@@ -1,0 +1,16 @@
+---
+name: CiderWebmail
+server:
+    host: &host linux
+authentication:
+    default_realm: imap
+    realms:
+        imap:
+            credential:
+                class: HTTP
+                type: basic
+                realm: Webmail
+            store:
+                class: IMAP
+                host : &host
+
