@@ -1,7 +1,6 @@
 ---
 name: CiderWebmail
 server:
-    host: &host linux
     port: 993
 authentication:
     default_realm: imap
