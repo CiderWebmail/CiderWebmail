@@ -1,6 +1,7 @@
 package Catalyst::Authentication::Store::IMAP;
 
 use base qw/Class::Accessor::Fast/;
+use Catalyst::Authentication::Store::IMAP::User;
 
 BEGIN {
     __PACKAGE__->mk_accessors(qw/host/);
@@ -22,15 +23,10 @@ sub from_session {
 
 sub find_user {
     my ( $self, $userinfo, $c ) = @_;
-    my $id = $userinfo->{id} || $userinfo->{username};
 
-    my $imap = Mail::IMAPClient->new(
-        Server => $c->config->{server}{host},
-        User    => $id,
-        Password=> $password,
-    ) or die "Cannot connect: $@";
-
-    $c->stash({imap => $imap});
+    $userinfo->{c} = $c;
+    $userinfo->{id} ||= $userinfo->{username};
+    return Catalyst::Authentication::Store::IMAP::User->new($userinfo);
 }
 
 1;

@@ -2,6 +2,7 @@
 name: CiderWebmail
 server:
     host: &host linux
+    port: 993
 authentication:
     default_realm: imap
     realms:
@@ -9,7 +10,8 @@ authentication:
             credential:
                 class: HTTP
                 type: basic
-                realm: Webmail
+                password_type: self_check
+                password_field: password
             store:
                 class: IMAP
                 host : &host

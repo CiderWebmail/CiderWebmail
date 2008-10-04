@@ -16,18 +16,6 @@ Catalyst Model.
 
 =cut
 
-sub login {
-    my ($self, $c, $username, $password) = @_;
-
-    my $imap = Mail::IMAPClient->new(
-        Server => $c->config->{server}{host},
-        User    => $username,
-        Password=> $password,
-    ) or die "Cannot connect: $@";
-
-    $c->stash({imap => $imap});
-}
-
 sub folders {
     my ($self, $c) = @_;
     return $c->stash->{imap}->folders;

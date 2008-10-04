@@ -33,7 +33,20 @@ sub default : Private {
     $c->response->body( $c->welcome_message );
 }
 
+=head2 auto
+
+Only logged in users may use this product. If no user was found, redirect to the login page.
+
+=cut
+
 sub auto : Private {
+    my ($self, $c) = @_;
+
+    if ($c->authenticate({ realm => "CiderWebmail" })) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 sub login : Local {
@@ -47,7 +60,7 @@ sub login : Local {
 sub index : Private {
     my ( $self, $c ) = @_;
     my $model = $c->model();
-    $c->body($model->folders);
+    $c->res->body(join ', ', $model->folders($c));
 }
 
 =head2 end
