@@ -1,0 +1,24 @@
+body {
+    color: white;
+    background-color: black;
+}
+
+div#top {
+    top: 0px;
+    left: 0px;
+}
+
+div#left {
+    position: absolute;
+    float: left;
+    width: 200px;
+    top: 45px;
+}
+
+div#page {
+    position: absolute;
+    left: 210px;
+    top: 45px;
+    width: auto;
+}
+
