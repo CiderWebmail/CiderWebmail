@@ -5,6 +5,7 @@ use warnings;
 use parent 'Catalyst::Model';
 
 use Mail::IMAPClient;
+use CiderWebmail::Model::IMAPClient::Message;
 
 =head1 NAME
 
@@ -19,6 +20,26 @@ Catalyst Model.
 sub folders {
     my ($self, $c) = @_;
     return $c->stash->{imap}->folders;
+}
+
+#select mailbox
+sub select {
+    my ($self, $c, $mailbox) = @_;
+    return $c->stash->{imap}->select($mailbox);
+}
+
+#all messages in the current mailbox
+sub messages {
+    my ($self, $c) = @_;
+
+    my @messages = ();
+    
+    foreach ( $c->stash->{imap}->search("ALL") ) {
+        my $uid = $_;
+        push(@messages, CiderWebmail::Model::IMAPClient::Message->new($c, { uid => $uid } ));
+    }
+
+    return \@messages;
 }
 
 =head1 AUTHOR
