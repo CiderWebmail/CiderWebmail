@@ -6,6 +6,8 @@ use warnings;
 use strict;
 use parent 'CiderWebmail::Model::IMAPClient';
 
+use MIME::WordDecoder;
+
 sub new {
     my ($class, $c, $o) = @_;
 
@@ -20,7 +22,13 @@ sub new {
 sub subject {
     my ($self) = @_;
 
-    return $self->{c}->stash->{imap}->subject($self->{'uid'});
+    return MIME::WordDecoder::unmime($self->{c}->stash->{imap}->subject($self->{'uid'}));
+}
+
+sub from {
+    my ($self) = @_;
+
+    return MIME::WordDecoder::unmime($self->{c}->stash->{imap}->get_header($self->{'uid'}, "From"));
 }
 
 1;
