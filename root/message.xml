@@ -1,0 +1,33 @@
+<html
+    xml:lang="en"
+    lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <link rel="stylesheet" media="screen"  href="/base.css" />
+    </head>
+    <body>
+        <div id="container">
+            <div id="top">
+                top
+            </div>
+            <div id="left">
+                <ul>
+                    <li tal:repeat="folder folders">$folder</li>
+                </ul>
+            </div>
+            <div id="page">
+		    <b>From: </b><span tal:content="message/from">from</span><br />
+		    <b>Subject: </b><span tal:content="message/subject">from</span><br />
+		    <b>Date: </b><span tal:content="message/date/hms">from</span><br />
+		    <b>Body-MIME: </b><span tal:content="message/body/bodytype">bodytype</span><br />
+
+		    <ul>
+			    <li tal:repeat="part message/body/parts">$part</li>
+	            </ul>
+            </div>
+        </div>
+    </body>
+</html>
+
