@@ -22,10 +22,12 @@
                     <tr>
                         <th>From</th>
                         <th>Subject</th>
+                        <th>Date</th>
                     </tr>
                     <tr tal:repeat="message messages">
                         <td tal:content="message/from">from</td>
                         <td tal:content="message/subject">from</td>
+                        <td tal:content="message/date/hms">from</td>
                     </tr>
                 </table>
             </div>
