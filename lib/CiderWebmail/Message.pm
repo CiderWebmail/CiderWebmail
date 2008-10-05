@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 use MIME::WordDecoder;
+use Mail::IMAPClient::BodyStructure;
 use DateTime;
 use DateTime::Format::Mail;
 
@@ -16,6 +17,12 @@ sub new {
     };
 
     bless $message, $class;
+}
+
+sub uid {
+    my ($self) = @_;
+
+    return $self->{'uid'};
 }
 
 sub subject {
@@ -41,6 +48,12 @@ sub date {
     $date =~ s/\([a-zA-Z]+\)$//;
 
     return DateTime::Format::Mail->parse_datetime($date);
+}
+
+sub body {
+    my ($self) = @_;
+
+    return Mail::IMAPClient::BodyStructure->new( $self->{c}->stash->{imap}->fetch($self->{uid}, "bodystructure"));
 }
 
 1;
