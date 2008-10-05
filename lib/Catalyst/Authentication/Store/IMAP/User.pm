@@ -44,8 +44,7 @@ sub check_password {
     my $c = $self->{c};
 
     my %connect_info = (
-#        Server  => $c->config->{server}{host},
-        Server => $ENV{IMAPHOST},       #temp until we have a 'final' config format...
+        Server  => $c->config->{authentication}{realms}{imap}{store}{host},
     );
 
     if (exists $c->config->{server}{port}) {

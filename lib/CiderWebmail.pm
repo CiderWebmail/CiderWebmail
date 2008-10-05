@@ -21,6 +21,7 @@ use Catalyst qw/
     Session::Store::FastMmap
     Session::State::Cookie
     Authentication
+    Unicode
 /;
 
 our $VERSION = '0.01';
@@ -34,7 +35,26 @@ our $VERSION = '0.01';
 # with a external configuration file acting as an override for
 # local deployment.
 
-__PACKAGE__->config( name => 'CiderWebmail' );
+__PACKAGE__->config(
+    name => 'CiderWebmail',
+    authentication => {
+        default_realm => 'imap',
+        realms => {
+            imap => {
+                credential => {
+                    class => 'HTTP',
+                    type =>  'basic',
+                    password_type => 'self_check',
+                    password_field =>  'password',
+                },
+                store => {
+                    class => 'IMAP',
+                    host => (__PACKAGE__->config->{server}{host} || $ENV{IMAPHOST}),
+                },
+            },
+        },
+    },
+);
 
 # Start the application
 __PACKAGE__->setup;
