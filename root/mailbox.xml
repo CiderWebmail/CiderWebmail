@@ -23,11 +23,13 @@
                         <th>From</th>
                         <th>Subject</th>
                         <th>Date</th>
+                        <th>UID</th>
                     </tr>
                     <tr tal:repeat="message messages">
                         <td tal:content="message/from">from</td>
                         <td tal:content="message/subject">from</td>
                         <td tal:content="message/date/hms">from</td>
+                        <td tal:content="message/uid">from</td>
                     </tr>
                 </table>
             </div>
