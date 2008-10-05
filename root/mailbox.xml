@@ -18,7 +18,16 @@
                 </ul>
             </div>
             <div id="page">
-                <li tal:repeat="message messages">MSG: $message/subject</li>
+                <table>
+                    <tr>
+                        <th>From</th>
+                        <th>Subject</th>
+                    </tr>
+                    <tr tal:repeat="message messages">
+                        <td tal:content="message/from">from</td>
+                        <td tal:content="message/subject">from</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </body>
