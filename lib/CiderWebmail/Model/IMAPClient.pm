@@ -42,6 +42,13 @@ sub messages {
     return \@messages;
 }
 
+#fetch a single message
+sub message {
+    my ($self, $c, $uid) = @_;
+
+    return CiderWebmail::Message->new($c, { uid => $uid } );
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

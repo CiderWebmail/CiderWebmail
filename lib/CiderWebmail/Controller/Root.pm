@@ -77,6 +77,20 @@ sub mailbox : Local {
     $c->stash( messages => $c->model->messages($c) );
 }
 
+sub message : Local {
+    my ( $self, $c, $uid ) = @_;
+    my $model = $c->model();
+
+    my $message = $c->model->message($c, $uid);
+
+    $c->stash( template => 'message.xml' );
+    
+    $c->model->select($c, "INBOX");
+    $c->stash( folders => [ $model->folders($c) ] );
+    $c->stash( message => $message );
+}
+
+
 =head2 end
 
 Attempt to render a view, if needed.
