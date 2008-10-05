@@ -5,7 +5,7 @@ use warnings;
 use parent 'Catalyst::Model';
 
 use Mail::IMAPClient;
-use CiderWebmail::Model::IMAPClient::Message;
+use CiderWebmail::Message;
 
 =head1 NAME
 
@@ -36,7 +36,7 @@ sub messages {
     
     foreach ( $c->stash->{imap}->search("ALL") ) {
         my $uid = $_;
-        push(@messages, CiderWebmail::Model::IMAPClient::Message->new($c, { uid => $uid } ));
+        push(@messages, CiderWebmail::Message->new($c, { uid => $uid } ));
     }
 
     return \@messages;
