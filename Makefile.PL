@@ -12,6 +12,7 @@ requires 'YAML'; # This should reflect the config file format you've chosen
 requires 'Catalyst::View::Petal';
 requires 'DateTime';
 requires 'DateTime::Format::Mail';
+requires 'MIME::WordDecoder';
 catalyst;
 
 install_script glob('script/*.pl');
