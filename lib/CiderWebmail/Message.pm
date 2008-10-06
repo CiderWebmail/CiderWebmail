@@ -43,7 +43,7 @@ sub mailbox {
 sub switch_mailbox {
     my ($self) = @_;
 
-    $self->{c}->model->select( $self->{c}, $self->mailbox );
+    $self->{c}->model->select( $self->{c}, { mailbox => $self->mailbox } );
     return;
 }
 

@@ -37,10 +37,10 @@ sub view : Local {
 
     #TODO maybe move this to some 'global' part - we will need it nearly everywhere
     #TODI per-server/per-user INBOX name/seperator/namespace/...
-    $c->model->select($c, "INBOX");
+    $c->model->select($c, { mailbox => "INBOX" } );
     $c->stash( folders => [ $model->folders($c) ] );
 
-    $c->stash( messages => $c->model->messages($c, $mailbox) );
+    $c->stash( messages => $c->model->messages($c, { mailbox => $mailbox } ) );
 }
 
 

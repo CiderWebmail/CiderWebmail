@@ -31,11 +31,14 @@ sub view : Local {
     my ( $self, $c, $mailbox, $uid ) = @_;
     my $model = $c->model();
 
-    my $message = $c->model->message($c, $mailbox, $uid);
+    die("mailbox not set") unless defined($mailbox);
+    die("uid not set") unless defined($uid);
+
+    my $message = $c->model->message($c, { mailbox => $mailbox, uid => $uid } );
 
     $c->stash( template => 'message.xml' );
     
-    $c->model->select($c, "INBOX");
+    $c->model->select($c, { mailbox => "INBOX" } );
     $c->stash( folders => [ $model->folders($c) ] );
     $c->stash( message => $message );
 }

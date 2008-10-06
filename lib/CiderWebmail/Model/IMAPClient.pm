@@ -27,23 +27,26 @@ sub folders {
 
 #select mailbox
 sub select {
-    my ($self, $c, $mailbox) = @_;
+    my ($self, $c, $o) = @_;
 
-    return $c->stash->{imap}->select($mailbox);
+    die("mailbox not set") unless defined( $o->{mailbox} );
+
+    return $c->stash->{imap}->select($o->{mailbox});
 }
 
 #all messages in a mailbox
 sub messages {
-    my ($self, $c, $mailbox) = @_;
+    my ($self, $c, $o) = @_;
 
-    die("mailbox not set") unless defined( $mailbox );
-    $self->select($c, $mailbox);
+    die("mailbox not set") unless defined( $o->{mailbox} );
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
 
     my @messages = ();
     
     foreach ( $c->stash->{imap}->search("ALL") ) {
         my $uid = $_;
-        push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $mailbox } ));
+        push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $o->{mailbox} } ));
     }
 
     return \@messages;
@@ -51,9 +54,9 @@ sub messages {
 
 #fetch a single message
 sub message {
-    my ($self, $c, $mailbox, $uid) = @_;
+    my ($self, $c, $o) = @_;
 
-    return CiderWebmail::Message->new($c, { uid => $uid, mailbox => $mailbox } );
+    return CiderWebmail::Message->new($c, { uid => $o->{uid}, mailbox => $o->{mailbox} } );
 }
 
 sub get_header {
@@ -63,7 +66,7 @@ sub get_header {
     die("uid not set") unless( defined($o->{uid}) );
     die("header not set") unless( defined($o->{header}) );
 
-    $self->select($c, $o->{mailbox});
+    $self->select($c, { mailbox => $o->{mailbox} } );
   
     unless ( $c->stash->{headercache}->get($o->{uid}."_".$o->{header}) ) {
         warn "adding ".join('-', $o->{uid}, $o->{header})." to cache";
@@ -95,7 +98,7 @@ sub date {
     die("mailbox not set") unless( defined($o->{mailbox} ) );
     die("uid not set") unless( defined($o->{uid}) );
     
-    $self->select($c, $o->{mailbox});
+    $self->select($c, { mailbox => $o->{mailbox} } );
     
     my $date = $c->stash->{imap}->get_header($o->{uid}, "Date");
   
@@ -117,7 +120,7 @@ sub body {
     die("mailbox not set") unless( defined($o->{mailbox} ) );
     die("uid not set") unless( defined($o->{uid}) );
 
-    $self->select($c, $o->{mailbox});
+    $self->select($c, { mailbox => $o->{mailbox} } );
 
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
