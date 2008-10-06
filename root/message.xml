@@ -21,11 +21,8 @@
 		    <b>From: </b><span tal:content="message/from">from</span><br />
 		    <b>Subject: </b><span tal:content="message/subject">from</span><br />
 		    <b>Date: </b><span tal:content="message/date/hms">from</span><br />
-		    <b>Body-MIME: </b><span tal:content="message/body/bodytype">bodytype</span><br />
-
-		    <ul>
-			    <li tal:repeat="part message/body/parts">$part</li>
-	            </ul>
+                    
+                    <pre tal:content="message/body">mail body</pre>
             </div>
         </div>
     </body>

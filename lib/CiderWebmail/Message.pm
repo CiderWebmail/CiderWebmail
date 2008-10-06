@@ -3,8 +3,11 @@ package CiderWebmail::Message;
 use warnings;
 use strict;
 
-use MIME::WordDecoder;
 use Mail::IMAPClient::BodyStructure;
+
+use MIME::WordDecoder;
+use MIME::Parser;
+
 use DateTime;
 use DateTime::Format::Mail;
 
@@ -53,7 +56,14 @@ sub date {
 sub body {
     my ($self) = @_;
 
-    return Mail::IMAPClient::BodyStructure->new( $self->{c}->stash->{imap}->fetch($self->{uid}, "bodystructure"));
+    unless ( defined( $self->{'entity'} ) ) {
+        my $parser = MIME::Parser->new();
+        $parser->output_to_core(1);
+        $self->{'entity'} = $parser->parse_data( $self->{c}->stash->{imap}->body_string( $self->{'uid'} ) );
+    }
+
+    #don't rely on this.. it will change once we support more advanced things
+    return join('', @{ $self->{'entity'}->body() });
 }
 
 1;
