@@ -8,6 +8,8 @@ use Mail::IMAPClient::BodyStructure;
 use DateTime;
 use DateTime::Format::Mail;
 
+use Cache::FastMmap;
+
 use Text::Iconv;
 
 sub new {
@@ -48,7 +50,7 @@ sub switch_mailbox {
 sub subject {
     my ($self) = @_;
     
-    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1});
+    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1 });
 }
 
 sub from {

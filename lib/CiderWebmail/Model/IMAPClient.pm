@@ -61,13 +61,19 @@ sub get_header {
    
     die("mailbox not set") unless( defined($o->{mailbox} ) );
     die("uid not set") unless( defined($o->{uid}) );
+    die("header not set") unless( defined($o->{header}) );
 
     $self->select($c, $o->{mailbox});
-   
+  
+    unless ( $c->stash->{headercache}->get($o->{uid}."_".$o->{header}) ) {
+        warn "adding ".join('-', $o->{uid}, $o->{header})." to cache";
+        $c->stash->{headercache}->set($o->{uid}."_".$o->{header},  $c->stash->{imap}->get_header($o->{uid}, $o->{header}))
+    }
+
     if ( defined($o->{decode}) ) {
         my $header;
         #TODO: check if get_header fails
-        my @header_array = decode_mimewords( $c->stash->{imap}->get_header($o->{uid}, $o->{header}));
+        my @header_array = decode_mimewords( $c->stash->{headercache}->get( $o->{uid}."_".$o->{header} ) );
         foreach ( @header_array ) {
             if ( defined($_->[1]) ) {
                my $converter = Text::Iconv->new($_->[1], "utf-8");
@@ -79,7 +85,7 @@ sub get_header {
  
         return $header;
     } else {
-        return $c->stash->{imap}->get_header($o->{uid}, $o->{header});
+        return $c->stash->{headercache}->get( $o->{uid}."_".$o->{header} );
     }
 }
 
@@ -120,7 +126,6 @@ sub body {
     #don't rely on this.. it will change once we support more advanced things
     return join('', @{ $entity->body() });
 }
-
 
 =head1 AUTHOR
 

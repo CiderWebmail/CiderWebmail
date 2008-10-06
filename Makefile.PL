@@ -18,6 +18,7 @@ requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
 
+requires 'Cache::FastMmap';
 catalyst;
 
 install_script glob('script/*.pl');
