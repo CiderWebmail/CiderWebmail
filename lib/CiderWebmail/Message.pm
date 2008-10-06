@@ -5,11 +5,13 @@ use strict;
 
 use Mail::IMAPClient::BodyStructure;
 
-use MIME::WordDecoder;
+use MIME::Words qw/ decode_mimewords /;
 use MIME::Parser;
 
 use DateTime;
 use DateTime::Format::Mail;
+
+use Text::Iconv;
 
 sub new {
     my ($class, $c, $o) = @_;
@@ -31,13 +33,35 @@ sub uid {
 sub subject {
     my ($self) = @_;
 
-    return MIME::WordDecoder::unmime($self->{c}->stash->{imap}->subject($self->{'uid'}));
+    #TODO not very clean, maybe there is a better way/module to handle this stuff, if not move this to some seperate module
+    my $subject;
+    foreach ( decode_mimewords( $self->{c}->stash->{imap}->get_header($self->{'uid'}, "Subject") ) ) {
+        if ( defined($_->[1]) ) {
+            my $converter = Text::Iconv->new($_->[1], "utf-8");
+            $subject .= $converter->convert( $_->[0] );
+        } else {
+            $subject .= $_->[0];
+        }
+    }
+
+    return $subject;
 }
 
 sub from {
     my ($self) = @_;
 
-    return MIME::WordDecoder::unmime($self->{c}->stash->{imap}->get_header($self->{'uid'}, "From"));
+    #TODO not very clean, maybe there is a better way/module to handle this stuff, if not move this to some seperate module
+    my $from;
+    foreach ( decode_mimewords( $self->{c}->stash->{imap}->get_header($self->{'uid'}, "From") ) ) {
+        if ( defined($_->[1]) ) {
+            my $converter = Text::Iconv->new($_->[1], "utf-8");
+            $from .= $converter->convert( $_->[0] );
+        } else {
+            $from .= $_->[0];
+        }
+    }
+
+    return $from;
 }
 
 #returns a datetime object
