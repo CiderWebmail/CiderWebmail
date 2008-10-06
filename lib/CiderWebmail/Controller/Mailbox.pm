@@ -30,7 +30,7 @@ sub index :Path :Args(0) {
 
 
 sub view : Local {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $mailbox ) = @_;
     my $model = $c->model();
 
     $c->stash( template => 'mailbox.xml' );
@@ -40,7 +40,7 @@ sub view : Local {
     $c->model->select($c, "INBOX");
     $c->stash( folders => [ $model->folders($c) ] );
 
-    $c->stash( messages => $c->model->messages($c) );
+    $c->stash( messages => $c->model->messages($c, $mailbox) );
 }
 
 

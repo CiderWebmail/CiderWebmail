@@ -28,9 +28,12 @@ sub select {
     return $c->stash->{imap}->select($mailbox);
 }
 
-#all messages in the current mailbox
+#all messages in a mailbox
 sub messages {
-    my ($self, $c) = @_;
+    my ($self, $c, $mailbox) = @_;
+
+    die("mailbox not set") unless defined( $mailbox );
+    $self->select($c, $mailbox);
 
     my @messages = ();
     
