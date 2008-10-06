@@ -13,7 +13,11 @@ requires 'Catalyst::View::Petal';
 requires 'DateTime';
 requires 'DateTime::Format::Mail';
 requires 'Catalyst::Plugin::Unicode';
+
 requires 'MIME::WordDecoder';
+requires 'MIME::Tools';
+requires 'MIME::Parser';
+
 catalyst;
 
 install_script glob('script/*.pl');
