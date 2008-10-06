@@ -23,6 +23,22 @@ div#page {
 }
 
 a {
-	color: lightgray;
-	text-decoration: underline;
+    color: lightgray;
+    text-decoration: underline;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    border: 1px solid lightgrey;
+}
+
+td {
+    text-align: left;
+    border: 1px solid lightgrey;
+}
+
+
