@@ -27,7 +27,7 @@
                     </tr>
                     <tr tal:repeat="message messages">
                         <td tal:content="message/from">from</td>
-                        <td tal:content="message/subject">subject</td>
+                        <td><a tal:attributes="href message/uri_view" tal:content="message/subject">subject</a></td>
                         <td tal:content="message/date/hms">date</td>
                         <td tal:content="message/uid">uid</td>
                     </tr>

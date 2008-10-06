@@ -64,6 +64,12 @@ sub from {
     return $from;
 }
 
+sub uri_view {
+    my ($self) = @_;
+
+    return $self->{c}->uri_for("/message/view/$self->{uid}");
+}
+
 #returns a datetime object
 sub date {
     my ($self) = @_;

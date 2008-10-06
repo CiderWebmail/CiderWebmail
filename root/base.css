@@ -22,3 +22,7 @@ div#page {
     width: auto;
 }
 
+a {
+	color: lightgray;
+	text-decoration: underline;
+}
