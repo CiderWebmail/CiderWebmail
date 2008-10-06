@@ -43,8 +43,11 @@ sub messages {
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     my @messages = ();
-    
+ 
     foreach ( $c->stash->{imap}->search("ALL") ) {
+        if ( $@ ) {
+            die("error in imap search: $@");
+        }
         my $uid = $_;
         push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $o->{mailbox} } ));
     }
@@ -68,15 +71,15 @@ sub get_header {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
   
-    unless ( $c->stash->{headercache}->get($o->{uid}."_".$o->{header}) ) {
-        warn "adding ".join('-', $o->{uid}, $o->{header})." to cache";
-        $c->stash->{headercache}->set($o->{uid}."_".$o->{header},  $c->stash->{imap}->get_header($o->{uid}, $o->{header}))
+    unless ( $c->stash->{headercache}->get( join('_', $o->{uid}, $o->{header}, $c->user->id) ) ) {
+        warn "adding ".join('_', $o->{uid}, $o->{header}, $c->user->id)." to cache";
+        $c->stash->{headercache}->set(join('_', $o->{uid}, $o->{header}, $c->user->id), $c->stash->{imap}->get_header($o->{uid}, $o->{header}));
     }
 
     if ( defined($o->{decode}) ) {
         my $header;
         #TODO: check if get_header fails
-        my @header_array = decode_mimewords( $c->stash->{headercache}->get( $o->{uid}."_".$o->{header} ) );
+        my @header_array = decode_mimewords( $c->stash->{headercache}->get( join('_', $o->{uid}, $o->{header}, $c->user->id) ) );
         foreach ( @header_array ) {
             if ( defined($_->[1]) ) {
                my $converter = Text::Iconv->new($_->[1], "utf-8");
