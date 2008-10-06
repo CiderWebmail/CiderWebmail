@@ -18,6 +18,8 @@ requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
 
+requires 'HTML::Entities';
+
 catalyst;
 
 install_script glob('script/*.pl');
