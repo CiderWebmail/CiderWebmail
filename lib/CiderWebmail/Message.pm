@@ -16,8 +16,12 @@ use Text::Iconv;
 sub new {
     my ($class, $c, $o) = @_;
 
+    die("mailbox not set") unless( defined($o->{'mailbox'}) );
+    die("uid not set") unless( defined($o->{'uid'}) );
+
     my $message = {
         c => $c,
+        mailbox => $o->{'mailbox'},
         uid => $o->{'uid'},
     };
 
@@ -30,8 +34,24 @@ sub uid {
     return $self->{'uid'};
 }
 
+sub mailbox {
+    my ($self) = @_;
+
+    return $self->{'mailbox'};
+}
+
+#select the mailbox of the message
+sub switch_mailbox {
+    my ($self) = @_;
+
+    $self->{c}->model->select( $self->{c}, $self->mailbox );
+    return;
+}
+
 sub subject {
     my ($self) = @_;
+    
+    $self->switch_mailbox;
 
     #TODO not very clean, maybe there is a better way/module to handle this stuff, if not move this to some seperate module
     my $subject;
@@ -50,6 +70,8 @@ sub subject {
 sub from {
     my ($self) = @_;
 
+    $self->switch_mailbox;
+
     #TODO not very clean, maybe there is a better way/module to handle this stuff, if not move this to some seperate module
     my $from;
     foreach ( decode_mimewords( $self->{c}->stash->{imap}->get_header($self->{'uid'}, "From") ) ) {
@@ -67,25 +89,32 @@ sub from {
 sub uri_view {
     my ($self) = @_;
 
-    return $self->{c}->uri_for("/message/view/$self->{uid}");
+    return $self->{c}->uri_for("/message/view/$self->{mailbox}/$self->{uid}");
 }
 
 #returns a datetime object
 sub date {
     my ($self) = @_;
 
+    $self->switch_mailbox;
     my $date = $self->{c}->stash->{imap}->get_header($self->{'uid'}, "Date");
-   
-    #some mailers specify (CEST)... Format::Mail isn't happy about this
-    #TODO better solution
-    $date =~ s/\([a-zA-Z]+\)$//;
+  
+    if ( defined($date) ) {
+        #some mailers specify (CEST)... Format::Mail isn't happy about this
+        #TODO better solution
+        $date =~ s/\([a-zA-Z]+\)$//;
 
-    return DateTime::Format::Mail->parse_datetime($date);
+        my $dt = DateTime::Format::Mail->new();
+        $dt->loose;
+
+        return $dt->parse_datetime($date);
+    }
 }
 
 sub body {
     my ($self) = @_;
 
+    $self->switch_mailbox;
     unless ( defined( $self->{'entity'} ) ) {
         my $parser = MIME::Parser->new();
         $parser->output_to_core(1);

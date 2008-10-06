@@ -28,10 +28,10 @@ sub index :Path :Args(0) {
 }
 
 sub view : Local {
-    my ( $self, $c, $uid ) = @_;
+    my ( $self, $c, $mailbox, $uid ) = @_;
     my $model = $c->model();
 
-    my $message = $c->model->message($c, $uid);
+    my $message = $c->model->message($c, $mailbox, $uid);
 
     $c->stash( template => 'message.xml' );
     

@@ -25,6 +25,7 @@ sub folders {
 #select mailbox
 sub select {
     my ($self, $c, $mailbox) = @_;
+
     return $c->stash->{imap}->select($mailbox);
 }
 
@@ -39,7 +40,7 @@ sub messages {
     
     foreach ( $c->stash->{imap}->search("ALL") ) {
         my $uid = $_;
-        push(@messages, CiderWebmail::Message->new($c, { uid => $uid } ));
+        push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $mailbox } ));
     }
 
     return \@messages;
@@ -47,9 +48,9 @@ sub messages {
 
 #fetch a single message
 sub message {
-    my ($self, $c, $uid) = @_;
+    my ($self, $c, $mailbox, $uid) = @_;
 
-    return CiderWebmail::Message->new($c, { uid => $uid } );
+    return CiderWebmail::Message->new($c, { uid => $uid, mailbox => $mailbox } );
 }
 
 =head1 AUTHOR
