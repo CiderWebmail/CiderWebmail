@@ -42,8 +42,8 @@ Only logged in users may use this product. If no user was found, redirect to the
 sub auto : Private {
     my ($self, $c) = @_;
 
-    unless( defined( $c->stash->{'headercache'} ) ) {
-        $c->stash->{'headercache'} = Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' );
+    unless( defined( $c->stash->{headercache} ) ) {
+        $c->stash->{headercache} = Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' );
         warn "headercache init...";
     }
 

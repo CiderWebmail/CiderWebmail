@@ -15,13 +15,13 @@ use Text::Iconv;
 sub new {
     my ($class, $c, $o) = @_;
 
-    die("mailbox not set") unless( defined($o->{'mailbox'}) );
-    die("uid not set") unless( defined($o->{'uid'}) );
+    die("mailbox not set") unless( defined($o->{mailbox}) );
+    die("uid not set") unless( defined($o->{uid}) );
 
     my $message = {
         c => $c,
-        mailbox => $o->{'mailbox'},
-        uid => $o->{'uid'},
+        mailbox => $o->{mailbox},
+        uid => $o->{uid},
     };
 
     bless $message, $class;
@@ -30,13 +30,13 @@ sub new {
 sub uid {
     my ($self) = @_;
 
-    return $self->{'uid'};
+    return $self->{uid};
 }
 
 sub mailbox {
     my ($self) = @_;
 
-    return $self->{'mailbox'};
+    return $self->{mailbox};
 }
 
 #select the mailbox of the message

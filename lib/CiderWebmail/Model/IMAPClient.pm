@@ -124,7 +124,7 @@ sub body {
 
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
-    my $entity = $parser->parse_data( $c->stash->{imap}->body_string( $self->{'uid'} ) );
+    my $entity = $parser->parse_data( $c->stash->{imap}->body_string( $self->{uid} ) );
 
     #don't rely on this.. it will change once we support more advanced things
     return join('', @{ $entity->body() });
