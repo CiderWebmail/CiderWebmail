@@ -63,34 +63,6 @@ sub index : Private {
     $c->res->body(join ', ', $model->folders($c));
 }
 
-sub mailbox : Local {
-    my ( $self, $c ) = @_;
-    my $model = $c->model();
-
-    $c->stash( template => 'mailbox.xml' );
-
-    #TODO maybe move this to some 'global' part - we will need it nearly everywhere
-    #TODI per-server/per-user INBOX name/seperator/namespace/...
-    $c->model->select($c, "INBOX");
-    $c->stash( folders => [ $model->folders($c) ] );
-
-    $c->stash( messages => $c->model->messages($c) );
-}
-
-sub message : Local {
-    my ( $self, $c, $uid ) = @_;
-    my $model = $c->model();
-
-    my $message = $c->model->message($c, $uid);
-
-    $c->stash( template => 'message.xml' );
-    
-    $c->model->select($c, "INBOX");
-    $c->stash( folders => [ $model->folders($c) ] );
-    $c->stash( message => $message );
-}
-
-
 =head2 end
 
 Attempt to render a view, if needed.
