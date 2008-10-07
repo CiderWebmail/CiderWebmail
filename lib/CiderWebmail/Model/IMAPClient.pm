@@ -102,9 +102,17 @@ sub date {
     die("uid not set") unless( defined($o->{uid}) );
     
     $self->select($c, { mailbox => $o->{mailbox} } );
-    
-    my $date = $c->stash->{imap}->get_header($o->{uid}, "Date");
-  
+
+    #TODO check if imap serverreturn error
+    #TODO abstract {imap}->get_header into seperate method (fetch_header) with some kind of nocache => 1 or clearcache => 1 option
+    #     and use thi
+    unless ( $c->stash->{headercache}->get( join('_', $o->{uid}, "Date", $c->user->id) ) ) {
+        warn "adding ".join('_', $o->{uid}, "Date", $c->user->id)." to cache";
+        $c->stash->{headercache}->set(join('_', $o->{uid}, "Date", $c->user->id), $c->stash->{imap}->get_header($o->{uid}, "Date"));
+    }
+
+    my $date = $c->stash->{headercache}->get( join('_', $o->{uid}, "Date", $c->user->id) ) ;
+   
     if ( defined($date) ) {
         #some mailers specify (CEST)... Format::Mail isn't happy about this
         #TODO better solution
