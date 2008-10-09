@@ -22,7 +22,7 @@ Catalyst Model.
 
 sub folders {
     my ($self, $c) = @_;
-    return $c->stash->{imap}->folders;
+    return [ $c->stash->{imap}->folders ];
 }
 
 #select mailbox
@@ -65,7 +65,7 @@ sub message {
 sub decode_header {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{header};
+    return '' unless $o->{header};
 
     my $header;
 
