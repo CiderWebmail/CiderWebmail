@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use base 'Catalyst::Controller';
 
+use CiderWebmail::Headercache;
+
 #
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in MyApp.pm
@@ -42,10 +44,7 @@ Only logged in users may use this product. If no user was found, redirect to the
 sub auto : Private {
     my ($self, $c) = @_;
 
-    unless( defined( $c->stash->{headercache} ) ) {
-        $c->stash->{headercache} = Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' );
-        warn "headercache init...";
-    }
+    $c->stash( headercache => CiderWebmail::Headercache->new($c) );
 
     if ($c->authenticate({ realm => "CiderWebmail" })) {
         return 1;

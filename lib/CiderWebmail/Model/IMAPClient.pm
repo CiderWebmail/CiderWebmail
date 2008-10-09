@@ -5,11 +5,11 @@ use warnings;
 use parent 'Catalyst::Model';
 
 use Mail::IMAPClient;
-use CiderWebmail::Message;
 
 use MIME::Words qw/ decode_mimewords /;
 use MIME::Parser;
 
+use CiderWebmail::Message;
 =head1 NAME
 
 CiderWebmail::Model::IMAPClient - Catalyst Model
@@ -29,7 +29,7 @@ sub folders {
 sub select {
     my ($self, $c, $o) = @_;
 
-    die("mailbox not set") unless defined( $o->{mailbox} );
+    die unless $o->{mailbox};
 
     return $c->stash->{imap}->select($o->{mailbox});
 }
@@ -38,7 +38,7 @@ sub select {
 sub messages {
     my ($self, $c, $o) = @_;
 
-    die("mailbox not set") unless defined( $o->{mailbox} );
+    die unless $o->{mailbox};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
@@ -62,36 +62,51 @@ sub message {
     return CiderWebmail::Message->new($c, { uid => $o->{uid}, mailbox => $o->{mailbox} } );
 }
 
+sub decode_header {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{header};
+
+    my $header;
+
+    foreach ( decode_mimewords( $o->{header} ) ) {
+        if ( @$_ > 1 ) {
+            my $converter = Text::Iconv->new($_->[1], "utf-8");
+            $header .= $converter->convert( $_->[0] );
+        } else {
+            $header .= $_->[0];
+        }
+    }
+
+    return $header;
+}
+
+#fetch from server
 sub get_header {
     my ($self, $c, $o) = @_;
    
-    die("mailbox not set") unless( defined($o->{mailbox} ) );
-    die("uid not set") unless( defined($o->{uid}) );
-    die("header not set") unless( defined($o->{header}) );
+    die unless $o->{mailbox};
+    die unless $o->{uid};
+    die unless $o->{header};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
-  
-    unless ( $c->stash->{headercache}->get( join('_', $o->{uid}, $o->{header}, $c->user->id) ) ) {
-        warn "adding ".join('_', $o->{uid}, $o->{header}, $c->user->id)." to cache";
-        $c->stash->{headercache}->set(join('_', $o->{uid}, $o->{header}, $c->user->id), $c->stash->{imap}->get_header($o->{uid}, $o->{header}));
+
+    my $header;
+
+    if ( $o->{cache} ) {
+        unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, header => $o->{header} }) ) {
+            $c->stash->{headercache}->set({ uid => $o->{uid}, header => $o->{header}, data => $c->stash->{imap}->get_header($o->{uid}, $o->{header}) });
+        }
+
+        $header = $c->stash->{headercache}->get({ uid => $o->{uid}, header => $o->{header} });
+    } else {
+        $header = $c->stash->{imap}->get_header($o->{uid}, $o->{header});
     }
 
-    if ( defined($o->{decode}) ) {
-        my $header;
-        #TODO: check if get_header fails
-        my @header_array = decode_mimewords( $c->stash->{headercache}->get( join('_', $o->{uid}, $o->{header}, $c->user->id) ) );
-        foreach ( @header_array ) {
-            if ( defined($_->[1]) ) {
-               my $converter = Text::Iconv->new($_->[1], "utf-8");
-               $header .= $converter->convert( $_->[0] );
-            } else {
-               $header .= $_->[0];
-            }
-        }
- 
-        return $header;
+    if ( $o->{decode} ) {
+        return $self->decode_header($c, { header => $header });
     } else {
-        return $c->stash->{headercache}->get( $o->{uid}."_".$o->{header} );
+        return $header;
     }
 }
 
@@ -101,18 +116,8 @@ sub date {
     die("mailbox not set") unless( defined($o->{mailbox} ) );
     die("uid not set") unless( defined($o->{uid}) );
     
-    $self->select($c, { mailbox => $o->{mailbox} } );
-
-    #TODO check if imap serverreturn error
-    #TODO abstract {imap}->get_header into seperate method (fetch_header) with some kind of nocache => 1 or clearcache => 1 option
-    #     and use thi
-    unless ( $c->stash->{headercache}->get( join('_', $o->{uid}, "Date", $c->user->id) ) ) {
-        warn "adding ".join('_', $o->{uid}, "Date", $c->user->id)." to cache";
-        $c->stash->{headercache}->set(join('_', $o->{uid}, "Date", $c->user->id), $c->stash->{imap}->get_header($o->{uid}, "Date"));
-    }
-
-    my $date = $c->stash->{headercache}->get( join('_', $o->{uid}, "Date", $c->user->id) ) ;
-   
+    my $date = $self->get_header($c,  { header => "Date", uid => $o->{uid}, mailbox => $o->{mailbox} } );
+    
     if ( defined($date) ) {
         #some mailers specify (CEST)... Format::Mail isn't happy about this
         #TODO better solution

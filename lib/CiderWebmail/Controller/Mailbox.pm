@@ -27,27 +27,21 @@ sub index :Path :Args(0) {
     $c->response->body('Matched CiderWebmail::Controller::Mailbox in Mailbox.');
 }
 
-
-
 sub view : Local {
     my ( $self, $c, $mailbox ) = @_;
-    my $model = $c->model();
-
     $c->stash( template => 'mailbox.xml' );
 
-    #TODO maybe move this to some 'global' part - we will need it nearly everywhere
-    #TODI per-server/per-user INBOX name/seperator/namespace/...
     $c->model->select($c, { mailbox => "INBOX" } );
-    $c->stash( folders => [ $model->folders($c) ] );
 
-    $c->stash( messages => $c->model->messages($c, { mailbox => $mailbox } ) );
+    $c->stash( folders  => [ $c->model->folders($c) ] );
+    $c->stash( messages => [ map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") }, @{ $c->model->messages($c,{ mailbox => $mailbox}) } ] );
 }
 
 
 
 =head1 AUTHOR
 
-,,,
+Mathias Reitinger <mathias.reitinger@loop0.org>
 
 =head1 LICENSE
 

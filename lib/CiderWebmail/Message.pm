@@ -15,8 +15,8 @@ use Text::Iconv;
 sub new {
     my ($class, $c, $o) = @_;
 
-    die("mailbox not set") unless( defined($o->{mailbox}) );
-    die("uid not set") unless( defined($o->{uid}) );
+    die unless $o->{mailbox};
+    die unless $o->{uid};
 
     my $message = {
         c => $c,
@@ -44,25 +44,31 @@ sub switch_mailbox {
     my ($self) = @_;
 
     $self->{c}->model->select( $self->{c}, { mailbox => $self->mailbox } );
+    #TODO check error
     return;
 }
 
 sub subject {
     my ($self) = @_;
     
-    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1 });
+    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1, cache => 1 });
 }
 
 sub from {
     my ($self) = @_;
 
-    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "From", decode => 1 });
+    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "From", decode => 1, cache => 1 });
 }
 
-sub uri_view {
+sub get_headers {
     my ($self) = @_;
-
-    return $self->{c}->uri_for("/message/view/$self->{mailbox}/$self->{uid}");
+    
+    return {
+        subject     => $self->subject(),
+        from        => $self->from,
+        date        => $self->date->strftime("%T %d"),
+        uid         => $self->uid,
+    };
 }
 
 #returns a datetime object
