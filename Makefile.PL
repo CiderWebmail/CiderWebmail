@@ -18,6 +18,8 @@ requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
 
+requires 'Email::Simple';
+
 requires 'Cache::FastMmap';
 catalyst;
 

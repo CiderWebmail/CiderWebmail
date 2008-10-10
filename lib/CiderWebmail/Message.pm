@@ -18,10 +18,15 @@ sub new {
     die unless $o->{mailbox};
     die unless $o->{uid};
 
+    #TODO add headers passed here to the header cache
     my $message = {
         c => $c,
         mailbox => $o->{mailbox},
-        uid => $o->{uid},
+        uid     => $o->{uid},
+        from    => $o->{from},
+        to      => $o->{to},
+        subject => $o->{subject},
+        date    => $o->{date}, #datetime object
     };
 
     bless $message, $class;
@@ -50,14 +55,22 @@ sub switch_mailbox {
 
 sub subject {
     my ($self) = @_;
-    
-    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1, cache => 1 });
+   
+    unless ( $self->{subject} ) {
+        $self->{subject} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1, cache => 1 });
+    }
+
+    return $self->{subject};
 }
 
 sub from {
     my ($self) = @_;
 
-    return $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "From", decode => 1, cache => 1 });
+    unless( $self->{from} ) {
+        $self->{from} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "From", decode => 1, cache => 1 });
+    }
+
+    return $self->{from};
 }
 
 sub get_headers {
@@ -75,7 +88,11 @@ sub get_headers {
 sub date {
     my ($self) = @_;
 
-    return $self->{c}->model->date($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    unless( $self->{date} ) {
+        $self->{date} = $self->{c}->model->date($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    }
+
+    return $self->{date};
 }
 
 sub body {

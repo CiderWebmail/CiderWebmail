@@ -34,7 +34,7 @@ sub view : Local {
     $c->model->select($c, { mailbox => "INBOX" } );
 
     $c->stash( folders  => [ map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") }, @{ $c->model->folders($c) } ] );
-    $c->stash( messages => [ map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") }, @{ $c->model->messages($c,{ mailbox => $mailbox}) } ] );
+    $c->stash( messages => [ map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") }, @{ $c->model->list_messages($c,{ mailbox => $mailbox}) } ] );
 }
 
 

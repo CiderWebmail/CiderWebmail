@@ -9,6 +9,8 @@ use Mail::IMAPClient;
 use MIME::Words qw/ decode_mimewords /;
 use MIME::Parser;
 
+use Email::Simple;
+
 use CiderWebmail::Message;
 =head1 NAME
 
@@ -33,6 +35,31 @@ sub select {
 
     return $c->stash->{imap}->select($o->{mailbox});
 }
+
+sub list_messages {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    my @messages = ();
+
+    my $messages_out = $c->stash->{imap}->fetch_hash("BODY[HEADER.FIELDS (Subject From To Date)]");
+
+    if ($@) { die $@; }
+
+    while ( my ($uid, $data) = each(%$messages_out) ) {
+        #we need to add \n to the header text because we only parse headers not a real rfc2822 message
+        #otherwise it would skip the last header
+        my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
+
+        push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $o->{mailbox}, from => $email->header('From'), subject => $email->header('Subject'), date => $self->date_to_datetime($email->header('Date')) }));
+     }
+
+    return \@messages;
+}
+
 
 #all messages in a mailbox
 sub messages {
@@ -110,23 +137,32 @@ sub get_header {
     }
 }
 
+sub date_to_datetime {
+    my ($self, $c, $o) = @_;
+
+    return("") unless $o->{date};
+
+    #some mailers specify (CEST)... Format::Mail isn't happy about this
+    #TODO better solution
+    $o->{date} =~ s/\([a-zA-Z]+\)$//;
+
+    my $dt = DateTime::Format::Mail->new();
+    $dt->loose;
+
+    return $dt->parse_datetime($o->{date});
+}
+   
+
 sub date {
     my ($self, $c, $o) = @_;
 
     die("mailbox not set") unless( defined($o->{mailbox} ) );
     die("uid not set") unless( defined($o->{uid}) );
     
-    my $date = $self->get_header($c,  { header => "Date", uid => $o->{uid}, mailbox => $o->{mailbox} } );
+    my $date = $self->get_header($c,  { header => "Date", uid => $o->{uid}, mailbox => $o->{mailbox}, cache => 1 } );
     
     if ( defined($date) ) {
-        #some mailers specify (CEST)... Format::Mail isn't happy about this
-        #TODO better solution
-        $date =~ s/\([a-zA-Z]+\)$//;
-
-        my $dt = DateTime::Format::Mail->new();
-        $dt->loose;
-
-        return $dt->parse_datetime($date);
+        return $self->date_to_datetime($c, { date => $date });
     }
 }
 
