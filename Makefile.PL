@@ -4,21 +4,31 @@ name 'CiderWebmail';
 all_from 'lib/CiderWebmail.pm';
 
 requires 'Catalyst::Runtime' => '5.7012';
+
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
+requires 'Catalyst::Plugin::Unicode';
+requires 'Catalyst::Plugin::Authentication';
+requires 'Catalyst::Plugin::Session::Store::FastMmap';
+requires 'Catalyst::Authentication::Credential::HTTP';
+
 requires 'Catalyst::Action::RenderView';
 requires 'YAML'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
+
 requires 'Catalyst::View::Petal';
+
 requires 'DateTime';
 requires 'DateTime::Format::Mail';
-requires 'Catalyst::Plugin::Unicode';
 
 requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
 
 requires 'Email::Simple';
+
+requires 'IO::Socket::SSL';
+requires 'Mail::IMAPClient';
 
 requires 'Cache::FastMmap';
 catalyst;
