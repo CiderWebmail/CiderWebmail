@@ -8,8 +8,6 @@ use Mail::IMAPClient::BodyStructure;
 use DateTime;
 use DateTime::Format::Mail;
 
-use Cache::FastMmap;
-
 use Text::Iconv;
 
 sub new {
