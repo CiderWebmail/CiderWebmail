@@ -54,7 +54,14 @@ sub list_messages {
         #otherwise it would skip the last header
         my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
 
-        push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $o->{mailbox}, from => $email->header('From'), subject => $email->header('Subject'), date => $self->date_to_datetime($email->header('Date')) }));
+        push( @messages, CiderWebmail::Message->new($c, 
+            {
+                uid => $uid,
+                mailbox => $o->{mailbox},
+                from => $self->decode_header($email->header('From')),
+                subject => $self->decode_header($email->header('Subject')),
+                date => $self->date_to_datetime($email->header('Date'))
+            }) );
      }
 
     return \@messages;
