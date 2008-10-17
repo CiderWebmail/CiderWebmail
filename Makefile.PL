@@ -26,6 +26,7 @@ requires 'MIME::Tools';
 requires 'MIME::Parser';
 
 requires 'Email::Simple';
+requires 'Text::Iconv';
 
 requires 'IO::Socket::SSL';
 requires 'Mail::IMAPClient';

@@ -29,12 +29,22 @@ sub index :Path :Args(0) {
 
 sub view : Local {
     my ( $self, $c, $mailbox ) = @_;
-    $c->stash( template => 'mailbox.xml' );
 
     $c->model->select($c, { mailbox => "INBOX" } );
 
-    $c->stash( folders  => [ map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") }, @{ $c->model->folders($c) } ] );
-    $c->stash( messages => [ map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") }, @{ $c->model->list_messages($c,{ mailbox => $mailbox}) } ] );
+    $c->stash({
+        folders  => [
+            map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") },
+                @{ $c->model->folders($c) }
+        ],
+        messages => [
+            sort { $a->{date} cmp $b->{date} }
+            map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
+                @{ $c->model->list_messages($c, {mailbox => $mailbox}) }
+        ],
+    });
+
+    $c->stash( template => 'mailbox.xml' );
 }
 
 

@@ -77,7 +77,7 @@ sub get_headers {
     return {
         subject     => $self->subject(),
         from        => $self->from,
-        date        => $self->date->strftime("%T %d"),
+        date        => $self->date->strftime("%F %T"),
         uid         => $self->uid,
     };
 }

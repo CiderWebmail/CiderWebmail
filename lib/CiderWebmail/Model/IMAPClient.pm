@@ -31,7 +31,7 @@ sub folders {
 sub select {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    die "no mailbox to select" unless $o->{mailbox};
 
     return $c->stash->{imap}->select($o->{mailbox});
 }
@@ -39,17 +39,17 @@ sub select {
 sub list_messages {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    die "no mailbox to list" unless $o->{mailbox};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    my @messages = ();
+    my @messages;
 
     my $messages_out = $c->stash->{imap}->fetch_hash("BODY[HEADER.FIELDS (Subject From To Date)]");
 
     if ($@) { die $@; }
 
-    while ( my ($uid, $data) = each(%$messages_out) ) {
+    while ( my ($uid, $data) = each %$messages_out ) {
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
         my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
@@ -58,9 +58,9 @@ sub list_messages {
             {
                 uid => $uid,
                 mailbox => $o->{mailbox},
-                from => $self->decode_header($email->header('From')),
-                subject => $self->decode_header($email->header('Subject')),
-                date => $self->date_to_datetime($email->header('Date'))
+                from => $self->decode_header($c, { header => ($email->header('From') or '') }),
+                subject => $self->decode_header($c, { header => ($email->header('Subject') or '') }),
+                date => $self->date_to_datetime($c, { date => ($email->header('Date') or '-') }),
             }) );
      }
 
@@ -105,8 +105,13 @@ sub decode_header {
 
     foreach ( decode_mimewords( $o->{header} ) ) {
         if ( @$_ > 1 ) {
-            my $converter = Text::Iconv->new($_->[1], "utf-8");
-            $header .= $converter->convert( $_->[0] );
+            unless (eval {
+                    my $converter = Text::Iconv->new($_->[1], "utf-8");
+                    $header .= $converter->convert( $_->[0] );
+                }) {
+                warn "unsupported encoding: $_->[1]";
+                $header .= $_->[0];
+            }
         } else {
             $header .= $_->[0];
         }
@@ -147,7 +152,7 @@ sub get_header {
 sub date_to_datetime {
     my ($self, $c, $o) = @_;
 
-    return("") unless $o->{date};
+    return '' unless $o->{date};
 
     #some mailers specify (CEST)... Format::Mail isn't happy about this
     #TODO better solution
@@ -156,28 +161,34 @@ sub date_to_datetime {
     my $dt = DateTime::Format::Mail->new();
     $dt->loose;
 
-    return $dt->parse_datetime($o->{date});
+    my $date = eval { $dt->parse_datetime($o->{date}) };
+    unless ($date) {
+        warn "$@ parsing $o->{date}";
+        $date = DateTime->from_epoch(epoch => 0); # just return a DateTime object so we can continue
+    }
+
+    return $date;
 }
    
 
 sub date {
     my ($self, $c, $o) = @_;
 
-    die("mailbox not set") unless( defined($o->{mailbox} ) );
-    die("uid not set") unless( defined($o->{uid}) );
+    die 'mailbox not set' unless defined $o->{mailbox};
+    die 'uid not set' unless defined $o->{uid};
     
     my $date = $self->get_header($c,  { header => "Date", uid => $o->{uid}, mailbox => $o->{mailbox}, cache => 1 } );
     
-    if ( defined($date) ) {
+    if ( defined $date ) {
         return $self->date_to_datetime($c, { date => $date });
-    }
+    } #FIXME what happens if $date is undef?
 }
 
 sub body {
     my ($self, $c, $o) = @_;
 
-    die("mailbox not set") unless( defined($o->{mailbox} ) );
-    die("uid not set") unless( defined($o->{uid}) );
+    die 'mailbox not set' unless defined $o->{mailbox};
+    die 'uid not set' unless defined $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
