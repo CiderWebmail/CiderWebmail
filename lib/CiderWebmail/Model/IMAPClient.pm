@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use parent 'Catalyst::Model';
 
-use Mail::IMAPClient;
+use Mail::IMAPClient; #remove when everything is moved to CiderWebmail::IMAP
 
 use MIME::Words qw/ decode_mimewords /;
 use MIME::Parser;
