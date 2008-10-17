@@ -33,7 +33,7 @@ sub select {
 
     die "no mailbox to select" unless $o->{mailbox};
 
-    return $c->stash->{imap}->select($o->{mailbox});
+    return $c->stash->{imap}->select($o->{mailbox}) || die("could not select mailbox: ".$o->{mailbox});
 }
 
 sub list_messages {
