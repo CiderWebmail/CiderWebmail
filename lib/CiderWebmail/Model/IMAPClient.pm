@@ -48,8 +48,13 @@ sub folders {
 sub select {
     my ($self, $c, $o) = @_;
 
-    $c->stash->{imapclient}->select( $o->{mailbox} );
-    $self->die_on_error($c);
+    die unless $o->{mailbox};
+
+    unless ( $c->stash->{currentmailbox} && ( $c->stash->{currentmailbox} eq $o->{mailbox} ) ) {
+        $c->stash->{imapclient}->select( $o->{mailbox} );
+        $self->die_on_error($c);
+        $c->stash->{currentmailbox} = $o->{mailbox};
+    }
 }
 
 #TODO some way to specify what fields to fetch?
