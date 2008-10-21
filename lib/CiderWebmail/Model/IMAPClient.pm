@@ -52,16 +52,6 @@ sub select {
     $self->die_on_error($c);
 }
 
-sub list_messages {
-    my ($self, $c, $o) = @_;
-
-    die "no mailbox to list" unless $o->{mailbox};
-
-    my $mailbox = CiderWebmail::Mailbox->new($c, { mailbox => $o->{mailbox} });
-
-    return $mailbox->list_messages;
-}
-
 #TODO some way to specify what fields to fetch?
 sub fetch_headers_hash {
     my ($self, $c, $o) = @_;
@@ -89,12 +79,6 @@ sub fetch_headers_hash {
     }
    
     return \@messages;
-}
-
-sub message {
-    my ($self, $c, $o) = @_;
-
-    return CiderWebmail::Message->new($c, { uid => $o->{uid}, mailbox => $o->{mailbox} } );
 }
 
 #fetch from server
@@ -127,8 +111,6 @@ sub get_header {
         return $header;
     }
 }
-
-  
 
 sub date {
     my ($self, $c, $o) = @_;
