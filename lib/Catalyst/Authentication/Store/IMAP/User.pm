@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use base qw/Catalyst::Authentication::User/;
+use Mail::IMAPClient;
 
 sub new {
     my $class = shift;
