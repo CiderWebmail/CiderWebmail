@@ -40,7 +40,6 @@ sub view : Local {
 
     $c->stash( template => 'message.xml' );
     
-    $c->stash( folders  => [ map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") }, @{ $c->model->folders($c) } ] );
     $c->stash( message => $message );
 }
 

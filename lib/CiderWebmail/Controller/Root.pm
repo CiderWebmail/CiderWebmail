@@ -44,9 +44,16 @@ Only logged in users may use this product. If no user was found, redirect to the
 sub auto : Private {
     my ($self, $c) = @_;
 
-    $c->stash( headercache => CiderWebmail::Headercache->new($c) );
 
     if ($c->authenticate({ realm => "CiderWebmail" })) {
+        $c->stash( headercache => CiderWebmail::Headercache->new($c) );
+        $c->stash({
+            folders  => [
+                map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") },
+                @{ $c->model->folders($c) }
+            ],
+        });
+
         return 1;
     } else {
         return 0;

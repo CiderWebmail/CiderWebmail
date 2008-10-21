@@ -35,10 +35,6 @@ sub view : Local {
     my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $mailbox});
 
     $c->stash({
-        folders  => [
-            map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") },
-                @{ $c->model->folders($c) }
-        ],
         messages => [
             sort { $a->{date} cmp $b->{date} }
             map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
