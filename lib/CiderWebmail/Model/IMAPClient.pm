@@ -100,7 +100,7 @@ sub message {
 #fetch from server
 sub get_header {
     my ($self, $c, $o) = @_;
-   
+    
     die unless $o->{mailbox};
     die unless $o->{uid};
     die unless $o->{header};
@@ -120,9 +120,9 @@ sub get_header {
         $header = $c->stash->{imapclient}->get_header($o->{uid}, $o->{header});
         $self->die_on_error($c);
     }
-
+        
     if ( $o->{decode} ) {
-        return CiderWebmail::Util::decode_header($c, { header => $header });
+        return CiderWebmail::Util::decode_header({ header => $header });
     } else {
         return $header;
     }
