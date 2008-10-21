@@ -65,7 +65,7 @@ sub check_password {
         Peek => 1,
     ) or return;
 
-    $c->stash({imap => $imap});
+    $c->stash({imapclient => $imap});
     return 1;
 }
 

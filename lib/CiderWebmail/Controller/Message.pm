@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
+use CiderWebmail::Message;
+
 =head1 NAME
 
 CiderWebmail::Controller::Message - Catalyst Controller
@@ -34,11 +36,10 @@ sub view : Local {
     die("mailbox not set") unless defined($mailbox);
     die("uid not set") unless defined($uid);
 
-    my $message = $c->model->message($c, { mailbox => $mailbox, uid => $uid } );
+    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
 
     $c->stash( template => 'message.xml' );
     
-    $c->model->select($c, { mailbox => "INBOX" } );
     $c->stash( folders  => [ map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") }, @{ $c->model->folders($c) } ] );
     $c->stash( message => $message );
 }

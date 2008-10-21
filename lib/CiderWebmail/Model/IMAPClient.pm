@@ -4,14 +4,13 @@ use strict;
 use warnings;
 use parent 'Catalyst::Model';
 
-use Mail::IMAPClient; #remove when everything is moved to CiderWebmail::IMAP
-
-use MIME::Words qw/ decode_mimewords /;
 use MIME::Parser;
 
 use Email::Simple;
 
 use CiderWebmail::Message;
+use CiderWebmail::Mailbox;
+use CiderWebmail::Util;
 =head1 NAME
 
 CiderWebmail::Model::IMAPClient - Catalyst Model
@@ -22,18 +21,35 @@ Catalyst Model.
 
 =cut
 
-sub folders {
+
+sub die_on_error {
     my ($self, $c) = @_;
-    return [ $c->stash->{imap}->folders ];
+  
+    if ( $c->stash->{imapclient}->LastError ) {
+        
+        my @loc = caller(0);
+        warn "IMAP error at line ".$loc[2]." in ".$loc[1]."\n\n";
+
+        my $error = $c->stash->{imapclient}->LastError;
+        $error =~ s/[^a-zA-Z0-9 ]//g;
+        die($error) if ($c->stash->{imapclient}->LastError);
+    }
 }
 
-#select mailbox
+sub folders {
+    my ($self, $c) = @_;
+
+    my @folders = $c->stash->{imapclient}->folders;
+    $self->die_on_error($c);
+
+    return \@folders;
+}
+
 sub select {
     my ($self, $c, $o) = @_;
 
-    die "no mailbox to select" unless $o->{mailbox};
-
-    return $c->stash->{imap}->select($o->{mailbox}) || die("could not select mailbox: ".$o->{mailbox});
+    $c->stash->{imapclient}->select( $o->{mailbox} );
+    $self->die_on_error($c);
 }
 
 sub list_messages {
@@ -41,83 +57,44 @@ sub list_messages {
 
     die "no mailbox to list" unless $o->{mailbox};
 
-    $self->select($c, { mailbox => $o->{mailbox} } );
+    my $mailbox = CiderWebmail::Mailbox->new($c, { mailbox => $o->{mailbox} });
 
-    my @messages;
-
-    my $messages_out = $c->stash->{imap}->fetch_hash("BODY[HEADER.FIELDS (Subject From To Date)]");
-
-    if ($@) { die $@; }
-
-    while ( my ($uid, $data) = each %$messages_out ) {
-        #we need to add \n to the header text because we only parse headers not a real rfc2822 message
-        #otherwise it would skip the last header
-        my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
-
-        push( @messages, CiderWebmail::Message->new($c, 
-            {
-                uid => $uid,
-                mailbox => $o->{mailbox},
-                from => $self->decode_header($c, { header => ($email->header('From') or '') }),
-                subject => $self->decode_header($c, { header => ($email->header('Subject') or '') }),
-                date => $self->date_to_datetime($c, { date => ($email->header('Date') or '-') }),
-            }) );
-     }
-
-    return \@messages;
+    return $mailbox->list_messages;
 }
 
-
-#all messages in a mailbox
-sub messages {
+#TODO some way to specify what fields to fetch?
+sub fetch_headers_hash {
     my ($self, $c, $o) = @_;
 
     die unless $o->{mailbox};
-
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     my @messages = ();
- 
-    foreach ( $c->stash->{imap}->search("ALL") ) {
-        if ( $@ ) {
-            die("error in imap search: $@");
-        }
-        my $uid = $_;
-        push(@messages, CiderWebmail::Message->new($c, { uid => $uid, mailbox => $o->{mailbox} } ));
-    }
+    my $messages_from_server = $c->stash->{imapclient}->fetch_hash("BODY[HEADER.FIELDS (Subject From To Date)]");
+    
+    $self->die_on_error($c);
 
+    while ( my ($uid, $data) = each %$messages_from_server ) {
+        #we need to add \n to the header text because we only parse headers not a real rfc2822 message
+        #otherwise it would skip the last header
+        my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
+        push( @messages,
+            {
+                uid => $uid,
+                mailbox => $o->{mailbox},
+                from => CiderWebmail::Util::decode_header({ header => ($email->header('From') or '') }),
+                subject => CiderWebmail::Util::decode_header({ header => ($email->header('Subject') or '') }),
+                date => CiderWebmail::Util::date_to_datetime({ date => ($email->header('Date') or '-') }),
+            } );
+    }
+   
     return \@messages;
 }
 
-#fetch a single message
 sub message {
     my ($self, $c, $o) = @_;
 
     return CiderWebmail::Message->new($c, { uid => $o->{uid}, mailbox => $o->{mailbox} } );
-}
-
-sub decode_header {
-    my ($self, $c, $o) = @_;
-
-    return '' unless $o->{header};
-
-    my $header;
-
-    foreach ( decode_mimewords( $o->{header} ) ) {
-        if ( @$_ > 1 ) {
-            unless (eval {
-                    my $converter = Text::Iconv->new($_->[1], "utf-8");
-                    $header .= $converter->convert( $_->[0] );
-                }) {
-                warn "unsupported encoding: $_->[1]";
-                $header .= $_->[0];
-            }
-        } else {
-            $header .= $_->[0];
-        }
-    }
-
-    return $header;
 }
 
 #fetch from server
@@ -134,42 +111,24 @@ sub get_header {
 
     if ( $o->{cache} ) {
         unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, header => $o->{header} }) ) {
-            $c->stash->{headercache}->set({ uid => $o->{uid}, header => $o->{header}, data => $c->stash->{imap}->get_header($o->{uid}, $o->{header}) });
+            $c->stash->{headercache}->set({ uid => $o->{uid}, header => $o->{header}, data => $c->stash->{imapclient}->get_header($o->{uid}, $o->{header}) });
+            $self->die_on_error($c);
         }
 
         $header = $c->stash->{headercache}->get({ uid => $o->{uid}, header => $o->{header} });
     } else {
-        $header = $c->stash->{imap}->get_header($o->{uid}, $o->{header});
+        $header = $c->stash->{imapclient}->get_header($o->{uid}, $o->{header});
+        $self->die_on_error($c);
     }
 
     if ( $o->{decode} ) {
-        return $self->decode_header($c, { header => $header });
+        return CiderWebmail::Util::decode_header($c, { header => $header });
     } else {
         return $header;
     }
 }
 
-sub date_to_datetime {
-    my ($self, $c, $o) = @_;
-
-    return '' unless $o->{date};
-
-    #some mailers specify (CEST)... Format::Mail isn't happy about this
-    #TODO better solution
-    $o->{date} =~ s/\([a-zA-Z]+\)$//;
-
-    my $dt = DateTime::Format::Mail->new();
-    $dt->loose;
-
-    my $date = eval { $dt->parse_datetime($o->{date}) };
-    unless ($date) {
-        warn "$@ parsing $o->{date}";
-        $date = DateTime->from_epoch(epoch => 0); # just return a DateTime object so we can continue
-    }
-
-    return $date;
-}
-   
+  
 
 sub date {
     my ($self, $c, $o) = @_;
@@ -178,9 +137,10 @@ sub date {
     die 'uid not set' unless defined $o->{uid};
     
     my $date = $self->get_header($c,  { header => "Date", uid => $o->{uid}, mailbox => $o->{mailbox}, cache => 1 } );
+    $self->die_on_error($c);
     
     if ( defined $date ) {
-        return $self->date_to_datetime($c, { date => $date });
+        return CiderWebmail::Util::date_to_datetime($c, { date => $date });
     } #FIXME what happens if $date is undef?
 }
 
@@ -194,7 +154,8 @@ sub body {
 
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
-    my $entity = $parser->parse_data( $c->stash->{imap}->body_string( $o->{uid} ) );
+    my $entity = $parser->parse_data( $c->stash->{imapclient}->body_string( $o->{uid} ) );
+    $self->die_on_error($c);
 
     #don't rely on this.. it will change once we support more advanced things
     return join('', @{ $entity->body() });

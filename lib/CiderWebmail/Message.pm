@@ -42,15 +42,6 @@ sub mailbox {
     return $self->{mailbox};
 }
 
-#select the mailbox of the message
-sub switch_mailbox {
-    my ($self) = @_;
-
-    $self->{c}->model->select( $self->{c}, { mailbox => $self->mailbox } );
-    #TODO check error
-    return;
-}
-
 sub subject {
     my ($self) = @_;
    

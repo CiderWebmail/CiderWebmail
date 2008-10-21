@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use parent 'Catalyst::Controller';
 
+use CiderWebmail::Mailbox;
+
 =head1 NAME
 
 CiderWebmail::Controller::Mailbox - Catalyst Controller
@@ -30,7 +32,7 @@ sub index :Path :Args(0) {
 sub view : Local {
     my ( $self, $c, $mailbox ) = @_;
 
-    $c->model->select($c, { mailbox => "INBOX" } );
+    my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $mailbox});
 
     $c->stash({
         folders  => [
@@ -40,7 +42,7 @@ sub view : Local {
         messages => [
             sort { $a->{date} cmp $b->{date} }
             map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
-                @{ $c->model->list_messages($c, {mailbox => $mailbox}) }
+                @{ $mbox->list_messages($c) }
         ],
     });
 
