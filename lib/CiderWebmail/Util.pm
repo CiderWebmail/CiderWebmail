@@ -32,7 +32,7 @@ sub decode_header {
 }
 
 sub date_to_datetime {
-    my ($self, $o) = @_;
+    my ($o) = @_;
 
     return '' unless $o->{date};
 
@@ -51,7 +51,5 @@ sub date_to_datetime {
 
     return $date;
 }
- 
-
 
 1;

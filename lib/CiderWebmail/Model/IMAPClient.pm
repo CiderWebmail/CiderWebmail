@@ -127,7 +127,7 @@ sub date {
     $self->die_on_error($c);
     
     if ( defined $date ) {
-        return CiderWebmail::Util::date_to_datetime($c, { date => $date });
+        return CiderWebmail::Util::date_to_datetime({ date => $date });
     } #FIXME what happens if $date is undef?
 }
 

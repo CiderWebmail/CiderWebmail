@@ -46,4 +46,10 @@ sub list_messages {
     return \@messages;
 }
 
+sub list_messages_hash {
+    my ($self, $c, $o) = @_;
+    
+    return $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
+}
+
 1;

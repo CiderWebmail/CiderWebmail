@@ -5,6 +5,7 @@ use warnings;
 use parent 'Catalyst::Controller';
 
 use CiderWebmail::Mailbox;
+use CiderWebmail::Util;
 
 =head1 NAME
 
@@ -37,8 +38,8 @@ sub view : Local {
     $c->stash({
         messages => [
             sort { $a->{date} cmp $b->{date} }
-            map +{ %{ $_->get_headers }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
-                @{ $mbox->list_messages($c) }
+            map +{ %{ $_ }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
+                @{ $mbox->list_messages_hash($c) }
         ],
     });
 
