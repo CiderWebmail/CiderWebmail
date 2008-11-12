@@ -50,6 +50,18 @@ sub view : Chained('setup') PathPart('') Args(0) {
     });
 }
 
+sub search : Chained('setup') PathPart('simple_search') Args(1) {
+    my ( $self, $c, $searchfor ) = @_;
+
+    my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
+
+    $c->stash({
+            messages => $mbox->simple_search($c, { searchfor => $searchfor }),
+    });
+
+    $c->stash( template => 'mailbox.xml' );
+}
+
 
 
 =head1 AUTHOR

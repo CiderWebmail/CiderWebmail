@@ -52,4 +52,23 @@ sub list_messages_hash {
     return $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
 }
 
+sub simple_search {
+    my ($self, $c, $o) = @_;
+   
+    die unless $o->{searchfor};
+
+    my $search_result = $c->model->simple_search($c, { mailbox => $self->{mailbox}, searchfor => $o->{searchfor} });
+
+    my @messages = map +{
+        uid     => $_,
+        mailbox => $self->{mailbox},
+        from    => $c->model->get_header($c, { mailbox => $self->{mailbox}, uid => $_, header => 'From', decode => 1 }),
+        subject => $c->model->get_header($c, { mailbox => $self->{mailbox}, uid => $_, header => 'Subject', decode => 1 }),
+        date    => $c->model->date($c, { mailbox => $self->{mailbox}, uid => $_, }),
+    }, @$search_result;
+
+    return \@messages;
+}
+
+
 1;

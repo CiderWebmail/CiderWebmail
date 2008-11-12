@@ -54,6 +54,7 @@ sub select {
 }
 
 #TODO some way to specify what fields to fetch?
+#TODO add data to headercache to speed up other operations (search)
 sub fetch_headers_hash {
     my ($self, $c, $o) = @_;
 
@@ -84,7 +85,31 @@ sub fetch_headers_hash {
     return \@messages;
 }
 
+#search in FROM/SUBJECT
+#FIXME report empty result
+#TODO body search?
+sub simple_search {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+    die unless $o->{searchfor};
+    $self->select($c, { mailbox => $o->{mailbox} });
+
+    my @search = (
+        'OR',
+        'HEADER SUBJECT', $c->stash->{imapclient}->Quote($o->{searchfor}),
+        'HEADER FROM', $c->stash->{imapclient}->Quote($o->{searchfor}),
+    );
+
+    my @uids = $c->stash->{imapclient}->search(@search);
+    $self->die_on_error($c);
+
+    return \@uids; 
+}
+
 #fetch from server
+#TODO this is very slow... if a header isn't present in the header cache we should
+#do a imap fetch and update the header cache for all 'important' headers in this mail
 sub get_header {
     my ($self, $c, $o) = @_;
     
