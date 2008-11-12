@@ -53,7 +53,7 @@ sub check_password {
         if ($connect_info{Port} == 993) { # use SSL
             require IO::Socket::SSL;
             my $ssl = new IO::Socket::SSL("$connect_info{Server}:imaps");
-            die ("Error connecting - $@") unless defined $ssl;
+            die ("Error connecting to IMAP server: $@") unless defined $ssl;
             $ssl->autoflush(1);
             %connect_info = (Socket => $ssl);
         }
@@ -61,10 +61,12 @@ sub check_password {
 
     my $imap = Mail::IMAPClient->new(
         %connect_info,
-        User => $id,
-        Password => $password,
         Peek => 1,
-    ) or return;
+    ) or die "Error connecting to IMAP server: $@";
+
+    $imap->User($id);
+    $imap->Password($password);
+    $imap->login or return;
 
     $c->stash({imapclient => $imap});
     return 1;
