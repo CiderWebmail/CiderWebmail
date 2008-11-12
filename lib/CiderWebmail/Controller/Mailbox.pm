@@ -19,32 +19,35 @@ Catalyst Controller.
 
 =cut
 
+=head2 setup
 
-=head2 index 
+Gets the selected mailbox from the URI path and sets up the stash.
 
 =cut
 
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-
-    $c->response->body('Matched CiderWebmail::Controller::Mailbox in Mailbox.');
+sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
+    my ( $self, $c, $mailbox ) = @_;
+    $c->stash->{folder} = $mailbox;
+    $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
 }
 
-sub view : Local {
-    my ( $self, $c, $mailbox ) = @_;
+=head2 view 
 
-    my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $mailbox});
+=cut
+
+sub view : Chained('setup') PathPart('') Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
 
     $c->stash({
-        folder => $mailbox,
         messages => [
             sort { $a->{date} cmp $b->{date} }
-            map +{ %{ $_ }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
+            map +{ %{ $_ }, uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}") },
                 @{ $mbox->list_messages_hash($c) }
         ],
         template => 'mailbox.xml',
     });
-    $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
 }
 
 

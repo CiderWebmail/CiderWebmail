@@ -40,7 +40,7 @@ sub auto : Private {
         my @folders = (
             map +{
                 name => $_,
-                uri_view => $c->uri_for("/mailbox/view/$_"),
+                uri_view => $c->uri_for("/mailbox/$_"),
             },
             @{ $c->model->folders($c) }
         );

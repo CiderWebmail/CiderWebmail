@@ -1,10 +1,5 @@
-* URI-redesign:
-  localhost:3000/mailbox/INBOX
-  localhost:3000/mailbox/INBOX/1234
-  localhost:3000/mailbox/INBOX/1234/reply
-  localhost:3000/send
-
 * Message count in folder list
 * Send new message
 * Delete message
 * Move message
+* MIME parsing of message body

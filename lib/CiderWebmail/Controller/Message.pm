@@ -18,19 +18,26 @@ Catalyst Controller.
 
 =cut
 
+=head2 setup
 
-=head2 index 
+Gets the selected message from the URI path and sets up the stash.
 
 =cut
 
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-
-    $c->response->body('Matched CiderWebmail::Controller::Message in Message.');
+sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
+    my ( $self, $c, $uid ) = @_;
+    $c->stash->{message} = $uid;
 }
 
-sub view : Local {
-    my ( $self, $c, $mailbox, $uid ) = @_;
+
+=head2 view 
+
+=cut
+
+sub view : Chained('setup') PathPart('') Args(0) {
+    my ( $self, $c ) = @_;
+    my $mailbox = $c->stash->{folder};
+    my $uid = $c->stash->{message};
     my $model = $c->model();
 
     die("mailbox not set") unless defined($mailbox);
@@ -42,7 +49,6 @@ sub view : Local {
         template => 'message.xml',
         message => $message,
     });
-    $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
 }
 
 
