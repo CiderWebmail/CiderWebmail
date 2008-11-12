@@ -5,6 +5,7 @@ use warnings;
 use base 'Catalyst::Controller';
 
 use CiderWebmail::Headercache;
+use List::Util qw(reduce);
 
 #
 # Sets the actions in this controller to be registered with no prefix
@@ -24,20 +25,9 @@ CiderWebmail::Controller::Root - Root Controller for CiderWebmail
 
 =cut
 
-=head2 default
-
-=cut
-
-sub default : Private {
-    my ( $self, $c ) = @_;
-
-    # Hello World
-    $c->response->body( $c->welcome_message );
-}
-
 =head2 auto
 
-Only logged in users may use this product. If no user was found, redirect to the login page.
+Only logged in users may use this product.
 
 =cut
 
@@ -71,7 +61,12 @@ sub login : Local {
 sub index : Private {
     my ( $self, $c ) = @_;
     my $model = $c->model();
-    $c->res->body(join ', ', $model->folders($c));
+    my $folders = $c->stash->{folders};
+    my %folders = map {$_->{name} => $_} @$folders;
+    my $folder =  exists $folders{INBOX}
+        ? $folders{INBOX}   # good guess
+        : reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # or just the first
+    $c->res->redirect($folder->{uri_view});
 }
 
 =head2 end
