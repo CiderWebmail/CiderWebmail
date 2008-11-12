@@ -5,8 +5,8 @@ use warnings;
 use parent 'Catalyst::Model';
 
 use MIME::Parser;
-
 use Email::Simple;
+use Carp qw(croak confess);
 
 use CiderWebmail::Message;
 use CiderWebmail::Mailbox;
@@ -27,12 +27,8 @@ sub die_on_error {
   
     if ( $c->stash->{imapclient}->LastError ) {
         
-        my @loc = caller(0);
-        warn "IMAP error at line ".$loc[2]." in ".$loc[1]."\n\n";
-
         my $error = $c->stash->{imapclient}->LastError;
-        $error =~ s/[^a-zA-Z0-9 ]//g;
-        die($error) if ($c->stash->{imapclient}->LastError);
+        croak $error if $error;
     }
 }
 
@@ -48,7 +44,7 @@ sub folders {
 sub select {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    die 'No mailbox to select' unless $o->{mailbox};
 
     unless ( $c->stash->{currentmailbox} && ( $c->stash->{currentmailbox} eq $o->{mailbox} ) ) {
         $c->stash->{imapclient}->select( $o->{mailbox} );
@@ -61,8 +57,10 @@ sub select {
 sub fetch_headers_hash {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    die 'No mailbox to fetch headers from' unless $o->{mailbox};
     $self->select($c, { mailbox => $o->{mailbox} } );
+
+    return [] unless $c->stash->{imapclient}->message_count;
 
     my @messages = ();
     my $messages_from_server = $c->stash->{imapclient}->fetch_hash("BODY[HEADER.FIELDS (Subject From To Date)]");
