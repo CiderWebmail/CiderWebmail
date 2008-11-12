@@ -53,6 +53,11 @@ sub select {
     }
 }
 
+sub message_count {
+    my ($self, $c, $folder) = @_;
+    return $c->stash->{imapclient}->message_count($folder);
+}
+
 #TODO some way to specify what fields to fetch?
 #TODO add data to headercache to speed up other operations (search)
 sub fetch_headers_hash {

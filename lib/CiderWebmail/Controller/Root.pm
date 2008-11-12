@@ -41,6 +41,7 @@ sub auto : Private {
             map +{
                 name => $_,
                 uri_view => $c->uri_for("/mailbox/$_"),
+                message_count => $c->model->message_count($c, $_),
             },
             @{ $c->model->folders($c) }
         );
