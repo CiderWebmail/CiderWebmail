@@ -1,30 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html
-    xml:lang="en"
-    lang="en"
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
-    xmlns:metal="http://xml.zope.org/namespaces/metal">
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:use-macro="layout.xml#layout">
     <head>
-        <link rel="stylesheet" media="screen"  href="/base.css" />
+        <title metal:fill-slot="title" tal:content="message/subject">Message</title>
     </head>
-    <body>
-        <div id="container">
-            <div id="top">
-                top
-            </div>
-            <div id="left">
-                <ul>
-                    <li tal:repeat="folder folders"><a tal:attributes="href folder/uri_view" tal:content="folder/name">folder</a></li>
-                </ul>
-            </div>
-            <div id="page">
-                <b>From: </b><span tal:content="message/from">from</span><br />
-                <b>Subject: </b><span tal:content="message/subject">from</span><br />
-                <b>Date: </b><span tal:content="message/date/hms">from</span><br />
+    <body metal:fill-slot="content">
+        <b>From: </b><span tal:content="message/from">from</span><br />
+        <b>Subject: </b><span tal:content="message/subject">from</span><br />
+        <b>Date: </b><span tal:content="message/date/hms">from</span><br />
 
-                <pre tal:content="message/body">mail body</pre>
-            </div>
-        </div>
+        <pre tal:content="message/body">mail body</pre>
     </body>
 </html>
 

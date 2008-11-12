@@ -38,9 +38,11 @@ sub view : Local {
 
     my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
 
-    $c->stash( template => 'message.xml' );
-    
-    $c->stash( message => $message );
+    $c->stash({
+        template => 'message.xml',
+        message => $message,
+    });
+    $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
 }
 
 

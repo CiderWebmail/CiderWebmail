@@ -1,39 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html
-    xml:lang="en"
-    lang="en"
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
-    xmlns:metal="http://xml.zope.org/namespaces/metal">
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:use-macro="layout.xml#layout">
     <head>
-        <link rel="stylesheet" media="screen"  href="/base.css" />
+        <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
     </head>
-    <body>
-        <div id="container">
-            <div id="top">
-                top
-            </div>
-            <div id="left">
-                <ul>
-                    <li tal:repeat="folder folders"><a tal:attributes="href folder/uri_view" tal:content="folder/name">folder</a></li>
-                </ul>
-            </div>
-            <div id="page">
-                <table>
-                    <tr>
-                        <th>From</th>
-                        <th>Subject</th>
-                        <th>Date</th>
-                        <th>UID</th>
-                    </tr>
-                    <tr tal:repeat="message messages">
-                        <td tal:content="message/from">from</td>
-                        <td><a tal:attributes="href message/uri_view" tal:content="message/subject">subject</a></td>
-                        <td tal:content="message/date">date</td>
-                        <td tal:content="message/uid">uid</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+    <body metal:fill-slot="content">
+        <h1 tal:content="folder">Mailbox</h1>
+        <table>
+            <tr>
+                <th>From</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>UID</th>
+            </tr>
+            <tr tal:repeat="message messages">
+                <td tal:content="message/from">from</td>
+                <td><a tal:attributes="href message/uri_view" tal:content="message/subject">subject</a></td>
+                <td tal:content="message/date">date</td>
+                <td tal:content="message/uid">uid</td>
+            </tr>
+        </table>
     </body>
 </html>
 

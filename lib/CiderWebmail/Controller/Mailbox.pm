@@ -36,14 +36,15 @@ sub view : Local {
     my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $mailbox});
 
     $c->stash({
+        folder => $mailbox,
         messages => [
             sort { $a->{date} cmp $b->{date} }
             map +{ %{ $_ }, uri_view => $c->uri_for("/message/view/$_->{mailbox}/$_->{uid}") },
                 @{ $mbox->list_messages_hash($c) }
         ],
+        template => 'mailbox.xml',
     });
-
-    $c->stash( template => 'mailbox.xml' );
+    $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
 }
 
 

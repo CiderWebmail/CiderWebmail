@@ -37,11 +37,16 @@ sub auto : Private {
 
     if ($c->authenticate({ realm => "CiderWebmail" })) {
         $c->stash( headercache => CiderWebmail::Headercache->new($c) );
+        my @folders = (
+            map +{
+                name => $_,
+                uri_view => $c->uri_for("/mailbox/view/$_"),
+            },
+            @{ $c->model->folders($c) }
+        );
         $c->stash({
-            folders  => [
-                map +{ name => $_, uri_view => $c->uri_for("/mailbox/view/$_") },
-                @{ $c->model->folders($c) }
-            ],
+            folders  => \@folders,
+            folders_hash => { map {$_->{name} => $_} @folders },
         });
 
         return 1;
@@ -62,7 +67,7 @@ sub index : Private {
     my ( $self, $c ) = @_;
     my $model = $c->model();
     my $folders = $c->stash->{folders};
-    my %folders = map {$_->{name} => $_} @$folders;
+    my %folders = $c->stash->{folders_hash};
     my $folder =  exists $folders{INBOX}
         ? $folders{INBOX}   # good guess
         : reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # or just the first

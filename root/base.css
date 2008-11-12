@@ -1,6 +1,5 @@
 body {
-    color: white;
-    background-color: black;
+    color: black;
 }
 
 div#top {
@@ -9,21 +8,24 @@ div#top {
 }
 
 div#left {
-    position: absolute;
     float: left;
-    width: 200px;
-    top: 45px;
+    width: 12em;
+}
+
+div#left li.selected {
+    font-weight: bold;
 }
 
 div#page {
-    position: absolute;
+    margin-left: 13em;
+    /*position: absolute;
     left: 210px;
     top: 45px;
-    width: auto;
+    width: auto;*/
 }
 
 a {
-    color: lightgray;
+    color: gray;
     text-decoration: underline;
 }
 
@@ -31,14 +33,10 @@ table {
     border-collapse: collapse;
 }
 
-th {
+td, th {
     text-align: left;
     border: 1px solid lightgrey;
-}
-
-td {
-    text-align: left;
-    border: 1px solid lightgrey;
+    padding: 0.1em 0.4em;
 }
 
 
