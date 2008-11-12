@@ -48,7 +48,7 @@ __PACKAGE__->config(
                 },
                 store => {
                     class => 'IMAP',
-                    host => (__PACKAGE__->config->{server}{host} || $ENV{IMAPHOST}),
+                    host => undef,
                 },
             },
         },
@@ -58,6 +58,7 @@ __PACKAGE__->config(
 # Start the application
 __PACKAGE__->setup;
 
+__PACKAGE__->config->{authentication}{realms}{imap}{store}{host} ||= (__PACKAGE__->config->{server}{host} || $ENV{IMAPHOST});
 
 =head1 NAME
 
