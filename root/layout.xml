@@ -19,6 +19,7 @@
                 <ul>
                     <li tal:repeat="folder folders" tal:attributes="class folder/selected"><a tal:attributes="href folder/uri_view" tal:content="string: ${folder/name} (${folder/message_count})">folder</a></li>
                 </ul>
+                <a tal:attributes="href uri_compose">Compose new mail</a>
             </div>
             <div id="page">
                 <div metal:define-slot="content" tal:omit-tag=""/>

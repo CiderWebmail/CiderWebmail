@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:use-macro="layout.xml#layout">
+    <head>
+        <title metal:fill-slot="title">Compose Message</title>
+    </head>
+    <body metal:fill-slot="content">
+        <h1>compose</h1>
+        <form tal:attributes="action uri_send">
+            <label>
+                <span>From:</span>
+                <input name="from" tal:attributes="value message/from"/>
+            </label>
+            <label>
+                <span>To:</span>
+                <input name="to" tal:attributes="value message/to"/>
+            </label>
+            <label>
+                <span>Subject:</span>
+                <input name="subject" tal:attributes="value message/subject"/>
+            </label>
+            <label>
+                <span>Text:</span>
+                <textarea name="body" tal:content="message/body"/>
+            </label>
+            <button type="submit">Send</button>
+        </form>
+    </body>
+</html>
+

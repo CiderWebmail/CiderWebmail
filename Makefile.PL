@@ -24,6 +24,8 @@ requires 'DateTime::Format::Mail';
 requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
+requires 'MIME::Lite';
+requires 'MIME::Words';
 
 requires 'Email::Simple';
 requires 'Text::Iconv';

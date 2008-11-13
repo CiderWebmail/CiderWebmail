@@ -29,6 +29,7 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     my ( $self, $c, $mailbox ) = @_;
     $c->stash->{folder} = $mailbox;
     $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
+    $c->stash->{uri_compose} = $c->uri_for("$mailbox/compose");
 }
 
 =head2 view 

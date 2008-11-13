@@ -8,7 +8,9 @@ div#top {
 }
 
 div#left {
-    float: left;
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 12em;
 }
 
@@ -39,4 +41,16 @@ td, th {
     padding: 0.1em 0.4em;
 }
 
+label {
+    display: block;
+    clear: left;
+}
+label span {
+    float: left;
+    width: 7em;
+}
 
+textarea {
+	width: 50em;
+	height: 30em;
+}
