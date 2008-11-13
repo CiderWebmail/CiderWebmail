@@ -59,7 +59,6 @@ sub message_count {
 }
 
 #TODO some way to specify what fields to fetch?
-#TODO add data to headercache to speed up other operations (search)
 sub fetch_headers_hash {
     my ($self, $c, $o) = @_;
 
@@ -77,6 +76,13 @@ sub fetch_headers_hash {
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
         my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
+    
+        #TODO we need some way to pass an array to {headercache}->set... this looks ridiculous
+        $c->stash->{headercache}->set( { uid => $uid, header => 'From', data => CiderWebmail::Util::decode_header({ header => ($email->header('From') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, header => 'To', data => CiderWebmail::Util::decode_header({ header => ($email->header('To') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, header => 'Subject', data => CiderWebmail::Util::decode_header({ header => ($email->header('Subject') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, header => 'Date', data => CiderWebmail::Util::decode_header({ header => ($email->header('Date') or '')}) });
+
         push( @messages,
             {
                 uid => $uid,
