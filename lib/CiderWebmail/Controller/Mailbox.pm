@@ -46,17 +46,19 @@ sub view : Chained('setup') PathPart('') Args(0) {
             map +{ %{ $_ }, uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}") },
                 @{ $mbox->list_messages_hash($c) }
         ],
+        uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
         template => 'mailbox.xml',
     });
 }
 
-sub search : Chained('setup') PathPart('simple_search') Args(1) {
+sub search : Chained('setup') PathPart('quicksearch') {
     my ( $self, $c, $searchfor ) = @_;
+    $searchfor ||= $c->req->param('text');
 
     my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
 
     $c->stash({
-            messages => $mbox->simple_search($c, { searchfor => $searchfor }),
+        messages => $mbox->simple_search($c, { searchfor => $searchfor }),
     });
 
     $c->stash( template => 'mailbox.xml' );

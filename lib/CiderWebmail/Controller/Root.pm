@@ -68,7 +68,7 @@ sub index : Private {
     my ( $self, $c ) = @_;
     my $model = $c->model();
     my $folders = $c->stash->{folders};
-    my %folders = $c->stash->{folders_hash};
+    my %folders = %{ $c->stash->{folders_hash} };
     my $folder =  exists $folders{INBOX}
         ? $folders{INBOX}   # good guess
         : reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # or just the first

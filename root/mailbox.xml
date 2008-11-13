@@ -9,6 +9,10 @@
     </head>
     <body metal:fill-slot="content">
         <h1 tal:content="folder">Mailbox</h1>
+        <form tal:attributes="action uri_quicksearch" method="GET">
+            <input name="text"/>
+            <button type="submit">Search</button>
+        </form>
         <table>
             <tr>
                 <th>From</th>
