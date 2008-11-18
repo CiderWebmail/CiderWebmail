@@ -73,6 +73,7 @@ sub get_headers {
     };
 }
 
+
 #returns a datetime object
 sub date {
     my ($self) = @_;
@@ -90,4 +91,9 @@ sub body {
     return $self->{c}->model->body($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
+sub delete {
+    my ($self) = @_;
+
+    $self->{c}->model->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
+}
 1;

@@ -44,8 +44,11 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $c->stash({
         messages => [
             sort { $a->{date} cmp $b->{date} }
-            map +{ %{ $_ }, uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}") },
-                @{ $mbox->list_messages_hash($c) }
+            map +{
+                    %{ $_ },
+                    uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
+                    uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
+                }, @{ $mbox->list_messages_hash($c) }
         ],
         uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
         template => 'mailbox.xml',

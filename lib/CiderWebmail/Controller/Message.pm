@@ -53,6 +53,29 @@ sub view : Chained('setup') PathPart('') Args(0) {
     });
 }
 
+=head2 delete
+
+Delete a message
+
+=cut
+
+sub delete : Chained('setup') PathPart('') Args(1) {
+    my ( $self, $c ) = @_;
+    my $mailbox = $c->stash->{folder};
+    my $uid = $c->stash->{message};
+    my $model = $c->model();
+
+    die("mailbox not set") unless defined($mailbox);
+    die("uid not set") unless defined($uid);
+
+    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+
+    $message->delete();
+    
+    $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
+}
+
+
 =head2 compose
 
 Compose a new message for sending

@@ -182,6 +182,27 @@ sub body {
     return join('', @{ $entity->body() });
 }
 
+=head2
+
+delete messages 
+
+=cut
+
+sub delete_messages {
+    my ($self, $c, $o) = @_;
+
+    die 'mailbox not set' unless defined $o->{mailbox};
+    die 'uids not set' unless defined $o->{uids};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    $c->stash->{imapclient}->delete_message($o->{uids});
+    $self->die_on_error($c);
+
+    $c->stash->{imapclient}->expunge($o->{mailbox});
+    $self->die_on_error($c);
+}
+
 =head1 AUTHOR
 
 Stefan Seifert
