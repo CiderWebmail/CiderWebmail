@@ -17,10 +17,17 @@ CiderWebmail::Model::IMAPClient - Catalyst Model
 
 =head1 DESCRIPTION
 
-Catalyst Model.
+Interface to the IMAP Server
 
 =cut
 
+=head1 METHODS
+
+=head2 die_on_error()
+
+die if the last IMAP command sent to the server caused an error
+
+=cut
 
 sub die_on_error {
     my ($self, $c) = @_;
@@ -32,6 +39,12 @@ sub die_on_error {
     }
 }
 
+=head2 folders()
+
+list all aviable folders
+
+=cut
+
 sub folders {
     my ($self, $c) = @_;
 
@@ -40,6 +53,12 @@ sub folders {
 
     return \@folders;
 }
+
+=head2 select()
+
+selects a folder
+
+=cut
 
 sub select {
     my ($self, $c, $o) = @_;
@@ -53,10 +72,23 @@ sub select {
     }
 }
 
+=head2 message_count()
+
+returnes the message count for a folder
+
+=cut
+
 sub message_count {
     my ($self, $c, $folder) = @_;
     return $c->stash->{imapclient}->message_count($folder);
 }
+
+=head2 fetch_headers_hash()
+
+returns a arrayref of hashes containing a hash for every message in
+the mailbox
+
+=cut
 
 #TODO some way to specify what fields to fetch?
 sub fetch_headers_hash {
@@ -96,6 +128,13 @@ sub fetch_headers_hash {
     return \@messages;
 }
 
+=head2 simple_search()
+
+searches a mailbox From/Subject headers
+returns a arrayref containing a list of UIDs
+
+=cut
+
 #search in FROM/SUBJECT
 #FIXME report empty result
 #TODO body search?
@@ -117,6 +156,14 @@ sub simple_search {
 
     return \@uids; 
 }
+
+=head2 get_header()
+
+fetch a single header from the server or the local headercache
+unless the header is already present in the local header cache this can be *very* slow
+
+=cut
+
 
 #fetch from server
 #TODO this is very slow... if a header isn't present in the header cache we should
@@ -151,6 +198,12 @@ sub get_header {
     }
 }
 
+=head2 date()
+ 
+fetch a date header from the server or the local headercache
+
+=cut
+
 sub date {
     my ($self, $c, $o) = @_;
 
@@ -164,6 +217,12 @@ sub date {
         return CiderWebmail::Util::date_to_datetime({ date => $date });
     } #FIXME what happens if $date is undef?
 }
+
+=head2 date()
+
+fetch the body from the server
+
+=cut
 
 sub body {
     my ($self, $c, $o) = @_;
@@ -182,9 +241,9 @@ sub body {
     return join('', @{ $entity->body() });
 }
 
-=head2
+=head2 delete_messages()
 
-delete messages 
+delete message(s) form the server and expunge the mailbox
 
 =cut
 
@@ -205,7 +264,8 @@ sub delete_messages {
 
 =head1 AUTHOR
 
-Stefan Seifert
+Stefan Seifert and
+Mathias Reitinger <mathias.reitinger@loop0.org>
 
 =head1 LICENSE
 
