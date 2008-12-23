@@ -252,21 +252,28 @@ sub body {
     @parts = ($entity) unless @parts;
 
     my $body = '';
+    my @attachments;
 
     foreach (@parts) {
+        my $part_head = $_->head;
+        my $part_body = $_->bodyhandle;
+
         if ($_->effective_type =~ m!\Atext/plain\b!) {
-            my $part_head = $_->head;
             my $charset = $part_head->mime_attr("content-type.charset");
             my $converter = Text::Iconv->new($charset, "utf-8");
 
-            my $part_body = $_->bodyhandle;
-            if ($part_body) {
-                $body .= $converter->convert($part_body->as_string);
-            }
+            $body .= $converter->convert($part_body->as_string) if $part_body;
+        }
+        else {
+            push @attachments, {
+                type => $_->effective_type,
+                name => ($part_head->mime_attr("content-type.name") or 'attachment'),
+                data => $part_body->as_string,
+            } if $part_body;
         }
     }
 
-    return $body;
+    return ($body, \@attachments);
 }
 
 =head2 delete_messages()

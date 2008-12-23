@@ -85,10 +85,18 @@ sub date {
     return $self->{date};
 }
 
+sub load_body {
+    my ($self) = @_;
+
+    ($self->{body}, $self->{attachments}) = $self->{c}->model->body($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+}
+
 sub body {
     my ($self) = @_;
 
-    return $self->{c}->model->body($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    $self->load_body unless $self->{body};
+
+    return $self->{body};
 }
 
 sub delete {

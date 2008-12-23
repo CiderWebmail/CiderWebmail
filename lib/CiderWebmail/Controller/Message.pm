@@ -46,6 +46,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
     die("uid not set") unless defined($uid);
 
     my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+    $message->load_body();
 
     $c->stash({
         template => 'message.xml',

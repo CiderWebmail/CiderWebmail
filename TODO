@@ -1,4 +1,5 @@
-* Send new message
-* Delete message
 * Move message
-* MIME parsing of message body
+* Displaying attachments
+* Sending attachments
+* Logout
+* I18N
