@@ -8,10 +8,25 @@ div#top {
 }
 
 div#left {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 12em;
+    width: 14em;
+    float: left;
+}
+
+div#left ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid black;
+}
+
+div#left ul li {
+    border-bottom: 1px solid black;
+}
+
+div#left ul li a {
+    display: block;
+    margin-left: 1em;
+    text-decoration: none;
 }
 
 div#left li.selected {
@@ -19,11 +34,8 @@ div#left li.selected {
 }
 
 div#page {
-    margin-left: 13em;
-    /*position: absolute;
-    left: 210px;
-    top: 45px;
-    width: auto;*/
+    margin-left: 15em;
+    margin-top: 1em;
 }
 
 a {

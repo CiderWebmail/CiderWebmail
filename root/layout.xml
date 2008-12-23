@@ -14,6 +14,7 @@
     <body>
         <div id="container">
             <div id="top">
+                <h1>CiderWebmail</h1>
             </div>
             <div id="left">
                 <ul>
