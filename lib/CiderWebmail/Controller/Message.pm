@@ -51,6 +51,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $c->stash({
         template => 'message.xml',
         message => $message,
+        uri_reply => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
     });
 }
 
@@ -60,7 +61,7 @@ Delete a message
 
 =cut
 
-sub delete : Chained('setup') PathPart('') Args(1) {
+sub delete : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
     my $mailbox = $c->stash->{folder};
     my $uid = $c->stash->{message};
@@ -83,14 +84,40 @@ Compose a new message for sending
 
 =cut
 
-sub compose : Chained('/mailbox/setup') PathPart Args(0) {
+sub compose : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
+
+    $c->stash->{message} ||= {};
     $c->stash({
-        message => {
-        },
         uri_send => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/send'),
         template => 'compose.xml',
     });
+}
+
+=head2 reply
+
+Reply to a message suggesting receiver, subject and message text
+
+=cut
+
+sub reply : Chained('setup') PathPart Args(0) {
+    my ( $self, $c ) = @_;
+    my $mailbox = $c->stash->{folder};
+    my $uid = $c->stash->{message};
+    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+    my $body = $message->body;
+    $body =~ s/[\s\r\n]+\z//s;
+    $body =~ s/^/> /gm;
+    $body .= "\n\n";
+
+    $c->stash({
+        message => {
+            to => ($message->get_header('reply-to') or $message->from),
+            subject => 'Re: ' . $message->subject,
+            body => $body,
+        },
+    });
+    $c->forward('compose');
 }
 
 =head2 send

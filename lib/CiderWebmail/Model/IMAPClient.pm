@@ -273,7 +273,7 @@ sub body {
         }
     }
 
-    return ($body, \@attachments);
+    return wantarray ? ($body, \@attachments) : $body; # only give attachments to those who are interested
 }
 
 =head2 delete_messages()

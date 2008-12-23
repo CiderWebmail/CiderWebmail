@@ -18,14 +18,13 @@
                 <th>From</th>
                 <th>Subject</th>
                 <th>Date</th>
-                <th>UID</th>
-                <th>delete</th>
+                <th>Delete</th>
             </tr>
             <tr tal:repeat="message messages">
-                <td tal:content="message/from">from</td>
-                <td><a tal:attributes="href message/uri_view" tal:content="message/subject">subject</a></td>
+                <td tal:condition="true:message/from" tal:content="message/from">from</td>
+                <td tal:condition="false:message/from">Unknown</td>
+                <td><a tal:attributes="href message/uri_view"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
                 <td tal:content="message/date/strftime '%F %T'">date</td>
-                <td tal:content="message/uid">uid</td>
                 <td><a tal:attributes="href message/uri_delete">delete</a></td>
             </tr>
         </table>

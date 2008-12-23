@@ -42,24 +42,24 @@ sub mailbox {
     return $self->{mailbox};
 }
 
+sub get_header {
+    my ($self, $header) = @_;
+    unless ($self->{$header}) {
+        $self->{$header} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => $header, decode => 1, cache => 1 });
+    }
+    return $self->{$header};
+}
+
 sub subject {
     my ($self) = @_;
-   
-    unless ( $self->{subject} ) {
-        $self->{subject} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "Subject", decode => 1, cache => 1 });
-    }
 
-    return $self->{subject};
+    return ($self->get_header('subject') or 'No Subject');
 }
 
 sub from {
     my ($self) = @_;
 
-    unless( $self->{from} ) {
-        $self->{from} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => "From", decode => 1, cache => 1 });
-    }
-
-    return $self->{from};
+    return ($self->get_header('from') or 'Unknown');
 }
 
 sub get_headers {
