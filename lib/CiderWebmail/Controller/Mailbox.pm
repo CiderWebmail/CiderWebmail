@@ -39,7 +39,10 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
+    unless ( $c->stash->{mbox} ) {
+        my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
+        $c->stash->{mbox} = $mbox->list_messages_hash($c);
+    }
 
     $c->stash({
         messages => [
@@ -48,7 +51,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
                     %{ $_ },
                     uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
                     uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-                }, @{ $mbox->list_messages_hash($c) }
+                }, @{ $c->stash->{mbox} }
         ],
         uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
         template => 'mailbox.xml',
@@ -62,10 +65,10 @@ sub search : Chained('setup') PathPart('quicksearch') {
     my $mbox = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
 
     $c->stash({
-        messages => $mbox->simple_search($c, { searchfor => $searchfor }),
+        mbox => $mbox->simple_search($c, { searchfor => $searchfor }),
     });
 
-    $c->stash( template => 'mailbox.xml' );
+    $c->forward('view');
 }
 
 
