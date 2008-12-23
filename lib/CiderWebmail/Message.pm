@@ -116,4 +116,11 @@ sub delete {
 
     $self->{c}->model->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
+
+sub as_string {
+    my ($self) = @_;
+
+    $self->{c}->model->body_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+}
+
 1;

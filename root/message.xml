@@ -10,6 +10,7 @@
     <body metal:fill-slot="content">
         <p>
             <a tal:attributes="href uri_reply">Reply to this message</a>
+            <a tal:attributes="href uri_forward">Forward this message</a>
         </p>
         <b>From: </b><span tal:content="message/from">from</span><br />
         <b>Subject: </b><span tal:content="message/subject">from</span><br />

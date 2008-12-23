@@ -10,6 +10,7 @@
     <body metal:fill-slot="content">
         <h1>compose</h1>
         <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
+            <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
             <label>
                 <span>From:</span>
                 <input name="from" tal:attributes="value message/from"/>
@@ -17,6 +18,10 @@
             <label>
                 <span>To:</span>
                 <input name="to" tal:attributes="value message/to"/>
+            </label>
+            <label>
+                <span>Cc:</span>
+                <input name="cc" tal:attributes="value message/cc"/>
             </label>
             <label>
                 <span>Subject:</span>

@@ -52,6 +52,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         template => 'message.xml',
         message => $message,
         uri_reply => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
+        uri_forward => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
     });
 }
 
@@ -129,11 +130,37 @@ sub reply : Chained('setup') Args(0) {
 
     $c->stash({
         message => {
-            to => ($message->get_header('reply-to') or $message->from),
+            from    => $message->get_header('to'),
+            to      => ($message->get_header('reply-to') or $message->from),
             subject => 'Re: ' . $message->subject,
-            body => $body,
+            body    => $body,
         },
     });
+
+    $c->forward('compose');
+}
+
+=head2 forward
+
+Forward a mail as attachment
+
+=cut
+
+sub forward : Chained('setup') Args(0) {
+    my ( $self, $c ) = @_;
+    my $mailbox = $c->stash->{folder};
+    my $uid = $c->stash->{message};
+
+    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+
+    $c->stash({
+        forward => $uid,
+        message => {
+            from    => $message->get_header('to'),
+            subject => 'Fwd: ' . $message->subject,
+        },
+    });
+
     $c->forward('compose');
 }
 
@@ -153,6 +180,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
     my $mail = MIME::Lite->new(
         From    => $c->req->param('from'),
         To      => $c->req->param('to'),
+        ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
         Subject => $subject,
         Data    => $body,
     );
@@ -167,6 +195,16 @@ sub send : Chained('/mailbox/setup') Args(0) {
             Filename    => $upload->basename,
             FH          => $upload->fh,
             Disposition => 'attachment',
+        );
+    }
+
+    if (my $forward = $c->req->param('forward')) {
+        my $mailbox = $c->stash->{folder};
+        my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $forward } );
+
+        $mail->attach(
+            Type        => $message->get_header('content-type'),
+            Data        => $message->as_string,
         );
     }
 
