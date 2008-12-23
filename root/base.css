@@ -7,6 +7,12 @@ div#top {
     left: 0px;
 }
 
+div#top h1 {
+    padding: 0;
+    margin: 0;
+}
+
+
 div#left {
     width: 14em;
     float: left;
@@ -25,8 +31,12 @@ div#left ul li {
 
 div#left ul li a {
     display: block;
-    margin-left: 1em;
     text-decoration: none;
+}
+
+div#left ul li a:hover {
+    color: white;
+    background-color: black;
 }
 
 div#left li.selected {
@@ -35,7 +45,6 @@ div#left li.selected {
 
 div#page {
     margin-left: 15em;
-    margin-top: 1em;
 }
 
 a {
