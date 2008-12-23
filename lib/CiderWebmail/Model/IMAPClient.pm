@@ -236,22 +236,37 @@ sub body {
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
 
+    #FIXME sucks, better give MIME::Parser the full message
     my $content_type = "Content-type: " . $self->get_header($c, {mailbox => $o->{mailbox}, uid => $o->{uid}, header => 'content-type'});
-    my $message = $content_type . "\n\n" . $c->stash->{imapclient}->body_string( $o->{uid} );
+    my $content_transfer_encoding = $self->get_header($c, {mailbox => $o->{mailbox}, uid => $o->{uid}, header => 'Content-Transfer-Encoding'});
+
+    my $message = $content_type . "\n";
+    $message .= "Content-Transfer-Encoding: $content_transfer_encoding\n" if $content_transfer_encoding;
+    $message .= "\n" . $c->stash->{imapclient}->body_string( $o->{uid} );
 
     my $entity = $parser->parse_data($message);
-    $self->die_on_error($c);
+    my $error = $c->stash->{imapclient}->LastError;
+    return $error if $error;
 
-    my @parts = $entity->parts;
-    if (@parts) { # multipart
-        foreach (@parts) {
-            return join '', @{ $_->body() } if $_->effective_type =~ m!\Atext/plain\b!;
+    my @parts = $entity->parts_DFS;
+    @parts = ($entity) unless @parts;
+
+    my $body = '';
+
+    foreach (@parts) {
+        if ($_->effective_type =~ m!\Atext/plain\b!) {
+            my $part_head = $_->head;
+            my $charset = $part_head->mime_attr("content-type.charset");
+            my $converter = Text::Iconv->new($charset, "utf-8");
+
+            my $part_body = $_->bodyhandle;
+            if ($part_body) {
+                $body .= $converter->convert($part_body->as_string);
+            }
         }
-        return join '', @{ $parts[0]->body() }; # no text/plain found, so just use the first
     }
-    else {
-        return join('', @{ $entity->body() });
-    }
+
+    return $body;
 }
 
 =head2 delete_messages()
