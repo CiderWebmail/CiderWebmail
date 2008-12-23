@@ -9,7 +9,7 @@
     </head>
     <body metal:fill-slot="content">
         <h1>compose</h1>
-        <form tal:attributes="action uri_send">
+        <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
             <label>
                 <span>From:</span>
                 <input name="from" tal:attributes="value message/from"/>
@@ -25,6 +25,10 @@
             <label>
                 <span>Text:</span>
                 <textarea name="body" tal:content="message/body"/>
+            </label>
+            <label>
+                <span>Attachment:</span>
+                <input type="file" name="attachment"/>
             </label>
             <button type="submit">Send</button>
         </form>

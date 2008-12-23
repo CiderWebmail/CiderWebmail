@@ -151,14 +151,24 @@ sub send : Chained('/mailbox/setup') Args(0) {
     utf8::encode($body);
 
     my $mail = MIME::Lite->new(
-        From => $c->req->param('from'),
-        To => $c->req->param('to'),
+        From    => $c->req->param('from'),
+        To      => $c->req->param('to'),
         Subject => $subject,
-        Data => $body,
+        Data    => $body,
     );
 
     $mail->attr("content-type"         => "text/plain");
     $mail->attr("content-type.charset" => 'UTF-8');
+
+    if (my $attachment = $c->req->param('attachment')) {
+        my $upload = $c->req->upload('attachment');
+        $mail->attach(
+            Type        => $upload->type,
+            Filename    => $upload->basename,
+            FH          => $upload->fh,
+            Disposition => 'attachment',
+        );
+    }
 
     $mail->send;
 
