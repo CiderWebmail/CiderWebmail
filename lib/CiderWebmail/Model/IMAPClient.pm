@@ -50,7 +50,10 @@ sub folders {
     my ($self, $c) = @_;
 
     my @folders = $c->stash->{imapclient}->folders;
+
     $self->die_on_error($c);
+
+    @folders = sort { lc($a) cmp lc($b) } @folders;
 
     return \@folders;
 }
