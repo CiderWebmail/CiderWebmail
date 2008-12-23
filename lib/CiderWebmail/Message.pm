@@ -120,7 +120,7 @@ sub delete {
 sub as_string {
     my ($self) = @_;
 
-    $self->{c}->model->body_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    $self->{c}->model->message_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 1;

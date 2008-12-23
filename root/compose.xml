@@ -31,6 +31,9 @@
                 <span>Text:</span>
                 <textarea name="body" tal:content="message/body"/>
             </label>
+            <p tal:condition="true: forward">
+                Forwarding message
+            </p>
             <label>
                 <span>Attachment:</span>
                 <input type="file" name="attachment"/>

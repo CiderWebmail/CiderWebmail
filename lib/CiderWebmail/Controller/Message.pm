@@ -203,8 +203,9 @@ sub send : Chained('/mailbox/setup') Args(0) {
         my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $forward } );
 
         $mail->attach(
-            Type        => $message->get_header('content-type'),
-            Data        => $message->as_string,
+            Type     => 'message/rfc822',
+            Filename => $message->subject . '.eml',
+            Data     => $message->as_string,
         );
     }
 

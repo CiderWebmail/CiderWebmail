@@ -222,13 +222,13 @@ sub date {
     } #FIXME what happens if $date is undef?
 }
 
-=head2 body_string()
+=head2 message_as_string()
 
 return a full message body as string
 
 =cut
 
-sub body_as_string {
+sub message_as_string {
     my ($self, $c, $o) = @_;
 
     die 'mailbox not set' unless defined $o->{mailbox};
@@ -236,7 +236,7 @@ sub body_as_string {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    return $c->stash->{imapclient}->body_string( $o->{uid} );
+    return $c->stash->{imapclient}->message_string( $o->{uid} );
 }
 
 =head2 body()
@@ -248,13 +248,7 @@ fetch the body from the server
 sub body {
     my ($self, $c, $o) = @_;
 
-    #FIXME sucks, better give MIME::Parser the full message
-    my $content_type = "Content-type: " . $self->get_header($c, {mailbox => $o->{mailbox}, uid => $o->{uid}, header => 'content-type'});
-    my $content_transfer_encoding = $self->get_header($c, {mailbox => $o->{mailbox}, uid => $o->{uid}, header => 'Content-Transfer-Encoding'});
-
-    my $message = $content_type . "\n";
-    $message .= "Content-Transfer-Encoding: $content_transfer_encoding\n" if $content_transfer_encoding;
-    $message .= "\n" . $self->body_as_string($c, $o);
+    my $message = $self->message_as_string($c, $o);
 
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
