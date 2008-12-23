@@ -35,6 +35,7 @@ sub die_on_error {
     if ( $c->stash->{imapclient}->LastError ) {
         
         my $error = $c->stash->{imapclient}->LastError;
+        warn $error if $error;
         croak $error if $error;
     }
 }
@@ -234,11 +235,23 @@ sub body {
 
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
-    my $entity = $parser->parse_data( $c->stash->{imapclient}->body_string( $o->{uid} ) );
+
+    my $content_type = "Content-type: " . $self->get_header($c, {mailbox => $o->{mailbox}, uid => $o->{uid}, header => 'content-type'});
+    my $message = $content_type . "\n\n" . $c->stash->{imapclient}->body_string( $o->{uid} );
+
+    my $entity = $parser->parse_data($message);
     $self->die_on_error($c);
 
-    #don't rely on this.. it will change once we support more advanced things
-    return join('', @{ $entity->body() });
+    my @parts = $entity->parts;
+    if (@parts) { # multipart
+        foreach (@parts) {
+            return join '', @{ $_->body() } if $_->effective_type =~ m!\Atext/plain\b!;
+        }
+        return join '', @{ $parts[0]->body() }; # no text/plain found, so just use the first
+    }
+    else {
+        return join('', @{ $entity->body() });
+    }
 }
 
 =head2 delete_messages()
