@@ -89,14 +89,26 @@ sub load_body {
     my ($self) = @_;
 
     ($self->{body}, $self->{attachments}) = $self->{c}->model->body($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+
+    foreach (@{ $self->{attachments} }) {
+        $_->{uri_view} = $self->{c}->uri_for('/mailbox/' . $self->mailbox . '/' . $self->uid . "/attachment/$_->{id}");
+    }
 }
 
 sub body {
     my ($self) = @_;
 
-    $self->load_body unless $self->{body};
+    $self->load_body unless exists $self->{body};
 
     return $self->{body};
+}
+
+sub attachments {
+    my ($self) = @_;
+
+    $self->load_body unless exists $self->{attachments};
+
+    return wantarray ? @{ $self->{attachments} } : $self->{attachments};
 }
 
 sub delete {

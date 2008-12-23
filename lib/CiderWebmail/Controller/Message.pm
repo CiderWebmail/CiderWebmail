@@ -55,6 +55,23 @@ sub view : Chained('setup') PathPart('') Args(0) {
     });
 }
 
+=head2 attachment
+
+=cut
+
+sub attachment : Chained('setup') Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    my $mailbox = $c->stash->{folder};
+    my $uid = $c->stash->{message};
+    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+
+    my $attachment = ( $message->attachments )[$id];
+    $c->res->content_type($attachment->{type});
+    $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
+    $c->res->body($attachment->{data});
+}
+
 =head2 delete
 
 Delete a message
@@ -100,7 +117,7 @@ Reply to a message suggesting receiver, subject and message text
 
 =cut
 
-sub reply : Chained('setup') PathPart Args(0) {
+sub reply : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
     my $mailbox = $c->stash->{folder};
     my $uid = $c->stash->{message};
@@ -126,7 +143,7 @@ Send a mail
 
 =cut
 
-sub send : Chained('/mailbox/setup') PathPart Args(0) {
+sub send : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
     my $subject = encode_mimeword($c->req->param('subject'));

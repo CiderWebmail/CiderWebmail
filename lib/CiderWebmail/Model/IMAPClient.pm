@@ -253,6 +253,7 @@ sub body {
 
     my $body = '';
     my @attachments;
+    my $id = 0;
 
     foreach (@parts) {
         my $part_head = $_->head;
@@ -269,6 +270,7 @@ sub body {
                 type => $_->effective_type,
                 name => ($part_head->mime_attr("content-type.name") or 'attachment'),
                 data => $part_body->as_string,
+                id   => $id++,
             } if $part_body;
         }
     }

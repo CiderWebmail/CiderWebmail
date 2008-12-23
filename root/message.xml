@@ -15,7 +15,7 @@
         <b>Subject: </b><span tal:content="message/subject">from</span><br />
         <b>Date: </b><span tal:content="message/date/hms">from</span><br />
         <div tal:condition="true:message/attachments">
-            <b>Attachments: </b><span tal:repeat="attachment message/attachments"><a tal:content="attachment/name" tal:attributes="title attachment/type"/> </span>
+            <b>Attachments: </b><span tal:repeat="attachment message/attachments"><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type"/> </span>
         </div>
 
         <pre tal:content="message/body">mail body</pre>
