@@ -1,27 +1,35 @@
 body {
     color: black;
+    margin: 0px;
+    padding: 0px;
 }
 
 div#top {
     top: 0px;
     left: 0px;
+    margin: 0px;
+    padding: 0px;
 }
 
 div#top h1 {
-    padding: 0;
-    margin: 0;
+    margin: 3px;
+    padding: 0px;
 }
 
-
 div#left {
-    width: 14em;
-    float: left;
+    position: absolute;
+    left: 0;
+    width: 12em;
+}
+
+div#left li.selected {
+    font-weight: bold;
 }
 
 div#left ul {
     list-style-type: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 0 10px;
     border: 1px solid black;
 }
 
@@ -43,8 +51,9 @@ div#left li.selected {
     font-weight: bold;
 }
 
+
 div#page {
-    margin-left: 15em;
+    margin: 0em 0em 0em 13em;
 }
 
 a {
