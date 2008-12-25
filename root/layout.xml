@@ -18,10 +18,17 @@
                 <h1>CiderWebmail</h1>
             </div>
             <div id="left">
-                <ul>
-                    <li><a tal:attributes="href uri_compose">Compose new mail</a></li>
-                    <li tal:repeat="folder folders" tal:attributes="class folder/selected"><a tal:attributes="href folder/uri_view" tal:content="string: ${folder/name} (${folder/message_count})">folder</a></li>
-                </ul>
+                 <a tal:attributes="href uri_compose">Compose new mail</a>
+                 <ul>
+                     <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
+                         <li metal:define-macro="folder-tree">
+                             <a href="#" tal:attributes="href folder/uri_view" tal:content="folder/name">Folder Title</a>
+                             <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
+                                 <li metal:use-macro="#folder-tree">Dummy Child 1</li>
+                             </ul>
+                         </li>
+                     </div>
+                 </ul>
             </div>
             <div id="page">
                 <div metal:define-slot="content" tal:omit-tag=""/>

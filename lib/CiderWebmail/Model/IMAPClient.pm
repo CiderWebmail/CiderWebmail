@@ -71,23 +71,21 @@ sub folder_tree {
     my @folders = sort { lc($a) cmp lc($b) } $c->stash->{imapclient}->folders;
     $self->die_on_error($c);
 
-    my $folder_tree;
- 
+    my %folder_index = ( '' => { folders => [] } );
+    my $seperator = '.';
+
     foreach my $folder (@folders) {
-        my $node = \$folder_tree; # start at tree root
+        my ($parent, $name) = $folder =~ /\A (?: (.*) \Q$seperator\E)? (.*?) \z/x;
+        $parent = $folder_index{$parent || ''};
 
-        #TODO get folder seperator from server
-        foreach (split(/\./, $folder)) { # walk the tree
-            $node = \${ ${$node}->{folders}{$_} };
-        }
-
-        $$node = {
+        push @{ $parent->{folders} }, $folder_index{$folder} = {
+            name => $name,
             total  => $self->message_count($c, $folder),
             unseen => $self->unseen_count($c, $folder),
         };
     }
 
-    return $folder_tree;
+    return $folder_index{''};
 }
 
 

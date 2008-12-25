@@ -48,6 +48,7 @@ sub auto : Private {
         $c->stash({
             folders  => \@folders,
             folders_hash => { map {$_->{name} => $_} @folders },
+            folder_tree => $c->model->folder_tree($c),
         });
 
         return 1;
