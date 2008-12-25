@@ -21,6 +21,8 @@ sub get {
 
     die unless defined $o->{uid};
     die unless defined $o->{header};
+    
+    die "hc get w/o mailbox" unless defined $o->{mailbox};
 
     return $self->{cache}->get( join('_', $o->{uid}, $o->{header}, $self->{c}->user->id) );
 }
@@ -31,7 +33,7 @@ sub set {
     die unless defined $o->{uid};
     die unless defined $o->{header};
 
-    warn "HC set: $o->{uid} $o->{header}";
+    die "hc set w/o mailbox" unless defined $o->{mailbox};
 
     $self->{cache}->set( join('_', $o->{uid}, $o->{header}, $self->{c}->user->id), $o->{data} ) || die;
 }

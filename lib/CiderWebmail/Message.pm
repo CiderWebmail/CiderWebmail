@@ -74,8 +74,6 @@ sub header_formatted {
         $header .= join("", $headername, ": ", $headervalue, "\n");
     }
 
-    warn $header;
-
     return $header;
 }
     

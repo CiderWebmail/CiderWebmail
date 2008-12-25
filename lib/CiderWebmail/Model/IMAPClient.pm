@@ -114,10 +114,10 @@ sub fetch_headers_hash {
         my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
     
         #TODO we need some way to pass an array to {headercache}->set... this looks ridiculous
-        $c->stash->{headercache}->set( { uid => $uid, header => 'From', data => CiderWebmail::Util::decode_header({ header => ($email->header('From') or '')}) });
-        $c->stash->{headercache}->set( { uid => $uid, header => 'To', data => CiderWebmail::Util::decode_header({ header => ($email->header('To') or '')}) });
-        $c->stash->{headercache}->set( { uid => $uid, header => 'Subject', data => CiderWebmail::Util::decode_header({ header => ($email->header('Subject') or '')}) });
-        $c->stash->{headercache}->set( { uid => $uid, header => 'Date', data => CiderWebmail::Util::decode_header({ header => ($email->header('Date') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, mailbox => $o->{mailbox}, header => 'From', data => CiderWebmail::Util::decode_header({ header => ($email->header('From') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, mailbox => $o->{mailbox}, header => 'To', data => CiderWebmail::Util::decode_header({ header => ($email->header('To') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, mailbox => $o->{mailbox}, header => 'Subject', data => CiderWebmail::Util::decode_header({ header => ($email->header('Subject') or '')}) });
+        $c->stash->{headercache}->set( { uid => $uid, mailbox => $o->{mailbox}, header => 'Date', data => CiderWebmail::Util::decode_header({ header => ($email->header('Date') or '')}) });
 
         push( @messages,
             {
@@ -179,7 +179,8 @@ sub all_headers {
 
     #TODO should we really cache *all* headers?
     while (my ($headername, $headervalue) = each(%$headers)) {
-        $c->stash->{headercache}->set({ uid => $o->{uid}, header => $headername, data => $headervalue });
+        $headervalue = join("\n", @$headervalue);
+        $c->stash->{headercache}->set({ uid => $o->{uid}, header => $headername, data => $headervalue, mailbox => $o->{mailbox} });
     }
 
     return $headers;
@@ -207,12 +208,12 @@ sub get_header {
     my $header;
 
     if ( $o->{cache} ) {
-        unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, header => $o->{header} }) ) {
-            $c->stash->{headercache}->set({ uid => $o->{uid}, header => $o->{header}, data => $c->stash->{imapclient}->get_header($o->{uid}, $o->{header}) });
+        unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $o->{header} }) ) {
+            $c->stash->{headercache}->set({ uid => $o->{uid}, header => $o->{header}, mailbox => $o->{mailbox}, data => $c->stash->{imapclient}->get_header($o->{uid}, $o->{header}) });
             $self->die_on_error($c);
         }
 
-        $header = $c->stash->{headercache}->get({ uid => $o->{uid}, header => $o->{header} });
+        $header = $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $o->{header} });
     } else {
         $header = $c->stash->{imapclient}->get_header($o->{uid}, $o->{header});
         $self->die_on_error($c);
