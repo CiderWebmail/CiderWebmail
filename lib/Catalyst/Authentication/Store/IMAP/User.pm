@@ -66,7 +66,11 @@ sub check_password {
 
     $imap->User($id);
     $imap->Password($password);
-    $imap->login or return;
+
+    unless($imap->login) {
+        warn "Could not login to ".$c->config->{authentication}{realms}{imap}{store}{host}." with user $id: $@";
+        return;
+    }
 
     $c->stash({imapclient => $imap});
     return 1;

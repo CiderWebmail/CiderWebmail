@@ -58,7 +58,7 @@ __PACKAGE__->config(
 # Start the application
 __PACKAGE__->setup;
 
-__PACKAGE__->config->{authentication}{realms}{imap}{store}{host} ||= (__PACKAGE__->config->{server}{host} || $ENV{IMAPHOST});
+__PACKAGE__->config->{authentication}{realms}{imap}{store}{host} ||= ($ENV{IMAPHOST} || __PACKAGE__->config->{server}{host});
 
 =head1 NAME
 
