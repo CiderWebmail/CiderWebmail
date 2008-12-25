@@ -58,6 +58,39 @@ sub folders {
     return \@folders;
 }
 
+=head2 foldertree()
+
+list all folders in a hash-tree
+
+=cut
+
+sub foldertree {
+    my ($self, $c) = @_;
+    
+    my @folders = $c->stash->{imapclient}->folders;
+
+    my %foldertree = ();
+
+     $self->die_on_error($c);
+ 
+     @folders = sort { lc($a) cmp lc($b) } @folders;
+ 
+    foreach (@folders) {
+        my $last = \%foldertree;
+        #TODO get folder seperator from server
+        foreach (split(/\./, $_)) {
+            my $foldername = $_;
+            unless($last->{$foldername}) {
+                $last->{$foldername} = {};
+            }
+            $last = $last->{$foldername};
+        }
+    }
+
+    return \%foldertree;
+}
+
+
 =head2 select()
 
 selects a folder
