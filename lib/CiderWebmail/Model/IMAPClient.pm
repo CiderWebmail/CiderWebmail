@@ -163,11 +163,10 @@ sub simple_search {
 
 =head2 all_headers()
 
-fetch all headers for a message
+fetch all headers for a message and updates the local headercache
 
 =cut
 
-#TODO: this should also update the local headercache
 sub all_headers {
     my ($self, $c, $o) = @_;
 
@@ -177,6 +176,11 @@ sub all_headers {
     $self->select($c, { mailbox => $o->{mailbox} } );
     
     my $headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+
+    #TODO should we really cache *all* headers?
+    while (my ($headername, $headervalue) = each(%$headers)) {
+        $c->stash->{headercache}->set({ uid => $o->{uid}, header => $headername, data => $headervalue });
+    }
 
     return $headers;
 }

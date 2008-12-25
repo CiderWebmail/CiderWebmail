@@ -31,6 +31,8 @@ sub set {
     die unless defined $o->{uid};
     die unless defined $o->{header};
 
+    warn "HC set: $o->{uid} $o->{header}";
+
     $self->{cache}->set( join('_', $o->{uid}, $o->{header}, $self->{c}->user->id), $o->{data} ) || die;
 }
 
