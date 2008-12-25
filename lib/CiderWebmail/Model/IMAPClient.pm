@@ -161,13 +161,32 @@ sub simple_search {
     return \@uids; 
 }
 
+=head2 all_headers()
+
+fetch all headers for a message
+
+=cut
+
+#TODO: this should also update the local headercache
+sub all_headers {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+    die unless $o->{uid};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+    
+    my $headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+
+    return $headers;
+}
+
 =head2 get_header()
 
 fetch a single header from the server or the local headercache
 unless the header is already present in the local header cache this can be *very* slow
 
 =cut
-
 
 #fetch from server
 #TODO this is very slow... if a header isn't present in the header cache we should

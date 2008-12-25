@@ -44,11 +44,42 @@ sub mailbox {
 
 sub get_header {
     my ($self, $header) = @_;
+
+    if ($header eq "_ALL") {
+        my $fetched_headers = $self->{c}->model->all_headers($self->{c}, { mailbox => $self->mailbox, uid => $self->uid });
+        my $headers = {};
+
+        while(my ($headername, $headervalue) = each(%$fetched_headers)) {
+            $headers->{$headername} = join("\n", @$headervalue);
+        } 
+
+        return $headers;
+    }
+
     unless ($self->{$header}) {
         $self->{$header} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => $header, decode => 1, cache => 1 });
     }
+
     return $self->{$header};
 }
+
+#TODO better formatting
+sub header_formatted {
+    my ($self) = @_;
+
+    my $headers = $self->get_header("_ALL");
+    my $header;
+
+    while (my ($headername, $headervalue) = each(%$headers)) {
+        $header .= join("", $headername, ": ", $headervalue, "\n");
+    }
+
+    warn $header;
+
+    return $header;
+}
+    
+
 
 sub subject {
     my ($self) = @_;

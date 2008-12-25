@@ -10,6 +10,7 @@
     <head>
         <title metal:define-slot="title">CiderWebmail</title>
         <link rel="stylesheet" media="screen"  href="/base.css" />
+        <script type="text/javascript" src="/ciderwebmail.js"></script>
     </head>
     <body>
         <div id="container">
