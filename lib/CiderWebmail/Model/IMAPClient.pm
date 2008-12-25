@@ -58,36 +58,36 @@ sub folders {
     return \@folders;
 }
 
-=head2 foldertree()
+=head2 folder_tree()
 
-list all folders in a hash-tree
+Return all folders as hash-tree.
 
 =cut
 
-sub foldertree {
+sub folder_tree {
     my ($self, $c) = @_;
     
-    my @folders = $c->stash->{imapclient}->folders;
+    # sorting folders makes sure branches are created before leafs
+    my @folders = sort { lc($a) cmp lc($b) } $c->stash->{imapclient}->folders;
+    $self->die_on_error($c);
 
-    my %foldertree = ();
+    my $folder_tree;
+ 
+    foreach my $folder (@folders) {
+        my $node = \$folder_tree; # start at tree root
 
-     $self->die_on_error($c);
- 
-     @folders = sort { lc($a) cmp lc($b) } @folders;
- 
-    foreach (@folders) {
-        my $last = \%foldertree;
         #TODO get folder seperator from server
-        foreach (split(/\./, $_)) {
-            my $foldername = $_;
-            unless($last->{$foldername}) {
-                $last->{$foldername} = {};
-            }
-            $last = $last->{$foldername};
+        foreach (split(/\./, $folder)) { # walk the tree
+            $node = \${ ${$node}->{folders}{$_} };
         }
+
+        $$node = {
+            total  => $self->message_count($c, $folder),
+            unseen => $self->unseen_count($c, $folder),
+        };
     }
 
-    return \%foldertree;
+    return $folder_tree;
 }
 
 
@@ -109,15 +109,26 @@ sub select {
     }
 }
 
-=head2 message_count()
+=head2 message_count($folder)
 
-returnes the message count for a folder
+returnes the number of messages in a folder
 
 =cut
 
 sub message_count {
     my ($self, $c, $folder) = @_;
     return $c->stash->{imapclient}->message_count($folder);
+}
+
+=head2 unseen_count($folder)
+
+returnes the number of unseen messages in a folder
+
+=cut
+
+sub unseen_count {
+    my ($self, $c, $folder) = @_;
+    return $c->stash->{imapclient}->unseen_count($folder);
 }
 
 =head2 fetch_headers_hash()
