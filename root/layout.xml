@@ -22,7 +22,7 @@
                  <ul>
                      <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
                          <li metal:define-macro="folder-tree">
-                             <a href="#" tal:attributes="href folder/uri_view" tal:content="folder/name">Folder Title</a>
+                             <a href="#" tal:attributes="href folder/uri_view"><span class="name" tal:content="folder/name"/> <span class="counts" tal:content="string: ${folder/unseen}/${folder/total}"/></a>
                              <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
                                  <li metal:use-macro="#folder-tree">Dummy Child 1</li>
                              </ul>
