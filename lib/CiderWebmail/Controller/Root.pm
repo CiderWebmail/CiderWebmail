@@ -37,18 +37,12 @@ sub auto : Private {
 
     if ($c->authenticate({ realm => "CiderWebmail" })) {
         $c->stash( headercache => CiderWebmail::Headercache->new($c) );
-        my @folders = (
-            map +{
-                name => $_,
-                uri_view => $c->uri_for("/mailbox/$_"),
-                message_count => $c->model->message_count($c, $_),
-            },
-            @{ $c->model->folders($c) }
-        );
+
+        my $tree = $c->model->folder_tree($c);
+        CiderWebmail::Util::add_foldertree_uri_view($c, { path => undef, folders => $tree->{folders}});
+
         $c->stash({
-            folders  => \@folders,
-            folders_hash => { map {$_->{name} => $_} @folders },
-            folder_tree => $c->model->folder_tree($c),
+            folder_tree => $tree,
         });
 
         return 1;

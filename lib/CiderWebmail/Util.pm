@@ -53,4 +53,24 @@ sub date_to_datetime {
     return $date;
 }
 
+sub add_foldertree_uri_view {
+    my $c = shift;
+    my $o = shift;
+   
+    die unless defined $o->{folders};
+
+    foreach ( @{$o->{folders}} ) {
+        my $folder = $_;
+        $folder->{uri_view} = $c->uri_for("/mailbox/". (defined($o->{path}) ? join($c->model->separator($c), $o->{path}, $folder->{name}) : $folder->{name}));
+        
+        if (defined($folder->{folders})) { #if we have any subfolders
+            add_foldertree_uri_view($c,
+                {
+                    path => (defined($o->{path}) ? join($c->{model}->separator($c), $o->{path}, $folder->{name}) : $folder->{name}),
+                    folders => $folder->{folders}
+                });
+        }
+    }
+}
+
 1;

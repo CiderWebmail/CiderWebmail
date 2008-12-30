@@ -58,6 +58,23 @@ sub folders {
     return \@folders;
 }
 
+=head2 separator()
+
+Returnes the folder separator
+
+=cut
+#TODO allow override from config file
+sub separator {
+    my ($self, $c) = @_;
+
+    unless(defined $c->stash->{separator}) {
+        $c->stash->{separator} = $c->stash->{imapclient}->separator;
+        $self->die_on_error($c);
+    }
+
+    return $c->stash->{separator};
+}
+
 =head2 folder_tree()
 
 Return all folders as hash-tree.
@@ -72,7 +89,7 @@ sub folder_tree {
     $self->die_on_error($c);
 
     my %folder_index = ( '' => { folders => [] } );
-    my $seperator = '.';
+    my $seperator = $self->separator($c);
 
     foreach my $folder (@folders) {
         my ($parent, $name) = $folder =~ /\A (?: (.*) \Q$seperator\E)? (.*?) \z/x;
