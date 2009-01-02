@@ -70,6 +70,8 @@ sub header_formatted {
     my $headers = $self->get_header("_ALL");
     my $header;
 
+    $headers->{Received} =~ s/\t/\n\t/g if exists $headers->{Received};
+
     while (my ($headername, $headervalue) = each(%$headers)) {
         $header .= join("", $headername, ": ", $headervalue, "\n");
     }
