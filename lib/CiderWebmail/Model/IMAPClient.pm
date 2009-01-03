@@ -268,7 +268,7 @@ sub get_header {
 
     if ( $o->{cache} ) {
         unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $o->{header} }) ) {
-            $c->stash->{headercache}->set({ uid => $o->{uid}, header => $o->{header}, mailbox => $o->{mailbox}, data => $c->stash->{imapclient}->get_header($o->{uid}, $o->{header}) });
+            $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
             $self->die_on_error($c);
         }
 
