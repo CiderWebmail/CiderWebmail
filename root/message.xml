@@ -13,6 +13,10 @@
             <a tal:attributes="href uri_forward">Forward this message</a>
         </p>
         <b>From: </b><span tal:content="message/from">from</span><br />
+        <b>To: </b><span tal:content="message/to">to</span><br />
+        <div tal:condition="true:message/cc">
+            <b>Cc: </b><span tal:content="message/cc">cc</span><br />
+        </div>
         <b>Subject: </b><span tal:content="message/subject">from</span><br />
         <b>Date: </b><span tal:content="message/date/hms">from</span><br />
         <b>Header: </b><a onClick='toggle(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre><br />

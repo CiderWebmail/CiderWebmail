@@ -93,6 +93,18 @@ sub from {
     return ($self->get_header('from') or 'Unknown');
 }
 
+sub to {
+    my ($self) = @_;
+
+    return ($self->get_header('to') or 'Unknown');
+}
+
+sub cc {
+    my ($self) = @_;
+
+    return $self->get_header('cc');
+}
+
 sub get_headers {
     my ($self) = @_;
     
