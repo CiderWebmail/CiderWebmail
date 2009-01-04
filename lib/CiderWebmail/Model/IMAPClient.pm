@@ -397,15 +397,29 @@ sub delete_messages {
     $self->die_on_error($c);
 }
 
-=head2 append_message()
+=head2 append_message($c, {mailbox, message_text})
 
-low level method to append an RFC822-formatted message to a folder
+low level method to append an RFC822-formatted message to a mailbox
 
 =cut
 
 sub append_message {
     my ($self, $c, $o) = @_;
-    $c->stash->{imapclient}->append($o->{folder}, $o->{message_text});
+    $c->stash->{imapclient}->append($o->{mailbox}, $o->{message_text});
+}
+
+=head2 move_message($c {uid, mailbox, target_mailbox})
+
+Move a message to another mailbox
+
+=cut
+
+sub move_message {
+    my ($self, $c, $o) = @_;
+
+    $self->select($c, { mailbox => $o->{mailbox} });
+    $c->stash->{imapclient}->move($o->{target_mailbox}, $o->{uid}) or die "could not move message $o->{uid} to folder $o->{mailbox}";
+    $self->die_on_error($c);
 }
 
 =head1 AUTHOR

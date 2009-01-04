@@ -51,10 +51,12 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $message->load_body();
 
     $c->stash({
-        template => 'message.xml',
-        message => $message,
-        uri_reply => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
-        uri_forward => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
+        template       => 'message.xml',
+        message        => $message,
+        target_folders => [ sort {$a->{name} cmp $b->{name}} values %{ clone($c->stash->{folders_hash}) } ],
+        uri_reply      => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
+        uri_forward    => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
+        uri_move       => $c->uri_for("/mailbox/$mailbox/$uid/move"),
     });
 }
 
@@ -97,6 +99,21 @@ sub delete : Chained('setup') Args(0) {
     $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
 }
 
+=head2 move
+
+Move a message to a different folder
+
+=cut
+
+sub move : Chained('setup') Args(0) {
+    my ( $self, $c ) = @_;
+    my $target_folder = $c->req->param('target_folder') or die "no folder to move message to";
+    my $model = $c->model();
+
+    $model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
+
+    $c->res->redirect($c->uri_for("/mailbox/$target_folder"));
+}
 
 =head2 compose
 
