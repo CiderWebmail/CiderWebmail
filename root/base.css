@@ -22,7 +22,7 @@ div#left {
     width: 12em;
 }
 
-div#left li.selected {
+div#left li.selected > a {
     font-weight: bold;
 }
 
@@ -81,6 +81,32 @@ label span {
 }
 
 textarea {
-	width: 50em;
-	height: 30em;
+    width: 50em;
+    height: 30em;
+}
+
+
+.message_list tr {
+    font-weight: bold;
+}
+
+.message_list tr.seen {
+    font-weight: normal;
+}
+
+.message_list tr.recent {
+    font-weight: bold;
+}
+
+.message_list tr.answered * {
+    color: blue;
+}
+
+.message_list tr.forwarded * {
+    color: green;
+}
+
+.message_list tr.deleted * {
+    color: red;
+    text-decoration: line-through;
 }

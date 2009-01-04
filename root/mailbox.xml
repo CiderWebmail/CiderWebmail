@@ -13,14 +13,14 @@
             <input name="text"/>
             <button type="submit">Search</button>
         </form>
-        <table>
+        <table class="message_list">
             <tr>
                 <th>From</th>
                 <th>Subject</th>
                 <th>Date</th>
                 <th>Delete</th>
             </tr>
-            <tr tal:repeat="message messages">
+            <tr tal:repeat="message messages" tal:attributes="class message/flags">
                 <td tal:condition="true:message/from" tal:content="message/from">from</td>
                 <td tal:condition="false:message/from">Unknown</td>
                 <td><a tal:attributes="href message/uri_view"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>

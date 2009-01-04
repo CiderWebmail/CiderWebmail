@@ -35,6 +35,8 @@ requires 'IO::Socket::SSL';
 requires 'Mail::IMAPClient';
 
 requires 'Cache::FastMmap';
+requires 'Clone';
+
 catalyst;
 
 install_script glob('script/*.pl');
