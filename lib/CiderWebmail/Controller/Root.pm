@@ -38,11 +38,12 @@ sub auto : Private {
     if ($c->authenticate({ realm => "CiderWebmail" })) {
         $c->stash( headercache => CiderWebmail::Headercache->new($c) );
 
-        my $tree = $c->model->folder_tree($c);
+        my ($tree, $folders_hash) = $c->model->folder_tree($c);
         CiderWebmail::Util::add_foldertree_uri_view($c, { path => undef, folders => $tree->{folders}});
 
         $c->stash({
             folder_tree => $tree,
+            folders_hash => $folders_hash,
         });
 
         return 1;
@@ -62,12 +63,18 @@ sub login : Local {
 sub index : Private {
     my ( $self, $c ) = @_;
     my $model = $c->model();
-    my $folders = $c->stash->{folders};
-    my %folders = %{ $c->stash->{folders_hash} };
-    my $folder =  exists $folders{INBOX}
-        ? $folders{INBOX}   # good guess
-        : reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # or just the first
-    $c->res->redirect($folder->{uri_view});
+    my $folders = $c->stash->{folder_tree}{folders};
+    my $inbox;
+
+    if (@$folders > 1) {
+        $_->{name} =~ /\Ainbox\z/i and $inbox = $_ foreach @$folders; # try to find a folder named INBOX
+        $inbox ||= reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # no folder named INBOX
+    }
+    else {
+        $inbox = $folders->[0]; # only one folder, so this must be INBOX
+    }
+
+    $c->res->redirect($inbox->{uri_view});
 }
 
 =head2 end

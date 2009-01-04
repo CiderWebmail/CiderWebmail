@@ -30,11 +30,11 @@ div#left ul {
     list-style-type: none;
     padding: 0;
     margin: 0 0 0 10px;
-    border: 1px solid black;
+    border: 1px solid lightgrey;
 }
 
 div#left ul li {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid lightgrey;
 }
 
 div#left ul li a {

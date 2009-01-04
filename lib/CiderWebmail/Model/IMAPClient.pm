@@ -89,10 +89,10 @@ sub folder_tree {
     $self->die_on_error($c);
 
     my %folder_index = ( '' => { folders => [] } );
-    my $seperator = $self->separator($c);
+    my $separator = $self->separator($c);
 
     foreach my $folder (@folders) {
-        my ($parent, $name) = $folder =~ /\A (?: (.*) \Q$seperator\E)? (.*?) \z/x;
+        my ($parent, $name) = $folder =~ /\A (?: (.*) \Q$separator\E)? (.*?) \z/x;
         $parent = $folder_index{$parent || ''};
 
         push @{ $parent->{folders} }, $folder_index{$folder} = {
@@ -102,7 +102,7 @@ sub folder_tree {
         };
     }
 
-    return $folder_index{''};
+    return wantarray ? ($folder_index{''}, \%folder_index) : $folder_index{''};
 }
 
 
@@ -117,7 +117,7 @@ sub select {
 
     die 'No mailbox to select' unless $o->{mailbox};
 
-    unless ( $c->stash->{currentmailbox} && ( $c->stash->{currentmailbox} eq $o->{mailbox} ) ) {
+    unless ( $c->stash->{currentmailbox} and $c->stash->{currentmailbox} eq $o->{mailbox} ) {
         $c->stash->{imapclient}->select( $o->{mailbox} );
         $self->die_on_error($c);
         $c->stash->{currentmailbox} = $o->{mailbox};

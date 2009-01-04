@@ -59,8 +59,7 @@ sub add_foldertree_uri_view {
    
     die unless defined $o->{folders};
 
-    foreach ( @{$o->{folders}} ) {
-        my $folder = $_;
+    foreach my $folder ( @{$o->{folders}} ) {
         $folder->{uri_view} = $c->uri_for("/mailbox/". (defined($o->{path}) ? join($c->model->separator($c), $o->{path}, $folder->{name}) : $folder->{name}));
         
         if (defined($folder->{folders})) { #if we have any subfolders
