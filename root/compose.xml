@@ -38,6 +38,12 @@
                 <span>Attachment:</span>
                 <input type="file" name="attachment"/>
             </label>
+            <label>
+                <span>Save message to:</span>
+                <select name="sent_folder">
+                    <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
+                </select>
+            </label>
             <button type="submit">Send</button>
         </form>
     </body>

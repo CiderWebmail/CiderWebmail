@@ -6,7 +6,9 @@ use parent 'Catalyst::Controller';
 
 use CiderWebmail::Message;
 use MIME::Lite;
-use MIME::Words qw/encode_mimeword/;
+use MIME::Words qw(encode_mimeword);
+use Clone qw(clone);
+use List::Util qw(first);
 
 =head1 NAME
 
@@ -105,10 +107,17 @@ Compose a new message for sending
 sub compose : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
+    my $folders = clone($c->stash->{folders_hash});
+    delete $_->{selected} foreach values %$folders; # clean any selectedness
+
+    my $sent = first { $_ =~ /\bsent\b/i } keys %$folders; # try to find a folder called "Sent"
+    $folders->{$sent}{selected} = 'selected' if $sent;
+
     $c->stash->{message} ||= {};
     $c->stash({
-        uri_send => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/send'),
-        template => 'compose.xml',
+        uri_send     => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/send'),
+        sent_folders => [ sort {$a->{name} cmp $b->{name}} values %$folders ],
+        template     => 'compose.xml',
     });
 }
 
@@ -210,6 +219,11 @@ sub send : Chained('/mailbox/setup') Args(0) {
     }
 
     $mail->send;
+
+    if (my $sent_folder = $c->req->param('sent_folder')) {
+        my $msg_text = $mail->as_string;
+        $c->model()->append_message($c, {folder => $sent_folder, message_text => $msg_text});
+    }
 
     $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
 }

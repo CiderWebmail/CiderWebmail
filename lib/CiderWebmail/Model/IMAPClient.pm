@@ -96,7 +96,8 @@ sub folder_tree {
         $parent = $folder_index{$parent || ''};
 
         push @{ $parent->{folders} }, $folder_index{$folder} = {
-            name => $name,
+            id     => $folder,
+            name   => $name,
             total  => $self->message_count($c, $folder),
             unseen => $self->unseen_count($c, $folder),
         };
@@ -389,6 +390,17 @@ sub delete_messages {
 
     $c->stash->{imapclient}->expunge($o->{mailbox});
     $self->die_on_error($c);
+}
+
+=head2 append_message()
+
+low level method to append an RFC822-formatted message to a folder
+
+=cut
+
+sub append_message {
+    my ($self, $c, $o) = @_;
+    $c->stash->{imapclient}->append($o->{folder}, $o->{message_text});
 }
 
 =head1 AUTHOR
