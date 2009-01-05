@@ -50,6 +50,10 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
     $message->load_body();
 
+    foreach(@{ $message->{attachments} }) {
+        $_->{uri_view} = $c->uri_for('/mailbox/' . $mailbox . '/' . $uid . "/attachment/$_->{id}");
+    }
+
     $c->stash({
         template       => 'message.xml',
         message        => $message,

@@ -137,10 +137,6 @@ sub load_body {
     my ($self) = @_;
 
     ($self->{body}, $self->{attachments}) = $self->{c}->model->body($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
-
-    foreach (@{ $self->{attachments} }) {
-        $_->{uri_view} = $self->{c}->uri_for('/mailbox/' . $self->mailbox . '/' . $self->uid . "/attachment/$_->{id}");
-    }
 }
 
 sub body {
