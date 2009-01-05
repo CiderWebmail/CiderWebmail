@@ -6,6 +6,7 @@
     metal:use-macro="layout.xml#layout">
     <head>
         <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
+        <script type="text/javascript" tal:attributes="src string:${uri_scripts}/mailbox.js" metal:fill-slot="scripts"/>
     </head>
     <body metal:fill-slot="content">
         <h1 tal:content="folder">Mailbox</h1>
@@ -20,8 +21,9 @@
                 <th>Date</th>
                 <th>Delete</th>
             </tr>
-            <tr tal:repeat="message messages" tal:attributes="id string:message_${message/uid}; class message/flags">
-                <td tal:condition="true:message/from" tal:content="message/from">from</td>
+            <tr class="message" tal:repeat="message messages" tal:attributes="id string:message_${message/uid}; class message/flags">
+                <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
+                <td tal:attributes="id string:from_${message/uid}" tal:condition="true:message/from" tal:content="message/from">from</td>
                 <td tal:condition="false:message/from">Unknown</td>
                 <td><a tal:attributes="href message/uri_view"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
                 <td tal:content="message/date/strftime '%F %T'">date</td>

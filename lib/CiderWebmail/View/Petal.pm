@@ -13,6 +13,23 @@ CiderWebmail::View::Petal - Catalyst View
 
 Catalyst View.
 
+=head1 METHODS
+
+=head2 process
+
+=cut
+
+sub process {
+    my ($self, $c) = @_;
+
+    $c->stash({
+        uri_static => $c->uri_for('/static'),
+        uri_scripts => $c->uri_for('/static/scripts'),
+    });
+
+    $self->SUPER::process($c);
+}
+
 =head1 AUTHOR
 
 Stefan Seifert

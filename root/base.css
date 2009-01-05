@@ -110,3 +110,12 @@ textarea {
     color: red;
     text-decoration: line-through;
 }
+
+div#left a.hover {
+    color: white;
+    background-color: green;
+}
+
+.message_list img {
+    position: relative;
+}
