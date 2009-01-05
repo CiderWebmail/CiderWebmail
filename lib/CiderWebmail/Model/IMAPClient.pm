@@ -420,6 +420,10 @@ sub move_message {
     $self->select($c, { mailbox => $o->{mailbox} });
     $c->stash->{imapclient}->move($o->{target_mailbox}, $o->{uid}) or die "could not move message $o->{uid} to folder $o->{mailbox}";
     $self->die_on_error($c);
+    
+    $c->stash->{imapclient}->expunge($o->{mailbox});
+    $self->die_on_error($c);
+
 }
 
 =head1 AUTHOR
