@@ -27,7 +27,7 @@
             <b>Cc: </b><span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span><br />
         </div>
         <b>Subject: </b><span tal:content="message/subject">from</span><br />
-        <b>Date: </b><span tal:content="message/date/hms">from</span><br />
+        <b>Date: </b><span tal:content="string: ${message/date/hms} ${message/date/ymd}">from</span><br />
         <b>Header: </b><a onClick='toggle(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre><br />
         <div tal:condition="true:message/attachments">
             <b>Attachments: </b><span tal:repeat="attachment message/attachments"><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type"/> </span>
