@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 use CiderWebmail::Message;
+use Mail::Address;
 
 sub new {
     my ($class, $c, $o) = @_;
@@ -48,8 +49,15 @@ sub list_messages {
 
 sub list_messages_hash {
     my ($self, $c, $o) = @_;
-    
-    return $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
+   
+    my $messages = $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
+
+    foreach(@$messages) {
+        my @address = Mail::Address->parse($_->{from});
+        $_->{from} = $address[0];
+    }
+
+    return $messages;
 }
 
 sub simple_search {
