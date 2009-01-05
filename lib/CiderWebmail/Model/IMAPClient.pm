@@ -359,9 +359,16 @@ sub body {
 
         if ($_->effective_type =~ m!\Atext/plain\b!) {
             my $charset = $part_head->mime_attr("content-type.charset");
-            my $converter = Text::Iconv->new($charset, "utf-8");
+            if ($part_body) {
+                unless (eval {
+                        my $converter = Text::Iconv->new($charset, "utf-8");
+                        $body .= $converter->convert($part_body->as_string);
+                    }) {
 
-            $body .= $converter->convert($part_body->as_string) if $part_body;
+                    warn "unsupported encoding: $charset";
+                    $body .= $part_body->as_string;
+                }
+            }
         }
         else {
             push @attachments, {
