@@ -6,6 +6,7 @@ use strict;
 use Mail::IMAPClient::BodyStructure;
 
 use DateTime;
+use Mail::Address;
 use DateTime::Format::Mail;
 
 use Text::Iconv;
@@ -90,20 +91,24 @@ sub subject {
 sub from {
     my ($self) = @_;
 
-    return ($self->get_header('from') or 'Unknown');
+    my @from = Mail::Address->parse($self->get_header('from'));
+    return \@from;
 }
 
 sub to {
     my ($self) = @_;
 
-    return ($self->get_header('to') or 'Unknown');
+    my @to = Mail::Address->parse($self->get_header('to'));
+    return \@to;
 }
 
 sub cc {
     my ($self) = @_;
 
-    return $self->get_header('cc');
+    my @cc = Mail::Address->parse($self->get_header('cc'));
+    return \@cc;
 }
+
 
 sub get_headers {
     my ($self) = @_;

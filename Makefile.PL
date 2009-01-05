@@ -19,6 +19,8 @@ requires 'YAML'; # This should reflect the config file format you've chosen
 
 requires 'Catalyst::View::Petal';
 
+requires 'Petal::Utils';
+
 requires 'DateTime';
 requires 'DateTime::Format::Mail';
 

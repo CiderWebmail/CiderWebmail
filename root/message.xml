@@ -21,10 +21,10 @@
             </label>
             <button type="submit">Move message</button>
         </form>
-        <b>From: </b><span tal:content="message/from">from</span><br />
-        <b>To: </b><span tal:content="message/to">to</span><br />
+        <b>From: </b><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span><br />
+        <b>To: </b><span tal:repeat="address message/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span><br />
         <div tal:condition="true:message/cc">
-            <b>Cc: </b><span tal:content="message/cc">cc</span><br />
+            <b>Cc: </b><span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span><br />
         </div>
         <b>Subject: </b><span tal:content="message/subject">from</span><br />
         <b>Date: </b><span tal:content="message/date/hms">from</span><br />
