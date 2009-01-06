@@ -1,4 +1,5 @@
 ---
 server:
     port: 993
-    host: mail.lanscene.at
+#    host: mail.lanscene.at
+    host: mail.atikon.at

@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xml:lang="en"
+    lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:define-macro="layout">
+
+    <head>
+        <title metal:define-slot="title">CiderWebmail</title>
+        <link rel="stylesheet" media="screen"  href="/base.css" />
+        <script type="text/javascript" src="/ciderwebmail.js" />
+        <script type="text/javascript" tal:attributes="src string:${uri_scripts}/mootools-1.2-core.js" />
+        <script type="text/javascript" tal:attributes="src string:${uri_scripts}/mootools-1.2-more.js" />
+        <script metal:define-slot="scripts" />
+    </head>
+    <body>
+        <div metal:define-slot="content" tal:omit-tag=""/>
+    </body>
+</html>
+
