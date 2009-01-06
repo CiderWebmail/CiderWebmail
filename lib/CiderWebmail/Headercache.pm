@@ -35,11 +35,7 @@ sub set {
 
     die "hc set w/o mailbox" unless defined $o->{mailbox};
 
-    if (grep(/^$o->{header}$/, qw/From To Subject Date/)) {
-        $self->{cache}->set( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id), $o->{data} ) || die;
-    } else {
-        warn "not caching $o->{header}";
-    }
+    $self->{cache}->set( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id), $o->{data} ) || die;
 }
 
 1;
