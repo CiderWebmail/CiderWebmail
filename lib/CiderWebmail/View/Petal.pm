@@ -22,6 +22,12 @@ Catalyst View.
 sub process {
     my ($self, $c) = @_;
 
+    my $root = $c->config->{root};
+
+    my $base_dir = ["$root/templates", $root];
+    unshift @$base_dir, "$root/ajax" if ($c->req->param('layout') or '') eq 'ajax';
+    $self->config(base_dir => $base_dir); # this sets the global config, so we have to do it for every request
+
     $c->stash({
         uri_static => $c->uri_for('/static'),
         uri_scripts => $c->uri_for('/static/scripts'),

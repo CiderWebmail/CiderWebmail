@@ -2,9 +2,22 @@ window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
     var droppables = $('folder_tree').getElements('.folder');
 
-    function start (event) {
+    function stop_propagation(event) {
+        if (event.stopPropagation) event.stopPropagation();
+        event.cancelBubble = true;
+
+        if (event.preventDefault) event.preventDefault();
+        else event.returnValue = false;
+    }
+
+    function get_target_node(event) {
         var target = event.target || event.srcElement;
         while (target && target.nodeType == 3) target = target.parentNode;
+        return target;
+    }
+
+    function start(event) {
+        var target = get_target_node(event);
 
         if (target.tagName.toLowerCase() == 'img' && target.id && target.id.indexOf('icon_') == 0) {
             var message = target;
@@ -13,18 +26,25 @@ window.addEvent('load', function() {
             message.style.top = event.clientY + 'px';
 
             add_drag_and_drop(message, droppables);
+            stop_propagation(event);
+        }
+    }
 
-            // stop bubbling, so the browser's image drag&drop doesn't kick in
-            if (event.stopPropagation) event.stopPropagation();
-            else event.cancelBubble = true;
+    function load_mail(event) {
+        var target = get_target_node(event);
 
-            if (event.preventDefault) event.preventDefault();
-            else event.returnValue = false;
+        if (target.tagName.toLowerCase() == 'a' && target.id && target.id.indexOf('link_') == 0) {
+            var uid = target.id.replace('link_', '');
+            var myHTMLRequest = new Request.HTML({update: 'message_view'}).get(target.href + "?layout=ajax");
+            stop_propagation(event);
         }
     }
 
     if (document.addEventListener) document.addEventListener('mousedown', start, false);
     else document.attachEvent('onmousedown', start);
+
+    if (document.addEventListener) document.addEventListener('click', load_mail, false);
+    else document.attachEvent('onclick', load_mail);
 });
 
 function add_drag_and_drop(message, droppables) {

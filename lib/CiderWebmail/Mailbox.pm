@@ -31,8 +31,7 @@ sub list_messages {
     my $messages_header_hash = $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
     my @messages = ();
 
-    foreach ( @$messages_header_hash ) {
-        my $message = $_;
+    foreach my $message ( @$messages_header_hash ) {
         push(@messages, CiderWebmail::Message->new($self->{c},
             {
                 mailbox => $message->{mailbox},
