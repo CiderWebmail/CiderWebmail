@@ -1,24 +1,53 @@
-window.addEvent('domready', function() {
-    var messages = $$('table.message_list tr td.icon img');
+window.addEvent('load', function() {
+    var messages = document.getElementById('messages_pane').getElementsByTagName('img');
 
-    messages.each(function (message, index) {
-        var message_drag = message.makeDraggable({
-            droppables: '.folder',
+    var selection = (Browser.Engine.trident) ? 'selectstart' : 'mousedown';
+    var droppables = $$('.folder');
+    var overed_prev;
 
-            onDrop: function(element, droppable){
-                if (! droppable) return;
-                var uid = message.id.replace('icon_', '');
-                var folder = droppable.title;
-                document.location.href = document.location.href + "/" + uid + "/move?target_folder=" + folder
-            },
+    for (var index = 0; index < messages.length; index++) {
+        var message = messages[index];
 
-            onEnter: function(element, droppable){
-                droppable.addClass('hover');
-            },
+        var drag = function(event) {
+            var overed = droppables.filter(function (el) {
+                    el = el.getCoordinates();
+                    return (event.client.x > el.left && event.client.x < el.right && event.client.y < el.bottom && event.client.y > el.top);
+                }).getLast();
 
-            onLeave: function(element, droppable){
-                droppable.removeClass('hover');
+            if (overed_prev != overed) {
+                if (overed_prev) {
+                    overed_prev.removeClass('hover');
+                }
+                overed_prev = overed;
+                if (overed){
+                    overed.addClass('hover');
+                }
             }
-        });
-    });
+            message.style.left = event.client.x + 'px';
+            message.style.top = event.client.y + 'px';
+        };
+
+        var drop = function(event) {
+            document.removeEvent('mousemove', drag);
+            document.removeEvent('mouseup', drop);
+            message.style.position = '';
+            message.style.left = '';
+            message.style.top = '';
+
+            if (! overed_prev) return;
+            var uid = message.id.replace('icon_', '');
+            document.location.href += "/" + uid + "/move?target_folder=" + overed_prev.title;
+        };
+
+        var start = function (event) {
+            message.style.position = 'fixed';
+            message.style.left = event.client.x + 'px';
+            message.style.top = event.client.y + 'px';
+
+            document.addEvents({mousemove: drag, mouseup: drop});
+            return false; // stop bubbling, so the browser's image drag&drop doesn't kick in
+        };
+
+        message.addEvent('mousedown', start);
+    }
 });

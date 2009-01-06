@@ -17,10 +17,8 @@
     </head>
     <body>
         <div id="container">
-            <div id="top">
-                <h1>CiderWebmail</h1>
-            </div>
             <div id="left">
+                <h1>CiderWebmail</h1>
                  <a tal:attributes="href uri_compose">Compose new mail</a>
                  <ul>
                      <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
@@ -33,7 +31,7 @@
                      </div>
                  </ul>
             </div>
-            <div id="page">
+            <div id="content">
                 <div metal:define-slot="content" tal:omit-tag=""/>
             </div>
         </div>

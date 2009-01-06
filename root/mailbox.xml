@@ -14,23 +14,27 @@
             <input name="text"/>
             <button type="submit">Search</button>
         </form>
-        <table class="message_list">
-            <tr>
-                <th></th>
-                <th>From</th>
-                <th>Subject</th>
-                <th>Date</th>
-                <th>Delete</th>
-            </tr>
-            <tr class="message" tal:repeat="message messages" tal:attributes="id string:message_${message/uid}; class message/flags">
-                <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
-                <td tal:attributes="id string:from_${message/uid}; title message/from/address" tal:condition="true:message/from" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</td>
-                <td tal:condition="false:message/from">Unknown</td>
-                <td><a tal:attributes="href message/uri_view"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
-                <td tal:content="message/date/strftime '%F %T'">date</td>
-                <td><a tal:attributes="href message/uri_delete">delete</a></td>
-            </tr>
-        </table>
+        <div id="messages_pane">
+            <table class="message_list">
+                <tr>
+                    <th></th>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Delete</th>
+                </tr>
+                <tr tal:repeat="message messages" tal:attributes="id string:message_${message/uid}; class message/flags">
+                    <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
+                    <td tal:attributes="id string:from_${message/uid}; title message/from/address" tal:condition="true:message/from" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</td>
+                    <td tal:condition="false:message/from">Unknown</td>
+                    <td><a tal:attributes="href message/uri_view"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
+                    <td tal:content="message/date/strftime '%F %T'">date</td>
+                    <td><a tal:attributes="href message/uri_delete">delete</a></td>
+                </tr>
+            </table>
+        </div>
+        <div id="message_view">
+        </iframe>
     </body>
 </html>
 
