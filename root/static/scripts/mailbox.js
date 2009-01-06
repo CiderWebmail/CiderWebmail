@@ -1,11 +1,30 @@
 window.addEvent('load', function() {
-    var messages = document.getElementById('messages_pane').getElementsByTagName('img');
+    var start_time = (new Date()).getTime();
+    var droppables = $('folder_tree').getElements('.folder');
 
-    var droppables = $$('.folder');
+    function start (event) {
+        var target = event.target || event.srcElement;
+        while (target && target.nodeType == 3) target = target.parentNode;
 
-    for (var index = 0; index < messages.length; index++) {
-        add_drag_and_drop(messages[index], droppables);
+        if (target.tagName.toLowerCase() == 'img' && target.id && target.id.indexOf('icon_') == 0) {
+            var message = target;
+            message.style.position = 'fixed';
+            message.style.left = event.clientX + 'px';
+            message.style.top = event.clientY + 'px';
+
+            add_drag_and_drop(message, droppables);
+
+            // stop bubbling, so the browser's image drag&drop doesn't kick in
+            if (event.stopPropagation) event.stopPropagation();
+            else event.cancelBubble = true;
+
+            if (event.preventDefault) event.preventDefault();
+            else event.returnValue = false;
+        }
     }
+
+    if (document.addEventListener) document.addEventListener('mousedown', start, false);
+    else document.attachEvent('onmousedown', start);
 });
 
 function add_drag_and_drop(message, droppables) {
@@ -42,21 +61,5 @@ function add_drag_and_drop(message, droppables) {
         document.location.href += "/" + uid + "/move?target_folder=" + overed_prev.title;
     }
 
-    function start (event) {
-        message.style.position = 'fixed';
-        message.style.left = event.clientX + 'px';
-        message.style.top = event.clientY + 'px';
-
-        document.addEvents({mousemove: drag, mouseup: drop});
-
-        // stop bubbling, so the browser's image drag&drop doesn't kick in
-        if (event.stopPropagation) event.stopPropagation();
-        else event.cancelBubble = true;
-
-        if (event.preventDefault) event.preventDefault();
-        else event.returnValue = false;
-    }
-
-    if (message.addEventListener) message.addEventListener('mousedown', start, false);
-    else message.attachEvent('onmousedown', start);
+    document.addEvents({mousemove: drag, mouseup: drop});
 }
