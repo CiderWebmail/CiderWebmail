@@ -46,13 +46,18 @@
                 <th>Header</th>
                 <td><a onClick='toggle(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
             </tr>
-            <tr tal:condition="true:message/attachments">
-                <th>Attachments:</th>
-                <td><span tal:repeat="attachment message/attachments"><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type"/></span></td>
-            </tr>
             <tr>
                 <td colspan='2'><pre tal:content="message/body">mail body</pre></td>
             </tr>
+            <tr tal:condition="true:message/attachments">
+                <td colspan='2'>
+                    <div class="attachment" tal:repeat="attachment message/attachments">
+                        <p><img tal:attributes="src string:/static/images/mimeicons/${attachment/icon}" /></p>
+                        <p><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type" /></p>
+                    </div>
+                </td>
+            </tr>
+
         </table>
     </body>
 </html>

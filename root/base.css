@@ -154,6 +154,19 @@ div#left a.hover {
     position: relative;
 }
 
+.attachment {
+    border: 1px lightgrey solid;
+    margin: 0.5em;
+    padding: 0.5em;
+    float: left;
+}
+
+.attachment p {
+    text-align: center;
+    font-size: 0.8em;
+}
+
+
 #messages_pane {
     position: absolute;
     top: 5em;
