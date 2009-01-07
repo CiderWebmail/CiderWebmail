@@ -188,3 +188,13 @@ div#left a.hover {
 #message_view .move_message {
     display: none;
 }
+
+.message_header tr th {
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.message_header tr td {
+    font-size: 0.8em;
+}
+
