@@ -357,8 +357,6 @@ sub body {
     $parser->output_to_core(1);
 
     my $entity = $parser->parse_data($message);
-    my $error = $c->stash->{imapclient}->LastError;
-    return $error if $error;
 
     my @parts = $entity->parts_DFS;
     @parts = ($entity) unless @parts;
