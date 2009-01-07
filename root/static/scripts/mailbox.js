@@ -23,7 +23,7 @@ window.addEvent('load', function() {
             var message = target;
             message.style.position = 'fixed';
             message.style.left = event.clientX + 'px';
-            message.style.top = event.clientY + 'px';
+            message.style.top  = event.clientY + 'px';
 
             add_drag_and_drop(message, droppables);
             stop_propagation(event);
@@ -50,10 +50,14 @@ window.addEvent('load', function() {
 
 function add_drag_and_drop(message, droppables) {
     var overed_prev;
+    var droppables_positions = new Object();
+    droppables.each(function (droppable) {
+        droppables_positions[droppable.title] = droppable.getCoordinates();
+    });
 
     function drag(event) {
         var overed = droppables.filter(function (el) {
-                el = el.getCoordinates();
+                el = droppables_positions[el.title];
                 return (event.client.x > el.left && event.client.x < el.right && event.client.y < el.bottom && event.client.y > el.top);
             }).getLast();
 
@@ -67,7 +71,7 @@ function add_drag_and_drop(message, droppables) {
             }
         }
         message.style.left = event.client.x + 'px';
-        message.style.top = event.client.y + 'px';
+        message.style.top  = event.client.y + 'px';
     }
 
     function drop(event) {
@@ -75,7 +79,7 @@ function add_drag_and_drop(message, droppables) {
         document.removeEvent('mouseup', drop);
         message.style.position = '';
         message.style.left = '';
-        message.style.top = '';
+        message.style.top  = '';
 
         if (! overed_prev) return;
         var uid = message.id.replace('icon_', '');
