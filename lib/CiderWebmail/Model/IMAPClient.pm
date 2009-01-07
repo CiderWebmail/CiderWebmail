@@ -460,7 +460,7 @@ sub transform_address {
 
     return undef unless defined $o->{data};
 
-    my @address = Mail::Address->parse($o->{data});
+    my @address = Mail::Address->parse($self->decode_header($c, $o));
    
     return \@address;
 }
@@ -470,7 +470,7 @@ sub transform_single_address {
 
     return undef unless defined $o->{data};
 
-    my @address = Mail::Address->parse($o->{data});
+    my @address = Mail::Address->parse($self->decode_header($c, $o));
   
     return $address[0];
 }
