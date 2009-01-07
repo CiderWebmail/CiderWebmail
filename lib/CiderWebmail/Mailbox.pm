@@ -25,33 +25,10 @@ sub mailbox {
     return $self->{mailbox};
 }
 
-sub list_messages {
-    my ($self, $c, $o) = @_;
-
-    my $messages_header_hash = $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
-    my @messages = ();
-
-    foreach my $message ( @$messages_header_hash ) {
-        push(@messages, CiderWebmail::Message->new($self->{c},
-            {
-                mailbox => $message->{mailbox},
-                uid     => $message->{uid},
-                from    => $message->{from},
-                to      => $message->{to},
-                subject => $message->{subject},
-                date    => $message->{date},
-            }));
-    }
-
-    return \@messages;
-}
-
 sub list_messages_hash {
     my ($self, $c, $o) = @_;
    
-    my $messages = $c->model->get_headers_hash($c, { mailbox => $self->{mailbox}, headers => [qw/From Subject Date/] });
-
-    return $messages;
+    return $c->model->get_headers_hash($c, { mailbox => $self->{mailbox}, headers => [qw/From Subject Date/] });
 }
 
 sub simple_search {
