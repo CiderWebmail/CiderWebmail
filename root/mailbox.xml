@@ -18,9 +18,9 @@
             <table class="message_list">
                 <tr>
                     <th></th>
-                    <th>From</th>
-                    <th>Subject</th>
-                    <th>Date</th>
+                    <th><a tal:attributes="href uri_sorted_from">From</a></th>
+                    <th><a tal:attributes="href uri_sorted_subject">Subject</a></th>
+                    <th><a tal:attributes="href uri_sorted_date">Date</a></th>
                     <th></th>
                 </tr>
                 <tbody tal:repeat="group groups">

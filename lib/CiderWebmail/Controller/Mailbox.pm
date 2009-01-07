@@ -45,7 +45,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
         $c->stash->{mbox} = $mbox->list_messages_hash($c);
     }
 
-    my @messages = sort { $a->{date} cmp $b->{date} }
+    my $sort = ($c->req->param('sort') or 'date');
+    my @messages = sort { $a->{$sort} cmp $b->{$sort} }
         map +{
                 %{ $_ },
                 uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
@@ -55,14 +56,20 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my %groups;
     
     foreach (@messages) {
-        my $date = $_->{date}->ymd;
-        push @{ $groups{$date} }, $_;
+        my $name = $sort eq 'date' ? $_->{$sort}->ymd : $_->{$sort};
+        push @{ $groups{$name} }, $_;
     }
 
+    my $clean_uri = $c->req->uri;
+    $clean_uri =~ s/[?&]sort=\w+//;
     $c->stash({
-        groups          => [ map +{ name => "$_, " . DateTime->new(year => substr($_, 0, 4), month => substr($_, 5, 2), day => substr($_, 8))->day_name, messages => [sort {$a->{date} cmp $b->{date}} @{ $groups{$_} }] }, sort keys %groups ],
+        groups          => [ map +{
+            name => $sort eq 'date' ? "$_, " . DateTime->new(year => substr($_, 0, 4), month => substr($_, 5, 2), day => substr($_, 8))->day_name : $_,
+            messages => [sort {$a->{$sort} cmp $b->{$sort}} @{ $groups{$_} }]
+        }, sort keys %groups ],
         messages        => \@messages,
         uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
+        (map {("uri_sorted_$_" => "$clean_uri?sort=$_")} qw(from subject date)),
         template        => 'mailbox.xml',
     });
 }
