@@ -452,13 +452,12 @@ sub transform_header {
     return $headers->{$o->{header}}->($self, $c, $o) if exists $headers->{$o->{header}};
 
     #if we have no appropriate transfrom function decode the header and return it
-    return $self->decode_header($c, { header => $o->{header}, data => ($o->{data} or '')})
+    return $self->decode_header($c, { data => ($o->{data} or '')})
 }
 
 sub transform_address {
     my ($self, $c, $o) = @_;
 
-    die unless defined $o->{header};
     return undef unless defined $o->{data};
 
     my @address = Mail::Address->parse($o->{data});
@@ -469,7 +468,6 @@ sub transform_address {
 sub transform_single_address {
     my ($self, $c, $o) = @_;
 
-    die unless defined $o->{header};
     return undef unless defined $o->{data};
 
     my @address = Mail::Address->parse($o->{data});
@@ -481,7 +479,6 @@ sub transform_single_address {
 sub transform_date {
     my ($self, $c, $o) = @_;
 
-    die unless defined $o->{header};
     return undef unless defined $o->{data};
 
     return CiderWebmail::Util::date_to_datetime({ date => $o->{data} });
@@ -490,7 +487,6 @@ sub transform_date {
 sub decode_header {
     my ($self, $c, $o) = @_;
 
-    die unless defined $o->{header};
     return '' unless defined $o->{data};
 
     my $header;
