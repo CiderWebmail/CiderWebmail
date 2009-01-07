@@ -100,7 +100,7 @@ sub delete : Chained('setup') Args(0) {
 
     $message->delete();
     
-    $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
+    $c->res->body('message deleted');
 }
 
 =head2 move

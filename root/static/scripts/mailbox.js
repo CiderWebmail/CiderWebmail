@@ -36,6 +36,11 @@ window.addEvent('load', function() {
             var myHTMLRequest = new Request.HTML({update: 'message_view'}).get(target.href + "?layout=ajax");
             stop_propagation(event);
         }
+        else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
+            var uid = target.id.replace('delete_', '');
+            new Request.HTML({url: target.parentNode.href}).send();
+            target.parentNode.parentNode.parentNode.parentNode.removeChild(target.parentNode.parentNode.parentNode);
+        }
         else {
             while (tagname != 'body' && tagname != 'tr') {
                 if (tagname == 'a') break; // let links continue to work
@@ -101,7 +106,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
         selected.each(function (message) {
             var uid = message.id.replace('message_', '');
-            var move_request = new Request.HTML({url: document.location.href + "/" + uid + "/move?target_folder=" + overed_prev.title}).send();
+            new Request.HTML({url: document.location.href + "/" + uid + "/move?target_folder=" + overed_prev.title}).send();
             message.parentNode.removeChild(message);
         });
 

@@ -29,7 +29,7 @@
                     <td tal:condition="false:message/from">Unknown</td>
                     <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
                     <td tal:content="message/date/strftime '%T'">date</td>
-                    <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif" alt="delete"/></a></td>
+                    <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
                 </tr>
             </table>
         </div>
