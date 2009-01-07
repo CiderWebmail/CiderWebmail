@@ -6,6 +6,7 @@ use parent 'Catalyst::Controller';
 
 use CiderWebmail::Mailbox;
 use CiderWebmail::Util;
+use DateTime;
 
 =head1 NAME
 
@@ -44,17 +45,25 @@ sub view : Chained('setup') PathPart('') Args(0) {
         $c->stash->{mbox} = $mbox->list_messages_hash($c);
     }
 
+    my @messages = sort { $a->{date} cmp $b->{date} }
+        map +{
+                %{ $_ },
+                uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
+                uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
+            }, @{ $c->stash->{mbox} };
+    
+    my %groups;
+    
+    foreach (@messages) {
+        my $date = $_->{date}->ymd;
+        push @{ $groups{$date} }, $_;
+    }
+
     $c->stash({
-        messages => [
-            sort { $a->{date} cmp $b->{date} }
-            map +{
-                    %{ $_ },
-                    uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
-                    uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-                }, @{ $c->stash->{mbox} }
-        ],
+        groups          => [ map +{ name => "$_, " . DateTime->new(year => substr($_, 0, 4), month => substr($_, 5, 2), day => substr($_, 8))->day_name, messages => [sort {$a->{date} cmp $b->{date}} @{ $groups{$_} }] }, sort keys %groups ],
+        messages        => \@messages,
         uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
-        template => 'mailbox.xml',
+        template        => 'mailbox.xml',
     });
 }
 
