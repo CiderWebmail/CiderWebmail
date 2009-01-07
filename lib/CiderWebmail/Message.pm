@@ -21,11 +21,7 @@ sub new {
     my $message = {
         c => $c,
         mailbox => $o->{mailbox},
-        uid     => $o->{uid},
-        from    => $o->{from},
-        to      => $o->{to},
-        subject => $o->{subject},
-        date    => $o->{date}, #datetime object
+        uid     => $o->{uid}
     };
 
     bless $message, $class;
@@ -46,40 +42,17 @@ sub mailbox {
 sub get_header {
     my ($self, $header) = @_;
 
-    if ($header eq "_ALL") {
-        my $fetched_headers = $self->{c}->model->all_headers($self->{c}, { mailbox => $self->mailbox, uid => $self->uid });
-        my $headers = {};
-
-        while(my ($headername, $headervalue) = each(%$fetched_headers)) {
-            $headers->{$headername} = join("\n", @$headervalue);
-        } 
-
-        return $headers;
-    }
-
-    unless ($self->{$header}) {
-        $self->{$header} = $self->{c}->model->get_header($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, header => $header, decode => 1, cache => 1 });
-    }
-
-    return $self->{$header};
+    my $headers = $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
+    
+    return $headers;
 }
 
-#TODO better formatting
+#TODO formatting
 sub header_formatted {
     my ($self) = @_;
 
-    my $headers = $self->get_header("_ALL");
-    my $header;
-
-    $headers->{Received} =~ s/\t/\n\t/g if exists $headers->{Received};
-
-    while (my ($headername, $headervalue) = each(%$headers)) {
-        $header .= join("", $headername, ": ", $headervalue, "\n");
-    }
-
-    return $header;
+    return $self->{c}->model->get_headers_string($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
 }
-    
 
 
 sub subject {
@@ -126,11 +99,7 @@ sub get_headers {
 sub date {
     my ($self) = @_;
 
-    unless( $self->{date} ) {
-        $self->{date} = $self->{c}->model->date($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
-    }
-
-    return $self->{date};
+    return $self->{c}->model->date($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 sub load_body {

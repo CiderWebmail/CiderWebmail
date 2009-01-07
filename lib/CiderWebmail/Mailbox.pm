@@ -69,8 +69,8 @@ sub simple_search {
     my @messages = map +{
         uid     => $_,
         mailbox => $self->{mailbox},
-        from    => $c->model->get_header($c, { mailbox => $self->{mailbox}, uid => $_, header => 'From', decode => 1 }),
-        subject => $c->model->get_header($c, { mailbox => $self->{mailbox}, uid => $_, header => 'Subject', decode => 1 }),
+        from    => $c->model->get_headers($c, { mailbox => $self->{mailbox}, uid => $_, header => [qw/From/] }),
+        subject => $c->model->get_headers($c, { mailbox => $self->{mailbox}, uid => $_, header => [qw/Subject/] }),
         date    => $c->model->date($c, { mailbox => $self->{mailbox}, uid => $_, }),
     }, @$search_result;
 

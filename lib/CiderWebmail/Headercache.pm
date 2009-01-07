@@ -16,6 +16,13 @@ sub new {
     bless $cache, $class;
 }
 
+=head2 get()
+
+fetch a header from the request or the on-disk cache
+return undef if the header was not found in the cache
+
+=cut
+
 sub get {
     my ($self, $o) = @_;
 
@@ -24,18 +31,37 @@ sub get {
     
     die "hc get w/o mailbox" unless defined $o->{mailbox};
 
-    return $self->{cache}->get( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id) );
+    if (exists $self->{c}->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}}) {
+        return $self->{c}->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}};
+    }
+
+    if (defined($self->{cache}->get( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id) ))) {
+        return $self->{cache}->get( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id) );
+    }
+
+    return undef;
 }
+
+=head2 set()
+
+insert a header into the request and (if appropriate) the on-disk cache
+
+=cut
 
 sub set {
     my ($self, $o) = @_;
 
     die unless defined $o->{uid};
     die unless defined $o->{header};
+    die unless defined $o->{mailbox};
 
-    die "hc set w/o mailbox" unless defined $o->{mailbox};
+    my %ondisk = (Date => 1, From => 1, To => 1, Subject => 1);
 
-    $self->{cache}->set( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id), $o->{data} ) || die;
+    $self->{c}->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{lc($o->{header})} = $o->{data};
+  
+    if (exists($ondisk{$o->{header}})) {
+        $self->{cache}->set( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id), $o->{data} ) || die;
+    }
 }
 
 1;

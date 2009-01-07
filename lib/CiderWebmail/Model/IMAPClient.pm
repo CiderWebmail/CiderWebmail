@@ -240,55 +240,69 @@ sub all_headers {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
     
-    my $headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+    my $fetched_headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+    my $headers = {}; 
 
-    #TODO should we really cache *all* headers?
-    while (my ($headername, $headervalue) = each(%$headers)) {
+    my $header = "";
+
+    while (my ($headername, $headervalue) = each(%$fetched_headers)) {
         $headervalue = join("\n", @$headervalue);
+        $headername = lc($headername);
+        $headers->{$headername} = $headervalue;
         $c->stash->{headercache}->set({ uid => $o->{uid}, header => $headername, data => $headervalue, mailbox => $o->{mailbox} });
+        $headers->{$headername} = $headervalue;
+        $header .= join("", $headername, ": ", $headervalue, "\n");
     }
 
+    $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader} = $header;
     return $headers;
 }
 
-=head2 get_header()
-
-fetch a single header from the server or the local headercache
-unless the header is already present in the local header cache this can be *very* slow
-
-=cut
-
-#fetch from server
-#TODO this is very slow... if a header isn't present in the header cache we should
-#do a imap fetch and update the header cache for all 'important' headers in this mail
-sub get_header {
+sub get_headers_string {
     my ($self, $c, $o) = @_;
-    
+
     die unless $o->{mailbox};
     die unless $o->{uid};
-    die unless $o->{header};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    my $header;
+    if (exists $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader}) {
+        return $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader};
+    } else {
+        $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
+        return $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader};
+    }
+}
 
-    if ( $o->{cache} ) {
-        unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $o->{header} }) ) {
-            $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
-            $self->die_on_error($c);
+=head2 get_headers()
+
+fetch headers from the server or (if available) the local headercache
+
+=cut
+
+sub get_headers {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+    die unless $o->{uid};
+    die unless $o->{headers};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    my $headers = {};
+
+    foreach(@{ $o->{headers} }) {
+        my $header = lc($_);
+        #if we are missing *any* of the headers fetch all headers from the imap server and store it in the request cache
+        unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header }) ) {
+            my $fetched_headers = $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
+            $headers->{$header} = $fetched_headers->{$header};
+        } else {
+            $headers->{$header} =  $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header });
         }
+    }
 
-        $header = $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $o->{header} });
-    } else {
-        $header = $c->stash->{imapclient}->get_header($o->{uid}, $o->{header});
-        $self->die_on_error($c);
-    }
-        
-    if ( $o->{decode} ) {
-        return CiderWebmail::Util::decode_header({ header => $header });
-    } else {
-        return $header;
-    }
+    return (wantarray ? $headers : $headers->{lc($o->{headers}->[0])});
 }
 
 =head2 date()
@@ -302,13 +316,13 @@ sub date {
 
     die 'mailbox not set' unless defined $o->{mailbox};
     die 'uid not set' unless defined $o->{uid};
-    
-    my $date = $self->get_header($c,  { header => "Date", uid => $o->{uid}, mailbox => $o->{mailbox}, cache => 1 } );
-    $self->die_on_error($c);
-    
+
+    my $date = $self->get_headers($c, { headers => [qw/Date/], uid => $o->{uid}, mailbox => $o->{mailbox} } );
+
+    #FIXME what happens if $date is undef?
     if ( defined $date ) {
         return CiderWebmail::Util::date_to_datetime({ date => $date });
-    } #FIXME what happens if $date is undef?
+    } 
 }
 
 =head2 message_as_string()
