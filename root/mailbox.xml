@@ -34,7 +34,8 @@
             </table>
         </div>
         <div id="message_view">
-        </iframe>
+            <p>Drag a mail's icon to a folder name to move that mail to that folder.</p>
+        </div>
     </body>
 </html>
 

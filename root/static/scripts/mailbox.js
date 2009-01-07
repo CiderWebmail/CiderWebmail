@@ -35,6 +35,7 @@ window.addEvent('load', function() {
 
         if (target.tagName.toLowerCase() == 'a' && target.id && target.id.indexOf('link_') == 0) {
             var uid = target.id.replace('link_', '');
+            $('message_view').innerHTML = '<p>loading message...</p>';
             var myHTMLRequest = new Request.HTML({update: 'message_view'}).get(target.href + "?layout=ajax");
             stop_propagation(event);
         }

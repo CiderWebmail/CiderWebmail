@@ -21,6 +21,7 @@ div#left h1 {
 div#left {
     position: absolute;
     left: 0;
+    top: 0;
     width: 12em;
 }
 
@@ -147,4 +148,9 @@ div#left a.hover {
     bottom: 2em;
     left: 0;
     width: 100%;
+    overflow: auto;
+}
+
+#message_view .move_message {
+    display: none;
 }

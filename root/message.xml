@@ -12,7 +12,7 @@
             <a tal:attributes="href uri_reply">Reply to this message</a>
             <a tal:attributes="href uri_forward">Forward this message</a>
         </p>
-        <form tal:attributes="action uri_move" method="post">
+        <form class="move_message" tal:attributes="action uri_move" method="post">
             <label>
                 <span>Target folder:</span>
                 <select name="target_folder">
