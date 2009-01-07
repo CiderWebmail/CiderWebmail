@@ -4,6 +4,10 @@ body {
     padding: 0px;
 }
 
+a img {
+    border: 0;
+}
+
 div#top {
     position: absolute;
     top: 0px;
@@ -154,6 +158,10 @@ div#left a.hover {
     position: relative;
 }
 
+.message_list td.sender {
+    white-space: nowrap;
+}
+
 .attachment {
     border: 1px lightgrey solid;
     margin: 0.5em;
@@ -176,6 +184,10 @@ div#left a.hover {
     overflow: auto;
 }
 
+#messages_pane tr.selected {
+    background-color: lightblue;
+}
+
 #message_view {
     position: absolute;
     top: 50%;
@@ -190,11 +202,27 @@ div#left a.hover {
 }
 
 .message_header tr th {
-    font-size: 0.8em;
     font-weight: bold;
 }
 
 .message_header tr td {
-    font-size: 0.8em;
 }
 
+.dragger {
+    position: absolute;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    opacity: 0.5;
+    -moz-opacity: 0.5;
+}
+
+.dragger li {
+    margin: 0;
+    padding: 0;
+}

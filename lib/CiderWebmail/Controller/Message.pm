@@ -116,7 +116,7 @@ sub move : Chained('setup') Args(0) {
 
     $model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
 
-    $c->res->redirect($c->uri_for("/mailbox/$target_folder"));
+    $c->res->body('message moved');
 }
 
 =head2 compose

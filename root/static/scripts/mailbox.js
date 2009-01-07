@@ -1,6 +1,7 @@
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
     var droppables = $('folder_tree').getElements('.folder');
+    var selected = new Array();
 
     function stop_propagation(event) {
         if (event.stopPropagation) event.stopPropagation();
@@ -20,24 +21,34 @@ window.addEvent('load', function() {
         var target = get_target_node(event);
 
         if (target.tagName.toLowerCase() == 'img' && target.id && target.id.indexOf('icon_') == 0) {
-            var message = target;
-            message.style.position = 'fixed';
-            message.style.left = event.clientX + 'px';
-            message.style.top  = event.clientY + 'px';
-
-            add_drag_and_drop(message, droppables);
+            add_drag_and_drop(target, event, droppables, selected);
             stop_propagation(event);
         }
     }
 
     function load_mail(event) {
         var target = get_target_node(event);
+        var tagname = target.tagName.toLowerCase();
 
-        if (target.tagName.toLowerCase() == 'a' && target.id && target.id.indexOf('link_') == 0) {
+        if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
             var uid = target.id.replace('link_', '');
             $('message_view').innerHTML = '<p>loading message...</p>';
             var myHTMLRequest = new Request.HTML({update: 'message_view'}).get(target.href + "?layout=ajax");
             stop_propagation(event);
+        }
+        else {
+            while (tagname != 'body' && tagname != 'tr') {
+                if (tagname == 'a') break; // let links continue to work
+
+                target = target.parentNode;
+                if (target.nodeType != 3) break; // no use continuing here
+                tagname = target.tagName.toLowerCase();
+            }
+
+            if (tagname == 'tr' && target.id && target.id.indexOf('message_') == 0) {
+                target.addClass('selected');
+                selected.push(target);
+            }
         }
     }
 
@@ -48,7 +59,7 @@ window.addEvent('load', function() {
     else document.attachEvent('onclick', load_mail);
 });
 
-function add_drag_and_drop(message, droppables) {
+function add_drag_and_drop(message, event, droppables, selected) {
     var overed_prev;
     var droppables_positions = new Object();
     droppables.each(function (droppable) {
@@ -70,21 +81,39 @@ function add_drag_and_drop(message, droppables) {
                 overed.addClass('hover');
             }
         }
-        message.style.left = event.client.x + 'px';
-        message.style.top  = event.client.y + 'px';
+        dragger.style.left = event.client.x + 'px';
+        dragger.style.top  = event.client.y + 'px';
     }
 
     function drop(event) {
         document.removeEvent('mousemove', drag);
         document.removeEvent('mouseup', drop);
-        message.style.position = '';
-        message.style.left = '';
-        message.style.top  = '';
+
+        dragger.parentNode.removeChild(dragger);
 
         if (! overed_prev) return;
-        var uid = message.id.replace('icon_', '');
-        document.location.href += "/" + uid + "/move?target_folder=" + overed_prev.title;
+
+        selected.each(function (message) {
+            var uid = message.id.replace('message_', '');
+            var move_request = new Request.HTML({url: document.location.href + "/" + uid + "/move?target_folder=" + overed_prev.title}).send();
+            message.parentNode.removeChild(message);
+        });
+
+        selected.splice(0, selected.length);
     }
+
+    var dragger = document.createElement('ul');
+    selected.each(function (message) {
+        var li = document.createElement('li');
+        li.innerHTML = message.getElements('td.subject a')[0].innerHTML;
+        dragger.appendChild(li);
+    });
+
+    dragger.className = 'dragger';
+    dragger.style.left = event.clientX + 'px';
+    dragger.style.top  = event.clientY + 'px';
+
+    document.body.appendChild(dragger);
 
     document.addEvents({mousemove: drag, mouseup: drop});
 }

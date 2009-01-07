@@ -21,15 +21,15 @@
                     <th>From</th>
                     <th>Subject</th>
                     <th>Date</th>
-                    <th>Delete</th>
+                    <th></th>
                 </tr>
                 <tr tal:repeat="message messages" tal:attributes="id string:message_${message/uid}; class message/flags">
                     <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
-                    <td tal:attributes="id string:from_${message/uid}; title message/from/address" tal:condition="true:message/from" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</td>
+                    <td class="sender" tal:attributes="id string:from_${message/uid}; title message/from/address" tal:condition="true:message/from" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</td>
                     <td tal:condition="false:message/from">Unknown</td>
-                    <td><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
+                    <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
                     <td tal:content="message/date/strftime '%T'">date</td>
-                    <td><a tal:attributes="href message/uri_delete">delete</a></td>
+                    <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif" alt="delete"/></a></td>
                 </tr>
             </table>
         </div>
