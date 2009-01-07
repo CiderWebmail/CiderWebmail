@@ -26,7 +26,7 @@ window.addEvent('load', function() {
         }
     }
 
-    function load_mail(event) {
+    function handle_click(event) {
         var target = get_target_node(event);
         var tagname = target.tagName.toLowerCase();
 
@@ -41,13 +41,19 @@ window.addEvent('load', function() {
                 if (tagname == 'a') break; // let links continue to work
 
                 target = target.parentNode;
-                if (target.nodeType != 3) break; // no use continuing here
+                if (target.nodeType != 1) break; // no use continuing here
                 tagname = target.tagName.toLowerCase();
             }
 
             if (tagname == 'tr' && target.id && target.id.indexOf('message_') == 0) {
-                target.addClass('selected');
-                selected.push(target);
+                if (target.hasClass('selected')) {
+                    target.removeClass('selected');
+                    selected.erase(target);
+                }
+                else {
+                    target.addClass('selected');
+                    selected.push(target);
+                }
             }
         }
     }
@@ -55,8 +61,8 @@ window.addEvent('load', function() {
     if (document.addEventListener) document.addEventListener('mousedown', start, false);
     else document.attachEvent('onmousedown', start);
 
-    if (document.addEventListener) document.addEventListener('click', load_mail, false);
-    else document.attachEvent('onclick', load_mail);
+    if (document.addEventListener) document.addEventListener('click', handle_click, false);
+    else document.attachEvent('onclick', handle_click);
 });
 
 function add_drag_and_drop(message, event, droppables, selected) {
