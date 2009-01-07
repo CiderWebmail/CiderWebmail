@@ -42,29 +42,12 @@ sub die_on_error {
     }
 }
 
-=head2 folders()
-
-list all aviable folders
-
-=cut
-
-sub folders {
-    my ($self, $c) = @_;
-
-    my @folders = $c->stash->{imapclient}->folders;
-
-    $self->die_on_error($c);
-
-    @folders = sort { lc($a) cmp lc($b) } @folders;
-
-    return \@folders;
-}
-
 =head2 separator()
 
 Returnes the folder separator
 
 =cut
+
 #TODO allow override from config file
 sub separator {
     my ($self, $c) = @_;
@@ -148,6 +131,12 @@ sub unseen_count {
     my ($self, $c, $folder) = @_;
     return $c->stash->{imapclient}->unseen_count($folder);
 }
+
+=head2 get_headers_hash()
+   
+returnes a array of hashes for all messages in a mailbox
+
+=cut
 
 sub get_headers_hash() {
     my ($self, $c, $o) = @_;
@@ -305,6 +294,12 @@ sub all_headers {
     $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader} = $header;
     return $headers;
 }
+
+=head2
+
+returnes the fullheader of a message as a string
+
+=cut
 
 sub get_headers_string {
     my ($self, $c, $o) = @_;
