@@ -43,11 +43,16 @@ div#left ul li {
 div#left ul li a {
     display: block;
     text-decoration: none;
+    text-align: right;
 }
 
 div#left ul li a:hover {
     color: white;
     background-color: black;
+}
+
+div#left ul li a span.name {
+    float: left;
 }
 
 div#left li.selected {
