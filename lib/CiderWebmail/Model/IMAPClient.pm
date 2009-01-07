@@ -491,7 +491,7 @@ sub decode_header {
     my ($self, $c, $o) = @_;
 
     die unless defined $o->{header};
-    return '' unless defined $o->{date};
+    return '' unless defined $o->{data};
 
     my $header;
 
