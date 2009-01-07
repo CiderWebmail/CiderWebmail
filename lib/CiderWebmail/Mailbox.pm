@@ -69,10 +69,16 @@ sub simple_search {
     my @messages = map +{
         uid     => $_,
         mailbox => $self->{mailbox},
-        from    => $c->model->get_headers($c, { mailbox => $self->{mailbox}, uid => $_, header => [qw/From/] }),
-        subject => $c->model->get_headers($c, { mailbox => $self->{mailbox}, uid => $_, header => [qw/Subject/] }),
+        from    => scalar $c->model->get_headers($c, { mailbox => $self->{mailbox}, uid => $_, headers => [qw/From/] }),
+        subject => scalar $c->model->get_headers($c, { mailbox => $self->{mailbox}, uid => $_, headers => [qw/Subject/] }),
         date    => $c->model->date($c, { mailbox => $self->{mailbox}, uid => $_, }),
     }, @$search_result;
+
+    foreach(@messages) {
+        my @address = Mail::Address->parse($_->{from});
+        $_->{from} = $address[0];
+    }
+
 
     return \@messages;
 }
