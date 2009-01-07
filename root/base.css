@@ -85,7 +85,6 @@ table {
 
 td, th {
     text-align: left;
-    border: 1px solid lightgrey;
     padding: 0.1em 0.4em;
 }
 
@@ -101,6 +100,23 @@ label span {
 textarea {
     width: 50em;
     height: 30em;
+}
+
+.message_list {
+    width: 100%;
+}
+
+.message_list tbody tr td {
+    border-style: solid;
+    border-color: lightgrey;
+    border-width: 0px 0px 1px 0px;
+    font-size: 0.8em;
+}
+
+.message_list tr th {
+    border-style: solid;
+    border-color: lightgrey;
+    border-width: 0px 0px 2px 0px;
 }
 
 
