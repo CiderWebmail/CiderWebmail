@@ -21,19 +21,38 @@
             </label>
             <button type="submit">Move message</button>
         </form>
-        <b>From: </b><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span><br />
-        <b>To: </b><span tal:repeat="address message/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span><br />
-        <div tal:condition="true:message/cc">
-            <b>Cc: </b><span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span><br />
-        </div>
-        <b>Subject: </b><span tal:content="message/subject">from</span><br />
-        <b>Date: </b><span tal:content="string: ${message/date/hms} ${message/date/ymd}">from</span><br />
-        <b>Header: </b><a onClick='toggle(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre><br />
-        <div tal:condition="true:message/attachments">
-            <b>Attachments: </b><span tal:repeat="attachment message/attachments"><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type"/> </span>
-        </div>
-
-        <pre tal:content="message/body">mail body</pre>
+        <table class="message_header">
+        <tr>
+                <th>From:</th>
+                <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
+            </tr>
+            <tr>
+                <th>To:</th>
+                <td><span tal:repeat="address message/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span></td>
+            </tr>
+            <tr tal:condition="true:message/cc">
+                <th>Cc:</th>
+                <td><span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span></td>
+            </tr>
+            <tr>
+                <th>Subject:</th>
+                <td><span tal:replace="message/subject">from</span></td>
+            </tr>
+            <tr>
+                <th>Date:</th>
+                <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
+            </tr>
+            <tr>
+                <th>Header</th>
+                <td><a onClick='toggle(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
+            </tr>
+            <tr tal:condition="true:message/attachments">
+                <th>Attachments:</th>
+                <td><span tal:repeat="attachment message/attachments"><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type"/></span></td>
+            </tr>
+            <tr>
+                <td colspan='2'><pre tal:content="message/body">mail body</pre></td>
+            </tr>
+        </table>
     </body>
 </html>
-
