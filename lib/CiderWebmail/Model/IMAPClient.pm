@@ -387,7 +387,7 @@ sub body {
         else {
             push @attachments, {
                 type => $_->effective_type,
-                name => ($part_head->mime_attr("content-type.name") or 'attachment'),
+                name => ($part_head->mime_attr("content-type.name") or "attachment (".$_->effective_type.")"),
                 data => $part_body->as_string,
                 id   => $id++,
             } if $part_body;
