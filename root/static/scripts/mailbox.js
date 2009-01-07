@@ -39,7 +39,7 @@ window.addEvent('load', function() {
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
             var uid = target.id.replace('delete_', '');
             new Request.HTML({url: target.parentNode.href}).send();
-            target.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(target.parentNode.parentNode.parentNode.parentNode);
+            target.parentNode.parentNode.parentNode.parentNode.removeChild(target.parentNode.parentNode.parentNode);
             stop_propagation(event);
         }
         else {
