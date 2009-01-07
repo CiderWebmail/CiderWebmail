@@ -31,7 +31,9 @@ requires 'MIME::Lite';
 requires 'MIME::Words';
 
 requires 'Email::Simple';
+
 requires 'Text::Iconv';
+requires 'Text::Flowed';
 
 requires 'IO::Socket::SSL';
 requires 'Mail::IMAPClient';

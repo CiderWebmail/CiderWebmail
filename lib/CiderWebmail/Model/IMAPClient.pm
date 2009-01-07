@@ -6,6 +6,7 @@ use parent 'Catalyst::Model';
 
 use MIME::Parser;
 use Email::Simple;
+use Text::Flowed;
 use Carp qw(croak confess);
 
 use CiderWebmail::Message;
@@ -374,7 +375,7 @@ sub body {
             if ($part_body) {
                 unless (eval {
                         my $converter = Text::Iconv->new($charset, "utf-8");
-                        $body .= $converter->convert($part_body->as_string);
+                        $body .= Text::Flowed::reformat($converter->convert($part_body->as_string));
                     }) {
 
                     warn "unsupported encoding: $charset";
@@ -390,6 +391,21 @@ sub body {
                 id   => $id++,
             } if $part_body;
         }
+
+        my %icons = (
+            'text/html' => 'layout.png',
+            'application/pdf' => 'pdf.png',
+            'generic'   => 'generic.png',
+        );
+
+        foreach (@attachments) {
+            if (exists $icons{$_->{type}}) {
+                $_->{icon} = $icons{$_->{type}};
+            } else {
+                $_->{icon} = $icons{generic};
+            }
+        }
+
     }
 
     return wantarray ? ($body, \@attachments) : $body; # only give attachments to those who are interested
