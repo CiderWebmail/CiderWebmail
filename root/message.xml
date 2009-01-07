@@ -24,7 +24,7 @@
         <table class="message_header">
         <tr>
                 <th>From:</th>
-                <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
+                <td><span tal:attributes="title message/from/address" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</span></td>
             </tr>
             <tr>
                 <th>To:</th>
