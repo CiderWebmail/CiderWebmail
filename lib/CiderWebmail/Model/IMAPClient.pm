@@ -184,56 +184,6 @@ sub get_headers_hash() {
     return \@messages;
 }
 
-=head2 fetch_headers_hash()
-
-returns a arrayref of hashes containing a hash for every message in
-the mailbox
-
-=cut
-
-#TODO some way to specify what fields to fetch?
-sub fetch_headers_hash {
-    my ($self, $c, $o) = @_;
-
-    die 'No mailbox to fetch headers from' unless $o->{mailbox};
-    $self->select($c, { mailbox => $o->{mailbox} } );
-
-    return [] unless $c->stash->{imapclient}->message_count;
-
-    my @messages = ();
-    my $messages_from_server = $c->stash->{imapclient}->fetch_hash("BODY[HEADER.FIELDS (Subject From To Date)]", 'FLAGS');
-
-    $self->die_on_error($c);
-
-    while ( my ($uid, $data) = each %$messages_from_server ) {
-        #we need to add \n to the header text because we only parse headers not a real rfc2822 message
-        #otherwise it would skip the last header
-        my %flags = map {m/(\w+)/; (lc $1 => lc $1)} split / /, $data->{FLAGS};
-        my $email = Email::Simple->new($data->{'BODY[HEADER.FIELDS (Subject From To Date)]'}."\n") || die;
-
-        #TODO we need some way to pass an array to {headercache}->set... this looks ridiculous
-        $c->stash->{headercache}->set( {
-            uid     => $uid,
-            mailbox => $o->{mailbox},
-            header  => $_,
-            data    => CiderWebmail::Util::decode_header({ header => ($email->header($_) or '')})
-        }) foreach qw(From To Subject Date);
-
-        push @messages, {
-            uid     => $uid,
-            mailbox => $o->{mailbox},
-            from    => CiderWebmail::Util::decode_header({ header => ($email->header('From') or '') }),
-            subject => CiderWebmail::Util::decode_header({ header => ($email->header('Subject') or '') }),
-            date    => CiderWebmail::Util::date_to_datetime({ date => ($email->header('Date') or '-') }),
-            flags   => join (' ', keys %flags),
-            unseen  => not exists $flags{seen},
-            %flags,
-        };
-    }
-
-    return \@messages;
-}
-
 =head2 simple_search()
 
 searches a mailbox From/Subject headers
