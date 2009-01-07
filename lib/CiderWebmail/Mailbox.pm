@@ -49,12 +49,7 @@ sub list_messages {
 sub list_messages_hash {
     my ($self, $c, $o) = @_;
    
-    my $messages = $c->model->fetch_headers_hash($c, { mailbox => $self->{mailbox} });
-
-    foreach(@$messages) {
-        my @address = Mail::Address->parse($_->{from});
-        $_->{from} = $address[0];
-    }
+    my $messages = $c->model->get_headers_hash($c, { mailbox => $self->{mailbox}, headers => [qw/From Subject Date/] });
 
     return $messages;
 }

@@ -149,6 +149,52 @@ sub unseen_count {
     return $c->stash->{imapclient}->unseen_count($folder);
 }
 
+sub get_headers_hash() {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+    die unless $o->{headers};
+   
+    lc foreach @{ $o->{headers} };
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    my $headers_to_fetch = join(" ", @{ $o->{headers} });
+    my @messages = ();
+
+    return [] unless $c->stash->{imapclient}->message_count;
+
+    my $messages_from_server = $c->stash->{imapclient}->fetch_hash("BODY[HEADER.FIELDS ($headers_to_fetch)]", 'FLAGS');
+    $self->die_on_error($c);
+
+    while ( my ($uid, $data) = each %$messages_from_server ) {
+        #we need to add \n to the header text because we only parse headers not a real rfc2822 message
+        #otherwise it would skip the last header
+        my %flags = map {m/(\w+)/; (lc $1 => lc $1)} split / /, $data->{FLAGS};
+        my $email = Email::Simple->new($data->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || die;
+        
+        $c->stash->{headercache}->set({
+            uid     => $uid,
+            mailbox => $o->{mailbox},
+            header  => $_,
+            data    => $email->header($_),
+        }) foreach @{ $o->{headers} };
+
+        push @messages, {
+            uid     => $uid,
+            mailbox => $o->{mailbox},
+            from    => $self->transform_header($c, { header => 'from', data => ($email->header('From') or '') }),
+            subject => $self->transform_header($c, { header => 'subject', data => ($email->header('Subject') or '') }),
+            date    => $self->transform_header($c, { header => 'date', data => ($email->header('Date') or '') }),
+            flags   => join (' ', keys %flags),
+            unseen  => not exists $flags{seen},
+            %flags,
+        };
+    }
+
+    return \@messages;
+}
+
 =head2 fetch_headers_hash()
 
 returns a arrayref of hashes containing a hash for every message in
@@ -451,7 +497,7 @@ sub transform_header {
     $o->{header} = lc($o->{header});
 
     my $headers = {
-        from => \&transform_address,
+        from => \&transform_single_address,
         to   => \&transform_address,
         cc   => \&transform_address,
         date => \&transform_date,
@@ -468,8 +514,21 @@ sub transform_address {
     return undef unless defined $o->{data};
 
     my @address = Mail::Address->parse($o->{data});
+   
     return \@address;
 }
+
+sub transform_single_address {
+    my ($self, $c, $o) = @_;
+
+    die unless defined $o->{header};
+    return undef unless defined $o->{data};
+
+    my @address = Mail::Address->parse($o->{data});
+  
+    return $address[0];
+}
+
 
 sub transform_date {
     my ($self, $c, $o) = @_;
