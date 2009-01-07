@@ -7,6 +7,7 @@ use parent 'Catalyst::Model';
 use MIME::Parser;
 use Email::Simple;
 use Text::Flowed;
+use Mail::Address;
 use Carp qw(croak confess);
 
 use CiderWebmail::Message;
@@ -297,33 +298,13 @@ sub get_headers {
         #if we are missing *any* of the headers fetch all headers from the imap server and store it in the request cache
         unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header }) ) {
             my $fetched_headers = $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
-            $headers->{$header} = $fetched_headers->{$header};
+            $headers->{$header} = $self->transform_header($c, { header => $header, data => $fetched_headers->{$header}});
         } else {
-            $headers->{$header} =  $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header });
+            $headers->{$header} = $self->transform_header($c, { header => $header, data => $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header })});
         }
     }
 
     return (wantarray ? $headers : $headers->{lc($o->{headers}->[0])});
-}
-
-=head2 date()
- 
-fetch a date header from the server or the local headercache
-
-=cut
-
-sub date {
-    my ($self, $c, $o) = @_;
-
-    die 'mailbox not set' unless defined $o->{mailbox};
-    die 'uid not set' unless defined $o->{uid};
-
-    my $date = $self->get_headers($c, { headers => [qw/Date/], uid => $o->{uid}, mailbox => $o->{mailbox} } );
-
-    #FIXME what happens if $date is undef?
-    if ( defined $date ) {
-        return CiderWebmail::Util::date_to_datetime({ date => $date });
-    } 
 }
 
 =head2 message_as_string()
@@ -459,6 +440,44 @@ sub move_message {
     $c->stash->{imapclient}->expunge($o->{mailbox});
     $self->die_on_error($c);
 
+}
+
+sub transform_header {
+    my ($self, $c, $o) = @_;
+
+    die unless defined $o->{header};
+    return undef unless defined $o->{data};
+
+    $o->{header} = lc($o->{header});
+
+    my $headers = {
+        from => \&transform_address,
+        to   => \&transform_address,
+        cc   => \&transform_address,
+        date => \&transform_date,
+    };
+
+    return $headers->{$o->{header}}->($self, $c, $o) if exists $headers->{$o->{header}};
+    return CiderWebmail::Util::decode_header({ header => ($o->{data} or '')})
+}
+
+sub transform_address {
+    my ($self, $c, $o) = @_;
+
+    die unless defined $o->{header};
+    return undef unless defined $o->{data};
+
+    my @address = Mail::Address->parse($o->{data});
+    return \@address;
+}
+
+sub transform_date {
+    my ($self, $c, $o) = @_;
+
+    die unless defined $o->{header};
+    return undef unless defined $o->{data};
+
+    return CiderWebmail::Util::date_to_datetime({ date => $o->{data} });
 }
 
 =head1 AUTHOR

@@ -64,22 +64,19 @@ sub subject {
 sub from {
     my ($self) = @_;
 
-    my @from = Mail::Address->parse($self->get_header('from'));
-    return \@from;
+    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/from/]});
 }
 
 sub to {
     my ($self) = @_;
 
-    my @to = Mail::Address->parse($self->get_header('to'));
-    return \@to;
+    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/to/]});
 }
 
 sub cc {
     my ($self) = @_;
 
-    my @cc = Mail::Address->parse($self->get_header('cc'));
-    return \@cc;
+    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/cc/]});
 }
 
 
@@ -99,7 +96,7 @@ sub get_headers {
 sub date {
     my ($self) = @_;
 
-    return $self->{c}->model->date($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/date/]});
 }
 
 sub load_body {
