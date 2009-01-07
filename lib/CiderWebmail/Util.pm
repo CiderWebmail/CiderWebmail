@@ -3,34 +3,8 @@ package CiderWebmail::Util;
 use warnings;
 use strict;
 
-use MIME::Words qw/ decode_mimewords /;
 use DateTime;
 use DateTime::Format::Mail;
-
-sub decode_header {
-    my ($o) = @_;
-
-    return '' unless $o->{header};
-
-    my $header;
-
-    foreach ( decode_mimewords( $o->{header} ) ) {
-        if ( @$_ > 1 ) {
-            unless (eval {
-                    my $converter = Text::Iconv->new($_->[1], "utf-8");
-                    my $part = $converter->convert( $_->[0] );
-                    $header .= $part if defined $part;
-                }) {
-                warn "unsupported encoding: $_->[1]";
-                $header .= $_->[0];
-            }
-        } else {
-            $header .= $_->[0];
-        }
-    }
-
-    return $header;
-}
 
 sub date_to_datetime {
     my ($o) = @_;

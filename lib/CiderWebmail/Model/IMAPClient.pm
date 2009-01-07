@@ -5,6 +5,7 @@ use warnings;
 use parent 'Catalyst::Model';
 
 use MIME::Parser;
+use MIME::Words qw/ decode_mimewords /;
 use Email::Simple;
 use Text::Flowed;
 use Mail::Address;
@@ -449,7 +450,9 @@ sub transform_header {
     };
 
     return $headers->{$o->{header}}->($self, $c, $o) if exists $headers->{$o->{header}};
-    return CiderWebmail::Util::decode_header({ header => ($o->{data} or '')})
+
+    #if we have no appropriate transfrom function decode the header and return it
+    return $self->decode_header($c, { header => $o->{header}, data => ($o->{data} or '')})
 }
 
 sub transform_address {
@@ -482,6 +485,32 @@ sub transform_date {
     return undef unless defined $o->{data};
 
     return CiderWebmail::Util::date_to_datetime({ date => $o->{data} });
+}
+
+sub decode_header {
+    my ($self, $c, $o) = @_;
+
+    die unless defined $o->{header};
+    return '' unless defined $o->{date};
+
+    my $header;
+
+    foreach ( decode_mimewords( $o->{data} ) ) {
+        if ( @$_ > 1 ) {
+            unless (eval {
+                    my $converter = Text::Iconv->new($_->[1], "utf-8");
+                    my $part = $converter->convert( $_->[0] );
+                    $header .= $part if defined $part;
+                }) {
+                warn "unsupported encoding: $_->[1]";
+                $header .= $_->[0];
+            }
+        } else {
+            $header .= $_->[0];
+        }
+    }
+
+    return $header;
 }
 
 =head1 AUTHOR
