@@ -145,7 +145,7 @@ sub get_headers_hash() {
     die unless $o->{mailbox};
     die unless $o->{headers};
    
-    lc foreach @{ $o->{headers} };
+    $_ = lc foreach @{ $o->{headers} };
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
