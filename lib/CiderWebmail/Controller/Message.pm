@@ -160,8 +160,8 @@ sub reply : Chained('setup') Args(0) {
 
     $c->stash({
         message => {
-            from    => $message->get_header('to'),
-            to      => ($message->get_header('reply-to') or $message->from),
+            from    => $message->to->[0], #this is stupd... we should no use the to address here...
+            to      => ($message->reply_to or $message->from),
             subject => 'Re: ' . $message->subject,
             body    => $body,
         },

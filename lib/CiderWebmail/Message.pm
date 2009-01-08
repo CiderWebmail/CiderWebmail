@@ -42,9 +42,7 @@ sub mailbox {
 sub get_header {
     my ($self, $header) = @_;
 
-    my $headers = $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
-    
-    return $headers;
+    return scalar $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
 #TODO formatting
@@ -64,19 +62,26 @@ sub subject {
 sub from {
     my ($self) = @_;
 
-    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/from/]});
+    return $self->get_header('from');
 }
 
 sub to {
     my ($self) = @_;
 
-    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/to/]});
+    return $self->get_header('to');
 }
+
+sub reply_to {
+    my ($self) = @_;
+
+    return $self->get_header('reply-to');
+}
+
 
 sub cc {
     my ($self) = @_;
 
-    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/cc/]});
+    return $self->get_header('cc');
 }
 
 
