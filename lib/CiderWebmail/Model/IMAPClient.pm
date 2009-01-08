@@ -479,9 +479,22 @@ sub transform_single_address {
 sub transform_date {
     my ($self, $c, $o) = @_;
 
-    return undef unless defined $o->{data};
+    return '' unless defined $o->{data};
 
-    return CiderWebmail::Util::date_to_datetime({ date => $o->{data} });
+    #some mailers specify (CEST)... Format::Mail isn't happy about this
+    #TODO better solution
+    $o->{data} =~ s/\([a-zA-Z]+\)$//;
+
+    my $dt = DateTime::Format::Mail->new();
+    $dt->loose;
+
+    my $date = eval { $dt->parse_datetime($o->{data}) };
+    unless ($date) {
+        warn "$@ parsing $o->{data}";
+        $date = DateTime->from_epoch(epoch => 0); # just return a DateTime object so we can continue
+    }
+
+    return $date;
 }
 
 sub decode_header {
