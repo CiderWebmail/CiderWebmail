@@ -21,6 +21,7 @@ window.addEvent('load', function() {
         var target = get_target_node(event);
 
         if (target.tagName.toLowerCase() == 'img' && target.id && target.id.indexOf('icon_') == 0) {
+            if (! selected.length) selected.push(target.parentNode.parentNode);
             add_drag_and_drop(target, event, droppables, selected);
             stop_propagation(event);
         }
