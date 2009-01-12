@@ -52,7 +52,6 @@ sub header_formatted {
     return $self->{c}->model->get_headers_string($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
 }
 
-
 sub subject {
     my ($self) = @_;
 
@@ -101,7 +100,7 @@ sub get_headers {
 sub date {
     my ($self) = @_;
 
-    return $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [qw/date/]});
+    return $self->get_header('date');
 }
 
 sub load_body {
