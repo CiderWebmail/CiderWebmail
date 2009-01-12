@@ -246,7 +246,7 @@ sub all_headers {
     return $headers;
 }
 
-=head2
+=head2 get_headers_string()
 
 returnes the fullheader of a message as a string
 
