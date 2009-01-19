@@ -6,40 +6,43 @@
     metal:use-macro="layout.xml#layout">
     <head>
         <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
-        <script type="text/javascript" tal:attributes="src string:${uri_scripts}/mailbox.js" metal:fill-slot="scripts"/>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" metal:fill-slot="css"/>
+        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mailbox.js" metal:fill-slot="scripts"/>
     </head>
-    <body metal:fill-slot="content">
-        <h1 tal:content="folder">Mailbox</h1>
-        <form tal:attributes="action uri_quicksearch" method="GET">
-            <input name="text"/>
-            <button type="submit">Search</button>
-        </form>
-        <div id="messages_pane">
-            <table class="message_list">
-                <tr>
-                    <th></th>
-                    <th><a tal:attributes="href uri_sorted_from">From</a></th>
-                    <th><a tal:attributes="href uri_sorted_subject">Subject</a></th>
-                    <th><a tal:attributes="href uri_sorted_date">Date</a></th>
-                    <th></th>
-                </tr>
-                <tbody tal:repeat="group groups">
+    <body>
+        <h1 metal:fill-slot="headline" tal:content="folder">Mailbox</h1>
+        <div metal:fill-slot="content">
+            <form tal:attributes="action uri_quicksearch" method="GET">
+                <input name="text"/>
+                <button type="submit">Search</button>
+            </form>
+            <div id="messages_pane">
+                <table class="message_list">
                     <tr>
-                        <td colspan="5" tal:content="group/name"/>
+                        <th></th>
+                        <th><a tal:attributes="href uri_sorted_from">From</a></th>
+                        <th><a tal:attributes="href uri_sorted_subject">Subject</a></th>
+                        <th><a tal:attributes="href uri_sorted_date">Date</a></th>
+                        <th></th>
                     </tr>
-                    <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class message/flags">
-                        <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
-                        <td class="sender" tal:attributes="id string:from_${message/uid}; title message/from/address" tal:condition="true:message/from" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</td>
-                        <td tal:condition="false:message/from">Unknown</td>
-                        <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
-                        <td tal:content="message/date/strftime '%T'">date</td>
-                        <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="message_view">
-            <p>Drag a mail's icon to a folder name to move that mail to that folder.</p>
+                    <tbody tal:repeat="group groups">
+                        <tr>
+                            <td colspan="5" tal:content="group/name"/>
+                        </tr>
+                        <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class message/flags">
+                            <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
+                            <td class="sender" tal:attributes="id string:from_${message/uid}; title message/from/address" tal:condition="true:message/from" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</td>
+                            <td tal:condition="false:message/from">Unknown</td>
+                            <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/subject" tal:replace="message/subject"/><span tal:condition="false:message/subject" tal:omit-tag="">No Subject</span></a></td>
+                            <td tal:content="message/date/strftime '%T'">date</td>
+                            <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="message_view">
+                <p>Drag a mail's icon to a folder name to move that mail to that folder.</p>
+            </div>
         </div>
     </body>
 </html>

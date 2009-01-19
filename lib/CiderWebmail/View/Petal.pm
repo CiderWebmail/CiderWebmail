@@ -29,8 +29,8 @@ sub process {
     $self->config(base_dir => $base_dir); # this sets the global config, so we have to do it for every request
 
     $c->stash({
+        uri_root => $c->uri_for('/'),
         uri_static => $c->uri_for('/static'),
-        uri_scripts => $c->uri_for('/static/scripts'),
     });
 
     $self->SUPER::process($c);

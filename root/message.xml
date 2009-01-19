@@ -6,6 +6,7 @@
     metal:use-macro="layout.xml#layout">
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
     </head>
     <body metal:fill-slot="content">
         <p>
@@ -44,7 +45,7 @@
             </tr>
             <tr>
                 <th>Header</th>
-                <td><a onClick='toggle(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
+                <td><a onClick='toggleHeader(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
             </tr>
             <tr>
                 <td colspan='2'><pre tal:content="message/body">mail body</pre></td>

@@ -1,0 +1,13 @@
+label {
+    display: block;
+    clear: left;
+}
+label span {
+    float: left;
+    width: 7em;
+}
+
+textarea {
+    width: 50em;
+    height: 30em;
+}

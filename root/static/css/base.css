@@ -1,0 +1,44 @@
+html, body
+    {position:relative; height:100%; margin:0; padding:0; color:#333333; background-color:#efefef;}
+
+img
+    {border:none;}
+a
+    {color:#333333; text-decoration:underline;}
+a:hover
+    {text-decoration:none;}
+
+table
+    {border-collapse:collapse;}
+
+td, th
+    {vertical-align:top; text-align:left; padding:0.1em 0.4em;}
+
+#controlpanel
+    {position:absolute; top:0px; bottom:0px; left:0px; width:13em;}
+    #logo
+        {padding:0.3em 0.5em; font-size:110%;}
+        #logo a
+            {font-weight:bold; text-decoration:none;}
+        #logo a:hover
+            {text-decoration:underline;}
+
+    #controlpanel ul
+        {padding:0;}
+        #controlpanel ul a
+            {text-decoration:none;}
+        #controlpanel ul a:hover
+            {text-decoration:underline;}
+        #controlpanel li.selected
+            {font-weight:bold;}
+
+    #mailnavigation
+        {margin-bottom:1em; padding:0.2em 0.5em;}
+
+#headline
+    {position:absolute; top:0px; height:2em; left:13em; right:0px; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc;}
+    #headline h1
+        {margin:0; padding:0.3em 0.5em; font-size:110%;}
+
+#content
+    {position:absolute; top:3em; bottom:0; left:13em; right:0; padding:0.2em 0.5em; background-color:#ffffff; border-top:1px solid #cccccc; border-left:1px solid #cccccc; overflow:auto;}

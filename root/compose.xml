@@ -6,46 +6,49 @@
     metal:use-macro="layout.xml#layout">
     <head>
         <title metal:fill-slot="title">Compose Message</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css"/>
     </head>
-    <body metal:fill-slot="content">
-        <h1>compose</h1>
-        <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
-            <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
-            <label>
-                <span>From:</span>
-                <input name="from" tal:attributes="value message/from/address"/>
-            </label>
-            <label>
-                <span>To:</span>
-                <input name="to" tal:attributes="value message/to/address"/>
-            </label>
-            <label>
-                <span>Cc:</span>
-                <input name="cc" tal:attributes="value message/cc"/>
-            </label>
-            <label>
-                <span>Subject:</span>
-                <input name="subject" tal:attributes="value message/subject"/>
-            </label>
-            <label>
-                <span>Text:</span>
-                <textarea name="body" tal:content="message/body"/>
-            </label>
-            <p tal:condition="true: forward">
-                Forwarding message
-            </p>
-            <label>
-                <span>Attachment:</span>
-                <input type="file" name="attachment"/>
-            </label>
-            <label>
-                <span>Save message to:</span>
-                <select name="sent_folder">
-                    <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
-                </select>
-            </label>
-            <button type="submit">Send</button>
-        </form>
+    <body>
+        <h1 metal:fill-slot="headline">compose new mail message</h1>
+        <div metal:fill-slot="content">
+            <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
+                <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
+                <label>
+                    <span>From:</span>
+                    <input name="from" tal:attributes="value message/from/address"/>
+                </label>
+                <label>
+                    <span>To:</span>
+                    <input name="to" tal:attributes="value message/to/address"/>
+                </label>
+                <label>
+                    <span>Cc:</span>
+                    <input name="cc" tal:attributes="value message/cc"/>
+                </label>
+                <label>
+                    <span>Subject:</span>
+                    <input name="subject" tal:attributes="value message/subject"/>
+                </label>
+                <label>
+                    <span>Text:</span>
+                    <textarea name="body" tal:content="message/body"/>
+                </label>
+                <p tal:condition="true: forward">
+                    Forwarding message
+                </p>
+                <label>
+                    <span>Attachment:</span>
+                    <input type="file" name="attachment"/>
+                </label>
+                <label>
+                    <span>Save message to:</span>
+                    <select name="sent_folder">
+                        <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
+                    </select>
+                </label>
+                <button type="submit">Send</button>
+            </form>
+        </div>
     </body>
 </html>
 

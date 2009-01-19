@@ -1,6 +1,6 @@
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
-    var droppables = $('folder_tree').getElements('.folder');
+    var droppables = $('mailnavigation').getElement('ul.folder_tree').getElements('.folder');
     var selected = new Array();
 
     function stop_propagation(event) {
@@ -129,4 +129,8 @@ function add_drag_and_drop(message, event, droppables, selected) {
     document.body.appendChild(dragger);
 
     document.addEvents({mousemove: drag, mouseup: drop});
+}
+
+function toggleHeader(node) {
+    node.nextSibling.style.display = node.nextSibling.style.display == 'none' ? '' : 'none';
 }
