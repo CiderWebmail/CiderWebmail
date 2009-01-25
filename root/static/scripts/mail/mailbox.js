@@ -1,6 +1,6 @@
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
-    var droppables = $('mailnavigation').getElement('ul.folder_tree').getElements('.folder');
+    var droppables = $('folder_tree').getElements('.folder');
     var selected = new Array();
 
     function stop_propagation(event) {

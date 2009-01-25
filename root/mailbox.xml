@@ -7,7 +7,7 @@
     <head>
         <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" metal:fill-slot="css"/>
-        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mailbox.js" metal:fill-slot="scripts"/>
+        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/mailbox.js" metal:fill-slot="scripts"/>
     </head>
     <body>
         <h1 metal:fill-slot="headline" tal:content="folder">Mailbox</h1>
@@ -17,7 +17,7 @@
                 <button type="submit">Search</button>
             </form>
             <div id="messages_pane">
-                <table class="message_list">
+                <table id="message_list" class="message_list">
                     <tr>
                         <th></th>
                         <th><a tal:attributes="href uri_sorted_from">From</a></th>
