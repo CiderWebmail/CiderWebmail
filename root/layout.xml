@@ -26,7 +26,7 @@
                 <ul class="actions">
                     <li><a tal:attributes="href uri_compose">Compose new mail</a></li>
                 </ul>
-                <ul class="folder_tree">
+                <ul id="folder_tree">
                     <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
                         <li metal:define-macro="folder-tree" tal:attributes="class folder/selected">
                             <a class="folder" href="#" tal:attributes="href folder/uri_view; title folder/id"><span class="name" tal:content="folder/name"/> <span class="counts" tal:content="string: ${folder/unseen}/${folder/total}"/></a>
