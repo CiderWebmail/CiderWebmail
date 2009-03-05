@@ -38,6 +38,9 @@ sub auto : Private {
     if ($c->authenticate({ realm => "CiderWebmail" })) {
         $c->stash( headercache => CiderWebmail::Headercache->new($c) );
 
+        #IMAPClient setup
+        $c->stash->{imapclient}->Ranges(1);
+ 
         my ($tree, $folders_hash) = $c->model->folder_tree($c);
         CiderWebmail::Util::add_foldertree_uri_view($c, { path => undef, folders => $tree->{folders}});
 

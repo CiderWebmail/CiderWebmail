@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use parent 'Catalyst::View::Petal';
 
-use Petal::Utils qw( :default );
+use Petal::Utils qw( :default :hash );
 =head1 NAME
 
 CiderWebmail::View::Petal - Catalyst View

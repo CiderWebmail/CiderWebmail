@@ -15,11 +15,13 @@
                 <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
                 <label>
                     <span>From:</span>
-                    <input name="from" tal:attributes="value message/from/address"/>
+                    <input name="from" tal:condition="true: message/from/0/address" tal:attributes="value message/from/0/address"/>
+                    <input name="from" tal:condition="false: message/from/0/address"/>
                 </label>
                 <label>
                     <span>To:</span>
-                    <input name="to" tal:attributes="value message/to/address"/>
+                    <input name="to" tal:condition="true: message/to/0/address" tal:attributes="value message/to/0/address"/>
+                    <input name="to" tal:condition="false: message/to/0/address"/>
                 </label>
                 <label>
                     <span>Cc:</span>

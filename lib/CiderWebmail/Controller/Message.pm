@@ -50,8 +50,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
     $message->load_body();
 
-    foreach(@{ $message->{attachments} }) {
-        $_->{uri_view} = $c->uri_for('/mailbox/' . $mailbox . '/' . $uid . "/attachment/$_->{id}");
+    foreach(keys(%{ $message->{attachments} })) {
+        my $id = $_;
+        $message->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $mailbox . '/' . $uid . "/attachment/$id");
     }
 
     $c->stash({
@@ -75,7 +76,8 @@ sub attachment : Chained('setup') Args(1) {
     my $uid = $c->stash->{message};
     my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
 
-    my $attachment = ( $message->attachments )[$id];
+    my $attachment = $message->attachments->{$id};
+
     $c->res->content_type($attachment->{type});
     $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
     $c->res->body($attachment->{data});
@@ -153,14 +155,16 @@ sub reply : Chained('setup') Args(0) {
     my $mailbox = $c->stash->{folder};
     my $uid = $c->stash->{message};
     my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
-    my $body = $message->body;
+
+    #FIXME: we need a way to find the 'main part' of a message and use this here
+    my $body = $message->main_body_part($c);
     $body =~ s/[\s\r\n]+\z//s;
     $body =~ s/^/> /gm;
     $body .= "\n\n";
 
     $c->stash({
         message => {
-            from    => $message->to->[0], #this is stupd... we should no use the to address here...
+            from    => $message->to, #this is stupd... we should not use the to address here...
             to      => ($message->reply_to or $message->from),
             subject => 'Re: ' . $message->subject,
             body    => $body,

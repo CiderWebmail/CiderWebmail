@@ -8,6 +8,7 @@
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
     </head>
+    <h1 metal:fill-slot="headline" tal:content="message/subject">Subject</h1>
     <body metal:fill-slot="content">
         <p>
             <a tal:attributes="href uri_reply">Reply to this message</a>
@@ -25,7 +26,7 @@
         <table class="message_header">
         <tr>
                 <th>From:</th>
-                <td><span tal:attributes="title message/from/address" tal:content="if: message/from/name then: message/from/name else: message/from/address">from</span></td>
+                <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
             </tr>
             <tr>
                 <th>To:</th>
@@ -33,7 +34,9 @@
             </tr>
             <tr tal:condition="true:message/cc">
                 <th>Cc:</th>
-                <td><span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span></td>
+                <td>
+                    <span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span>
+                </td>
             </tr>
             <tr>
                 <th>Subject:</th>
@@ -48,13 +51,16 @@
                 <td><a onClick='toggleHeader(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
             </tr>
             <tr>
-                <td colspan='2'><pre tal:content="message/body">mail body</pre></td>
+                <td colspan='2'>
+                    <div class="body_part" tal:repeat="body_part each: message/renderable">
+                        <pre tal:condition="body_part/val/is_text" tal:content="body_part/val/data">mail body</pre>
+                    </div>
+                </td>
             </tr>
             <tr tal:condition="true:message/attachments">
                 <td colspan='2'>
-                    <div class="attachment" tal:repeat="attachment message/attachments">
-                        <p><img tal:attributes="src string:/static/images/mimeicons/${attachment/icon}" /></p>
-                        <p><a tal:content="attachment/name" tal:attributes="href attachment/uri_view; title attachment/type" /></p>
+                    <div class="attachment" tal:repeat="attachment each: message/attachments">
+                        <p><a tal:content="attachment/val/name" tal:attributes="href attachment/val/uri_view; title attachment/val/type" /></p>
                     </div>
                 </td>
             </tr>

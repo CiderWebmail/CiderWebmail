@@ -6,6 +6,7 @@ use parent 'Catalyst::Model';
 
 use MIME::Parser;
 use MIME::Words qw/ decode_mimewords /;
+use Mail::IMAPClient::MessageSet;
 use Email::Simple;
 use Text::Flowed;
 use Mail::Address;
@@ -22,17 +23,20 @@ CiderWebmail::Model::IMAPClient - Catalyst Model
 
 Interface to the IMAP Server
 
+You should *really* read rfc3501 if you want to use this.
+
 =cut
 
 =head1 METHODS
 
-=head2 die_on_error()
+=head2 _die_on_error($c)
 
 die if the last IMAP command sent to the server caused an error
+this sould be called after every command sent to the imap server.
 
 =cut
 
-sub die_on_error {
+sub _die_on_error {
     my ($self, $c) = @_;
   
     if ( $c->stash->{imapclient}->LastError ) {
@@ -43,7 +47,7 @@ sub die_on_error {
     }
 }
 
-=head2 separator()
+=head2 separator($c)
 
 Returnes the folder separator
 
@@ -55,13 +59,13 @@ sub separator {
 
     unless(defined $c->stash->{separator}) {
         $c->stash->{separator} = $c->stash->{imapclient}->separator;
-        $self->die_on_error($c);
+        $self->_die_on_error($c);
     }
 
     return $c->stash->{separator};
 }
 
-=head2 folder_tree()
+=head2 folder_tree($c)
 
 Return all folders as hash-tree.
 
@@ -72,7 +76,7 @@ sub folder_tree {
     
     # sorting folders makes sure branches are created before leafs
     my @folders = sort { lc($a) cmp lc($b) } $c->stash->{imapclient}->folders;
-    $self->die_on_error($c);
+    $self->_die_on_error($c);
 
     my %folder_index = ( '' => { folders => [] } );
     my $separator = $self->separator($c);
@@ -84,8 +88,8 @@ sub folder_tree {
         push @{ $parent->{folders} }, $folder_index{$folder} = {
             id     => $folder,
             name   => $name,
-            total  => $self->message_count($c, $folder),
-            unseen => $self->unseen_count($c, $folder),
+            total  => $self->message_count($c, { mailbox => $folder }),
+            unseen => $self->unseen_count($c, { mailbox => $folder }),
         };
     }
 
@@ -93,7 +97,7 @@ sub folder_tree {
 }
 
 
-=head2 select()
+=head2 select($c, { mailbox => $mailbox })
 
 selects a folder
 
@@ -104,82 +108,170 @@ sub select {
 
     die 'No mailbox to select' unless $o->{mailbox};
 
-    unless ( $c->stash->{currentmailbox} and $c->stash->{currentmailbox} eq $o->{mailbox} ) {
+    unless ( $c->stash->{imapclient}->Folder and $c->stash->{imapclient}->Folder eq $o->{mailbox} ) {
         $c->stash->{imapclient}->select( $o->{mailbox} );
-        $self->die_on_error($c);
-        $c->stash->{currentmailbox} = $o->{mailbox};
+        $self->_die_on_error($c);
     }
 }
 
-=head2 message_count($folder)
+=head2 message_count($c, { mailbox => $mailbox })
 
-returnes the number of messages in a folder
+returnes the number of messages in a mailbox
 
 =cut
 
 sub message_count {
-    my ($self, $c, $folder) = @_;
-    return $c->stash->{imapclient}->message_count($folder);
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+
+    return $c->stash->{imapclient}->message_count($o->{mailbox});
 }
 
-=head2 unseen_count($folder)
+=head2 unseen_count($c, { mailbox => $mailbox })
 
-returnes the number of unseen messages in a folder
+returnes the number of unseen messages in a mailbox
 
 =cut
 
 sub unseen_count {
-    my ($self, $c, $folder) = @_;
-    return $c->stash->{imapclient}->unseen_count($folder);
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+
+    return $c->stash->{imapclient}->unseen_count($o->{mailbox});
 }
 
-=head2 get_headers_hash()
+=head2 get_headers_hash($c, { uids => [qw/ 1 .. 10 /], sort => [qw/ date /], headers => [qw/ date subject /], mailbox => 'INBOX' })
    
-returnes a array of hashes for all messages in a mailbox
+returnes a array of hashes for messages in a mailbox
+
+=over 4
+
+=item * uids (arrayref): a list of uids (as described in RFC2060) to fetch
+
+=item * sort (arrayref): sort criteria (as described in RFC2060). for example: [ qw/ date / ] will sort by date, [ qw/ reverse date / ] will sort by reverse date
+
+=item * headers (arrayref, required): a list of mail-headers to fetch.
+
+=item * mailbox (required)
+
+=back
 
 =cut
 
+#TODO update headercache
 sub get_headers_hash() {
     my ($self, $c, $o) = @_;
 
     die unless $o->{mailbox};
     die unless $o->{headers};
-   
-    $_ = lc foreach @{ $o->{headers} };
 
-    $self->select($c, { mailbox => $o->{mailbox} } );
+    my $uids;           #uids we will fetch, MessageSet object!
+    my @messages;       #messages wo got back, contains 'transformed' headers
+    my @words;     #things we expect in return from the imap server
 
     my $headers_to_fetch = join(" ", @{ $o->{headers} });
-    my @messages = ();
+    push (@words, 'FLAGS');
+    push(@words, "BODY[HEADER.FIELDS ($headers_to_fetch)]");
 
-    return [] unless $c->stash->{imapclient}->message_count;
+    
+    $self->select($c, { mailbox => $o->{mailbox} } );
+    
+    if ($o->{uids}) {
+        die "sorting a list of UIDs is not implemented yet, you have to specify uids OR sort" if $o->{sort};
+        die "sort needs to be an arrayref" unless ( ref($o->{uids}) eq "ARRAY" );
 
-    my $messages_from_server = $c->stash->{imapclient}->fetch_hash("BODY[HEADER.FIELDS ($headers_to_fetch)]", 'FLAGS');
-    $self->die_on_error($c);
+        foreach (@{ $o->{uids} }) {
+            die ("illegal char in uid list") if ($_ =~ m/[^0-9]/);
+        }
 
-    while ( my ($uid, $data) = each %$messages_from_server ) {
+        $uids = Mail::IMAPClient::MessageSet->new($o->{uids});
+    } else {
+        #TODO allow custom search?
+        #TODO empty folder
+        #TODO shortcut for fetch ALL
+        $uids = $c->stash->{imapclient}->search("ALL");
+    }
+
+    if ($o->{sort}) {
+        die "sorting a list of UIDs is not implemented yet, you have to specify uids OR sort" if $o->{uids};
+        die "sort needs to be an arrayref" unless ( ref($o->{sort}) eq "ARRAY" );
+       
+        #TODO check RFC if we need to allow more here
+        foreach (@{ $o->{sort} }) {
+            die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z]/);
+        }
+
+        #TODO empty result
+        my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
+        $uids = $c->stash->{imapclient}->sort(@sort);
+    }
+
+    my $lines = $c->stash->{imapclient}->fetch($uids, "(BODY[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");
+    $self->_die_on_error($c);
+
+    for (my $index = 0;  $index <= scalar(@$lines) ; $index++) {
+        my $line = $lines->[$index];
+        my $entry = {};     #not processed data of the current message
+        my $message = {};   #final data of the current message
+        my $uid;            #uid of the current message
+        my $data;           #header data of the current message
+      
+        next unless $line;
+        next if ($line =~ m/UID FETCH/);
+
+        $uid = $line =~ /\bUID\s+(\d+)/i ? $1 : undef;
+        next unless defined $uid;
+
+        $message->{uid}     = $uid;
+        $message->{mailbox} = $o->{mailbox};
+      
+        #from Mail::IMAPClient
+        foreach my $w (@words) {
+            if($line =~ /\Q$w\E\s*$/i ) {
+               $entry->{$w} = $lines->[$index+1];
+               $entry->{$w} =~ s/(?:\n?\r)+$//g;
+               chomp $entry->{$w};
+            } else {
+                $line =~ /\(      # open paren followed by ...
+                    (?:.*\s)?  # ...optional stuff and a space
+                    \Q$w\E\s   # escaped fetch field<sp>
+                    (?:"       # then: a dbl-quote
+                      (\\.|    # then bslashed anychar(s) or ...
+                       [^"]+)  # ... nonquote char(s)
+                    "|         # then closing quote; or ...
+                    \(         # ...an open paren
+                      (\\.|    # then bslashed anychar or ...
+                       [^\)]+) # ... non-close-paren char
+                    \)|        # then closing paren; or ...
+                    (\S+))     # unquoted string
+                    (?:\s.*)?  # possibly followed by space-stuff
+                    \)         # close paren
+                /xi;
+                $entry->{$w} = defined $1 ? $1 : defined $2 ? $2 : $3;
+            }
+        }
+
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
-        my %flags = map {m/(\w+)/; (lc $1 => lc $1)} split / /, $data->{FLAGS};
-        my $email = Email::Simple->new($data->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || die;
-        
-        $c->stash->{headercache}->set({
-            uid     => $uid,
-            mailbox => $o->{mailbox},
-            header  => $_,
-            data    => $email->header($_),
-        }) foreach @{ $o->{headers} };
+        my $email = Email::Simple->new($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || die;
 
-        push @messages, {
-            uid     => $uid,
-            mailbox => $o->{mailbox},
-            from    => $self->transform_header($c, { header => 'from', data => ($email->header('From') or '') }),
-            subject => $self->transform_header($c, { header => 'subject', data => ($email->header('Subject') or '') }),
-            date    => $self->transform_header($c, { header => 'date', data => ($email->header('Date') or '') }),
-            flags   => join (' ', keys %flags),
-            unseen  => not exists $flags{seen},
-            %flags,
-        };
+        my %headers = $email->header_pairs;
+
+        while ( my ($header, $value) = each(%headers) ) {
+            $header = lc $header;
+            $message->{head}->{$header} = $self->transform_header($c, { header => $header, data => ($value or '') }),
+        }
+
+
+        #this is FUBAR we should return an array with the flags and use this in the template
+        if ($entry->{FLAGS}) {
+            $message->{flags} = lc($entry->{FLAGS});
+            $message->{flags} =~ s/\\//g;
+        }
+
+        push(@messages, $message);
     }
 
     return \@messages;
@@ -209,12 +301,34 @@ sub simple_search {
     );
 
     my @uids = $c->stash->{imapclient}->search(@search);
-    $self->die_on_error($c);
+    $self->_die_on_error($c);
 
     return \@uids; 
 }
 
-=head2 all_headers()
+=head2 get_headers_string($c, { mailbox => $mailbox, uid => $uid })
+
+returnes the fullheader of a message as a string
+
+=cut
+
+sub get_headers_string {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+    die unless $o->{uid};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    if (exists $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader}) {
+        return $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader};
+    } else {
+        $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
+        return $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader};
+    }
+}
+
+=head2 all_headers($c, { mailbox => $mailbox, uid => $uid })
 
 fetch all headers for a message and updates the local headercache
 
@@ -246,31 +360,9 @@ sub all_headers {
     return $headers;
 }
 
-=head2 get_headers_string()
+=head2 get_headers($c, { mailbox => $mailbox })
 
-returnes the fullheader of a message as a string
-
-=cut
-
-sub get_headers_string {
-    my ($self, $c, $o) = @_;
-
-    die unless $o->{mailbox};
-    die unless $o->{uid};
-
-    $self->select($c, { mailbox => $o->{mailbox} } );
-
-    if (exists $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader}) {
-        return $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader};
-    } else {
-        $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
-        return $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_fullheader};
-    }
-}
-
-=head2 get_headers()
-
-fetch headers from the server or (if available) the local headercache
+fetch headers for a single message from the server or (if available) the local headercache
 
 =cut
 
@@ -299,7 +391,7 @@ sub get_headers {
     return (wantarray ? $headers : $headers->{lc($o->{headers}->[0])});
 }
 
-=head2 message_as_string()
+=head2 message_as_string($c, { mailbox => $mailbox, uid => $uid })
 
 return a full message body as string
 
@@ -313,78 +405,17 @@ sub message_as_string {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    return $c->stash->{imapclient}->message_string( $o->{uid} );
-}
+    my $message_string = $c->stash->{imapclient}->message_string( $o->{uid} );
+    
 
-=head2 body()
-
-fetch the body from the server
-
-=cut
-
-sub body {
-    my ($self, $c, $o) = @_;
-
-    my $message = $self->message_as_string($c, $o);
-
-    my $parser = MIME::Parser->new();
-    $parser->output_to_core(1);
-
-    my $entity = $parser->parse_data($message);
-
-    my @parts = $entity->parts_DFS;
-    @parts = ($entity) unless @parts;
-
-    my $body = '';
-    my @attachments;
-    my $id = 0;
-
-    foreach (@parts) {
-        my $part_head = $_->head;
-        my $part_body = $_->bodyhandle;
-
-        if ($_->effective_type =~ m!\Atext/plain\b!) {
-            my $charset = $part_head->mime_attr("content-type.charset");
-            if ($part_body) {
-                unless (eval {
-                        my $converter = Text::Iconv->new($charset, "utf-8");
-                        $body .= Text::Flowed::reformat($converter->convert($part_body->as_string));
-                    }) {
-
-                    warn "unsupported encoding: $charset";
-                    $body .= $part_body->as_string;
-                }
-            }
-        }
-        else {
-            push @attachments, {
-                type => $_->effective_type,
-                name => ($part_head->mime_attr("content-type.name") or "attachment (".$_->effective_type.")"),
-                data => $part_body->as_string,
-                id   => $id++,
-            } if $part_body;
-        }
-
-        my %icons = (
-            'text/html' => 'layout.png',
-            'application/pdf' => 'pdf.png',
-            'generic'   => 'generic.png',
-        );
-
-        foreach (@attachments) {
-            if (exists $icons{$_->{type}}) {
-                $_->{icon} = $icons{$_->{type}};
-            } else {
-                $_->{icon} = $icons{generic};
-            }
-        }
-
+    unless($c->stash->{headercache}->get({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring'})) {
+        $c->stash->{headercache}->set({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring', data => $message_string});
     }
 
-    return wantarray ? ($body, \@attachments) : $body; # only give attachments to those who are interested
+    return $c->stash->{headercache}->get({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring'});
 }
 
-=head2 delete_messages()
+=head2 delete_messages($c, { mailbox => $mailbox, uid => $uid })
 
 delete message(s) form the server and expunge the mailbox
 
@@ -399,13 +430,13 @@ sub delete_messages {
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     $c->stash->{imapclient}->delete_message($o->{uids});
-    $self->die_on_error($c);
+    $self->_die_on_error($c);
 
     $c->stash->{imapclient}->expunge($o->{mailbox});
-    $self->die_on_error($c);
+    $self->_die_on_error($c);
 }
 
-=head2 append_message($c, {mailbox, message_text})
+=head2 append_message($c, { mailbox => $mailbox, message_text => $message_text })
 
 low level method to append an RFC822-formatted message to a mailbox
 
@@ -416,7 +447,7 @@ sub append_message {
     $c->stash->{imapclient}->append($o->{mailbox}, $o->{message_text});
 }
 
-=head2 move_message($c {uid, mailbox, target_mailbox})
+=head2 move_message($c, { mailbox => $mailbox, target_mailbox => $target_mailbox, uid => $uid })
 
 Move a message to another mailbox
 
@@ -427,12 +458,32 @@ sub move_message {
 
     $self->select($c, { mailbox => $o->{mailbox} });
     $c->stash->{imapclient}->move($o->{target_mailbox}, $o->{uid}) or die "could not move message $o->{uid} to folder $o->{mailbox}";
-    $self->die_on_error($c);
+    $self->_die_on_error($c);
     
     $c->stash->{imapclient}->expunge($o->{mailbox});
-    $self->die_on_error($c);
-
+    $self->_die_on_error($c);
 }
+
+=head2 transform_header($c, { header => $header_name, data => $header_data })
+
+'transform' a header from the 'raw' state (the way it was returned from the server) to an appropriate object.
+if no appropriate object exists the header will be decoded (using decode_mimewords()) and UTF-8 encoded
+
+the following 'transformations' take place:
+
+=over 4
+
+=item * from -> Mail::Address object
+
+=item * to -> Mail::Address object
+
+=item * cc -> Mail::Address object
+
+=item * date -> DateTime object
+
+=back
+
+=cut
 
 sub transform_header {
     my ($self, $c, $o) = @_;
@@ -443,40 +494,29 @@ sub transform_header {
     $o->{header} = lc($o->{header});
 
     my $headers = {
-        from => \&transform_single_address,
-        to   => \&transform_address,
-        cc   => \&transform_address,
-        date => \&transform_date,
+        from => \&_transform_address,
+        to   => \&_transform_address,
+        cc   => \&_transform_address,
+        date => \&_transform_date,
     };
 
     return $headers->{$o->{header}}->($self, $c, $o) if exists $headers->{$o->{header}};
 
     #if we have no appropriate transfrom function decode the header and return it
-    return $self->decode_header($c, { data => ($o->{data} or '')})
+    return $self->_decode_header($c, { data => ($o->{data} or '')})
 }
 
-sub transform_address {
+sub _transform_address {
     my ($self, $c, $o) = @_;
 
     return undef unless defined $o->{data};
 
-    my @address = Mail::Address->parse($self->decode_header($c, $o));
+    my @address = Mail::Address->parse($self->_decode_header($c, $o));
    
     return \@address;
 }
 
-sub transform_single_address {
-    my ($self, $c, $o) = @_;
-
-    return undef unless defined $o->{data};
-
-    my @address = Mail::Address->parse($self->decode_header($c, $o));
-  
-    return $address[0];
-}
-
-
-sub transform_date {
+sub _transform_date {
     my ($self, $c, $o) = @_;
 
     return '' unless defined $o->{data};
@@ -497,7 +537,7 @@ sub transform_date {
     return $date;
 }
 
-sub decode_header {
+sub _decode_header {
     my ($self, $c, $o) = @_;
 
     return '' unless defined $o->{data};
