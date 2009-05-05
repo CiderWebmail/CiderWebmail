@@ -208,7 +208,7 @@ sub get_headers_hash() {
         $uids = $c->stash->{imapclient}->sort(@sort);
     }
 
-    my $lines = $c->stash->{imapclient}->fetch($uids, "(BODY[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");
+    my $lines = $c->stash->{imapclient}->fetch($uids, "(BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");
     $self->_die_on_error($c);
 
     for (my $index = 0;  $index <= scalar(@$lines) ; $index++) {
