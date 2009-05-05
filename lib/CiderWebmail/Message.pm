@@ -241,7 +241,7 @@ sub _render_text_html {
     my $part = {};
     
     my $charset = $o->{part}->head->mime_attr("content-type.charset");
-    my $scrubber = HTML::Scrubber->new( allow => [ qw/p b i u hr br div span table thead tbody tr th td/ ] );
+    my $scrubber = HTML::Scrubber->new( allow => [ qw/p b strong i u hr br div span table thead tbody tr th td/ ] );
  
     my @default = (
         0   =>    # default rule, deny all tags
