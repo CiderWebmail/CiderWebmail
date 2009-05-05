@@ -54,6 +54,8 @@
                 <td colspan='2'>
                     <div class="body_part" tal:repeat="body_part each: message/renderable">
                         <pre tal:condition="body_part/val/is_text" tal:content="body_part/val/data">mail body</pre>
+                        <div tal:condition="body_part/val/is_html" tal:content="structure body_part/val/data">mail body</div>
+                        <hr />
                     </div>
                 </td>
             </tr>

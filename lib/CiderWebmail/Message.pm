@@ -8,6 +8,7 @@ use Mail::IMAPClient::BodyStructure;
 use DateTime;
 use Mail::Address;
 use DateTime::Format::Mail;
+use HTML::Scrubber;
 
 use Text::Iconv;
 
@@ -180,6 +181,7 @@ sub body_parts {
 
    my $part_types = {
         'text/plain' => \&_render_text_plain,
+        'text/html' => \&_render_text_html,
     };
  
     my $body_parts = {}; #body parts we render (text/plain, text/html, etc)
@@ -230,5 +232,43 @@ sub _render_text_plain {
 
     return $part;
 }
+
+sub _render_text_html {
+    my ($c, $o) = @_;
+
+    die 'no part set' unless defined $o->{part};
+
+    my $part = {};
+    
+    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $scrubber = HTML::Scrubber->new( allow => [ qw/p b i u hr br div span table thead tbody tr th td/ ] );
+ 
+    my @default = (
+        0   =>    # default rule, deny all tags
+        {
+            '*'           => 0, # default rule, deny all attributes
+            'href'        => qr{^(?!(?:java)?script)}i,
+            'src'         => qr{^(?!(?:java)?script)}i,
+            'class'       => 1,
+            'style'       => 1,
+        }
+    );
+
+    $scrubber->default( @default );
+    
+    unless (eval {
+            my $converter = Text::Iconv->new($charset, "utf-8");
+            $part->{data} = $converter->convert($scrubber->scrub($o->{part}->bodyhandle->as_string));
+        }) {
+
+        warn "unsupported encoding: $charset";
+        $part->{data} = $scrubber->scrub($o->{part}->bodyhandle->as_string);
+    }
+
+    $part->{is_html} = 1;
+
+    return $part;
+}
+
 
 1;
