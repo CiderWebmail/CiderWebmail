@@ -61,13 +61,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
         }
 
         if ($sort =~ m/(from|to)/) {
-            if (defined($_->{head}->{$1}->name)) {
-                $name = $_->{head}->{$1}->name;
-            } elsif (defined($_->{head}->{$1}->address)) {
-                $name = $_->{head}->{$1}->address;
-            } else {
-                $name = 'unknown';
-            }
+            my $address = $_->{head}->{$1}->[0];
+            $name = ($address->name ? $address->name : $address->address);
         }
 
         if ($sort eq 'subject') {
