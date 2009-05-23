@@ -33,6 +33,8 @@ sub process {
         uri_static => $c->uri_for('/static'),
     });
 
+    $c->res->content_type('text/xml') if $c->req->param('layout') eq 'ajax';
+
     $self->SUPER::process($c);
 }
 

@@ -33,7 +33,7 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     $c->stash->{uri_compose} = $c->uri_for("/mailbox/$mailbox/compose");
 }
 
-=head2 view 
+=head2 view
 
 =cut
 
@@ -50,9 +50,15 @@ sub view : Chained('setup') PathPart('') Args(0) {
                 uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
                 uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
             }, @{ $c->stash->{mbox}->list_messages_hash($c, { sort => [ $sort ] }) };
-    
+
+    if (defined $c->req->param('start')) {
+        my ($start) = $c->req->param('start')  =~ /(\d+)/;
+        my ($end) =   $c->req->param('length') =~ /(\d+)/;
+        @messages = splice @messages, ($start or 0), ($end or 0);
+    }
+
     my %groups;
-    
+
     foreach (@messages) {
         my $name;
 

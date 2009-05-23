@@ -70,7 +70,41 @@ window.addEvent('load', function() {
 
     if (document.addEventListener) document.addEventListener('click', handle_click, false);
     else document.attachEvent('onclick', handle_click);
+
+    if (location.search.match(/start=/)) {
+        /start=(\d+)/.exec(location.search);
+        var start_index = parseInt(RegExp.$1);
+        /length=(\d+)/.exec(location.search);
+        var length = parseInt(RegExp.$1);
+        start_index += length;
+        fetch_new_rows(start_index, length)
+    }
 });
+
+function fetch_new_rows(start_index, length) {
+        var href = location.href.replace(/start=\d+/, 'start=' + start_index);
+
+        new Request({url: href + ';layout=ajax', onSuccess: function(responseText, responseXML) {
+            var new_rows = responseXML.getElementById('message_list');
+            while (new_rows.firstChild.nodeType == 3)
+                new_rows.removeChild(new_rows.firstChild);
+            new_rows.removeChild(new_rows.firstChild);
+
+            // this hack is presented to you by Microsoft
+            var dummy = document.createElement('span');
+            dummy.innerHTML = new_rows.parentNode.innerHTML;
+            new_rows = dummy.firstChild.nodeType == 1 ? dummy.firstChild : dummy.firstChild.nextSibling;
+
+            if (new_rows.childNodes.length) {
+                message_list = document.getElementById('message_list');
+                for (var i = 0; i < new_rows.childNodes.length ; i++)
+                    message_list.appendChild(new_rows.childNodes[i].cloneNode(true));
+                fetch_new_rows(start_index + length, length);
+            }
+
+            document.removeChild(dummy);
+        }}).send();
+}
 
 function add_drag_and_drop(message, event, droppables, selected) {
     var overed_prev;

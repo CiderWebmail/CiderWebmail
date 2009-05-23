@@ -70,7 +70,7 @@ CiderWebmail - Catalyst based application
 
 =head1 DESCRIPTION
 
-[enter your description here]
+CiderWebmail: webmail sucks - we suck less!
 
 =head1 SEE ALSO
 
