@@ -146,10 +146,19 @@ sub get_folder_uids {
     my ($self, $c, $o) = @_;
 
     die unless $o->{mailbox};
+    die unless $o->{sort};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    my $uids = $c->stash->{imapclient}->search("ALL");
+    #TODO check RFC if we need to allow more here
+    foreach (@{ $o->{sort} }) {
+        die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z]/);
+    }
+
+    #TODO empty result
+    my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
+    my $uids = $c->stash->{imapclient}->sort(@sort);
+ 
     return $uids;
 }
 
