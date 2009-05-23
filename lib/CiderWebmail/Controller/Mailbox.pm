@@ -49,7 +49,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
                 %{ $_ },
                 uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
                 uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-            }, @{ $c->stash->{mbox}->list_messages_hash($c, { sort => [ $sort ] }) };
+            }, @{ $c->stash->{mbox}->list_messages_hash({ sort => [ $sort ] }) };
 
     if (defined $c->req->param('start')) {
         my ($start) = $c->req->param('start')  =~ /(\d+)/;
@@ -100,7 +100,7 @@ sub search : Chained('setup') PathPart('quicksearch') {
     $searchfor ||= $c->req->param('text');
 
     my $mbox = CiderWebmail::Mailbox->new($c, { mailbox => $c->stash->{folder} });
-    $mbox->simple_search($c, { searchfor => $searchfor });
+    $mbox->simple_search({ searchfor => $searchfor });
     
     $c->stash({
         mbox => $mbox,

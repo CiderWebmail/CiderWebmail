@@ -26,27 +26,27 @@ sub mailbox {
 }
 
 sub list_messages_hash {
-    my ($self, $c, $o) = @_;
+    my ($self, $o) = @_;
     
     if (defined($self->{uids})) {
-        return $c->model->get_headers_hash($c, { mailbox => $self->{mailbox}, uids => $self->{uids}, headers => [qw/From Subject Date/] });
+        return $self->{c}->model->get_headers_hash($self->{c}, { mailbox => $self->{mailbox}, uids => $self->{uids}, headers => [qw/From Subject Date/] });
     } else {
-        return $c->model->get_headers_hash($c, { mailbox => $self->{mailbox}, sort => $o->{sort}, headers => [qw/From Subject Date/] });
+        return $self->{c}->model->get_headers_hash($self->{c} { mailbox => $self->{mailbox}, sort => $o->{sort}, headers => [qw/From Subject Date/] });
     }
 }
 
 sub uids {
-    my ($self, $c, $o) = @_;
+    my ($self, $o) = @_;
 
-    return $c->model->get_folder_uids($c, { mailbox => $self->{mailbox}, sort => $o->{sort} });
+    return $self->{c}->model->get_folder_uids($self->{uids}, { mailbox => $self->{mailbox}, sort => $o->{sort} });
 }
 
 sub simple_search {
-    my ($self, $c, $o) = @_;
+    my ($self, $o) = @_;
    
     $o->{searchfor} = "ALL" unless $o->{searchfor};
 
-    my $search_result = $c->model->simple_search($c, { mailbox => $self->{mailbox}, searchfor => $o->{searchfor} });
+    my $search_result = $self->{c}->model->simple_search($self->{c}, { mailbox => $self->{mailbox}, searchfor => $o->{searchfor} });
     $self->{uids} = $search_result;
 }
 
