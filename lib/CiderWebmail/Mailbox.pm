@@ -38,7 +38,7 @@ sub list_messages_hash {
 sub uids {
     my ($self, $c, $o) = @_;
 
-    return $c->model->get_folder_uids($c, $o);
+    return $c->model->get_folder_uids($c, { mailbox => $self->{mailbox}, sort => $o->{sort} });
 }
 
 sub simple_search {
