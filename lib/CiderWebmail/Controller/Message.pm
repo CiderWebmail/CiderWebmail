@@ -30,7 +30,7 @@ Gets the selected message from the URI path and sets up the stash.
 
 sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
     my ( $self, $c, $uid ) = @_;
-    $c->stash->{message} = $uid;
+    $c->stash->{message} = CiderWebmail::Message->new($c, { mailbox => $c->stash->{folder}, uid => $uid } );
 }
 
 
@@ -40,28 +40,20 @@ sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
 
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
-    my $mailbox = $c->stash->{folder};
-    my $uid = $c->stash->{message};
-    my $model = $c->model();
+    
+    $c->stash->{message}->load_body();
 
-    die("mailbox not set") unless defined($mailbox);
-    die("uid not set") unless defined($uid);
-
-    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
-    $message->load_body();
-
-    foreach(keys(%{ $message->{attachments} })) {
+    foreach(keys(%{ $c->stash->{message}->{attachments} })) {
         my $id = $_;
-        $message->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $mailbox . '/' . $uid . "/attachment/$id");
+        $c->stash->{message}->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $c->stash->{message}->uid . "/attachment/$id");
     }
 
     $c->stash({
         template       => 'message.xml',
-        message        => $message,
         target_folders => [ sort {$a->{name} cmp $b->{name}} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_reply      => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
-        uri_forward    => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
-        uri_move       => $c->uri_for("/mailbox/$mailbox/$uid/move"),
+        uri_reply      => $c->uri_for("/mailbox/$c->stash->{folder}/$c->stash->{message}->uid/reply"),
+        uri_forward    => $c->uri_for("/mailbox/$c->stash->{folder}/$c->stash->{message}->uid/forward"),
+        uri_move       => $c->uri_for("/mailbox/$c->stash->{folder}/$c->stash->{message}->uid/move"),
     });
 }
 
@@ -73,10 +65,8 @@ sub attachment : Chained('setup') Args(1) {
     my ( $self, $c, $id ) = @_;
 
     my $mailbox = $c->stash->{folder};
-    my $uid = $c->stash->{message};
-    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
 
-    my $attachment = $message->attachments->{$id};
+    my $attachment = $c->stash->{message}->attachments->{$id};
 
     $c->res->content_type($attachment->{type});
     $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
@@ -91,16 +81,8 @@ Delete a message
 
 sub delete : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
-    my $mailbox = $c->stash->{folder};
-    my $uid = $c->stash->{message};
-    my $model = $c->model();
-
-    die("mailbox not set") unless defined($mailbox);
-    die("uid not set") unless defined($uid);
-
-    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
-
-    $message->delete();
+    
+    $c->stash->{message}->delete();
     
     $c->res->body('message deleted');
 }
@@ -116,7 +98,8 @@ sub move : Chained('setup') Args(0) {
     my $target_folder = $c->req->param('target_folder') or die "no folder to move message to";
     my $model = $c->model();
 
-    $model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
+    #TODO fixme
+    #$model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
 
     $c->res->body('message moved');
 }
