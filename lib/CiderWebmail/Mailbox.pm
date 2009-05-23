@@ -44,7 +44,7 @@ sub uids {
 sub simple_search {
     my ($self, $c, $o) = @_;
    
-    die unless $o->{searchfor};
+    $o->{searchfor} = "ALL" unless $o->{searchfor};
 
     my $search_result = $c->model->simple_search($c, { mailbox => $self->{mailbox}, searchfor => $o->{searchfor} });
     $self->{uids} = $search_result;
