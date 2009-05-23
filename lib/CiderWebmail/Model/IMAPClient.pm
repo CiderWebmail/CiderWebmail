@@ -142,6 +142,17 @@ sub unseen_count {
     return $c->stash->{imapclient}->unseen_count($o->{mailbox});
 }
 
+sub get_folder_uids {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    my $uids = $c->stash->{imapclient}->search("ALL");
+    return $uids;
+}
+
 =head2 get_headers_hash($c, { uids => [qw/ 1 .. 10 /], sort => [qw/ date /], headers => [qw/ date subject /], mailbox => 'INBOX' })
    
 returnes a array of hashes for messages in a mailbox
