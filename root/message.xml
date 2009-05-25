@@ -11,8 +11,8 @@
     <h1 metal:fill-slot="headline" tal:content="message/subject">Subject</h1>
     <body metal:fill-slot="content">
         <p>
-            <a tal:attributes="href uri_reply">Reply to this message</a>
-            <a tal:attributes="href uri_forward">Forward this message</a>
+            <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> Reply</a>
+            <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt="forward"/> Forward</a>
         </p>
         <form class="move_message" tal:attributes="action uri_move" method="post">
             <label>

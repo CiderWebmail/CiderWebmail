@@ -142,6 +142,12 @@ sub unseen_count {
     return $c->stash->{imapclient}->unseen_count($o->{mailbox});
 }
 
+=head2 get_folder_uids($c, { mailbox => $mailbox })
+
+Returns a MessageSet object representing all UIDs in a mailbox
+
+=cut
+
 sub get_folder_uids {
     my ($self, $c, $o) = @_;
 
@@ -223,9 +229,9 @@ sub get_headers_hash() {
             die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z]/);
         }
 
-        #TODO empty result
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
         $uids = $c->stash->{imapclient}->sort(@sort);
+        return [] unless @$uids;
     }
 
     my $lines = $c->stash->{imapclient}->fetch($uids, "(BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");

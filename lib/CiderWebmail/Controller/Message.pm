@@ -50,7 +50,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     $c->stash({
         template       => 'message.xml',
-        target_folders => [ sort {$a->{name} cmp $b->{name}} values %{ clone($c->stash->{folders_hash}) } ],
+        target_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
         uri_reply      => $c->uri_for("/mailbox/$c->stash->{folder}/$c->stash->{message}->uid/reply"),
         uri_forward    => $c->uri_for("/mailbox/$c->stash->{folder}/$c->stash->{message}->uid/forward"),
         uri_move       => $c->uri_for("/mailbox/$c->stash->{folder}/$c->stash->{message}->uid/move"),

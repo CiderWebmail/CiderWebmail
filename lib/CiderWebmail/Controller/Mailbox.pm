@@ -40,22 +40,23 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
 
-    unless ( $c->stash->{mbox} ) {
-        $c->stash->{mbox} = CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
-    }
+    my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
 
     my $sort = ($c->req->param('sort') or 'date');
-    my @messages = map +{
-                %{ $_ },
-                uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
-                uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-            }, @{ $c->stash->{mbox}->list_messages_hash({ sort => [ $sort ] }) };
+
+    my @uids = $mailbox->uids($c, { sort => [ $sort ] });
 
     if (defined $c->req->param('start')) {
         my ($start) = $c->req->param('start')  =~ /(\d+)/;
         my ($end) =   $c->req->param('length') =~ /(\d+)/;
-        @messages = splice @messages, ($start or 0), ($end or 0);
+        @uids = splice @uids, ($start or 0), ($end or 0);
     }
+
+    my @messages = map +{
+                %{ $_ },
+                uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
+                uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
+            }, @{ $mailbox->list_messages_hash($c, { uid => \@uids }) };
 
     my %groups;
 

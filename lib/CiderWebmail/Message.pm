@@ -218,12 +218,12 @@ sub _render_text_plain {
     my $charset = $o->{part}->head->mime_attr("content-type.charset");
 
     my $part = {};
-    unless (eval {
+    unless ($charset and eval {
             my $converter = Text::Iconv->new($charset, "utf-8");
             $part->{data} = Text::Flowed::reformat($converter->convert($o->{part}->bodyhandle->as_string));
         }) {
 
-        warn "unsupported encoding: $charset";
+        warn "unsupported encoding: $charset" if $charset;
         $part->{data} = Text::Flowed::reformat($o->{part}->bodyhandle->as_string);
     
     }
