@@ -31,14 +31,14 @@ sub list_messages_hash {
     if (defined($self->{uids})) {
         return $self->{c}->model->get_headers_hash($self->{c}, { mailbox => $self->{mailbox}, uids => $self->{uids}, headers => [qw/From Subject Date/] });
     } else {
-        return $self->{c}->model->get_headers_hash($self->{c} { mailbox => $self->{mailbox}, sort => $o->{sort}, headers => [qw/From Subject Date/] });
+        return $self->{c}->model->get_headers_hash($self->{c}, { mailbox => $self->{mailbox}, sort => $o->{sort}, headers => [qw/From Subject Date/] });
     }
 }
 
 sub uids {
     my ($self, $o) = @_;
 
-    return $self->{c}->model->get_folder_uids($self->{uids}, { mailbox => $self->{mailbox}, sort => $o->{sort} });
+    return $self->{c}->model->get_folder_uids($self->{c}, { mailbox => $self->{mailbox}, sort => $o->{sort} });
 }
 
 sub simple_search {

@@ -44,7 +44,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my $sort = ($c->req->param('sort') or 'date');
 
-    my @uids = $mailbox->uids($c, { sort => [ $sort ] });
+    my @uids = $mailbox->uids({ sort => [ $sort ] });
 
     if (defined $c->req->param('start')) {
         my ($start) = $c->req->param('start')  =~ /(\d+)/;

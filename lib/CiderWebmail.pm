@@ -15,6 +15,9 @@ use Catalyst::Runtime '5.70';
 
 use Catalyst qw/
     ConfigLoader
+
+    StackTrace
+
     Static::Simple
     Session
     Session::Store::FastMmap

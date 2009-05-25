@@ -9,6 +9,7 @@ requires 'Catalyst::Runtime' => '5.7012';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Plugin::Unicode';
+requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';
 requires 'Catalyst::Authentication::Credential::HTTP';
