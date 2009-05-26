@@ -156,7 +156,7 @@ sub main_body_part {
     #to use when forwarding/replying to messages and return it
     foreach(values(%{ $renderable })) {
         my $part = $_;
-        if ($part->{is_text} == 1) {
+        if (($part->{is_text} or 0) == 1) {
             return $part->{data};
         }
     }
@@ -218,15 +218,19 @@ sub _render_text_plain {
     my $charset = $o->{part}->head->mime_attr("content-type.charset");
 
     my $part = {};
-    unless ($charset and eval {
+    my $part_string;
+    unless ($charset
+        and eval {
             my $converter = Text::Iconv->new($charset, "utf-8");
-            $part->{data} = Text::Flowed::reformat($converter->convert($o->{part}->bodyhandle->as_string));
+            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
         }) {
 
         warn "unsupported encoding: $charset" if $charset;
-        $part->{data} = Text::Flowed::reformat($o->{part}->bodyhandle->as_string);
-    
+        $part_string = $o->{part}->bodyhandle->as_string;
     }
+
+    utf8::decode($part_string);
+    $part->{data} = Text::Flowed::reformat($part_string);
 
     $part->{is_text} = 1;
 
@@ -254,16 +258,16 @@ sub _render_text_html {
         }
     );
 
-    $scrubber->default( @default );
-    
-    unless (eval {
-            my $converter = Text::Iconv->new($charset, "utf-8");
-            $part->{data} = $converter->convert($scrubber->scrub($o->{part}->bodyhandle->as_string));
-        }) {
+    my $part_string = $o->{part}->bodyhandle->as_string;
+    eval {
+        my $converter = Text::Iconv->new($charset, "utf-8");
+        $part_string = $converter->convert($part_string);
+    } or warn "unsupported encoding: $charset" if $charset;
+    utf8::decode($part_string);
 
-        warn "unsupported encoding: $charset";
-        $part->{data} = $scrubber->scrub($o->{part}->bodyhandle->as_string);
-    }
+    $scrubber->default( @default );
+    $part->{data} = $scrubber->scrub($part_string);
+    $part->{data} =~ s!<(br|hr)>!<$1/>!g;
 
     $part->{is_html} = 1;
 

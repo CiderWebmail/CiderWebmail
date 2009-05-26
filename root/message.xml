@@ -3,7 +3,8 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
-    metal:use-macro="layout.xml#layout">
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail">
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
@@ -11,43 +12,43 @@
     <h1 metal:fill-slot="headline" tal:content="message/subject">Subject</h1>
     <body metal:fill-slot="content">
         <p>
-            <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> Reply</a>
-            <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt="forward"/> Forward</a>
+            <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> <span i18n:translate="">Reply</span></a>
+            <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt="forward"/> <span i18n:translate="">Forward</span></a>
         </p>
         <form class="move_message" tal:attributes="action uri_move" method="post">
             <label>
-                <span>Target folder:</span>
+                <span i18n:translate="">Target folder:</span>
                 <select name="target_folder">
                     <option tal:repeat="folder target_folders" tal:content="folder/id"/>
                 </select>
             </label>
-            <button type="submit">Move message</button>
+            <button type="submit" i18n:translate="">Move message</button>
         </form>
         <table class="message_header">
         <tr>
-                <th>From:</th>
+                <th i18n:translate="">From:</th>
                 <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
             </tr>
             <tr>
-                <th>To:</th>
+                <th i18n:translate="">To:</th>
                 <td><span tal:repeat="address message/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span></td>
             </tr>
             <tr tal:condition="true:message/cc">
-                <th>Cc:</th>
+                <th i18n:translate="">Cc:</th>
                 <td>
                     <span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span>
                 </td>
             </tr>
             <tr>
-                <th>Subject:</th>
+                <th i18n:translate="">Subject:</th>
                 <td><span tal:replace="message/subject">from</span></td>
             </tr>
             <tr>
-                <th>Date:</th>
+                <th i18n:translate="">Date:</th>
                 <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
             </tr>
             <tr>
-                <th>Header</th>
+                <th i18n:translate="">Header:</th>
                 <td><a onClick='toggleHeader(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
             </tr>
             <tr>
@@ -66,7 +67,6 @@
                     </div>
                 </td>
             </tr>
-
         </table>
     </body>
 </html>

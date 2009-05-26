@@ -432,7 +432,7 @@ sub message_as_string {
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     my $message_string = $c->stash->{imapclient}->message_string( $o->{uid} );
-    
+    utf8::decode($message_string);
 
     unless($c->stash->{headercache}->get({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring'})) {
         $c->stash->{headercache}->set({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring', data => $message_string});
@@ -575,12 +575,15 @@ sub _decode_header {
             unless (eval {
                     my $converter = Text::Iconv->new($_->[1], "utf-8");
                     my $part = $converter->convert( $_->[0] );
+                    utf8::decode($part);
                     $header .= $part if defined $part;
                 }) {
                 warn "unsupported encoding: $_->[1]";
+                utf8::decode($_->[0]);
                 $header .= $_->[0];
             }
         } else {
+            utf8::decode($_->[0]);
             $header .= $_->[0];
         }
     }

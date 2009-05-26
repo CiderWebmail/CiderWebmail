@@ -1,0 +1,75 @@
+msgid "Attachment:"
+msgstr "Attachment:"
+
+msgid "Cc:"
+msgstr "Cc:"
+
+msgid "Compose Message"
+msgstr "Compose Message"
+
+msgid "Compose new mail"
+msgstr "Compose new mail"
+
+msgid "Compose new mail message"
+msgstr "Compose new mail message"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date:"
+msgstr "Date:"
+
+msgid "Drag a mail's icon to a folder name to move that mail to that folder."
+msgstr "Drag a mail's icon to a folder name to move that mail to that folder."
+
+msgid "Forward"
+msgstr "Forward"
+
+msgid "Forwarding message"
+msgstr "Forwarding message"
+
+msgid "From"
+msgstr "From"
+
+msgid "From:"
+msgstr "From:"
+
+msgid "Header:"
+msgstr "Header:"
+
+msgid "Loading message"
+msgstr "Loading message"
+
+msgid "Move message"
+msgstr "Move message"
+
+msgid "No Subject"
+msgstr "No Subject"
+
+msgid "Reply"
+msgstr "Reply"
+
+msgid "Save message to:"
+msgstr "Save message to:"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Subject:"
+msgstr "Subject:"
+
+msgid "Target folder:"
+msgstr "Target folder:"
+
+msgid "Text:"
+msgstr "Text:"
+
+msgid "To:"
+msgstr "To:"
+

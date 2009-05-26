@@ -5,6 +5,8 @@ use warnings;
 use parent 'Catalyst::View::Petal';
 
 use Petal::Utils qw( :default :hash );
+use Petal::TranslationService::Gettext;
+
 =head1 NAME
 
 CiderWebmail::View::Petal - Catalyst View
@@ -26,7 +28,14 @@ sub process {
 
     my $base_dir = ["$root/templates", $root];
     unshift @$base_dir, "$root/ajax" if ($c->req->param('layout') or '') eq 'ajax';
-    $self->config(base_dir => $base_dir); # this sets the global config, so we have to do it for every request
+    $self->config(
+        base_dir => $base_dir,
+        translation_service => Petal::TranslationService::Gettext->new(
+            domain => 'CiderWebmail',
+            locale_dir => $c->config->{root} . '/locale',
+            target_lang => $c->config->{language} || 'en',
+        ),
+    ); # this sets the global config, so we have to do it for every request
 
     $c->stash({
         uri_root => $c->uri_for('/'),

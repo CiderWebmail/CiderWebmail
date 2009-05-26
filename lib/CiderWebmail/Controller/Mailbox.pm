@@ -64,7 +64,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         my $name;
 
         if ($sort eq 'date') {
-            $name = $_->{head}->{date}->ymd;
+            $name = ($_->{head}->{date} or DateTime->from_epoch(epoch => 0))->ymd;
         }
 
         if ($sort =~ m/(from|to)/) {

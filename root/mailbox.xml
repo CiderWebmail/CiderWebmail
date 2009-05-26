@@ -3,6 +3,8 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
     metal:use-macro="layout.xml#layout">
     <head>
         <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
@@ -14,15 +16,15 @@
         <div metal:fill-slot="content">
             <form tal:attributes="action uri_quicksearch" method="GET">
                 <input name="text"/>
-                <button type="submit">Search</button>
+                <button type="submit" i18n:translate="">Search</button>
             </form>
             <div id="messages_pane">
                 <table id="message_list" class="message_list">
                     <tr>
                         <th></th>
-                        <th><a tal:attributes="href uri_sorted_from">From</a></th>
-                        <th><a tal:attributes="href uri_sorted_subject">Subject</a></th>
-                        <th><a tal:attributes="href uri_sorted_date">Date</a></th>
+                        <th><a tal:attributes="href uri_sorted_from" i18n:translate="">From</a></th>
+                        <th><a tal:attributes="href uri_sorted_subject" i18n:translate="">Subject</a></th>
+                        <th><a tal:attributes="href uri_sorted_date" i18n:translate="">Date</a></th>
                         <th></th>
                     </tr>
                     <tbody tal:repeat="group groups">
@@ -34,7 +36,7 @@
                             <td class="sender" tal:attributes="id string:from_${message/uid}">
                                 <span tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
                             </td>
-                            <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/head/subject" tal:replace="message/head/subject"/><span tal:condition="false:message/head/subject" tal:omit-tag="">No Subject</span></a></td>
+                            <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/head/subject" tal:replace="message/head/subject"/><span tal:condition="false:message/head/subject" tal:omit-tag="" i18n:translate="">No Subject</span></a></td>
                             <td tal:content="message/head/date/strftime '%T'">date</td>
                             <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
                         </tr>
@@ -42,7 +44,8 @@
                 </table>
             </div>
             <div id="message_view">
-                <p>Drag a mail's icon to a folder name to move that mail to that folder.</p>
+                <p id="help_message" i18n:translate="">Drag a mail's icon to a folder name to move that mail to that folder.</p>
+                <p id="loading_message" i18n:translate="">Loading message</p>
             </div>
         </div>
     </body>

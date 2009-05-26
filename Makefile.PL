@@ -41,6 +41,8 @@ requires 'Mail::IMAPClient';
 requires 'Cache::FastMmap';
 requires 'Clone';
 
+requires 'Locale::Maketext::Gettext';
+
 catalyst;
 
 install_script glob('script/*.pl');

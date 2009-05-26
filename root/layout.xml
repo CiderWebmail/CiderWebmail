@@ -5,9 +5,12 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
     metal:define-macro="layout">
 
     <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
         <title metal:define-slot="title">CiderWebmail</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/base.css" />
@@ -20,11 +23,11 @@
     <body>
         <div id="controlpanel">
             <div id="logo">
-                <a tal:attributes="href uri_root">CiderWebmail</a>
+                <h1><a href="http://www.atikon.com"><img tal:attributes="src string:${uri_static}/images/atikon_logo.gif" alt="Atikon" title="Atikon EDV &amp; Marketing GmbH"/></a></h1>
             </div>
             <div id="mailnavigation">
                 <ul class="actions">
-                    <li><a tal:attributes="href uri_compose">Compose new mail</a></li>
+                    <li><a tal:attributes="href uri_compose" i18n:translate="">Compose new mail</a></li>
                 </ul>
                 <ul id="folder_tree">
                     <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">

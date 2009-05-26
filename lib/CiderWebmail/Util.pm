@@ -18,7 +18,7 @@ sub add_foldertree_uri_view {
         if (defined($folder->{folders})) { #if we have any subfolders
             add_foldertree_uri_view($c,
                 {
-                    path => (defined($o->{path}) ? join($c->{model}->separator($c), $o->{path}, $folder->{name}) : $folder->{name}),
+                    path => (defined($o->{path}) ? join($c->model->separator($c), $o->{path}, $folder->{name}) : $folder->{name}),
                     folders => $folder->{folders}
                 });
         }

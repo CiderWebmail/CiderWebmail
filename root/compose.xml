@@ -2,52 +2,53 @@
 <html
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
-    xmlns:metal="http://xml.zope.org/namespaces/metal">
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
+    >
     <head>
-        <title metal:fill-slot="title">Compose Message</title>
+        <title metal:fill-slot="title" i18n:translate="">Compose Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css"/>
     </head>
     <body>
-        <h1 metal:fill-slot="headline">compose new mail message</h1>
+        <h1 metal:fill-slot="headline" i18n:translate="">Compose new mail message</h1>
         <div metal:fill-slot="content">
             <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
                 <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
                 <label>
-                    <span>From:</span>
+                    <span i18n:translate="">From:</span>
                     <input name="from" tal:condition="true: message/from/0/address" tal:attributes="value message/from/0/address"/>
                     <input name="from" tal:condition="false: message/from/0/address"/>
                 </label>
                 <label>
-                    <span>To:</span>
+                    <span i18n:translate="">To:</span>
                     <input name="to" tal:condition="true: message/to/0/address" tal:attributes="value message/to/0/address"/>
                     <input name="to" tal:condition="false: message/to/0/address"/>
                 </label>
                 <label>
-                    <span>Cc:</span>
+                    <span i18n:translate="">Cc:</span>
                     <input name="cc" tal:attributes="value message/cc"/>
                 </label>
                 <label>
-                    <span>Subject:</span>
+                    <span i18n:translate="">Subject:</span>
                     <input name="subject" tal:attributes="value message/subject"/>
                 </label>
                 <label>
-                    <span>Text:</span>
+                    <span i18n:translate="">Text:</span>
                     <textarea name="body" tal:content="message/body"/>
                 </label>
-                <p tal:condition="true: forward">
-                    Forwarding message
-                </p>
+                <p tal:condition="true: forward" i18n:translate="">Forwarding message</p>
                 <label>
-                    <span>Attachment:</span>
+                    <span i18n:translate="">Attachment:</span>
                     <input type="file" name="attachment"/>
                 </label>
                 <label>
-                    <span>Save message to:</span>
+                    <span i18n:translate="">Save message to:</span>
                     <select name="sent_folder">
                         <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
                     </select>
                 </label>
-                <button type="submit">Send</button>
+                <button type="submit" i18n:translate="">Send</button>
             </form>
         </div>
     </body>

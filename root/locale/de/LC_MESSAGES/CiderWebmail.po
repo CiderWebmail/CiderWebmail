@@ -1,0 +1,86 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Attachment:"
+msgstr "Anhang:"
+
+msgid "Cc:"
+msgstr "Cc:"
+
+msgid "Compose Message"
+msgstr "Neue Email schreiben"
+
+msgid "Compose new mail"
+msgstr "Neue Email schreiben"
+
+msgid "Compose new mail message"
+msgstr "Neue Email schreiben"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Date:"
+msgstr "Datum:"
+
+msgid "Drag a mail's icon to a folder name to move that mail to that folder."
+msgstr ""
+"Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen "
+"Ordner zu verschieben."
+
+msgid "Forward"
+msgstr "Weiterleiten"
+
+msgid "Forwarding message"
+msgstr "Leite Email weiter"
+
+msgid "From"
+msgstr "Von"
+
+msgid "From:"
+msgstr "Von:"
+
+msgid "Header:"
+msgstr "Header:"
+
+msgid "Loading message"
+msgstr "Lade Email"
+
+msgid "Move message"
+msgstr "Email verschieben"
+
+msgid "No Subject"
+msgstr "Kein Betreff"
+
+msgid "Reply"
+msgstr "Antworten"
+
+msgid "Save message to:"
+msgstr "Email speichern in:"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Send"
+msgstr "Senden"
+
+msgid "Subject"
+msgstr "Betreff"
+
+msgid "Subject:"
+msgstr "Betreff:"
+
+msgid "Target folder:"
+msgstr "Zielordner:"
+
+msgid "Text:"
+msgstr "Text:"
+
+msgid "To:"
+msgstr "An:"

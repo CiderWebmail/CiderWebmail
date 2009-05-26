@@ -40,6 +40,8 @@ sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
 
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
+    my $mailbox = $c->stash->{folder};
+    my $uid = $c->stash->{message}->uid;
     
     $c->stash->{message}->load_body();
 
@@ -51,9 +53,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $c->stash({
         template       => 'message.xml',
         target_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_reply      => $c->uri_for("/mailbox/".$c->stash->{folder}."/".$c->stash->{message}->uid."/reply"),
-        uri_forward      => $c->uri_for("/mailbox/".$c->stash->{folder}."/".$c->stash->{message}->uid."/forward"),
-        uri_move      => $c->uri_for("/mailbox/".$c->stash->{folder}."/".$c->stash->{message}->uid."/move"),
+        uri_reply      => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
+        uri_forward    => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
+        uri_move       => $c->uri_for("/mailbox/$mailbox/$uid/move"),
     });
 }
 
@@ -122,7 +124,7 @@ sub compose : Chained('/mailbox/setup') Args(0) {
     $c->stash->{message} ||= {};
     $c->stash({
         uri_send     => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/send'),
-        sent_folders => [ sort {$a->{name} cmp $b->{name}} values %$folders ],
+        sent_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %$folders ],
         template     => 'compose.xml',
     });
 }
@@ -136,8 +138,7 @@ Reply to a message suggesting receiver, subject and message text
 sub reply : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
     my $mailbox = $c->stash->{folder};
-    my $uid = $c->stash->{message};
-    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+    my $message = $c->stash->{message};
 
     #FIXME: we need a way to find the 'main part' of a message and use this here
     my $body = $message->main_body_part($c);
@@ -166,14 +167,12 @@ Forward a mail as attachment
 sub forward : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
     my $mailbox = $c->stash->{folder};
-    my $uid = $c->stash->{message};
-
-    my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $uid } );
+    my $message = $c->stash->{message};
 
     $c->stash({
-        forward => $uid,
+        forward => $message->uid,
         message => {
-            from    => $message->get_header('to'),
+            from    => $message->to,
             subject => 'Fwd: ' . $message->subject,
         },
     });
@@ -230,7 +229,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (my $sent_folder = $c->req->param('sent_folder')) {
         my $msg_text = $mail->as_string;
-        $c->model()->append_message($c, {folder => $sent_folder, message_text => $msg_text});
+        $c->model()->append_message($c, {mailbox => $sent_folder, message_text => $msg_text});
     }
 
     $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));

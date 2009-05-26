@@ -2,6 +2,7 @@ window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
     var droppables = $('folder_tree').getElements('.folder');
     var selected = new Array();
+    var loading_message = $('message_view').innerHTML;
 
     function stop_propagation(event) {
         if (event.stopPropagation) event.stopPropagation();
@@ -33,7 +34,9 @@ window.addEvent('load', function() {
 
         if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
             var uid = target.id.replace('link_', '');
-            $('message_view').innerHTML = '<p>loading message...</p>';
+            $('message_view').innerHTML = loading_message;
+            $('loading_message').style.display = 'block';
+            $('help_message').style.display = 'none';
             var myHTMLRequest = new Request.HTML({update: 'message_view'}).get(target.href + "?layout=ajax");
             stop_propagation(event);
         }
