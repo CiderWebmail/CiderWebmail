@@ -321,8 +321,8 @@ sub simple_search {
 
     my @search = (
         'OR',
-        'HEADER SUBJECT', $c->stash->{imapclient}->Quote($o->{searchfor}),
-        'HEADER FROM', $c->stash->{imapclient}->Quote($o->{searchfor}),
+        'SUBJECT', $c->stash->{imapclient}->Quote($o->{searchfor}),
+        'FROM', $c->stash->{imapclient}->Quote($o->{searchfor}),
     );
 
     my @uids = $c->stash->{imapclient}->search(@search);
