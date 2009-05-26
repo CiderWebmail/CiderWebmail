@@ -10,9 +10,8 @@
     metal:define-macro="layout">
 
     <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-        <title metal:define-slot="title">CiderWebmail</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title metal:define-slot="title">CiderWebmail</title>
         <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/base.css" />
         <link metal:define-slot="css" />
         <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mootools-1.2-core.js" />
@@ -23,7 +22,7 @@
     <body>
         <div id="controlpanel">
             <div id="logo">
-                <h1><a href="http://www.atikon.com"><img tal:attributes="src string:${uri_static}/images/atikon_logo.gif" alt="Atikon" title="Atikon EDV &amp; Marketing GmbH"/></a></h1>
+                <a tal:attributes="href uri_root">CiderWebmail</a>
             </div>
             <div id="mailnavigation">
                 <ul class="actions">

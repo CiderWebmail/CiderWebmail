@@ -163,9 +163,7 @@ sub get_folder_uids {
 
     #TODO empty result
     my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
-    my $uids = $c->stash->{imapclient}->sort(@sort);
- 
-    return $uids;
+    return $c->stash->{imapclient}->sort(@sort);
 }
 
 =head2 get_headers_hash($c, { uids => [qw/ 1 .. 10 /], sort => [qw/ date /], headers => [qw/ date subject /], mailbox => 'INBOX' })
@@ -284,6 +282,7 @@ sub get_headers_hash() {
         my $email = Email::Simple->new($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || die;
 
         my %headers = $email->header_pairs;
+        defined $headers{$_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;

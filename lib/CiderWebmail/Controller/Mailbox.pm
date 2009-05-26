@@ -64,7 +64,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         my $name;
 
         if ($sort eq 'date') {
-            $name = ($_->{head}->{date} or DateTime->from_epoch(epoch => 0))->ymd;
+            $name = $_->{head}->{date}->ymd;
         }
 
         if ($sort =~ m/(from|to)/) {
@@ -82,8 +82,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $clean_uri = $c->req->uri;
     $clean_uri =~ s/[?&]sort=\w+//;
     $c->stash({
-        groups          => [ map +{
-            name => 
+        groups => [ map +{
+            name =>
                 $sort eq 'date'
                     ? "$_, " . DateTime->new(year => substr($_, 0, 4), month => substr($_, 5, 2), day => substr($_, 8))->day_name #sorting by date
                     : $_, #default sort by $foo
