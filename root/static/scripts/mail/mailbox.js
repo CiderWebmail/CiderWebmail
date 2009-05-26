@@ -37,7 +37,13 @@ window.addEvent('load', function() {
             $('message_view').innerHTML = loading_message;
             $('loading_message').style.display = 'block';
             $('help_message').style.display = 'none';
-            var myHTMLRequest = new Request.HTML({update: 'message_view'}).get(target.href + "?layout=ajax");
+            $('message_view').style.top = '30%';
+            $('messages_pane').style.bottom = '70%';
+            var myHTMLRequest = new Request.HTML({
+                onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
+                    $('message_view').innerHTML = responseHTML;
+                }
+            }).get(target.href + "?layout=ajax");
             stop_propagation(event);
         }
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {

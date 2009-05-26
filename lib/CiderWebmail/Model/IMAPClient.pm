@@ -519,10 +519,11 @@ sub transform_header {
     $o->{header} = lc($o->{header});
 
     my $headers = {
-        from => \&_transform_address,
-        to   => \&_transform_address,
-        cc   => \&_transform_address,
-        date => \&_transform_date,
+        from       => \&_transform_address,
+        to         => \&_transform_address,
+        cc         => \&_transform_address,
+        'reply-to' => \&_transform_address,
+        date       => \&_transform_date,
     };
 
     return $headers->{$o->{header}}->($self, $c, $o) if exists $headers->{$o->{header}};

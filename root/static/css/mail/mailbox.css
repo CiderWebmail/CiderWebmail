@@ -69,11 +69,13 @@ div#left a.hover {
 
 #messages_pane {
     position: absolute;
-    top: 5em;
-    bottom: 50%;
+    top: 2.5em;
+    bottom: 30%;
     left: 0;
     width: 100%;
     overflow: auto;
+    margin-bottom: 1px;
+    border-bottom: 1px solid gray;
 }
 
 #messages_pane tr.selected {
@@ -82,8 +84,8 @@ div#left a.hover {
 
 #message_view {
     position: absolute;
-    top: 50%;
-    bottom: 2em;
+    top: 70%;
+    bottom: 0;
     left: 0;
     width: 100%;
     overflow: auto;
@@ -117,4 +119,21 @@ div#left a.hover {
 .dragger li {
     margin: 0;
     padding: 0;
+}
+
+#folder_headline {
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+h1 {
+    font-size: 140%;
+}
+
+#quicksearch {
+    float: right;
+    margin: 0;
+    padding: 0;
+    text-align: bottom;
 }

@@ -4,69 +4,63 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    i18n:domain="CiderWebmail">
+    i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
+    >
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
     </head>
-    <h1 metal:fill-slot="headline" tal:content="message/subject">Subject</h1>
-    <body metal:fill-slot="content">
-        <p>
-            <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> <span i18n:translate="">Reply</span></a>
-            <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt="forward"/> <span i18n:translate="">Forward</span></a>
-        </p>
-        <form class="move_message" tal:attributes="action uri_move" method="post">
-            <label>
-                <span i18n:translate="">Target folder:</span>
-                <select name="target_folder">
-                    <option tal:repeat="folder target_folders" tal:content="folder/id"/>
-                </select>
-            </label>
-            <button type="submit" i18n:translate="">Move message</button>
-        </form>
-        <table class="message_header">
-        <tr>
-                <th i18n:translate="">From:</th>
-                <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
-            </tr>
-            <tr>
-                <th i18n:translate="">To:</th>
-                <td><span tal:repeat="address message/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span></td>
-            </tr>
-            <tr tal:condition="true:message/cc">
-                <th i18n:translate="">Cc:</th>
-                <td>
-                    <span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span>
-                </td>
-            </tr>
-            <tr>
-                <th i18n:translate="">Subject:</th>
-                <td><span tal:replace="message/subject">from</span></td>
-            </tr>
-            <tr>
-                <th i18n:translate="">Date:</th>
-                <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
-            </tr>
-            <tr>
-                <th i18n:translate="">Header:</th>
-                <td><a onClick='toggleHeader(this)'>toggle</a><pre style="display: none;" tal:content="message/header_formatted">header</pre></td>
-            </tr>
-            <tr>
-                <td colspan='2'>
-                    <div class="body_part" tal:repeat="body_part each: message/renderable">
-                        <pre tal:condition="body_part/val/is_text" tal:content="body_part/val/data">mail body</pre>
-                        <div tal:condition="body_part/val/is_html" tal:content="structure body_part/val/data">mail body</div>
-                        <hr />
-                    </div>
-                </td>
-            </tr>
-            <tr tal:condition="true:message/attachments">
-                <td colspan='2'>
-                    <div class="attachment" tal:repeat="attachment each: message/attachments">
-                        <p><a tal:content="attachment/val/name" tal:attributes="href attachment/val/uri_view; title attachment/val/type" /></p>
-                    </div>
-                </td>
-            </tr>
-        </table>
+    <body>
+        <div metal:fill-slot="content">
+            <h1 tal:content="message/subject">Subject</h1>
+            <p>
+                <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> <span i18n:translate="">Reply</span></a>
+                <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt="forward"/> <span i18n:translate="">Forward</span></a>
+            </p>
+            <form class="move_message" tal:attributes="action uri_move" method="post">
+                <label>
+                    <span i18n:translate="">Target folder:</span>
+                    <select name="target_folder">
+                        <option tal:repeat="folder target_folders" tal:content="folder/id"/>
+                    </select>
+                </label>
+                <button type="submit" i18n:translate="">Move message</button>
+            </form>
+            <table class="message_header">
+                <tr>
+                    <th i18n:translate="">From:</th>
+                    <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">To:</th>
+                    <td><span tal:repeat="address message/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span></td>
+                </tr>
+                <tr tal:condition="true:message/cc">
+                    <th i18n:translate="">Cc:</th>
+                    <td>
+                        <span tal:repeat="address message/cc" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">to</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Date:</th>
+                    <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Header:</th>
+                    <td><a onClick='toggleHeader(this)'>toggle</a><pre id="header_toggle" style="display: none;" tal:content="message/header_formatted">header</pre></td>
+                </tr>
+            </table>
+            <div class="body_part" tal:repeat="body_part each: message/renderable">
+                <pre tal:condition="body_part/val/is_text" tal:content="body_part/val/data">mail body</pre>
+                <div tal:condition="body_part/val/is_html" tal:content="structure body_part/val/data">mail body</div>
+                <hr />
+            </div>
+            <div id="attachments" tal:condition="true:message/attachments">
+                <div class="attachment" tal:repeat="attachment each: message/attachments">
+                    <p><a tal:content="attachment/val/name" tal:attributes="href attachment/val/uri_view; title attachment/val/type" /></p>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

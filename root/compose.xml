@@ -5,14 +5,15 @@
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
     >
     <head>
         <title metal:fill-slot="title" i18n:translate="">Compose Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css"/>
     </head>
     <body>
-        <h1 metal:fill-slot="headline" i18n:translate="">Compose new mail message</h1>
         <div metal:fill-slot="content">
+            <h1 i18n:translate="">Compose new mail message</h1>
             <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
                 <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
                 <label>
