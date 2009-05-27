@@ -40,6 +40,7 @@ requires 'Mail::IMAPClient';
 
 requires 'Cache::FastMmap';
 requires 'Clone';
+requires 'HTML::Scrubber';
 
 requires 'Locale::Maketext::Gettext';
 

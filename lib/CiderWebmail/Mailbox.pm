@@ -28,8 +28,8 @@ sub mailbox {
 sub list_messages_hash {
     my ($self, $o) = @_;
     
-    if (defined($self->{uids})) {
-        return $self->{c}->model->get_headers_hash($self->{c}, { mailbox => $self->{mailbox}, uids => $self->{uids}, headers => [qw/From Subject Date/] });
+    if (defined($o->{uids})) {
+        return $self->{c}->model->get_headers_hash($self->{c}, { mailbox => $self->{mailbox}, uids => $o->{uids}, headers => [qw/From Subject Date/] });
     } else {
         return $self->{c}->model->get_headers_hash($self->{c}, { mailbox => $self->{mailbox}, sort => $o->{sort}, headers => [qw/From Subject Date/] });
     }

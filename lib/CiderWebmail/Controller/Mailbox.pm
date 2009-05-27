@@ -56,7 +56,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
                 %{ $_ },
                 uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
                 uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-            }, @{ $mailbox->list_messages_hash($c, { uid => \@uids }) };
+            }, @{ $mailbox->list_messages_hash({ uids => \@uids }) };
 
     my %groups;
 
