@@ -267,7 +267,9 @@ sub _render_text_html {
 
     $scrubber->default( @default );
     $part->{data} = $scrubber->scrub($part_string);
-    $part->{data} =~ s!<(br|hr)>!<$1/>!g;
+    use HTML::Tidy;
+    my $tidy = HTML::Tidy->new( { output_xhtml => 1, bare => 1, clean => 1, doctype => 'omit', enclose_block_text => 1, show_errors => 0, char_encoding => 'utf8', show_body_only => 1, tidy_mark => 0 } );
+    $part->{data} = $tidy->clean($part->{data});
 
     $part->{is_html} = 1;
 

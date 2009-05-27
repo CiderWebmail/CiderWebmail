@@ -10,16 +10,16 @@ if ($@) {
     exit;
 }
 
-my $mech = Test::WWW::Mechanize::Catalyst->new;
+my $mech = Test::WWW::Mechanize->new;
 
 $mech->credentials('test@atikon.at', 'quech0Ae');
-$mech->get( 'http://localhost/' );
+$mech->get( 'http://localhost:3000/' )->is_success or die 'This test requires a running Catalyst server on port 3000. Recommending using the -fork option!';
 
 # Find all message links:
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
 
 my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
-plan tests => 4 * @links;
+plan tests => 6 * @links;
 
 for my $link (@links) {
     $mech->get_ok($link->url);
@@ -30,9 +30,17 @@ for my $link (@links) {
     # <input value="ss@atikon.com" name="from">
 
     unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="to">/, 'To: field does not contain an email address')) {
-        warn $mech->content =~ m'(<input value="[^"]+" name="to">)';
+        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="to">)';
     }
     unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
-        warn $mech->content =~ m'(<input value="[^"]+" name="from">)';
+        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
+    }
+
+    $mech->back;
+
+    $mech->follow_link_ok({ url_regex => qr{/forward\z} }, "forwarding");
+
+    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
+        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
     }
 }

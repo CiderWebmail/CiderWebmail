@@ -43,6 +43,7 @@ requires 'Mail::IMAPClient';
 requires 'Cache::FastMmap';
 requires 'Clone';
 requires 'HTML::Scrubber';
+requires 'HTML::Tidy';
 
 requires 'Locale::Maketext::Gettext';
 
