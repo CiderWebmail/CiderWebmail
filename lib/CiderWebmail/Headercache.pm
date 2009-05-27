@@ -5,12 +5,14 @@ use Cache::FastMmap;
 
 package CiderWebmail::Headercache;
 
+my $headercache = Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' );
+
 sub new {
     my ($class, $c, $o) = @_;
 
     my $cache = {
         c => $c,
-        cache => Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' ),
+        cache => $headercache,
     };
 
     bless $cache, $class;
