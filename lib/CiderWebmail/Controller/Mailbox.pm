@@ -79,6 +79,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
         push @{ $groups{$name} }, $_;
     }
 
+    DateTime->DefaultLocale($c->config->{language}); # is this really a good place for this?
+
     my $clean_uri = $c->req->uri;
     $clean_uri =~ s/[?&]sort=\w+//;
     $c->stash({
