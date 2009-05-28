@@ -1,3 +1,7 @@
+html, body {
+    overflow-y: hidden;
+}
+
 .message_list {
     width: 100%;
 }

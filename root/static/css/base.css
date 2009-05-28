@@ -1,5 +1,5 @@
 html, body
-    {position:relative; height:100%; margin:0; padding:0; color:#333333; background-color:#efefef;}
+    {position:relative; height:100%; margin:0; padding:0; color:#333333; background-color:#efefef; }
 
 img
     {border:none;}
@@ -41,7 +41,8 @@ td, th
         {margin:0; padding:0.3em 0.5em; font-size:110%;}
 
 #content
-    {position:absolute; top:0; bottom:0; left:13em; right:0; padding:0.2em 0.5em; background-color:#ffffff; border-top:1px solid #cccccc; border-left:1px solid #cccccc; overflow:auto;}
+    {position:absolute; top:0; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; overflow:auto;}
+#compose { padding: 0 0.5em; }
 
 #loading_message
     {display: none;}

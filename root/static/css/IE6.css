@@ -1,0 +1,6 @@
+#messages_pane {
+    height: expression(this.parentNode.clientHeight * (1 - parseInt(this.currentStyle.bottom) / 100) - this.offsetTop);
+}
+#message_view {
+    height: expression(this.parentNode.clientHeight * (1 - parseInt(this.currentStyle.top) / 100));
+}

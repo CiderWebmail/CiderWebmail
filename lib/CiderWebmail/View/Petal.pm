@@ -38,8 +38,10 @@ sub process {
     ); # this sets the global config, so we have to do it for every request
 
     $c->stash({
-        uri_root => $c->uri_for('/'),
-        uri_static => $c->uri_for('/static'),
+        uri_root                 => $c->uri_for('/'),
+        uri_static               => $c->uri_for('/static'),
+        condcomment_lt_ie7_start => '<!--[if lt IE 7]>',
+        condcommentend           => '<![endif]-->',
     });
 
     $c->res->content_type('text/xml') if ($c->req->param('layout') or '') eq 'ajax';
