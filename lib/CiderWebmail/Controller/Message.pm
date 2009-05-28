@@ -160,7 +160,7 @@ sub reply : Chained('setup') Args(1) {
         $new_message->{to} = $recipient->[0]->address;
     } elsif ($who eq 'all') {
         my @recipients;
-        foreach( ( ( $message->reply_to or $message->from ), $message->cc ) ) {
+        foreach( ( ( $message->reply_to or $message->from ), $message->cc, $message->to ) ) {
             push(@recipients, $_->address) foreach( @$_ );
         }
         $new_message->{to} = join('; ', @recipients);
