@@ -416,6 +416,22 @@ sub get_headers {
     return (wantarray ? $headers : $headers->{lc($o->{headers}->[0])});
 }
 
+=head2 mark_read($c, { mailbox => $mailbox, uid => $uid })
+
+mark a messages as read
+
+=cut
+
+sub mark_read {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+    die unless $o->{uid};
+
+    $self->select($c, { mailbox => $o->{mailbox} });
+    $c->stash->{imapclient}->set_flag("Seen", $o->{uid});
+}
+
 =head2 message_as_string($c, { mailbox => $mailbox, uid => $uid })
 
 return a full message body as string

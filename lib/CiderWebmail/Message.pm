@@ -84,6 +84,11 @@ sub cc {
     return $self->get_header('cc');
 }
 
+sub mark_read {
+    my ($self) = @_;
+
+    $self->{c}->model->mark_read($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+}
 
 sub get_headers {
     my ($self) = @_;

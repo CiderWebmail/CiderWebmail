@@ -50,6 +50,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
         $c->stash->{message}->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $c->stash->{message}->uid . "/attachment/$id");
     }
 
+    $c->stash->{message}->mark_read();
+
     $c->stash({
         template       => 'message.xml',
         target_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
