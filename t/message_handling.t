@@ -19,11 +19,11 @@ $mech->get( 'http://localhost:3000/' )->is_success or die 'This test requires a 
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
 
 my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
-plan tests => 6 * @links;
+plan tests => 9 * @links;
 
 for my $link (@links) {
     $mech->get_ok($link->url);
-    $mech->follow_link_ok({ url_regex => qr{/reply\z} }, "replying");
+    $mech->follow_link_ok({ url_regex => qr{/reply/sender\z} }, "replying");
 
     # check if address fields are filled like:
     # <input value="johann.aglas@atikon.com" name="to">
@@ -41,6 +41,17 @@ for my $link (@links) {
     $mech->follow_link_ok({ url_regex => qr{/forward\z} }, "forwarding");
 
     unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
+        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
+    }
+
+    $mech->back;
+
+    $mech->follow_link_ok({ url_regex => qr{/reply/all\z} }, "reply to all");
+
+    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}(?:\s*;\s*$RE{Email}{Address})*" name="to">/, 'To: field does not contain an email address')) {
+        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="to">)';
+    }
+    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}(?:\s*;\s*$RE{Email}{Address})*" name="from">/, 'From: field does not contain an email address')) {
         warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
     }
 }
