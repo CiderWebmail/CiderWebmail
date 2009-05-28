@@ -23,8 +23,8 @@
                 </label>
                 <label>
                     <span i18n:translate="">To:</span>
-                    <input name="to" tal:condition="true: message/to/0/address" tal:attributes="value message/to/0/address"/>
-                    <input name="to" tal:condition="false: message/to/0/address"/>
+                    <input name="to" tal:condition="true: message/to" tal:attributes="value message/to"/>
+                    <input name="to" tal:condition="false: message/to"/>
                 </label>
                 <label>
                     <span i18n:translate="">Cc:</span>

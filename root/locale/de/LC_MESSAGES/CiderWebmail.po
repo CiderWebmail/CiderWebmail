@@ -61,6 +61,9 @@ msgstr "Kein Betreff"
 msgid "Reply"
 msgstr "Antworten"
 
+msgid "Reply All"
+msgstr "Allen Antworten"
+
 msgid "Save message to:"
 msgstr "Email speichern in:"
 

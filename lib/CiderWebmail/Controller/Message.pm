@@ -53,7 +53,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $c->stash({
         template       => 'message.xml',
         target_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_reply      => $c->uri_for("/mailbox/$mailbox/$uid/reply"),
+        uri_reply      => $c->uri_for("/mailbox/$mailbox/$uid/reply/sender"),
+        uri_reply_all  => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
         uri_forward    => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
         uri_move       => $c->uri_for("/mailbox/$mailbox/$uid/move"),
     });
@@ -135,8 +136,8 @@ Reply to a message suggesting receiver, subject and message text
 
 =cut
 
-sub reply : Chained('setup') Args(0) {
-    my ( $self, $c ) = @_;
+sub reply : Chained('setup') Args(1) {
+    my ( $self, $c, $who ) = @_;
     my $mailbox = $c->stash->{folder};
     my $message = $c->stash->{message};
 
@@ -146,14 +147,26 @@ sub reply : Chained('setup') Args(0) {
     $body =~ s/^/> /gm;
     $body .= "\n\n";
 
-    $c->stash({
-        message => {
-            from    => $message->to, #this is stupd... we should not use the to address here...
-            to      => ($message->reply_to or $message->from),
-            subject => 'Re: ' . $message->subject,
-            body    => $body,
-        },
-    });
+    my $new_message = {
+        from    => $message->to, #this is stupd... we should not use the to address here...
+        subject => 'Re: ' . $message->subject,
+        body    => $body,
+    };
+
+    if ($who eq 'sender') {
+        my $recipient = ($message->reply_to or $message->from);
+        $new_message->{to} = $recipient->[0]->address;
+    } elsif ($who eq 'all') {
+        my @recipients;
+        foreach( ( ( $message->reply_to or $message->from ), $message->cc ) ) {
+            push(@recipients, $_->address) foreach( @$_ );
+        }
+        $new_message->{to} = join('; ', @recipients);
+    } else {
+        die("invalid reply destination");
+    }
+
+    $c->stash(message => $new_message);
 
     $c->forward('compose');
 }

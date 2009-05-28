@@ -49,6 +49,9 @@ msgstr "No Subject"
 msgid "Reply"
 msgstr "Reply"
 
+msgid "Reply All"
+msgstr "Reply All"
+
 msgid "Save message to:"
 msgstr "Save message to:"
 

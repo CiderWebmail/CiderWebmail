@@ -16,6 +16,7 @@
             <h1 tal:content="message/subject">Subject</h1>
             <p>
                 <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> <span i18n:translate="">Reply</span></a>
+                <a tal:attributes="href uri_reply_all"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt="reply"/> <span i18n:translate="">Reply All</span></a>
                 <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt="forward"/> <span i18n:translate="">Forward</span></a>
             </p>
             <form class="move_message" tal:attributes="action uri_move" method="post">
