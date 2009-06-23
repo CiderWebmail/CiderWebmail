@@ -82,7 +82,7 @@ div#left a.hover {
     border-bottom: 2px solid gray;
 }
 
-#messages_pane.message_display {
+#content.message_display #messages_pane {
     bottom: 70%;
 }
 
@@ -147,7 +147,10 @@ h1 {
 }
 
 @media print {
-    #folder_headline, #messages_pane.message_display {
+    #content.message_display #folder_headline, #content.message_display #messages_pane, #help_message {
         display: none;
+    }
+    #messages_pane {
+        border: none;
     }
 }

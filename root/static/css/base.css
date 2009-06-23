@@ -48,11 +48,12 @@ td, th
     {display: none;}
 
 @media print {
-    *   { position: static !important; overflow: visible !important; }
+    *   { position: static !important; overflow: visible !important; float: none !important; }
     #controlpanel, #quicksearch, #message_actions, th.actions, td.actions
         { display: none; }
     body, html, #content
         { height: auto; }
     #content
         { border: none; }
+    a   { text-decoration: none; }
 }
