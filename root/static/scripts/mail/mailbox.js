@@ -38,7 +38,7 @@ window.addEvent('load', function() {
             $('loading_message').style.display = 'block';
             $('help_message').style.display = 'none';
             $('message_view').style.top = '30%';
-            $('messages_pane').style.bottom = '70%';
+            $('messages_pane').addClass('message_display');
             var myHTMLRequest = new Request.HTML({
                 onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
                     $('message_view').innerHTML = responseHTML;

@@ -78,8 +78,12 @@ div#left a.hover {
     left: 0;
     width: 100%;
     overflow: auto;
-    margin-bottom: 1px;
-    border-bottom: 1px solid gray;
+    margin-bottom: 2px;
+    border-bottom: 2px solid gray;
+}
+
+#messages_pane.message_display {
+    bottom: 70%;
 }
 
 #messages_pane tr.selected {
@@ -140,4 +144,10 @@ h1 {
     margin: 0;
     padding: 0;
     text-align: bottom;
+}
+
+@media print {
+    #folder_headline, #messages_pane.message_display {
+        display: none;
+    }
 }

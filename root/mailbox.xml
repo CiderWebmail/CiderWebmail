@@ -25,7 +25,7 @@
                         <th><a tal:attributes="href uri_sorted_from" i18n:translate="">From</a></th>
                         <th><a tal:attributes="href uri_sorted_subject" i18n:translate="">Subject</a></th>
                         <th><a tal:attributes="href uri_sorted_date" i18n:translate="">Date</a></th>
-                        <th></th>
+                        <th class="actions"></th>
                     </tr>
                     <tbody tal:repeat="group groups">
                         <tr>
@@ -38,7 +38,7 @@
                             </td>
                             <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/head/subject" tal:replace="message/head/subject"/><span tal:condition="false:message/head/subject" tal:omit-tag="" i18n:translate="">No Subject</span></a></td>
                             <td tal:content="message/head/date/strftime '%T'">date</td>
-                            <td><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
+                            <td class="actions"><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
                         </tr>
                     </tbody>
                 </table>
