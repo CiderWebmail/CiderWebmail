@@ -38,9 +38,11 @@ root/locale/de/LC_MESSAGES/CiderWebmail.mo
 root/locale/de/LC_MESSAGES/CiderWebmail.po
 root/locale/en/LC_MESSAGES/CiderWebmail.mo
 root/locale/en/LC_MESSAGES/CiderWebmail.po
+root/logout.xml
 root/mailbox.xml
 root/message.xml
 root/static/css/base.css
+root/static/css/IE6.css
 root/static/css/mail/mailbox.css
 root/static/css/mail/new.css
 root/static/images/btn_120x50_built.png
@@ -276,7 +278,6 @@ root/static/images/mimeicons/world2.png
 root/static/images/trashcan.gif
 root/static/scripts/base.js
 root/static/scripts/mail/mailbox.js
-root/static/scripts/mailbox.js
 root/static/scripts/mootools-1.2-core.js
 root/static/scripts/mootools-1.2-more.js
 script/ciderwebmail_cgi.pl
