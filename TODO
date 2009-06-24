@@ -1,5 +1,3 @@
-* marking mails read when opening
-* reply to all
 * reply and forward via AJAX or at least in a new tab so the message list keeps it's position
 * displaying message/rfc822 parts
 * handling HTML attachments as attachments, not like alternate body parts
@@ -7,6 +5,5 @@
 * allow reversing of sort order
 * multiple attachments
 * better header formatting in message view
-* Logout
 * *make it look shiny*
 * per-user settings

@@ -51,7 +51,8 @@ for my $link (@links) {
     unless ($mech->content_like(qr/<input value="$RE{Email}{Address}(?:\s*;\s*$RE{Email}{Address})*" name="to">/, 'To: field does not contain an email address')) {
         warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="to">)';
     }
-    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}(?:\s*;\s*$RE{Email}{Address})*" name="from">/, 'From: field does not contain an email address')) {
+
+    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
         warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
     }
 }

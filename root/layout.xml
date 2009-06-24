@@ -28,6 +28,7 @@
             <div id="mailnavigation">
                 <ul class="actions">
                     <li><a tal:attributes="href uri_compose" i18n:translate="">Compose new mail</a></li>
+                    <li><a tal:attributes="href uri_logout" i18n:translate="">Logout</a></li>
                 </ul>
                 <ul id="folder_tree">
                     <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">

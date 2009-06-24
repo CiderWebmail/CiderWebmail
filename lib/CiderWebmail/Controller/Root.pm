@@ -34,8 +34,7 @@ Only logged in users may use this product.
 sub auto : Private {
     my ($self, $c) = @_;
 
-
-    if ($c->authenticate({ realm => "CiderWebmail" })) {
+    if ($c->sessionid and not $c->session->{ended} and $c->authenticate({ realm => 'CiderWebmail' })) {
         $c->stash( headercache => CiderWebmail::Headercache->new($c) );
 
         #IMAPClient setup
@@ -45,22 +44,32 @@ sub auto : Private {
         CiderWebmail::Util::add_foldertree_uri_view($c, { path => undef, folders => $tree->{folders}});
 
         $c->stash({
-            folder_tree => $tree,
+            folder_tree  => $tree,
             folders_hash => $folders_hash,
+            uri_logout   => $c->uri_for('/logout'),
         });
 
         return 1;
-    } else {
-        return 0;
     }
+
+    if ($c->sessionid and $c->session->{ended}) {
+        $c->delete_session('logged out');
+    }
+
+    $c->session; # start new session
+
+    my $realm = $c->get_auth_realm($c->config->{authentication}{default_realm});
+    $realm->credential->authorization_required_response($c, $realm, { realm => 'CiderWebmail' });
+
+    return 0;
 }
 
-sub login : Local {
+sub logout : Local {
     my ( $self, $c ) = @_;
-    my $username = $c->req->param('username');
-    my $password => $c->req->param('password');
 
-    my $model = $c->model();
+    $c->session->{ended} = 1;
+
+    $c->stash({ template => 'logout.xml' });
 }
 
 sub index : Private {
