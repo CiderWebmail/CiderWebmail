@@ -2,7 +2,6 @@
 * displaying message/rfc822 parts
 * handling HTML attachments as attachments, not like alternate body parts
 * update folder counts on AJAX delete/move
-* allow reversing of sort order
 * multiple attachments
 * better header formatting in message view
 * *make it look shiny*

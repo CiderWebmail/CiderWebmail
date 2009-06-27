@@ -44,6 +44,7 @@ requires 'Cache::FastMmap';
 requires 'Clone';
 requires 'HTML::Scrubber';
 requires 'HTML::Tidy';
+requires 'URI::QueryParam';
 
 requires 'Locale::Maketext::Gettext';
 

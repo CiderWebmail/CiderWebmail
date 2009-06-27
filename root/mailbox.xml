@@ -29,15 +29,17 @@
                     </tr>
                     <tbody tal:repeat="group groups">
                         <tr>
-                            <td colspan="5" tal:content="group/name"/>
+                            <td tal:condition="true:group/name" colspan="5" tal:content="group/name"/>
+                            <td tal:condition="and: true:sort_subject false:group/name" colspan="5" i18n:translate="">No Subject</td>
                         </tr>
                         <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class message/flags">
                             <td class="icon"><img tal:attributes="id string:icon_${message/uid}; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
                             <td class="sender" tal:attributes="id string:from_${message/uid}">
-                                <span tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
+                                <span tal:condition="false: sort_from" tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
                             </td>
-                            <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/head/subject" tal:replace="message/head/subject"/><span tal:condition="false:message/head/subject" tal:omit-tag="" i18n:translate="">No Subject</span></a></td>
-                            <td tal:content="message/head/date/strftime '%T'">date</td>
+                            <td class="subject"><a tal:condition="false: sort_subject" onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}"><span tal:condition="true:message/head/subject" tal:replace="message/head/subject"/><span tal:condition="false:message/head/subject" i18n:translate="">No Subject</span></a></td>
+                            <td tal:condition="true: sort_date" tal:content="message/head/date/strftime '%T'">date</td>
+                            <td tal:condition="false: sort_date" tal:content="message/head/date/strftime '%F %T'">date</td>
                             <td class="actions"><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
                         </tr>
                     </tbody>

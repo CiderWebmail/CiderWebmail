@@ -158,7 +158,7 @@ sub get_folder_uids {
 
     #TODO check RFC if we need to allow more here
     foreach (@{ $o->{sort} }) {
-        die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z]/);
+        die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z ]/);
     }
 
     #TODO empty result

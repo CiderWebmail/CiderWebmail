@@ -7,6 +7,7 @@ use parent 'Catalyst::Controller';
 use CiderWebmail::Mailbox;
 use CiderWebmail::Util;
 use DateTime;
+use URI::QueryParam;
 
 =head1 NAME
 
@@ -33,6 +34,8 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     $c->stash->{uri_compose} = $c->uri_for("/mailbox/$mailbox/compose");
 }
 
+my $local_timezone = (eval { DateTime::TimeZone->new(name => "local"); } or 'UTC');
+
 =head2 view
 
 =cut
@@ -52,15 +55,20 @@ sub view : Chained('setup') PathPart('') Args(0) {
         @uids = splice @uids, ($start or 0), ($end or 0);
     }
 
-    my @messages = map +{
+    my $reverse = $sort =~ s/\Areverse\W+//;
+
+    my %messages = map { ($_->{uid} => {
                 %{ $_ },
                 uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
                 uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-            }, @{ $mailbox->list_messages_hash({ uids => \@uids }) };
+            }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
+    my @messages = map $messages{$_}, @uids;
 
-    my %groups;
+    my @groups;
 
     foreach (@messages) {
+        $_->{head}->{date}->set_time_zone($c->config->{time_zone} or $local_timezone);
+
         my $name;
 
         if ($sort eq 'date') {
@@ -69,32 +77,37 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
         if ($sort =~ m/(from|to)/) {
             my $address = $_->{head}->{$1}->[0];
-            $name = ($address->name ? $address->name : $address->address);
+            $name = $address ? ($address->name ? $address->address . ': ' . $address->name : $address->address) : 'Unknown';
         }
 
         if ($sort eq 'subject') {
             $name = $_->{head}->{subject};
         }
+        
+        if (not @groups or $groups[-1]{name} ne ($name or '')) {
+            push @groups, {name => $name, messages => []};
+        }
 
-        push @{ $groups{$name} }, $_;
+        push @{ $groups[-1]{messages} }, $_;
     }
 
     DateTime->DefaultLocale($c->config->{language}); # is this really a good place for this?
 
-    my $clean_uri = $c->req->uri;
-    $clean_uri =~ s/[?&]sort=\w+//;
+    if ($sort eq 'date') {
+        $_->{name} .= ', ' . DateTime->new(year => substr($_->{name}, 0, 4), month => substr($_->{name}, 5, 2), day => substr($_->{name}, 8))->day_name foreach @groups;
+    }
+
+    my $sort_uri = $c->req->uri->clone;
     $c->stash({
-        groups => [ map +{
-            name =>
-                $sort eq 'date'
-                    ? "$_, " . DateTime->new(year => substr($_, 0, 4), month => substr($_, 5, 2), day => substr($_, 8))->day_name #sorting by date
-                    : $_, #default sort by $foo
-            messages => $groups{$_}
-        }, sort keys %groups ],
         messages        => \@messages,
         uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
-        (map {("uri_sorted_$_" => "$clean_uri?sort=$_")} qw(from subject date)),
         template        => 'mailbox.xml',
+        groups          => \@groups,
+        "sort_$sort"    => 1,
+        (map {
+            $sort_uri->query_param(sort => ($_ eq $sort and not $reverse) ? "reverse $_" : $_);
+            ("uri_sorted_$_" => $sort_uri->as_string)
+        } qw(from subject date)),
     });
 }
 

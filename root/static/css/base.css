@@ -15,7 +15,7 @@ td, th
     {vertical-align:top; text-align:left; padding:0.1em 0.4em;}
 
 #controlpanel
-    {position:absolute; top: 0px; height: 100%; left:0px; width:13em;}
+    {position:absolute; top: 0px; height: 100%; left:0px; width:13em; overflow: auto;}
     #logo
         {padding:0.3em 0.5em; font-size:110%;}
         #logo a
