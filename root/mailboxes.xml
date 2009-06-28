@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
+    >
+    <head>
+        <title metal:fill-slot="title" tal:content="message/subject">Message</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
+    </head>
+    <body>
+        <div metal:fill-slot="content">
+            <h1>Folders</h1>
+            <p>
+                <a tal:attributes="href uri_create_folder" i18n:translate="">Create folder</a>
+            </p>
+            <ul>
+                <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
+                    <li metal:define-macro="folder-tree" tal:attributes="class folder/selected">
+                        <a class="folder" href="#" tal:attributes="href folder/uri_view; title folder/id"><span class="name" tal:content="folder/name"/></a>
+                        <span class="actions"><a tal:attributes="href folder/uri_create_subfolder" i18n:translate="">New subfolder</a></span>
+                        <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
+                            <li metal:use-macro="#folder-tree">Dummy Child 1</li>
+                        </ul>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </body>
+</html>

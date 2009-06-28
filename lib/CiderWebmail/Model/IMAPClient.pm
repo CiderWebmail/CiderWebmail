@@ -505,6 +505,20 @@ sub move_message {
     $self->_die_on_error($c);
 }
 
+=head2 create_mailbox($c, { mailbox => $mailbox, name => $name })
+
+Create a subfolder
+
+=cut
+
+sub create_mailbox {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{name};
+
+    $c->stash->{imapclient}->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
+}
+
 =head2 transform_header($c, { header => $header_name, data => $header_data })
 
 'transform' a header from the 'raw' state (the way it was returned from the server) to an appropriate object.

@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
+    >
+    <head>
+        <title metal:fill-slot="title" tal:content="message/subject">Message</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
+    </head>
+    <body>
+        <div metal:fill-slot="content">
+            <h1 i18n:translate="">Folders</h1>
+            <form>
+                <label>
+                    <span>Name</span>
+                    <input name="name"/>
+                </label>
+                <button type="submit" i18n:translate="">Create</button>
+            </form>
+        </div>
+    </body>
+</html>

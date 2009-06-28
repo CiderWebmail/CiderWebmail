@@ -119,7 +119,29 @@ sub mailboxes : Local {
         ]
     });
 
-    $c->stash({ template => 'mailboxes.xml' });
+    $c->stash({
+        template          => 'mailboxes.xml',
+        uri_create_folder => $c->uri_for('create_folder'),
+    });
+}
+
+=head2 create_folder
+
+Create a top level folder
+
+=cut
+
+sub create_folder : Local {
+    my ( $self, $c ) = @_;
+
+    if (my $name = $c->req->param('name')) {
+        $c->model('IMAPClient')->create_mailbox($c, {name => $name});
+        $c->res->redirect($c->uri_for('mailboxes'));
+    }
+
+    $c->stash({
+        template => 'create_mailbox.xml',
+    });
 }
 
 =head2 end

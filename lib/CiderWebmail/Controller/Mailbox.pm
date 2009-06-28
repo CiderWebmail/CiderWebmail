@@ -140,6 +140,11 @@ Create a subfolder of this mailbox
 sub create_subfolder : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
+    if (my $name = $c->req->param('name')) {
+        $c->model('IMAPClient')->create_mailbox($c, {mailbox => $c->stash->{folder}, name => $name});
+        $c->res->redirect($c->uri_for('/mailboxes'));
+    }
+
     $c->stash({
         template => 'create_mailbox.xml',
     });
