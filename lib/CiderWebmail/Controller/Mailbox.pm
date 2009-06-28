@@ -111,6 +111,12 @@ sub view : Chained('setup') PathPart('') Args(0) {
     });
 }
 
+=head2 search
+
+Search the mailbox using simple_search
+
+=cut
+
 sub search : Chained('setup') PathPart('quicksearch') {
     my ( $self, $c, $searchfor ) = @_;
     $searchfor ||= $c->req->param('text');
@@ -125,7 +131,19 @@ sub search : Chained('setup') PathPart('quicksearch') {
     $c->forward('view');
 }
 
+=head2 create_subfolder
 
+Create a subfolder of this mailbox
+
+=cut
+
+sub create_subfolder : Chained('setup') PathPart {
+    my ( $self, $c ) = @_;
+
+    $c->stash({
+        template => 'create_mailbox.xml',
+    });
+}
 
 =head1 AUTHOR
 

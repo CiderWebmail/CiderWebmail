@@ -40,13 +40,14 @@ sub auto : Private {
         #IMAPClient setup
         $c->stash->{imapclient}->Ranges(1);
  
-        my ($tree, $folders_hash) = $c->model->folder_tree($c);
-        CiderWebmail::Util::add_foldertree_uri_view($c, { path => undef, folders => $tree->{folders}});
+        my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
+        CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
 
         $c->stash({
-            folder_tree  => $tree,
-            folders_hash => $folders_hash,
-            uri_logout   => $c->uri_for('/logout'),
+            folder_tree   => $tree,
+            folders_hash  => $folders_hash,
+            uri_mailboxes => $c->uri_for('/mailboxes'),
+            uri_logout    => $c->uri_for('/logout'),
         });
 
         return 1;
@@ -64,6 +65,12 @@ sub auto : Private {
     return 0;
 }
 
+=head2 logout
+
+Logout action: markes the current session as ended
+
+=cut
+
 sub logout : Local {
     my ( $self, $c ) = @_;
 
@@ -72,9 +79,15 @@ sub logout : Local {
     $c->stash({ template => 'logout.xml' });
 }
 
+=head2 index
+
+Redirect to the INBOX view
+
+=cut
+
 sub index : Private {
     my ( $self, $c ) = @_;
-    my $model = $c->model();
+    my $model = $c->model('IMAPClient');
     my $folders = $c->stash->{folder_tree}{folders};
     my $inbox;
 
@@ -87,6 +100,26 @@ sub index : Private {
     }
 
     $c->res->redirect($inbox->{uri_view});
+}
+
+=head2 mailboxes
+
+=cut
+
+sub mailboxes : Local {
+    my ( $self, $c ) = @_;
+
+    my $tree = $c->stash->{folder_tree};
+    CiderWebmail::Util::add_foldertree_uris($c, {
+        path    => undef,
+        folders => $tree->{folders},
+        uris    => [
+            {action => 'view',             uri => ''},
+            {action => 'create_subfolder', uri => 'create_subfolder'},
+        ]
+    });
+
+    $c->stash({ template => 'mailboxes.xml' });
 }
 
 =head2 end

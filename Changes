@@ -19,3 +19,8 @@ This file documents the revision history for Perl extension CiderWebmail.
 0.03  2009-06-24 11:48:00
 	- Print layouts
         - Logout
+
+0.04 2009-06-27 17:59:00
+	- Use server side sorting
+	- Allow reversal of sort order
+	- Convert message times to local timezone

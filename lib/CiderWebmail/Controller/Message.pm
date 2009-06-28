@@ -101,10 +101,10 @@ Move a message to a different folder
 sub move : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
     my $target_folder = $c->req->param('target_folder') or die "no folder to move message to";
-    my $model = $c->model();
+    my $model = $c->model('IMAPClient');
 
     #TODO fixme
-    #$model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
+    $model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
 
     $c->res->body('message moved');
 }
@@ -118,13 +118,22 @@ Compose a new message for sending
 sub compose : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->stash->{message} ||= {};
+
+    my $settings = $c->model('DB::Settings')->find($c->user->id);
+    $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ] if $settings and $settings->from_address;
+
     my $folders = clone($c->stash->{folders_hash});
     delete $_->{selected} foreach values %$folders; # clean any selectedness
 
-    my $sent = first { $_ =~ /\bsent\b/i } keys %$folders; # try to find a folder called "Sent"
-    $folders->{$sent}{selected} = 'selected' if $sent;
+    if ($settings and $settings->sent_folder and exists $folders->{$settings->sent_folder}) {
+        $folders->{$settings->sent_folder}{selected} = 'selected';
+    }
+    else {
+        my $sent = first { $_ =~ /\bsent\b/i } keys %$folders; # try to find a folder called "Sent"
+        $folders->{$sent}{selected} = 'selected' if $sent;
+    }
 
-    $c->stash->{message} ||= {};
     $c->stash({
         uri_send     => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/send'),
         sent_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %$folders ],
@@ -150,7 +159,7 @@ sub reply : Chained('setup') Args(1) {
     $body .= "\n\n";
 
     my $new_message = {
-        from    => $message->to, #this is stupd... we should not use the to address here...
+        from    => $message->to, # If no user-specified from address is available, the to address of the replied-to mail is a good guess
         subject => 'Re: ' . $message->subject,
         body    => $body,
     };
@@ -207,9 +216,18 @@ sub send : Chained('/mailbox/setup') Args(0) {
     my $subject = encode_mimeword($c->req->param('subject'));
     my $body = $c->req->param('body');
     utf8::encode($body);
+    my $from = $c->req->param('from');
+    my $sent_folder = $c->req->param('sent_folder');
+
+    my $settings = $c->model('DB::Settings');
+    $settings->update_or_create({
+        user => $c->user->id,
+        from_address => $from,
+        sent_folder => $sent_folder
+    });
 
     my $mail = MIME::Lite->new(
-        From    => $c->req->param('from'),
+        From    => $from,
         To      => $c->req->param('to'),
         ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
         Subject => $subject,
@@ -242,9 +260,9 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     $mail->send;
 
-    if (my $sent_folder = $c->req->param('sent_folder')) {
+    if ($sent_folder) {
         my $msg_text = $mail->as_string;
-        $c->model()->append_message($c, {mailbox => $sent_folder, message_text => $msg_text});
+        $c->model('IMAPClient')->append_message($c, {mailbox => $sent_folder, message_text => $msg_text});
     }
 
     $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));

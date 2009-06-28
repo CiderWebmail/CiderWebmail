@@ -44,8 +44,9 @@ requires:
   Regexp::Common::Email::Address: 0
   Text::Flowed: 0
   Text::Iconv: 0
+  URI::QueryParam: 0
   YAML: 0
   parent: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.03
+version: 0.04

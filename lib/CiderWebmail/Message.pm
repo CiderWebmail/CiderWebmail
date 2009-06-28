@@ -43,14 +43,14 @@ sub mailbox {
 sub get_header {
     my ($self, $header) = @_;
 
-    return scalar $self->{c}->model->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
+    return scalar $self->{c}->model('IMAPClient')->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
 #TODO formatting
 sub header_formatted {
     my ($self) = @_;
 
-    return $self->{c}->model->get_headers_string($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+    return $self->{c}->model('IMAPClient')->get_headers_string($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
 }
 
 sub subject {
@@ -87,7 +87,7 @@ sub cc {
 sub mark_read {
     my ($self) = @_;
 
-    $self->{c}->model->mark_read($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+    $self->{c}->model('IMAPClient')->mark_read($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
 }
 
 sub get_headers {
@@ -139,13 +139,13 @@ sub attachments {
 sub delete {
     my ($self) = @_;
 
-    $self->{c}->model->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
+    $self->{c}->model('IMAPClient')->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
 sub as_string {
     my ($self) = @_;
 
-    $self->{c}->model->message_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    $self->{c}->model('IMAPClient')->message_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 sub main_body_part {
@@ -174,7 +174,7 @@ sub body_parts {
     die 'mailbox not set' unless defined $self->{mailbox};
     die 'uid not set' unless defined $self->{uid};
 
-    my $message = $self->{c}->model->message_as_string($c, { mailbox => $self->{mailbox}, uid => $self->{uid} });
+    my $message = $self->{c}->model('IMAPClient')->message_as_string($c, { mailbox => $self->{mailbox}, uid => $self->{uid} });
 
     my $parser = MIME::Parser->new();
     $parser->output_to_core(1);
