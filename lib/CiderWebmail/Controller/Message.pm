@@ -41,16 +41,16 @@ sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
     my $mailbox = $c->stash->{folder};
-    my $uid = $c->stash->{message}->uid;
+    my $message = $c->stash->{message};
+    my $uid = $message->uid;
     
-    $c->stash->{message}->load_body();
+    $message->load_body();
 
-    foreach(keys(%{ $c->stash->{message}->{attachments} })) {
-        my $id = $_;
-        $c->stash->{message}->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $c->stash->{message}->uid . "/attachment/$id");
+    foreach my $id (keys(%{ $message->{attachments} })) {
+        $message->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $message->uid . "/attachment/$id");
     }
 
-    $c->stash->{message}->mark_read();
+    $message->mark_read();
 
     $c->stash({
         template       => 'message.xml',

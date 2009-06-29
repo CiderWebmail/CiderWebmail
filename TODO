@@ -1,6 +1,5 @@
 * reply and forward via AJAX or at least in a new tab so the message list keeps it's position
 * displaying message/rfc822 parts
-* handling HTML attachments as attachments, not like alternate body parts
 * multiple attachments
 * better header formatting in message view
 * *make it look shiny*
