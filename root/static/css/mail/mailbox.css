@@ -143,7 +143,7 @@ h1 {
     float: right;
     margin: 0;
     padding: 0;
-    text-align: bottom;
+    vertical-align: bottom;
 }
 
 @media print {

@@ -27,20 +27,11 @@
             </div>
             <div id="mailnavigation">
                 <ul class="actions">
-                    <li><a tal:attributes="href uri_compose" i18n:translate="">Compose new mail</a></li>
-                    <li><a tal:attributes="href uri_mailboxes" i18n:translate="">Manage folders</a></li>
-                    <li><a tal:attributes="href uri_logout" i18n:translate="">Logout</a></li>
+                    <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose" i18n:translate="">Compose new mail</a></li>
+                    <li tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes" i18n:translate="">Manage folders</a></li>
+                    <li tal:condition="true: uri_logout"><a tal:attributes="href uri_logout" i18n:translate="">Logout</a></li>
                 </ul>
-                <ul id="folder_tree">
-                    <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
-                        <li metal:define-macro="folder-tree" tal:attributes="class folder/selected">
-                            <a class="folder" href="#" tal:attributes="href folder/uri_view; title folder/id"><span class="name" tal:content="folder/name"/> <span class="counts" tal:content="string: ${folder/unseen}/${folder/total}"/></a>
-                            <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
-                                <li metal:use-macro="#folder-tree">Dummy Child 1</li>
-                            </ul>
-                        </li>
-                    </div>
-                </ul>
+                <ul metal:use-macro="folder_tree.xml#folder_tree"/>
             </div>
         </div>
         <div id="headline">

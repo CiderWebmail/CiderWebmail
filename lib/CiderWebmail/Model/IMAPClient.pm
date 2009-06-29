@@ -519,6 +519,20 @@ sub create_mailbox {
     $c->stash->{imapclient}->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
 }
 
+=head2 delete_mailbox($c, { mailbox => $mailbox })
+
+Delete a complete folder
+
+=cut
+
+sub delete_mailbox {
+    my ($self, $c, $o) = @_;
+
+    die unless $o->{mailbox};
+
+    $c->stash->{imapclient}->delete($o->{mailbox});
+}
+
 =head2 transform_header($c, { header => $header_name, data => $header_data })
 
 'transform' a header from the 'raw' state (the way it was returned from the server) to an appropriate object.

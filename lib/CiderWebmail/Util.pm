@@ -30,4 +30,24 @@ sub add_foldertree_uris {
     }
 }
 
+sub add_foldertree_to_stash {
+    my ($c) = @_;
+
+    my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
+    CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
+
+    $c->stash({
+        folder_tree   => $tree,
+        folders_hash  => $folders_hash,
+    });
+}
+
+sub send_foldertree_update {
+    my ($c) = @_;
+    CiderWebmail::Util::add_foldertree_to_stash($c); # update folder display
+    $c->stash->{folders_hash}{$c->stash->{folder}}{selected} = 'selected';
+    $c->stash({ template => 'folder_tree.xml' });
+    $c->res->content_type('text/xml');
+}
+
 1;

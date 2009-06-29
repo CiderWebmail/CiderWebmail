@@ -19,9 +19,12 @@ lib/CiderWebmail.pm
 lib/CiderWebmail/Controller/Mailbox.pm
 lib/CiderWebmail/Controller/Message.pm
 lib/CiderWebmail/Controller/Root.pm
+lib/CiderWebmail/DB.pm
+lib/CiderWebmail/DB/Result/Settings.pm
 lib/CiderWebmail/Headercache.pm
 lib/CiderWebmail/Mailbox.pm
 lib/CiderWebmail/Message.pm
+lib/CiderWebmail/Model/DB.pm
 lib/CiderWebmail/Model/IMAPClient.pm
 lib/CiderWebmail/Util.pm
 lib/CiderWebmail/View/Petal.pm
@@ -31,7 +34,9 @@ META.yml
 README
 root/ajax/layout.xml
 root/compose.xml
+root/create_mailbox.xml
 root/favicon.ico
+root/folder_tree.xml
 root/layout.xml
 root/locale/CiderWebmail.pot
 root/locale/de/LC_MESSAGES/CiderWebmail.mo
@@ -40,6 +45,7 @@ root/locale/en/LC_MESSAGES/CiderWebmail.mo
 root/locale/en/LC_MESSAGES/CiderWebmail.po
 root/logout.xml
 root/mailbox.xml
+root/mailboxes.xml
 root/message.xml
 root/static/css/base.css
 root/static/css/IE6.css
@@ -280,6 +286,7 @@ root/static/scripts/base.js
 root/static/scripts/mail/mailbox.js
 root/static/scripts/mootools-1.2-core.js
 root/static/scripts/mootools-1.2-more.js
+root/var/user_settings.sql
 script/ciderwebmail_cgi.pl
 script/ciderwebmail_create.pl
 script/ciderwebmail_fastcgi.pl
@@ -291,6 +298,7 @@ t/03podcoverage.t
 t/controller_Mailbox.t
 t/controller_Message.t
 t/message_handling.t
+t/model_DB.t
 t/model_IMAPClient.t
 t/view_Petal.t
 TODO

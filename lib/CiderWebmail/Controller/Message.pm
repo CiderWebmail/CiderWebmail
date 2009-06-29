@@ -80,16 +80,24 @@ sub attachment : Chained('setup') Args(1) {
 
 =head2 delete
 
-Delete a message
+Move a message to the trash (if available) or delete a message from the trash.
 
 =cut
 
 sub delete : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
+
+    my $folders = $c->stash->{folders_hash};
+    my $trash = first { $_ =~ /\btrash|papierkorb\b/i } keys %$folders; # try to find a folder called "Trash"
+
+    if ($trash and $c->stash->{folder} ne $trash) {
+        $c->stash->{message}->move({target_folder => $trash});
+    }
+    else {
+        $c->stash->{message}->delete();
+    }
     
-    $c->stash->{message}->delete();
-    
-    $c->res->body('message deleted');
+    CiderWebmail::Util::send_foldertree_update($c); # update folder display
 }
 
 =head2 move
@@ -101,12 +109,10 @@ Move a message to a different folder
 sub move : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
     my $target_folder = $c->req->param('target_folder') or die "no folder to move message to";
-    my $model = $c->model('IMAPClient');
 
-    #TODO fixme
-    $model->move_message($c, {uid => $c->stash->{message}, mailbox => $c->stash->{folder}, target_mailbox => $target_folder});
+    $c->stash->{message}->move({target_folder => $target_folder});
 
-    $c->res->body('message moved');
+    CiderWebmail::Util::send_foldertree_update($c); # update folder display
 }
 
 =head2 compose

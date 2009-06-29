@@ -39,13 +39,10 @@ sub auto : Private {
 
         #IMAPClient setup
         $c->stash->{imapclient}->Ranges(1);
- 
-        my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
-        CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
+
+        CiderWebmail::Util::add_foldertree_to_stash($c);
 
         $c->stash({
-            folder_tree   => $tree,
-            folders_hash  => $folders_hash,
             uri_mailboxes => $c->uri_for('/mailboxes'),
             uri_logout    => $c->uri_for('/logout'),
         });
@@ -116,6 +113,7 @@ sub mailboxes : Local {
         uris    => [
             {action => 'view',             uri => ''},
             {action => 'create_subfolder', uri => 'create_subfolder'},
+            {action => 'delete',           uri => 'delete'},
         ]
     });
 

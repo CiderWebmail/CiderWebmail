@@ -23,14 +23,26 @@ msgstr "Compose new mail"
 msgid "Compose new mail message"
 msgstr "Compose new mail message"
 
+msgid "Create"
+msgstr "Create"
+
+msgid "Create folder"
+msgstr "Create folder"
+
 msgid "Date"
 msgstr "Date"
 
 msgid "Date:"
 msgstr "Date:"
 
+msgid "Delete"
+msgstr "Delete"
+
 msgid "Drag a mail's icon to a folder name to move that mail to that folder."
 msgstr "Drag a mail's icon to a folder name to move that mail to that folder."
+
+msgid "Folders"
+msgstr "Folders"
 
 msgid "Forward"
 msgstr "Forward"
@@ -50,8 +62,17 @@ msgstr "Header:"
 msgid "Loading message"
 msgstr "Loading message"
 
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Manage folders"
+msgstr "Manage folders"
+
 msgid "Move message"
 msgstr "Move message"
+
+msgid "New subfolder"
+msgstr "New subfolder"
 
 msgid "No Subject"
 msgstr "No Subject"
@@ -71,6 +92,9 @@ msgstr "Search"
 msgid "Send"
 msgstr "Send"
 
+msgid "Session ended"
+msgstr "Session ended"
+
 msgid "Subject"
 msgstr "Subject"
 
@@ -85,3 +109,6 @@ msgstr "Text:"
 
 msgid "To:"
 msgstr "To:"
+
+msgid "messages"
+msgstr "messages"

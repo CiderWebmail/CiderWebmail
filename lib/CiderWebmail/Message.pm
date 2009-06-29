@@ -142,6 +142,14 @@ sub delete {
     $self->{c}->model('IMAPClient')->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
+sub move {
+    my ($self, $o) = @_;
+
+    die 'target_folder not set' unless defined $o->{target_folder};
+
+    $self->{c}->model('IMAPClient')->move_message($self->{c}, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
+}
+
 sub as_string {
     my ($self) = @_;
 

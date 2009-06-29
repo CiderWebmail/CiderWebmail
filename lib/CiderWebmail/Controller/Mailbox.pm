@@ -49,52 +49,54 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my @uids = $mailbox->uids({ sort => [ $sort ] });
 
-    if (defined $c->req->param('start')) {
-        my ($start) = $c->req->param('start')  =~ /(\d+)/;
-        my ($end) =   $c->req->param('length') =~ /(\d+)/;
-        @uids = splice @uids, ($start or 0), ($end or 0);
-    }
-
     my $reverse = $sort =~ s/\Areverse\W+//;
 
-    my %messages = map { ($_->{uid} => {
-                %{ $_ },
-                uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
-                uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
-            }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
-    my @messages = map $messages{$_}, @uids;
+    my (@messages, @groups);
 
-    my @groups;
+    if (@uids) {
+        if (defined $c->req->param('start')) {
+            my ($start) = $c->req->param('start')  =~ /(\d+)/;
+            my ($end) =   $c->req->param('length') =~ /(\d+)/;
+            @uids = splice @uids, ($start or 0), ($end or 0);
+        }
 
-    foreach (@messages) {
-        $_->{head}->{date}->set_time_zone($c->config->{time_zone} or $local_timezone);
+        my %messages = map { ($_->{uid} => {
+                    %{ $_ },
+                    uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
+                    uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
+                }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
+        @messages = map $messages{$_}, @uids;
 
-        my $name;
+        foreach (@messages) {
+            $_->{head}->{date}->set_time_zone($c->config->{time_zone} or $local_timezone);
+
+            my $name;
+
+            if ($sort eq 'date') {
+                $name = $_->{head}->{date}->ymd;
+            }
+
+            if ($sort =~ m/(from|to)/) {
+                my $address = $_->{head}->{$1}->[0];
+                $name = $address ? ($address->name ? $address->address . ': ' . $address->name : $address->address) : 'Unknown';
+            }
+
+            if ($sort eq 'subject') {
+                $name = $_->{head}->{subject};
+            }
+            
+            if (not @groups or $groups[-1]{name} ne ($name or '')) {
+                push @groups, {name => $name, messages => []};
+            }
+
+            push @{ $groups[-1]{messages} }, $_;
+        }
+
+        DateTime->DefaultLocale($c->config->{language}); # is this really a good place for this?
 
         if ($sort eq 'date') {
-            $name = $_->{head}->{date}->ymd;
+            $_->{name} .= ', ' . DateTime->new(year => substr($_->{name}, 0, 4), month => substr($_->{name}, 5, 2), day => substr($_->{name}, 8))->day_name foreach @groups;
         }
-
-        if ($sort =~ m/(from|to)/) {
-            my $address = $_->{head}->{$1}->[0];
-            $name = $address ? ($address->name ? $address->address . ': ' . $address->name : $address->address) : 'Unknown';
-        }
-
-        if ($sort eq 'subject') {
-            $name = $_->{head}->{subject};
-        }
-        
-        if (not @groups or $groups[-1]{name} ne ($name or '')) {
-            push @groups, {name => $name, messages => []};
-        }
-
-        push @{ $groups[-1]{messages} }, $_;
-    }
-
-    DateTime->DefaultLocale($c->config->{language}); # is this really a good place for this?
-
-    if ($sort eq 'date') {
-        $_->{name} .= ', ' . DateTime->new(year => substr($_->{name}, 0, 4), month => substr($_->{name}, 5, 2), day => substr($_->{name}, 8))->day_name foreach @groups;
     }
 
     my $sort_uri = $c->req->uri->clone;
@@ -148,6 +150,20 @@ sub create_subfolder : Chained('setup') PathPart {
     $c->stash({
         template => 'create_mailbox.xml',
     });
+}
+
+=head2 delete
+
+Delete a folder
+
+=cut
+
+sub delete : Chained('setup') PathPart {
+    my ( $self, $c ) = @_;
+    
+    $c->model('IMAPClient')->delete_mailbox($c, {mailbox => $c->stash->{folder}});
+
+    $c->res->redirect($c->uri_for('/mailboxes'));
 }
 
 =head1 AUTHOR

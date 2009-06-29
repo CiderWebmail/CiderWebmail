@@ -1,7 +1,9 @@
+var droppables;
+
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
-    var droppables = $('folder_tree').getElements('.folder');
     var selected = new Array();
+    droppables = $('folder_tree').getElements('.folder');
     var loading_message = $('message_view').innerHTML;
 
     function stop_propagation(event) {
@@ -48,7 +50,7 @@ window.addEvent('load', function() {
         }
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
             var uid = target.id.replace('delete_', '');
-            new Request.HTML({url: target.parentNode.href}).send();
+            new Request({url: target.parentNode.href, onSuccess: update_foldertree}).send();
             target.parentNode.parentNode.parentNode.parentNode.removeChild(target.parentNode.parentNode.parentNode);
             stop_propagation(event);
         }
@@ -115,6 +117,12 @@ function fetch_new_rows(start_index, length) {
         }}).send();
 }
 
+function update_foldertree(responseText, responseXML) {
+    var folder_tree = responseText.match(/<ul[^>]*id="folder_tree"[^>]*>([\s\S]*)<\/ul>/i)[1]; // responseXML.getElementById doesn't work in IE
+    document.getElementById('folder_tree').innerHTML = folder_tree;
+    droppables = $('folder_tree').getElements('.folder');
+}
+
 function add_drag_and_drop(message, event, droppables, selected) {
     var overed_prev;
     var droppables_positions = new Object();
@@ -151,8 +159,17 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
         selected.each(function (message) {
             var uid = message.id.replace('message_', '');
-            new Request.HTML({url: document.location.href + "/" + uid + "/move?target_folder=" + overed_prev.title}).send();
-            message.parentNode.removeChild(message);
+            var href = location.href.replace(/\/?(\?.*)?$/, '');
+            new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree}).send();
+
+            var tbody = message.parentNode
+            tbody.removeChild(message);
+
+            var children = 0;
+            for (var i = 0; i < tbody.childNodes.length; i++)
+                if (tbody.childNodes[i].nodeType == 1) children++;
+            if (children == 1)
+                tbody.parentNode.removeChild(tbody);
         });
 
         selected.splice(0, selected.length);
@@ -161,7 +178,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
     var dragger = document.createElement('ul');
     selected.each(function (message) {
         var li = document.createElement('li');
-        li.innerHTML = message.getElements('td.subject a')[0].innerHTML;
+        li.innerHTML = $(message).getElements('td.subject a')[0].innerHTML;
         dragger.appendChild(li);
     });
 

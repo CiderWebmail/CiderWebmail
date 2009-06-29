@@ -24,3 +24,9 @@ This file documents the revision history for Perl extension CiderWebmail.
 	- Use server side sorting
 	- Allow reversal of sort order
 	- Convert message times to local timezone
+
+0.05 2009-06-29 11:30:00
+	- Folder management: creating and deleting folders
+	- Store per user settings like From address and Sent folder
+	- Update folder counts on AJAX move/delete
+	- Use a Trash folder if available
