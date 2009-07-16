@@ -9,8 +9,9 @@ use DateTime;
 use Mail::Address;
 use DateTime::Format::Mail;
 use HTML::Scrubber;
-
 use Text::Iconv;
+
+use CiderWebmail::Message::Forwarded;
 
 sub new {
     my ($class, $c, $o) = @_;
@@ -167,7 +168,7 @@ sub main_body_part {
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
     #to use when forwarding/replying to messages and return it
-    foreach(values(%{ $renderable })) {
+    foreach (values %{ $renderable }) {
         my $part = $_;
         if (($part->{is_text} or 0) == 1) {
             return $part->{data};
@@ -175,6 +176,11 @@ sub main_body_part {
     }
 }
 
+my %part_types = (
+    'text/plain'     => \&_render_text_plain,
+    'text/html'      => \&_render_text_html,
+    'message/rfc822' => \&_render_message_rfc822,
+);
 
 sub body_parts {
     my ($self, $c, $o) = @_;
@@ -182,33 +188,38 @@ sub body_parts {
     die 'mailbox not set' unless defined $self->{mailbox};
     die 'uid not set' unless defined $self->{uid};
 
-    my $message = $self->{c}->model('IMAPClient')->message_as_string($c, { mailbox => $self->{mailbox}, uid => $self->{uid} });
+    my $entity;
 
-    my $parser = MIME::Parser->new();
-    $parser->output_to_core(1);
+    if ($self->{entity}) {
+        $entity = $self->{entity};
+    }
+    else {
+        my $message = $c->model('IMAPClient')->message_as_string($c, { mailbox => $self->{mailbox}, uid => $self->{uid} });
 
-    my $entity = $parser->parse_data($message);
+        my $parser = MIME::Parser->new();
+        $parser->output_to_core(1);
 
-    my @parts = $entity->parts_DFS;
-    @parts = ($entity) unless @parts;
+        $entity = $parser->parse_data($message);
+    }
 
-   my $part_types = {
-        'text/plain' => \&_render_text_plain,
-        'text/html' => \&_render_text_html,
-    };
+    my @parts = ($entity);
  
-    my $body_parts = {}; #body parts we render (text/plain, text/html, etc)
+    my $body_parts  = {}; #body parts we render (text/plain, text/html, etc)
     my $attachments = {}; #body parts we don't render (everything else)
     
     my $id = 0;
-    foreach (@parts) {
-        my $part = $_;
+    while (@parts) {
+        my $part = shift @parts;
 
-        if (exists $part_types->{$part->effective_type}) {
-            my $rendered_part = $part_types->{$part->effective_type}->($c, { part => $part });
+        if (exists $part_types{$part->effective_type} and not (($part->head->get('content-disposition') or '') =~ /\Aattachment\b/x)) {
+            my $rendered_part = $part_types{$part->effective_type}->($self, $c, { part => $part });
             $rendered_part->{id} = $id;
             $body_parts->{$id} = $rendered_part;
-        } else {
+        }
+        elsif ($part->effective_type =~ m!\Amultipart/!) {
+            push @parts, $part->parts;
+        }
+        else {
             $attachments->{$id} = {
                 type => $part->effective_type,
                 name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
@@ -224,7 +235,7 @@ sub body_parts {
 }
 
 sub _render_text_plain {
-    my ($c, $o) = @_;
+    my ($self, $c, $o) = @_;
 
     die 'no part set' unless defined $o->{part};
 
@@ -251,7 +262,7 @@ sub _render_text_plain {
 }
 
 sub _render_text_html {
-    my ($c, $o) = @_;
+    my ($self, $c, $o) = @_;
 
     die 'no part set' unless defined $o->{part};
 
@@ -289,5 +300,19 @@ sub _render_text_html {
     return $part;
 }
 
+sub _render_message_rfc822 {
+    my ($self, $c, $o) = @_;
+
+    die 'no part set' unless defined $o->{part};
+
+    my $part = {};
+    
+    $part->{data} = CiderWebmail::Message::Forwarded->new($c, { entity => $o->{part}->parts(0), mailbox => $self->{mailbox}, uid => $self->{uid} } );
+    $part->{data}->load_body();
+
+    $part->{is_message} = 1;
+
+    return $part;
+}
 
 1;

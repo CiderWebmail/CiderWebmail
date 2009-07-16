@@ -53,12 +53,13 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $message->mark_read();
 
     $c->stash({
-        template       => 'message.xml',
-        target_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_reply      => $c->uri_for("/mailbox/$mailbox/$uid/reply/sender"),
-        uri_reply_all  => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
-        uri_forward    => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
-        uri_move       => $c->uri_for("/mailbox/$mailbox/$uid/move"),
+        template        => 'message.xml',
+        target_folders  => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
+        uri_view_source => $c->uri_for("/mailbox/$mailbox/$uid/view_source"),
+        uri_reply       => $c->uri_for("/mailbox/$mailbox/$uid/reply/sender"),
+        uri_reply_all   => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
+        uri_forward     => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
+        uri_move        => $c->uri_for("/mailbox/$mailbox/$uid/move"),
     });
 }
 
@@ -76,6 +77,20 @@ sub attachment : Chained('setup') Args(1) {
     $c->res->content_type($attachment->{type});
     $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
     $c->res->body($attachment->{data});
+}
+
+=head2 view_source
+
+=cut
+
+sub view_source : Chained('setup') Args(0) {
+    my ( $self, $c ) = @_;
+    my $mailbox = $c->stash->{folder};
+    my $message = $c->stash->{message};
+    my $uid = $message->uid;
+
+    $c->res->content_type('text/plain');
+    $c->res->body($c->model('IMAPClient')->message_as_string($c, { mailbox => $mailbox, uid => $uid }));
 }
 
 =head2 delete

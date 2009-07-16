@@ -11,8 +11,8 @@
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
     </head>
-    <body>
-        <div metal:fill-slot="content">
+    <body metal:fill-slot="content">
+        <div metal:define-macro="view_message">
             <h1 tal:content="message/subject">Subject</h1>
             <p id="message_actions">
                 <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
@@ -50,12 +50,17 @@
                     <td><a onClick='toggleHeader(this)'>toggle</a><pre id="header_toggle" style="display: none;" tal:content="message/header_formatted">header</pre></td>
                 </tr>
             </table>
+            <a tal:attributes="href uri_view_source">View source</a>
             <div class="body_part" tal:repeat="body_part each: message/renderable">
                 <pre tal:condition="body_part/val/is_text" tal:content="body_part/val/data">mail body</pre>
                 <div tal:condition="body_part/val/is_html" tal:content="structure body_part/val/data">mail body</div>
+                <div tal:condition="body_part/val/is_message" tal:define="message body_part/val/data" class="forwarded">
+                    <h2>Forwarded message</h2>
+                    <div metal:use-macro="#view_message" />
+                </div>
                 <hr />
             </div>
-            <div id="attachments" tal:condition="true:message/attachments">
+            <div class="attachments" tal:condition="true:message/attachments">
                 <div class="attachment" tal:repeat="attachment each: message/attachments">
                     <p><a tal:content="attachment/val/name" tal:attributes="href attachment/val/uri_view; title attachment/val/type" /></p>
                 </div>

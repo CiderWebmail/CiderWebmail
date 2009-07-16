@@ -110,6 +110,12 @@ div#left a.hover {
 .message_header tr td {
 }
 
+.forwarded {
+    border: 1px solid black;
+    padding: 3px;
+    margin: 3px;
+}
+
 .dragger {
     position: absolute;
 
