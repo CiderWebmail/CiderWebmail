@@ -49,8 +49,8 @@ msgstr "Ordner"
 msgid "Forward"
 msgstr "Weiterleiten"
 
-msgid "Forwarding message"
-msgstr "Leite Email weiter"
+msgid "Forwarding"
+msgstr "Weiterleitung"
 
 msgid "From"
 msgstr "Von"
@@ -114,3 +114,6 @@ msgstr "An:"
 
 msgid "messages"
 msgstr "Mails"
+
+#~ msgid "Forwarding message"
+#~ msgstr "Leite Email weiter"

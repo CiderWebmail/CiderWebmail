@@ -15,7 +15,8 @@
         <div id="compose" metal:fill-slot="content">
             <h1 i18n:translate="">Compose new mail message</h1>
             <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
-                <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward"/>
+                <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward/uid"/>
+                <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value in_reply_to/uid"/>
                 <label>
                     <span i18n:translate="">From:</span>
                     <input name="from" tal:condition="true: message/from/0/address" tal:attributes="value message/from/0/address"/>
@@ -38,10 +39,15 @@
                     <span i18n:translate="">Text:</span>
                     <textarea name="body" tal:content="message/body"/>
                 </label>
-                <p tal:condition="true: forward" i18n:translate="">Forwarding message</p>
+                <p tal:condition="true: forward" class="forwarding">
+                    <span i18n:translate="" class="label">Forwarding</span>:
+                    <span tal:content="forward/subject" class="subject"/>
+                    (<span tal:condition="true: forward/from/0/name" tal:content="forward/from/0/name" class="address"/><span tal:condition="false: forward/from/0/name" tal:content="forward/from/0/address" class="address"/>, <span tal:condition="true: forward/date" tal:content="forward/date/strftime '%F %T'" class="date"/>)
+                </p>
                 <label>
                     <span i18n:translate="">Attachment:</span>
                     <input type="file" name="attachment"/>
+                    <a onclick="add_attachment(this)">[+]</a>
                 </label>
                 <label>
                     <span i18n:translate="">Save message to:</span>

@@ -21,7 +21,7 @@ sub new {
 
     #TODO add headers passed here to the header cache
     my $message = {
-        c => $c,
+        c       => $c,
         mailbox => $o->{mailbox},
         uid     => $o->{uid}
     };
@@ -126,7 +126,7 @@ sub renderable {
 
     $self->load_body unless exists $self->{renderable};
 
-    return (wantarray ? [ values(%{ $self->{renderable} }) ] : $self->{renderable} );
+    return wantarray ? [ values %{ $self->{renderable} } ] : $self->{renderable};
 }
 
 sub attachments {
@@ -134,7 +134,7 @@ sub attachments {
 
     $self->load_body unless exists $self->{attachments};
 
-    return (wantarray ? [ values(%{ $self->{attachments} }) ] : $self->{attachments} );
+    return wantarray ? [ values %{ $self->{attachments} } ] : $self->{attachments};
 }
 
 sub delete {
@@ -212,7 +212,7 @@ sub body_parts {
         my $part = shift @parts;
 
         if (exists $part_types{$part->effective_type} and not (($part->head->get('content-disposition') or '') =~ /\Aattachment\b/x)) {
-            my $rendered_part = $part_types{$part->effective_type}->($self, $c, { part => $part });
+            my $rendered_part = $part_types{$part->effective_type}->($self, $c, { part => $part, id => $id });
             $rendered_part->{id} = $id;
             $body_parts->{$id} = $rendered_part;
         }
@@ -225,13 +225,14 @@ sub body_parts {
                 name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
                 data => $part->bodyhandle->as_string,
                 id   => $id,
+                path => ((exists $self->{path} and defined $self->{path}) ? "$self->{path}/" : '') . $id,
             } if $part->bodyhandle;
         }
 
         $id++;
-   }
+    }
 
-   return { renderable => $body_parts, attachments => $attachments };
+    return { renderable => $body_parts, attachments => $attachments };
 }
 
 sub _render_text_plain {
@@ -307,7 +308,7 @@ sub _render_message_rfc822 {
 
     my $part = {};
     
-    $part->{data} = CiderWebmail::Message::Forwarded->new($c, { entity => $o->{part}->parts(0), mailbox => $self->{mailbox}, uid => $self->{uid} } );
+    $part->{data} = CiderWebmail::Message::Forwarded->new($c, { entity => $o->{part}->parts(0), mailbox => $self->{mailbox}, uid => $self->{uid}, path => ((exists $self->{path} and defined $self->{path}) ? "$self->{path}/" : '') . $o->{id} } );
     $part->{data}->load_body();
 
     $part->{is_message} = 1;

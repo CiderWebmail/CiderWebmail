@@ -48,6 +48,8 @@ requires 'URI::QueryParam';
 
 requires 'Locale::Maketext::Gettext';
 
+requires 'List::MoreUtils';
+
 catalyst;
 
 install_script glob('script/*.pl');

@@ -45,7 +45,7 @@ html, body {
     text-decoration: line-through;
 }
 
-div#left a.hover {
+ul#folder_tree a.hover {
     color: white;
     background-color: green;
 }
@@ -114,6 +114,7 @@ div#left a.hover {
     border: 1px solid black;
     padding: 3px;
     margin: 3px;
+    overflow: auto;
 }
 
 .dragger {

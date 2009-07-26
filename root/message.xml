@@ -14,10 +14,10 @@
     <body metal:fill-slot="content">
         <div metal:define-macro="view_message">
             <h1 tal:content="message/subject">Subject</h1>
-            <p id="message_actions">
-                <a tal:attributes="href uri_reply"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
-                <a tal:attributes="href uri_reply_all"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply All</span></a>
-                <a tal:attributes="href uri_forward"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
+            <p tal:condition="false:message/path" id="message_actions">
+                <a tal:attributes="href uri_reply" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
+                <a tal:attributes="href uri_reply_all" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply All</span></a>
+                <a tal:attributes="href uri_forward" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
             </p>
             <form class="move_message" tal:attributes="action uri_move" method="post">
                 <label>
@@ -50,7 +50,7 @@
                     <td><a onClick='toggleHeader(this)'>toggle</a><pre id="header_toggle" style="display: none;" tal:content="message/header_formatted">header</pre></td>
                 </tr>
             </table>
-            <a tal:attributes="href uri_view_source">View source</a>
+            <a tal:attributes="href uri_view_source" onclick="return open_in_new_window(this)">View source</a>
             <div class="body_part" tal:repeat="body_part each: message/renderable">
                 <pre tal:condition="body_part/val/is_text" tal:content="body_part/val/data">mail body</pre>
                 <div tal:condition="body_part/val/is_html" tal:content="structure body_part/val/data">mail body</div>
@@ -62,7 +62,7 @@
             </div>
             <div class="attachments" tal:condition="true:message/attachments">
                 <div class="attachment" tal:repeat="attachment each: message/attachments">
-                    <p><a tal:content="attachment/val/name" tal:attributes="href attachment/val/uri_view; title attachment/val/type" /></p>
+                    <p><a tal:content="attachment/val/name" tal:attributes="href string:${uri_view_attachment}/${attachment/val/path}; title attachment/val/type" /></p>
                 </div>
             </div>
         </div>

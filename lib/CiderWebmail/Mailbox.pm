@@ -38,7 +38,9 @@ sub list_messages_hash {
 sub uids {
     my ($self, $o) = @_;
 
-    return $self->{c}->model('IMAPClient')->get_folder_uids($self->{c}, { mailbox => $self->{mailbox}, sort => $o->{sort} });
+    return $o->{filter}
+        ? $self->{c}->model('IMAPClient')->simple_search($self->{c}, { mailbox => $self->{mailbox}, searchfor => $o->{filter}, sort => $o->{sort} })
+        : $self->{c}->model('IMAPClient')->get_folder_uids($self->{c}, { mailbox => $self->{mailbox}, sort => $o->{sort} });
 }
 
 sub simple_search {
@@ -46,8 +48,7 @@ sub simple_search {
    
     $o->{searchfor} = "ALL" unless $o->{searchfor};
 
-    my $search_result = $self->{c}->model('IMAPClient')->simple_search($self->{c}, { mailbox => $self->{mailbox}, searchfor => $o->{searchfor} });
-    $self->{uids} = $search_result;
+    return $self->{c}->model('IMAPClient')->simple_search($self->{c}, { mailbox => $self->{mailbox}, searchfor => $o->{searchfor}, sort => $o->{sort} });
 }
 
 

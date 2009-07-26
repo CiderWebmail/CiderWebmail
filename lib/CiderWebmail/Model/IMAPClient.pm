@@ -156,9 +156,8 @@ sub get_folder_uids {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    #TODO check RFC if we need to allow more here
     foreach (@{ $o->{sort} }) {
-        die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z ]/);
+        die "illegal char in sort: $_" if $_ !~ /\A(?:reverse )?(arrival|cc|date|from|size|subject|to)\z/i;
     }
 
     #TODO empty result
@@ -204,10 +203,10 @@ sub get_headers_hash() {
     
     if ($o->{uids}) {
         die "sorting a list of UIDs is not implemented yet, you have to specify uids OR sort" if $o->{sort};
-        die "sort needs to be an arrayref" unless ( ref($o->{uids}) eq "ARRAY" );
+        die "uids needs to be an arrayref" unless ( ref($o->{uids}) eq "ARRAY" );
 
         foreach (@{ $o->{uids} }) {
-            die ("illegal char in uid list") if ($_ =~ m/[^0-9]/);
+            die "illegal char in uid $_" if /\D/;
         }
 
         $uids = Mail::IMAPClient::MessageSet->new($o->{uids});
@@ -222,9 +221,8 @@ sub get_headers_hash() {
         die "sorting a list of UIDs is not implemented yet, you have to specify uids OR sort" if $o->{uids};
         die "sort needs to be an arrayref" unless ( ref($o->{sort}) eq "ARRAY" );
        
-        #TODO check RFC if we need to allow more here
         foreach (@{ $o->{sort} }) {
-            die ("illegal char in sort") if ($_ =~ m/[^a-zA-Z]/);
+            die "illegal char in sort: $_" if $_ !~ /\A(?:reverse )?(arrival|cc|date|from|size|subject|to)\z/i;
         }
 
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
@@ -325,10 +323,20 @@ sub simple_search {
         'FROM', $c->stash->{imapclient}->Quote($o->{searchfor}),
     );
 
-    my @uids = $c->stash->{imapclient}->search(@search);
+    my @uids;
+    if ($o->{sort}) {
+        foreach (@{ $o->{sort} }) {
+            die "illegal char in sort: $_" if $_ !~ /\A(?:reverse )?(arrival|cc|date|from|size|subject|to)\z/i;
+        }
+        my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8' );
+        @uids = $c->stash->{imapclient}->sort(@sort, @search);
+    }
+    else {
+        @uids = $c->stash->{imapclient}->search(@search);
+    }
     $self->_die_on_error($c);
 
-    return \@uids; 
+    return wantarray ? @uids : \@uids; 
 }
 
 =head2 get_headers_string($c, { mailbox => $mailbox, uid => $uid })

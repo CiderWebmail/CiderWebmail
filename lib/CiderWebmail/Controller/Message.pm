@@ -9,6 +9,7 @@ use MIME::Lite;
 use MIME::Words qw(encode_mimeword);
 use Clone qw(clone);
 use List::Util qw(first);
+use List::MoreUtils qw(all);
 
 =head1 NAME
 
@@ -46,20 +47,17 @@ sub view : Chained('setup') PathPart('') Args(0) {
     
     $message->load_body();
 
-    foreach my $id (keys(%{ $message->{attachments} })) {
-        $message->{attachments}->{$id}->{uri_view} = $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $message->uid . "/attachment/$id");
-    }
-
     $message->mark_read();
 
     $c->stash({
         template        => 'message.xml',
         target_folders  => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_view_source => $c->uri_for("/mailbox/$mailbox/$uid/view_source"),
-        uri_reply       => $c->uri_for("/mailbox/$mailbox/$uid/reply/sender"),
-        uri_reply_all   => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
-        uri_forward     => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
-        uri_move        => $c->uri_for("/mailbox/$mailbox/$uid/move"),
+        uri_view_source     => $c->uri_for("/mailbox/$mailbox/$uid/view_source"),
+        uri_reply           => $c->uri_for("/mailbox/$mailbox/$uid/reply/sender"),
+        uri_reply_all       => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
+        uri_forward         => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
+        uri_move            => $c->uri_for("/mailbox/$mailbox/$uid/move"),
+        uri_view_attachment => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $message->uid . '/attachment'),
     });
 }
 
@@ -67,12 +65,23 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
 =cut
 
-sub attachment : Chained('setup') Args(1) {
-    my ( $self, $c, $id ) = @_;
+sub attachment : Chained('setup') Args {
+    my ( $self, $c, @path ) = @_;
+
+    return $c->res->body('invalid attachment path') unless all {/\A\d+\z/} @path;
 
     my $mailbox = $c->stash->{folder};
 
-    my $attachment = $c->stash->{message}->attachments->{$id};
+    my $attachment = pop @path;
+    my $body = $c->stash->{message};
+    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} get's initialized with an empty hash
+
+    foreach (@path) {
+        $body = $body->renderable->{$_}{data};
+        return $c->res->body('attachment not found') unless $body;
+    }
+
+    $attachment = $body->attachments->{$attachment};
 
     $c->res->content_type($attachment->{type});
     $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
@@ -198,7 +207,10 @@ sub reply : Chained('setup') Args(1) {
         die("invalid reply destination");
     }
 
-    $c->stash(message => $new_message);
+    $c->stash({
+        in_reply_to => $message,
+        message  => $new_message,
+    });
 
     $c->forward('compose');
 }
@@ -215,7 +227,7 @@ sub forward : Chained('setup') Args(0) {
     my $message = $c->stash->{message};
 
     $c->stash({
-        forward => $message->uid,
+        forward => $message,
         message => {
             from    => $message->to,
             subject => 'Fwd: ' . $message->subject,
@@ -258,14 +270,16 @@ sub send : Chained('/mailbox/setup') Args(0) {
     $mail->attr("content-type"         => "text/plain");
     $mail->attr("content-type.charset" => 'UTF-8');
 
-    if (my $attachment = $c->req->param('attachment')) {
-        my $upload = $c->req->upload('attachment');
-        $mail->attach(
-            Type        => $upload->type,
-            Filename    => $upload->basename,
-            FH          => $upload->fh,
-            Disposition => 'attachment',
-        );
+    if (my @attachments = $c->req->param('attachment')) {
+        foreach ($c->req->upload('attachment')) {
+            $mail->attach(
+                Type        => $_->type,
+                Filename    => $_->basename,
+                FH          => $_->fh,
+                Disposition => 'attachment',
+                ReadNow     => 1,
+            );
+        }
     }
 
     if (my $forward = $c->req->param('forward')) {
@@ -277,6 +291,16 @@ sub send : Chained('/mailbox/setup') Args(0) {
             Filename => $message->subject . '.eml',
             Data     => $message->as_string,
         );
+    }
+
+    if (my $in_reply_to = $c->req->param('in_reply_to')) {
+        $in_reply_to = CiderWebmail::Message->new($c, { mailbox => $c->stash->{folder}, uid => $in_reply_to } );
+        if ($in_reply_to) {
+            my $message_id = $in_reply_to->get_header('Message-ID');
+            $mail->add('In-Reply-To', $message_id);
+            my $references = $in_reply_to->get_header('References');
+            $mail->add('References', join ' ', $references ? split /\s+/s, $references : (), $message_id);
+        }
     }
 
     $mail->send;

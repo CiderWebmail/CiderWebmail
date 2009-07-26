@@ -10,6 +10,7 @@ sub new {
 
     my $message = $class->SUPER::new($c, $o);
     $message->{entity} = $o->{entity};
+    $message->{path}   = $o->{path};
 
     bless $message, $class;
 }

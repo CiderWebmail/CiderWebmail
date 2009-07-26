@@ -50,7 +50,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $settings->set_column(sort_order => $sort);
     $settings->update_or_insert();
 
-    my @uids = $mailbox->uids({ sort => [ $sort ] });
+    my $filter = $c->req->param('filter');
+
+    my @uids = $mailbox->uids({ sort => [ $sort ], filter => $filter });
 
     my $reverse = $sort =~ s/\Areverse\W+//;
 
@@ -86,6 +88,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
             if ($sort eq 'subject') {
                 $name = $_->{head}->{subject};
+                $name =~ s/\A\s+//;
+                $name =~ s/\A(re:|fwd?:)\s*//i;
+                $name =~ s/\s+\z//;
             }
             
             if (not @groups or $groups[-1]{name} ne ($name or '')) {
@@ -105,35 +110,17 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
         messages        => \@messages,
-        uri_quicksearch => $c->uri_for($c->stash->{folder} . '/quicksearch'),
+        uri_quicksearch => $c->uri_for($c->stash->{folder}),
         template        => 'mailbox.xml',
         groups          => \@groups,
+        filter          => $filter,
+        sort            => scalar $c->req->param('sort'),
         "sort_$sort"    => 1,
         (map {
             $sort_uri->query_param(sort => ($_ eq $sort and not $reverse) ? "reverse $_" : $_);
             ("uri_sorted_$_" => $sort_uri->as_string)
         } qw(from subject date)),
     });
-}
-
-=head2 search
-
-Search the mailbox using simple_search
-
-=cut
-
-sub search : Chained('setup') PathPart('quicksearch') {
-    my ( $self, $c, $searchfor ) = @_;
-    $searchfor ||= $c->req->param('text');
-
-    my $mbox = CiderWebmail::Mailbox->new($c, { mailbox => $c->stash->{folder} });
-    $mbox->simple_search({ searchfor => $searchfor });
-    
-    $c->stash({
-        mbox => $mbox,
-    });
-
-    $c->forward('view');
 }
 
 =head2 create_subfolder

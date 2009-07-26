@@ -47,8 +47,8 @@ msgstr "Folders"
 msgid "Forward"
 msgstr "Forward"
 
-msgid "Forwarding message"
-msgstr "Forwarding message"
+msgid "Forwarding"
+msgstr "Forwarding"
 
 msgid "From"
 msgstr "From"
@@ -112,3 +112,6 @@ msgstr "To:"
 
 msgid "messages"
 msgstr "messages"
+
+#~ msgid "Forwarding message"
+#~ msgstr "Forwarding message"

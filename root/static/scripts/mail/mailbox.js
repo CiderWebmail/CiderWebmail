@@ -28,13 +28,19 @@ window.addEvent('load', function() {
             add_drag_and_drop(target, event, droppables, selected);
             stop_propagation(event);
         }
+        else if (target.tagName.toLowerCase() == 'td' && target.parentNode.id && target.parentNode.id.indexOf('message_') == 0) {
+            if (! selected.length) selected.push(target.parentNode);
+            var icon = target.parentNode.getElementsByTagName('img')[0];
+            add_drag_and_drop(icon, event, droppables, selected);
+            stop_propagation(event);
+        }
     }
 
     function handle_click(event) {
         var target = get_target_node(event);
         var tagname = target.tagName.toLowerCase();
 
-        if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
+        if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) { //TODO add check for meta key
             var uid = target.id.replace('link_', '');
             $('message_view').innerHTML = loading_message;
             $('loading_message').style.display = 'block';
@@ -51,7 +57,10 @@ window.addEvent('load', function() {
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
             var uid = target.id.replace('delete_', '');
             new Request({url: target.parentNode.href, onSuccess: update_foldertree}).send();
-            target.parentNode.parentNode.parentNode.parentNode.removeChild(target.parentNode.parentNode.parentNode);
+            var group = target.parentNode.parentNode.parentNode.parentNode;
+            group.removeChild(target.parentNode.parentNode.parentNode);
+            if (group.childNodes.length == 1)
+                group.parentNode.removeChild(group);
             stop_propagation(event);
         }
         else {
@@ -193,4 +202,9 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
 function toggleHeader(node) {
     node.nextSibling.style.display = node.nextSibling.style.display == 'none' ? '' : 'none';
+}
+
+function open_in_new_window(link) {
+    window.open(link);
+    return false;
 }
