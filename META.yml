@@ -33,6 +33,7 @@ requires:
   HTML::Scrubber: 0
   HTML::Tidy: 0
   IO::Socket::SSL: 0
+  List::MoreUtils: 0
   Locale::Maketext::Gettext: 0
   MIME::Lite: 0
   MIME::Parser: 0
@@ -49,4 +50,4 @@ requires:
   parent: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.05
+version: 0.07
