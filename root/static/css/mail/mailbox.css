@@ -103,11 +103,27 @@ ul#folder_tree a.hover {
     display: none;
 }
 
+.message_header {
+    margin-bottom: 1em;
+}
+
+.message_header table {
+    float: left;
+}
+
+.message_header_details {
+    float: right;
+}
+
 .message_header tr th {
     font-weight: bold;
 }
 
 .message_header tr td {
+}
+
+.body_part, pre.all_headers {
+    clear: both;
 }
 
 .forwarded {

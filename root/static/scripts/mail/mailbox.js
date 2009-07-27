@@ -200,8 +200,10 @@ function add_drag_and_drop(message, event, droppables, selected) {
     document.addEvents({mousemove: drag, mouseup: drop});
 }
 
-function toggleHeader(node) {
-    node.nextSibling.style.display = node.nextSibling.style.display == 'none' ? '' : 'none';
+function toggleHeader(node, on) {
+    var header = node.parentNode.parentNode.nextSibling;
+    if (header.nodeType != 1) header = header.nextSibling;
+    header.getElementsByTagName('pre')[0].style.display = on ? '' : 'none';
 }
 
 function open_in_new_window(link) {

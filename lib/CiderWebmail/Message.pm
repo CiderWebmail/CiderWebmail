@@ -126,7 +126,12 @@ sub renderable {
 
     $self->load_body unless exists $self->{renderable};
 
-    return wantarray ? [ values %{ $self->{renderable} } ] : $self->{renderable};
+    return $self->{renderable};
+}
+
+sub renderable_list {
+    my ($self) = @_;
+    return [ sort { $a->{id} <=> $b->{id} } values %{ $self->renderable } ];
 }
 
 sub attachments {
@@ -134,7 +139,12 @@ sub attachments {
 
     $self->load_body unless exists $self->{attachments};
 
-    return wantarray ? [ values %{ $self->{attachments} } ] : $self->{attachments};
+    return wantarray ? sort { $a->{id} <=> $b->{id} } values %{ $self->{attachments} } : $self->{attachments};
+}
+
+sub attachment_list {
+    my ($self) = @_;
+    return [ sort { $a->{id} <=> $b->{id} } values %{ $self->attachments } ];
 }
 
 sub delete {

@@ -74,7 +74,7 @@ sub attachment : Chained('setup') Args {
 
     my $attachment = pop @path;
     my $body = $c->stash->{message};
-    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} get's initialized with an empty hash
+    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} gets initialized with an empty hash
 
     foreach (@path) {
         $body = $body->renderable->{$_}{data};
