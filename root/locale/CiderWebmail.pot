@@ -37,6 +37,9 @@ msgstr "Folders"
 msgid "Forward"
 msgstr "Forward"
 
+msgid "Forwarded message"
+msgstr "Forwarded message"
+
 msgid "Forwarding"
 msgstr "Forwarding"
 
@@ -45,9 +48,6 @@ msgstr "From"
 
 msgid "From:"
 msgstr "From:"
-
-msgid "Header:"
-msgstr "Header:"
 
 msgid "Loading message"
 msgstr "Loading message"
@@ -85,6 +85,9 @@ msgstr "Send"
 msgid "Session ended"
 msgstr "Session ended"
 
+msgid "Show all headers"
+msgstr "Show all headers"
+
 msgid "Subject"
 msgstr "Subject"
 
@@ -99,6 +102,9 @@ msgstr "Text:"
 
 msgid "To:"
 msgstr "To:"
+
+msgid "View source"
+msgstr "View source"
 
 msgid "messages"
 msgstr "messages"

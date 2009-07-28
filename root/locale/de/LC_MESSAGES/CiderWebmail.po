@@ -49,17 +49,17 @@ msgstr "Ordner"
 msgid "Forward"
 msgstr "Weiterleiten"
 
+msgid "Forwarded message"
+msgstr "Weitergeleitete Email"
+
 msgid "Forwarding"
-msgstr "Weiterleitung"
+msgstr "Weiterleitung:"
 
 msgid "From"
 msgstr "Von"
 
 msgid "From:"
 msgstr "Von:"
-
-msgid "Header:"
-msgstr "Header:"
 
 msgid "Loading message"
 msgstr "Lade Email"
@@ -97,6 +97,9 @@ msgstr "Senden"
 msgid "Session ended"
 msgstr "Sitzung beendet"
 
+msgid "Show all headers"
+msgstr "Alle Header anzeigen"
+
 msgid "Subject"
 msgstr "Betreff"
 
@@ -112,8 +115,14 @@ msgstr "Text:"
 msgid "To:"
 msgstr "An:"
 
+msgid "View source"
+msgstr "Quelltext anzeigen"
+
 msgid "messages"
 msgstr "Mails"
+
+#~ msgid "Header:"
+#~ msgstr "Header:"
 
 #~ msgid "Forwarding message"
 #~ msgstr "Leite Email weiter"
