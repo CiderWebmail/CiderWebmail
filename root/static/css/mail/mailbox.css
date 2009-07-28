@@ -105,6 +105,7 @@ ul#folder_tree a.hover {
 
 .message_header {
     margin-bottom: 1em;
+    overflow: auto;
 }
 
 .message_header table {
@@ -112,7 +113,9 @@ ul#folder_tree a.hover {
 }
 
 .message_header_details {
+    font-size: 75%;
     float: right;
+    color: gray;
 }
 
 .message_header tr th {
