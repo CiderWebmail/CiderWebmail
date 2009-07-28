@@ -103,39 +103,6 @@ ul#folder_tree a.hover {
     display: none;
 }
 
-.message_header {
-    margin-bottom: 1em;
-    overflow: auto;
-}
-
-.message_header table {
-    float: left;
-}
-
-.message_header_details {
-    font-size: 75%;
-    float: right;
-    color: gray;
-}
-
-.message_header tr th {
-    font-weight: bold;
-}
-
-.message_header tr td {
-}
-
-.body_part, pre.all_headers {
-    clear: both;
-}
-
-.forwarded {
-    border: 1px solid black;
-    padding: 3px;
-    margin: 3px;
-    overflow: auto;
-}
-
 .dragger {
     position: absolute;
 

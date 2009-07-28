@@ -1,3 +1,13 @@
+* Design for the homepage
+* Get a logo
+* Differenct icons according to message state
+* Icon for mails with attachments
+* Update folder count on message open (because of message being marked as read)
+* Shortcut for moving current message to a folder
+* Shortcuts for displaying next/previous message
+* On scroll message list loading via AJAX (50% done)
+* Calendar functions
+* IMAP IDLE support
 * Adjustable "frame" size
 * Composing HTML mails
 * better header formatting in message view

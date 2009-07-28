@@ -10,6 +10,7 @@
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
+        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/message.js" metal:fill-slot="scripts" />
     </head>
     <body metal:fill-slot="content">
         <div metal:define-macro="view_message">
