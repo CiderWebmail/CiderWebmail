@@ -40,7 +40,7 @@ window.addEvent('load', function() {
         var target = get_target_node(event);
         var tagname = target.tagName.toLowerCase();
 
-        if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) { //TODO add check for meta key
+        if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
             var uid = target.id.replace('link_', '');
             $('message_view').innerHTML = loading_message;
             $('loading_message').style.display = 'block';

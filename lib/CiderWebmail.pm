@@ -26,7 +26,7 @@ use Catalyst qw/
     Unicode
 /;
 
-our $VERSION = '0.07';
+our $VERSION = '1.00';
 
 # Configure the application. 
 #
