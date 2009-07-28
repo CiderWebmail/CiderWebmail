@@ -43,3 +43,7 @@ This file documents the revision history for Perl extension CiderWebmail.
 	- Open reply and forward links in new windows
 	- Add in-reply-to and references headers on reply
 	- Bugfixes
+
+1.00 2009-07-28 16:15:00
+	- Bugfixes
+	- Polishing
