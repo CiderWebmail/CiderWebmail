@@ -57,14 +57,15 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $reverse = $sort =~ s/\Areverse\W+//;
 
     my (@messages, @groups);
+    my ($start, $length);
+
+    ($start)  = ($c->req->param('start') or '')  =~ /(\d+)/;
+    $start ||= 0;
+    ($length) = ($c->req->param('length') or '') =~ /(\d+)/;
+    $length ||= 250;
+    @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
     if (@uids) {
-        if (defined $c->req->param('start')) {
-            my ($start) = $c->req->param('start')  =~ /(\d+)/;
-            my ($end) =   $c->req->param('length') =~ /(\d+)/;
-            @uids = splice @uids, ($start or 0), ($end or 0);
-        }
-
         my %messages = map { ($_->{uid} => {
                     %{ $_ },
                     uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
