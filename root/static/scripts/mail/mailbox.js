@@ -1,11 +1,6 @@
 var droppables;
 var current_message;
 
-function add_event_listener(eventname, handler, bubble) {
-    if (document.addEventListener) document.addEventListener(eventname, handler, bubble);
-    else document.attachEvent('on' + eventname, handler);
-}
-
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
     var selected = new Array();
