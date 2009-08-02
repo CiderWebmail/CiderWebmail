@@ -1,4 +1,10 @@
 var droppables;
+var current_message;
+
+function add_event_listener(eventname, handler, bubble) {
+    if (document.addEventListener) document.addEventListener(eventname, handler, bubble);
+    else document.attachEvent(eventname, handler);
+}
 
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
@@ -36,22 +42,27 @@ window.addEvent('load', function() {
         }
     }
 
+    function show_message(target) {
+        var uid = target.id.replace('link_', '');
+        $('message_view').innerHTML = loading_message;
+        $('loading_message').style.display = 'block';
+        $('help_message').style.display = 'none';
+        $('message_view').style.top = '30%';
+        $('content').addClass('message_display');
+        current_message = target.parentNode.parentNode;
+        var myHTMLRequest = new Request.HTML({
+            onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
+                $('message_view').innerHTML = responseHTML;
+            }
+        }).get(target.href + "?layout=ajax");
+    }
+
     function handle_click(event) {
         var target = get_target_node(event);
         var tagname = target.tagName.toLowerCase();
 
         if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
-            var uid = target.id.replace('link_', '');
-            $('message_view').innerHTML = loading_message;
-            $('loading_message').style.display = 'block';
-            $('help_message').style.display = 'none';
-            $('message_view').style.top = '30%';
-            $('content').addClass('message_display');
-            var myHTMLRequest = new Request.HTML({
-                onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-                    $('message_view').innerHTML = responseHTML;
-                }
-            }).get(target.href + "?layout=ajax");
+            show_message(target);
             stop_propagation(event);
         }
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
@@ -85,11 +96,36 @@ window.addEvent('load', function() {
         }
     }
 
-    if (document.addEventListener) document.addEventListener('mousedown', start, false);
-    else document.attachEvent('onmousedown', start);
-
-    if (document.addEventListener) document.addEventListener('click', handle_click, false);
-    else document.attachEvent('onclick', handle_click);
+    add_event_listener('mousedown', start, false);
+    add_event_listener('click', handle_click, false);
+    add_event_listener('keyup', function (event) {
+            switch (event.keyCode) {
+                case 37:
+                    var previous = current_message.previousSibling;
+                    if (previous && previous.nodeType != 1) previous = previous.previousSibling;
+                    if (! previous || ! previous.id) { // first row is the group header
+                        var prev_group = current_message.parentNode.previousSibling;
+                        if (prev_group) {
+                            var prev_messages = prev_group.getElementsByTagName('tr');
+                            previous = prev_messages[prev_messages.length - 1];
+                        }
+                    }
+                    if (previous)
+                        show_message(document.getElementById(previous.id.replace('message', 'link'))); //left
+                    break;
+                case 39: ; //right
+                    var next = current_message.nextSibling;
+                    if (next && next.nodeType != 1) next = next.nextSibling;
+                    if (! next) {
+                        var next_group = current_message.parentNode.nextSibling;
+                        if (next_group)
+                            next = next_group.getElementsByTagName('tr')[1]; // first row is the group header
+                    }
+                    if (next)
+                        show_message(document.getElementById(next.id.replace('message', 'link'))); //left
+                    break;
+            }
+        }, false);
 
     var length = 250;
     fetch_new_rows(length, length)
