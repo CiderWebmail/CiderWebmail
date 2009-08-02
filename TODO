@@ -3,6 +3,7 @@
 * Icon for mails with attachments
 * Update folder count on message open (because of message being marked as read)
 * Shortcut for moving current message to a folder
+* Reply/forward for forwarded messages
 * On scroll message list loading via AJAX (50% done)
 * Calendar functions
 * IMAP IDLE support

@@ -3,7 +3,7 @@ var current_message;
 
 function add_event_listener(eventname, handler, bubble) {
     if (document.addEventListener) document.addEventListener(eventname, handler, bubble);
-    else document.attachEvent(eventname, handler);
+    else document.attachEvent('on' + eventname, handler);
 }
 
 window.addEvent('load', function() {
@@ -110,7 +110,7 @@ window.addEvent('load', function() {
                             previous = prev_messages[prev_messages.length - 1];
                         }
                     }
-                    if (previous)
+                    if (previous && previous.id) // first row of the table is table header
                         show_message(document.getElementById(previous.id.replace('message', 'link'))); //left
                     break;
                 case 39: ; //right
