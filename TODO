@@ -1,6 +1,5 @@
 * Design for the homepage
 * Get a logo
-* Differenct icons according to message state
 * Icon for mails with attachments
 * Update folder count on message open (because of message being marked as read)
 * Shortcut for moving current message to a folder

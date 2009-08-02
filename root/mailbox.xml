@@ -40,7 +40,7 @@
                             <td tal:condition="and: true:sort_subject false:group/name" colspan="5" i18n:translate="">No Subject</td>
                         </tr>
                         <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class message/flags">
-                            <td class="icon"><img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/kmmsgread.png" alt=""/></td>
+                            <td class="icon"><img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png" alt=""/></td>
                             <td class="sender" tal:attributes="id string:from_${message/uid}">
                                 <span tal:condition="false: sort_from" tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
                             </td>
