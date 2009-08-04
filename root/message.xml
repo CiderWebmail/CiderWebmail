@@ -60,6 +60,13 @@
             </div>
             <div class="body_part" tal:repeat="body_part message/renderable_list">
                 <pre tal:condition="body_part/is_text" tal:content="body_part/data">mail body</pre>
+                <div tal:condition="body_part/is_calendar" class="calendar">
+                    <div tal:repeat="data body_part/data" class="calendar_entry">
+                        <span i18n:translate="">Begin: </span> <span tal:content="data/start">start</span><br />
+                        <span i18n:translate="">End: </span> <span tal:content="data/end">end</span><br />
+                        <span i18n:translate="">Summary: </span> <span tal:content="data/summary">end</span><br />
+                    </div>
+                </div>
                 <div tal:condition="body_part/is_html" tal:content="structure body_part/data">mail body</div>
                 <div tal:condition="body_part/is_message" tal:define="message body_part/data" class="forwarded">
                     <h2 i18n:translate="">Forwarded message</h2>
