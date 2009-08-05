@@ -51,6 +51,9 @@ requires 'Locale::Maketext::Gettext';
 
 requires 'List::MoreUtils';
 
+requires 'Data::ICal';
+requires 'DateTime::Format::ISO8601';
+
 catalyst;
 
 install_script glob('script/*.pl');
