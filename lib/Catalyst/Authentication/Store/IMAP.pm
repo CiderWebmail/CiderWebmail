@@ -1,5 +1,8 @@
 package Catalyst::Authentication::Store::IMAP;
 
+use strict;
+use warnings;
+
 use base qw/Class::Accessor::Fast/;
 use Catalyst::Authentication::Store::IMAP::User;
 
