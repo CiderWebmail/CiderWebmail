@@ -24,6 +24,7 @@ lib/CiderWebmail/DB/Result/Settings.pm
 lib/CiderWebmail/Headercache.pm
 lib/CiderWebmail/Mailbox.pm
 lib/CiderWebmail/Message.pm
+lib/CiderWebmail/Message/Forwarded.pm
 lib/CiderWebmail/Model/DB.pm
 lib/CiderWebmail/Model/IMAPClient.pm
 lib/CiderWebmail/Util.pm
@@ -50,7 +51,9 @@ root/message.xml
 root/static/css/base.css
 root/static/css/IE6.css
 root/static/css/mail/mailbox.css
+root/static/css/mail/message.css
 root/static/css/mail/new.css
+root/static/images/attachment.png
 root/static/images/btn_120x50_built.png
 root/static/images/btn_120x50_built_shadow.png
 root/static/images/btn_120x50_powered.png
@@ -63,6 +66,15 @@ root/static/images/catalyst_logo.png
 root/static/images/kmmsgread.png
 root/static/images/mail_forward.png
 root/static/images/mail_reply.png
+root/static/images/message.png
+root/static/images/messageanswered.png
+root/static/images/messageforwarded.png
+root/static/images/messagerecent.png
+root/static/images/messagerecentseen.png
+root/static/images/messageseen.png
+root/static/images/messageseenanswered.png
+root/static/images/messageseenforwarded.png
+root/static/images/messageseenforwardedanswered.png
 root/static/images/mimeicons/a.gif
 root/static/images/mimeicons/a.png
 root/static/images/mimeicons/alert.black.gif
@@ -284,6 +296,7 @@ root/static/images/mimeicons/world2.png
 root/static/images/trashcan.gif
 root/static/scripts/base.js
 root/static/scripts/mail/mailbox.js
+root/static/scripts/mail/message.js
 root/static/scripts/mootools-1.2-core.js
 root/static/scripts/mootools-1.2-more.js
 root/var/user_settings.sql

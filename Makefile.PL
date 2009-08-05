@@ -13,6 +13,7 @@ requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';
 requires 'Catalyst::Authentication::Credential::HTTP';
+requires 'Catalyst::Model::DBIC::Schema';
 
 requires 'Catalyst::Action::RenderView';
 requires 'YAML'; # This should reflect the config file format you've chosen
