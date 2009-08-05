@@ -178,12 +178,33 @@ sub main_body_part {
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
     #to use when forwarding/replying to messages and return it
+#FIXME this code does not actually get the first body part. Should use renderable_list here.
     foreach (values %{ $renderable }) {
         my $part = $_;
         if (($part->{is_text} or 0) == 1) {
             return $part->{data};
         }
     }
+}
+
+=head2 get_embedded_message
+
+Recursively get an embedded message according to a given path.
+
+=cut
+
+sub get_embedded_message {
+    my ( $self, $c, @path ) = @_;
+
+    my $body = $self;
+    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} gets initialized with an empty hash
+
+    foreach (@path) {
+        $body = $body->renderable->{$_}{data};
+        return unless $body;
+    }
+
+    return $body;
 }
 
 my %part_types = (

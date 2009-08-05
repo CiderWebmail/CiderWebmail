@@ -48,7 +48,9 @@ This file documents the revision history for Perl extension CiderWebmail.
 	- Bugfixes
 	- Polishing
 
-1.01 2009-08-02 22:00:00
+1.01 XXXX-XX-XX XX:XX:XX
 	- Finished incremental message loading
 	- Use different icons according to message state
 	- Cursor left/right as shortcuts for displaying previous/next message
+	- Allow reply/forward to attached messages
+	- Render ICal attachments

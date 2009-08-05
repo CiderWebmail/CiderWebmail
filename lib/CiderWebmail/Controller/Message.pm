@@ -46,8 +46,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $uid = $message->uid;
     
     $message->load_body();
-
     $message->mark_read();
+
+    CiderWebmail::Util::send_foldertree_update($c); # update folder display
 
     $c->stash({
         template        => 'message.xml',
@@ -73,13 +74,8 @@ sub attachment : Chained('setup') Args {
     my $mailbox = $c->stash->{folder};
 
     my $attachment = pop @path;
-    my $body = $c->stash->{message};
-    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} gets initialized with an empty hash
-
-    foreach (@path) {
-        $body = $body->renderable->{$_}{data};
-        return $c->res->body('attachment not found') unless $body;
-    }
+    my $body = $c->stash->{message}->get_embedded_message($c, @path);
+    return $c->res->body('attachment not found') unless $body;
 
     $attachment = $body->attachments->{$attachment};
 
@@ -177,10 +173,13 @@ Reply to a message suggesting receiver, subject and message text
 
 =cut
 
-sub reply : Chained('setup') Args(1) {
-    my ( $self, $c, $who ) = @_;
+sub reply : Chained('setup') Args() {
+    my ( $self, $c, $who, @path ) = @_;
     my $mailbox = $c->stash->{folder};
     my $message = $c->stash->{message};
+
+    $message = $message->get_embedded_message($c, @path);
+    return $c->res->body('message not found') unless $message;
 
     #FIXME: we need a way to find the 'main part' of a message and use this here
     my $body = $message->main_body_part($c);
@@ -221,10 +220,13 @@ Forward a mail as attachment
 
 =cut
 
-sub forward : Chained('setup') Args(0) {
-    my ( $self, $c ) = @_;
+sub forward : Chained('setup') Args() {
+    my ( $self, $c, @path ) = @_;
     my $mailbox = $c->stash->{folder};
     my $message = $c->stash->{message};
+
+    $message = $message->get_embedded_message($c, @path);
+    return $c->res->body('message not found') unless $message;
 
     $c->stash({
         forward => $message,
@@ -284,7 +286,9 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (my $forward = $c->req->param('forward')) {
         my $mailbox = $c->stash->{folder};
+        my ($forward, @path) = split m!/!, $forward;
         my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $forward } );
+        $message = $message->get_embedded_message($c, @path);
 
         $mail->attach(
             Type     => 'message/rfc822',

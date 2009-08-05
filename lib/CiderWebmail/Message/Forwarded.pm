@@ -18,7 +18,9 @@ sub new {
 sub get_header {
     my ($self, $header) = @_;
 
-    return $self->{c}->model('IMAPClient')->transform_header($self->{c}, { header => $header, data => scalar $self->{entity}->head->get($header) });
+    my $data = $self->{entity}->head->get($header);
+    chomp $data if defined $data;
+    return $self->{c}->model('IMAPClient')->transform_header($self->{c}, { header => $header, data => $data });
 }
 
 sub header_formatted {
