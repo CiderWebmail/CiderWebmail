@@ -10,6 +10,9 @@ use DateTime::Format::Mail;
 use HTML::Scrubber;
 use Text::Iconv;
 
+use Data::ICal;
+use DateTime::Format::ISO8601;
+
 use CiderWebmail::Message::Forwarded;
 
 has c           => (is => 'ro', isa => 'Object');
@@ -146,6 +149,7 @@ sub main_body_part {
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
     #to use when forwarding/replying to messages and return it
+#FIXME this code does not actually get the first body part. Should use renderable_list here.
     foreach (values %{ $renderable }) {
         my $part = $_;
         if (($part->{is_text} or 0) == 1) {
@@ -154,9 +158,30 @@ sub main_body_part {
     }
 }
 
+=head2 get_embedded_message
+
+Recursively get an embedded message according to a given path.
+
+=cut
+
+sub get_embedded_message {
+    my ( $self, $c, @path ) = @_;
+
+    my $body = $self;
+    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} gets initialized with an empty hash
+
+    foreach (@path) {
+        $body = $body->renderable->{$_}{data};
+        return unless $body;
+    }
+
+    return $body;
+}
+
 my %part_types = (
     'text/plain'     => \&_render_text_plain,
     'text/html'      => \&_render_text_html,
+    'text/calendar'      => \&_render_text_calendar,
     'message/rfc822' => \&_render_message_rfc822,
 );
 
@@ -233,6 +258,53 @@ sub _render_text_plain {
     $part->{data} = Text::Flowed::reformat($part_string);
 
     $part->{is_text} = 1;
+
+    return $part;
+}
+
+sub _render_text_calendar {
+    my ($self, $c, $o) = @_;
+
+    die 'no part set' unless defined $o->{part};
+
+    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+
+    my $part = {};
+    my $part_string;
+    unless ($charset
+        and eval {
+            my $converter = Text::Iconv->new($charset, "utf-8");
+            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
+        }) {
+
+        warn "unsupported encoding: $charset" if $charset;
+        $part_string = $o->{part}->bodyhandle->as_string;
+    }
+
+    utf8::decode($part_string);
+    my $cal = Data::ICal->new(data => $part_string);
+    my $dt = DateTime::Format::ISO8601->new;
+
+    my @events;
+    foreach ( @{$cal->entries} ) {
+        my $entry = $_;
+        my $start = $entry->property('dtstart') || next;
+        my $end = $entry->property('dtend') || next;
+        my $summary = $entry->property('summary') || next;
+       
+        my $dt_start = $dt->parse_datetime($start->[0]->value);
+        my $dt_end = $dt->parse_datetime($end->[0]->value);
+
+        push(@events, {
+            start => join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")),
+            end => join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")), 
+            summary => $summary->[0]->value, }
+        );
+    }
+
+    $part->{data} = \@events;
+
+    $part->{is_calendar} = 1;
 
     return $part;
 }

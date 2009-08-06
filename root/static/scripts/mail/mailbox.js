@@ -39,6 +39,7 @@ window.addEvent('load', function() {
 
     function show_message(target) {
         var uid = target.id.replace('link_', '');
+        $(target.parentNode.parentNode).addClass('seen');
         $('message_view').innerHTML = loading_message;
         $('loading_message').style.display = 'block';
         $('help_message').style.display = 'none';
@@ -47,7 +48,9 @@ window.addEvent('load', function() {
         current_message = target.parentNode.parentNode;
         var myHTMLRequest = new Request.HTML({
             onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-                $('message_view').innerHTML = responseHTML;
+                var parsed = responseHTML.match(/([\s\S]*?)<div[^>]*>([\s\S]*)<\/div>/);
+                $('message_view').innerHTML = parsed[2];
+                update_foldertree(parsed[1], responseTree);
             }
         }).get(target.href + "?layout=ajax");
     }
@@ -133,7 +136,7 @@ function fetch_new_rows(start_index, length) {
     new Request({url: href + ';layout=ajax', onSuccess: function(responseText, responseXML) {
         // this hack is presented to you by Microsoft
         var dummy = document.createElement('span');
-        dummy.innerHTML = '<table>' + responseText.replace(/[\r\n]+/g, ' ').match(/<table[^>]+id="message_list"[^>]*>(.*)<\/table>/)[1] + '</table>'; // responseXML.getElementById doesn't work in IE
+        dummy.innerHTML = '<table>' + responseText.match(/<table[^>]+id="message_list"[^>]*>([\S\s]*)<\/table>/)[1] + '</table>'; // responseXML.getElementById doesn't work in IE
         var new_rows = dummy.firstChild;
 
         while (new_rows.firstChild.nodeType == 3)

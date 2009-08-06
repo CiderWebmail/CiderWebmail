@@ -14,7 +14,8 @@
         <title metal:define-slot="title">CiderWebmail</title>
     </head>
     <body>
-        <div metal:define-slot="content" tal:omit-tag=""/>
+        <ul metal:use-macro="folder_tree.xml#folder_tree"/>
+        <div metal:define-slot="content"/>
     </body>
 </html>
 

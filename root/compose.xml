@@ -15,8 +15,8 @@
         <div id="compose" metal:fill-slot="content">
             <h1 i18n:translate="">Compose new mail message</h1>
             <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
-                <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value forward/uid"/>
-                <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value in_reply_to/uid"/>
+                <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value string:${forward/uid}/${forward/path}"/>
+                <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/uid}/${in_reply_to/path}"/>
                 <label>
                     <span i18n:translate="">From:</span>
                     <input name="from" tal:condition="true: message/from/0/address" tal:attributes="value message/from/0/address"/>
