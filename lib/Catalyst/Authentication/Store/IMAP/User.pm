@@ -32,7 +32,7 @@ has id => (is => 'ro', isa => 'Str');
 
 Create a new object with the key-value-pairs listed in the arg list.
 
-=head2 supports( )
+=head2 supported_features( )
 
 Checks for existence of keys that correspond with features.
 
