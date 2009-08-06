@@ -1,22 +1,13 @@
-use warnings;
-use strict;
+package CiderWebmail::Headercache;
+
+use Moose;
 
 use Cache::FastMmap;
 
-package CiderWebmail::Headercache;
-
 my $headercache = Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' );
 
-sub new {
-    my ($class, $c, $o) = @_;
-
-    my $cache = {
-        c => $c,
-        cache => $headercache,
-    };
-
-    bless $cache, $class;
-}
+has c     => (is => 'ro', isa => 'Object');
+has cache => (is => 'ro', isa => 'Object', default => sub { return $headercache });
 
 =head2 get()
 
@@ -33,12 +24,12 @@ sub get {
     
     die "hc get w/o mailbox" unless defined $o->{mailbox};
 
-    if (exists $self->{c}->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}}) {
-        return $self->{c}->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}};
+    if (exists $self->c->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}}) {
+        return $self->c->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}};
     }
 
-    if (defined($self->{cache}->get( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id) ))) {
-        return $self->{cache}->get( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id) );
+    if (defined($self->cache->get( join('_', $o->{uid}, lc($o->{header}), $self->c->user->id) ))) {
+        return $self->cache->get( join('_', $o->{uid}, lc($o->{header}), $self->c->user->id) );
     }
 
     return undef;
@@ -59,10 +50,10 @@ sub set {
 
     my %ondisk = (Date => 1, From => 1, To => 1, Subject => 1);
 
-    $self->{c}->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{lc($o->{header})} = $o->{data};
+    $self->c->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{lc($o->{header})} = $o->{data};
   
     if (exists($ondisk{$o->{header}})) {
-        $self->{cache}->set( join('_', $o->{uid}, lc($o->{header}), $self->{c}->user->id), $o->{data} ) || die;
+        $self->cache->set( join('_', $o->{uid}, lc($o->{header}), $self->c->user->id), $o->{data} ) or die "could not cache $o->{header} => $o->{data}";
     }
 }
 
