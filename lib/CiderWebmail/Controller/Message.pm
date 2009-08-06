@@ -31,7 +31,7 @@ Gets the selected message from the URI path and sets up the stash.
 
 sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
     my ( $self, $c, $uid ) = @_;
-    $c->stash->{message} = CiderWebmail::Message->new($c, { mailbox => $c->stash->{folder}, uid => $uid } );
+    $c->stash->{message} = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid);
 }
 
 
@@ -284,7 +284,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (my $forward = $c->req->param('forward')) {
         my $mailbox = $c->stash->{folder};
-        my $message = CiderWebmail::Message->new($c, { mailbox => $mailbox, uid => $forward } );
+        my $message = CiderWebmail::Message->new(c => $c, mailbox => $mailbox, uid => $forward);
 
         $mail->attach(
             Type     => 'message/rfc822',
@@ -294,7 +294,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
     }
 
     if (my $in_reply_to = $c->req->param('in_reply_to')) {
-        $in_reply_to = CiderWebmail::Message->new($c, { mailbox => $c->stash->{folder}, uid => $in_reply_to } );
+        $in_reply_to = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $in_reply_to);
         if ($in_reply_to) {
             my $message_id = $in_reply_to->get_header('Message-ID');
             $mail->add('In-Reply-To', $message_id);

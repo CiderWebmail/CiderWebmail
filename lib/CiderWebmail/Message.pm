@@ -1,7 +1,6 @@
 package CiderWebmail::Message;
 
-use warnings;
-use strict;
+use Moose;
 
 use Mail::IMAPClient::BodyStructure;
 
@@ -13,45 +12,27 @@ use Text::Iconv;
 
 use CiderWebmail::Message::Forwarded;
 
-sub new {
-    my ($class, $c, $o) = @_;
+has c           => (is => 'ro', isa => 'Object');
+has mailbox     => (is => 'ro', isa => 'Str');
+has uid         => (is => 'ro', isa => 'Int');
+has renderable  => (is => 'rw', isa => 'HashRef');
+has attachments => (is => 'rw', isa => 'HashRef');
+has loaded      => (is => 'rw');
 
-    die unless $o->{mailbox};
-    die unless $o->{uid};
-
-    #TODO add headers passed here to the header cache
-    my $message = {
-        c       => $c,
-        mailbox => $o->{mailbox},
-        uid     => $o->{uid}
-    };
-
-    bless $message, $class;
-}
-
-sub uid {
-    my ($self) = @_;
-
-    return $self->{uid};
-}
-
-sub mailbox {
-    my ($self) = @_;
-
-    return $self->{mailbox};
-}
+has entity      => (is => 'ro', isa => 'Object');
+has path        => (is => 'ro', isa => 'Str');
 
 sub get_header {
     my ($self, $header) = @_;
 
-    return scalar $self->{c}->model('IMAPClient')->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
+    return scalar $self->c->model('IMAPClient')->get_headers($self->c, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
 #TODO formatting
 sub header_formatted {
     my ($self) = @_;
 
-    return $self->{c}->model('IMAPClient')->get_headers_string($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+    return $self->c->model('IMAPClient')->get_headers_string($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
 sub subject {
@@ -88,7 +69,7 @@ sub cc {
 sub mark_read {
     my ($self) = @_;
 
-    $self->{c}->model('IMAPClient')->mark_read($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+    $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
 sub get_headers {
@@ -113,33 +94,23 @@ sub date {
 sub load_body {
     my ($self) = @_;
 
-    return if defined $self->{renderable};
+    return if $self->loaded;
+    $self->loaded(1);
 
-    my $body_parts = $self->body_parts($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    my $body_parts = $self->body_parts($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
    
-    $self->{renderable} = $body_parts->{renderable};
-    $self->{attachments} = $body_parts->{attachments};
+    $self->renderable($body_parts->{renderable});
+    $self->attachments($body_parts->{attachments});
 }
 
-sub renderable {
+before qw(renderable attachments) => sub {
     my ($self) = @_;
-
-    $self->load_body unless exists $self->{renderable};
-
-    return $self->{renderable};
-}
+    $self->load_body();
+};
 
 sub renderable_list {
     my ($self) = @_;
     return [ sort { $a->{id} <=> $b->{id} } values %{ $self->renderable } ];
-}
-
-sub attachments {
-    my ($self) = @_;
-
-    $self->load_body unless exists $self->{attachments};
-
-    return wantarray ? sort { $a->{id} <=> $b->{id} } values %{ $self->{attachments} } : $self->{attachments};
 }
 
 sub attachment_list {
@@ -150,7 +121,7 @@ sub attachment_list {
 sub delete {
     my ($self) = @_;
 
-    $self->{c}->model('IMAPClient')->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
+    $self->c->model('IMAPClient')->delete_messages($self->c, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
 sub move {
@@ -158,20 +129,17 @@ sub move {
 
     die 'target_folder not set' unless defined $o->{target_folder};
 
-    $self->{c}->model('IMAPClient')->move_message($self->{c}, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
+    $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
 }
 
 sub as_string {
     my ($self) = @_;
 
-    $self->{c}->model('IMAPClient')->message_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 sub main_body_part {
     my ($self, $c, $o) = @_;
-
-    die 'mailbox not set' unless defined $self->{mailbox};
-    die 'uid not set' unless defined $self->{uid};
 
     my $renderable = $self->renderable;
   
@@ -195,16 +163,13 @@ my %part_types = (
 sub body_parts {
     my ($self, $c, $o) = @_;
 
-    die 'mailbox not set' unless defined $self->{mailbox};
-    die 'uid not set' unless defined $self->{uid};
+    die 'mailbox not set' unless defined $self->mailbox;
+    die 'uid not set' unless defined $self->uid;
 
-    my $entity;
+    my $entity = $self->entity;
 
-    if ($self->{entity}) {
-        $entity = $self->{entity};
-    }
-    else {
-        my $message = $c->model('IMAPClient')->message_as_string($c, { mailbox => $self->{mailbox}, uid => $self->{uid} });
+    unless ($entity) {
+        my $message = $c->model('IMAPClient')->message_as_string($c, { mailbox => $self->mailbox, uid => $self->uid });
 
         my $parser = MIME::Parser->new();
         $parser->output_to_core(1);
@@ -235,7 +200,7 @@ sub body_parts {
                 name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
                 data => $part->bodyhandle->as_string,
                 id   => $id,
-                path => ((exists $self->{path} and defined $self->{path}) ? "$self->{path}/" : '') . $id,
+                path => ((defined $self->path) ? "$self->path/" : '') . $id,
             } if $part->bodyhandle;
         }
 
@@ -318,7 +283,7 @@ sub _render_message_rfc822 {
 
     my $part = {};
     
-    $part->{data} = CiderWebmail::Message::Forwarded->new($c, { entity => $o->{part}->parts(0), mailbox => $self->{mailbox}, uid => $self->{uid}, path => ((exists $self->{path} and defined $self->{path}) ? "$self->{path}/" : '') . $o->{id} } );
+    $part->{data} = CiderWebmail::Message::Forwarded->new(c => $c, entity => $o->{part}->parts(0), mailbox => $self->mailbox, uid => $self->uid, path => (defined $self->path ? "$self->path/" : '') . $o->{id});
     $part->{data}->load_body();
 
     $part->{is_message} = 1;
