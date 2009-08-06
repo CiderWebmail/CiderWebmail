@@ -3,18 +3,18 @@ package CiderWebmail::Message;
 use warnings;
 use strict;
 
+use CiderWebmail::Message::Forwarded;
+
 use Mail::IMAPClient::BodyStructure;
 
+use Data::ICal;
 use DateTime;
-use Mail::Address;
+use DateTime::Format::ISO8601;
 use DateTime::Format::Mail;
 use HTML::Scrubber;
+use HTML::Tidy;
+use Mail::Address;
 use Text::Iconv;
-
-use Data::ICal;
-use DateTime::Format::ISO8601;
-
-use CiderWebmail::Message::Forwarded;
 
 sub new {
     my ($class, $c, $o) = @_;
@@ -181,7 +181,7 @@ sub main_body_part {
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
     #to use when forwarding/replying to messages and return it
-#FIXME this code does not actually get the first body part. Should use renderable_list here.
+    #FIXME this code does not actually get the first body part. Should use renderable_list here.
     foreach (values %{ $renderable }) {
         my $part = $_;
         if (($part->{is_text} or 0) == 1) {
@@ -213,7 +213,7 @@ sub get_embedded_message {
 my %part_types = (
     'text/plain'     => \&_render_text_plain,
     'text/html'      => \&_render_text_html,
-    'text/calendar'      => \&_render_text_calendar,
+    'text/calendar'  => \&_render_text_calendar,
     'message/rfc822' => \&_render_message_rfc822,
 );
 
@@ -275,23 +275,10 @@ sub _render_text_plain {
 
     die 'no part set' unless defined $o->{part};
 
-    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $part_string = $self->_decode_charset($o);
 
     my $part = {};
-    my $part_string;
-    unless ($charset
-        and eval {
-            my $converter = Text::Iconv->new($charset, "utf-8");
-            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
-        }) {
-
-        warn "unsupported encoding: $charset" if $charset;
-        $part_string = $o->{part}->bodyhandle->as_string;
-    }
-
-    utf8::decode($part_string);
     $part->{data} = Text::Flowed::reformat($part_string);
-
     $part->{is_text} = 1;
 
     return $part;
@@ -302,21 +289,8 @@ sub _render_text_calendar {
 
     die 'no part set' unless defined $o->{part};
 
-    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $part_string = $self->_decode_charset($o);
 
-    my $part = {};
-    my $part_string;
-    unless ($charset
-        and eval {
-            my $converter = Text::Iconv->new($charset, "utf-8");
-            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
-        }) {
-
-        warn "unsupported encoding: $charset" if $charset;
-        $part_string = $o->{part}->bodyhandle->as_string;
-    }
-
-    utf8::decode($part_string);
     my $cal = Data::ICal->new(data => $part_string);
     my $dt = DateTime::Format::ISO8601->new;
 
@@ -337,8 +311,8 @@ sub _render_text_calendar {
         );
     }
 
+    my $part = {};
     $part->{data} = \@events;
-
     $part->{is_calendar} = 1;
 
     return $part;
@@ -349,11 +323,9 @@ sub _render_text_html {
 
     die 'no part set' unless defined $o->{part};
 
-    my $part = {};
-    
-    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $tidy = HTML::Tidy->new( { output_xhtml => 1, bare => 1, clean => 1, doctype => 'omit', enclose_block_text => 1, show_errors => 0, char_encoding => 'utf8', show_body_only => 1, tidy_mark => 0 } );
     my $scrubber = HTML::Scrubber->new( allow => [ qw/p b strong i u hr br div span table thead tbody tr th td/ ] );
- 
+
     my @default = (
         0   =>    # default rule, deny all tags
         {
@@ -364,20 +336,15 @@ sub _render_text_html {
             'style'       => 1,
         }
     );
-
-    my $part_string = $o->{part}->bodyhandle->as_string;
-    eval {
-        my $converter = Text::Iconv->new($charset, "utf-8");
-        $part_string = $converter->convert($part_string);
-    } or warn "unsupported encoding: $charset" if $charset;
-    utf8::decode($part_string);
-
+    
     $scrubber->default( @default );
-    $part->{data} = $scrubber->scrub($part_string);
-    use HTML::Tidy;
-    my $tidy = HTML::Tidy->new( { output_xhtml => 1, bare => 1, clean => 1, doctype => 'omit', enclose_block_text => 1, show_errors => 0, char_encoding => 'utf8', show_body_only => 1, tidy_mark => 0 } );
-    $part->{data} = $tidy->clean($part->{data});
 
+
+    my $part_string = $self->_decode_charset($o);
+    
+    my $part = {};
+    $part->{data} = $scrubber->scrub($part_string);
+    $part->{data} = $tidy->clean($part->{data});
     $part->{is_html} = 1;
 
     return $part;
@@ -396,6 +363,28 @@ sub _render_message_rfc822 {
     $part->{is_message} = 1;
 
     return $part;
+}
+
+sub _decode_charset {
+    my ($self, $o) = @_;
+    die 'no part set' unless defined $o->{part};
+
+    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+
+    my $part_string;
+    unless ($charset
+        and eval {
+            my $converter = Text::Iconv->new($charset, "utf-8");
+            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
+        }) {
+
+        warn "unsupported encoding: $charset" if $charset;
+        $part_string = $o->{part}->bodyhandle->as_string;
+    }
+
+    utf8::decode($part_string);
+
+    return $part_string;
 }
 
 1;
