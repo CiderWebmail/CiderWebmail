@@ -23,6 +23,10 @@ __PACKAGE__->set_primary_key("user");
 # Created by DBIx::Class::Schema::Loader v0.04005 @ 2009-06-29 18:09:42
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+dBadUv981RkGHU1eKULHQ
 
+=head1 CiderWebmail::DB::Result::Settings
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+Class representing the settings table in the DB
+
+=cut
+
 1;

@@ -292,6 +292,7 @@ sub get_headers_hash() {
         if ($entry->{FLAGS}) {
             $message->{flags} = lc($entry->{FLAGS});
             $message->{flags} =~ s/\\//g;
+            $message->{flag}{$_} = $_ foreach split /\s+/, $message->{flags};
         }
 
         push(@messages, $message);

@@ -43,7 +43,7 @@ my $local_timezone = (eval { DateTime::TimeZone->new(name => "local"); } or 'UTC
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new($c, {mailbox => $c->stash->{folder}});
+    my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
     my $sort = ($c->req->param('sort') or $settings->sort_order or 'date');
@@ -57,14 +57,15 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $reverse = $sort =~ s/\Areverse\W+//;
 
     my (@messages, @groups);
+    my ($start, $length);
+
+    ($start)  = ($c->req->param('start') or '')  =~ /(\d+)/;
+    $start ||= 0;
+    ($length) = ($c->req->param('length') or '') =~ /(\d+)/;
+    $length ||= 250;
+    @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
     if (@uids) {
-        if (defined $c->req->param('start')) {
-            my ($start) = $c->req->param('start')  =~ /(\d+)/;
-            my ($end) =   $c->req->param('length') =~ /(\d+)/;
-            @uids = splice @uids, ($start or 0), ($end or 0);
-        }
-
         my %messages = map { ($_->{uid} => {
                     %{ $_ },
                     uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),

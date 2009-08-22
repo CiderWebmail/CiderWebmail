@@ -1,30 +1,21 @@
 package CiderWebmail::Message::Forwarded;
 
-use warnings;
-use strict;
+use Moose;
 
-use base qw(CiderWebmail::Message);
-
-sub new {
-    my ($class, $c, $o) = @_;
-
-    my $message = $class->SUPER::new($c, $o);
-    $message->{entity} = $o->{entity};
-    $message->{path}   = $o->{path};
-
-    bless $message, $class;
-}
+extends 'CiderWebmail::Message';
 
 sub get_header {
     my ($self, $header) = @_;
 
-    return $self->{c}->model('IMAPClient')->transform_header($self->{c}, { header => $header, data => scalar $self->{entity}->head->get($header) });
+    my $data = $self->entity->head->get($header);
+    chomp $data if defined $data;
+    return $self->c->model('IMAPClient')->transform_header($self->c, { header => $header, data => $data });
 }
 
 sub header_formatted {
     my ($self) = @_;
 
-    return $self->{entity}->head->as_string;
+    return $self->entity->head->as_string;
 }
 
 sub mark_read {
@@ -45,7 +36,7 @@ sub move {
 sub as_string {
     my ($self) = @_;
 
-    return $self->{entity}->as_string;
+    return $self->entity->as_string;
 }
 
 1;

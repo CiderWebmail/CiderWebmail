@@ -6,6 +6,16 @@ use strict;
 use DateTime;
 use DateTime::Format::Mail;
 
+=head1 FUNCTIONS
+
+=head2 add_foldertree_uris
+
+Adds some URIs to a folder tree.
+Accepts a parameter hash:
+    { folders => $folder_tree, path => 'folder/path', uris => [{action => 'view', uri => 'view_folder'}, ...] }
+
+=cut
+
 sub add_foldertree_uris {
     my $c = shift;
     my $o = shift;
@@ -28,7 +38,15 @@ sub add_foldertree_uris {
             });
         }
     }
+
+    return;
 }
+
+=head2 add_foldertree_to_stash
+
+Gets a folder tree and folders hash from the model, adds 'view' uris and puts them on the stash.
+
+=cut
 
 sub add_foldertree_to_stash {
     my ($c) = @_;
@@ -41,6 +59,12 @@ sub add_foldertree_to_stash {
         folders_hash  => $folders_hash,
     });
 }
+
+=head2 send_foldertree_update
+
+Common function to reply to a request with a new folder tree. Used in AJAX commands.
+
+=cut
 
 sub send_foldertree_update {
     my ($c) = @_;

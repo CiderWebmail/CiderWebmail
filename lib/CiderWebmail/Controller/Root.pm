@@ -35,7 +35,7 @@ sub auto : Private {
     my ($self, $c) = @_;
 
     if ($c->sessionid and not $c->session->{ended} and $c->authenticate({ realm => 'CiderWebmail' })) {
-        $c->stash( headercache => CiderWebmail::Headercache->new($c) );
+        $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
 
         #IMAPClient setup
         $c->stash->{imapclient}->Ranges(1);

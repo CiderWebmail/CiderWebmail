@@ -9,3 +9,8 @@ function add_attachment(adder) {
     attachment.removeChild(adder);
     return false;
 }
+
+function add_event_listener(eventname, handler, bubble) {
+    if (document.addEventListener) document.addEventListener(eventname, handler, bubble);
+    else document.attachEvent('on' + eventname, handler);
+}

@@ -12,13 +12,13 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
         <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/message.js" metal:fill-slot="scripts" />
     </head>
-    <body metal:fill-slot="content">
+    <body metal:fill-slot="content" tal:omit-tag="">
         <div metal:define-macro="view_message">
             <h1 tal:content="message/subject">Subject</h1>
-            <p tal:condition="false:message/path" id="message_actions">
-                <a tal:attributes="href uri_reply" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
-                <a tal:attributes="href uri_reply_all" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply All</span></a>
-                <a tal:attributes="href uri_forward" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
+            <p class="message_actions">
+                <a tal:attributes="href string:${uri_reply}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
+                <a tal:attributes="href string:${uri_reply_all}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply All</span></a>
+                <a tal:attributes="href string:${uri_forward}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
             </p>
             <form class="move_message" tal:attributes="action uri_move" method="post">
                 <label>
@@ -60,6 +60,13 @@
             </div>
             <div class="body_part" tal:repeat="body_part message/renderable_list">
                 <pre tal:condition="body_part/is_text" tal:content="body_part/data">mail body</pre>
+                <div tal:condition="body_part/is_calendar" class="calendar">
+                    <div tal:repeat="data body_part/data" class="calendar_entry">
+                        <span i18n:translate="">Begin: </span> <span tal:content="data/start">start</span><br />
+                        <span i18n:translate="">End: </span> <span tal:content="data/end">end</span><br />
+                        <span i18n:translate="">Summary: </span> <span tal:content="data/summary">end</span><br />
+                    </div>
+                </div>
                 <div tal:condition="body_part/is_html" tal:content="structure body_part/data">mail body</div>
                 <div tal:condition="body_part/is_message" tal:define="message body_part/data" class="forwarded">
                     <h2 i18n:translate="">Forwarded message</h2>

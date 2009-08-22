@@ -24,13 +24,17 @@ td, th
             {text-decoration:underline;}
 
     #controlpanel ul
-        {padding:0;}
+        {padding: 0; margin-left: 0; list-style: none;}
+        #controlpanel ul ul
+            { margin-left: 0.7em; }
         #controlpanel ul a
             {text-decoration:none;}
         #controlpanel ul a:hover
             {text-decoration:underline;}
         #controlpanel li.selected
             {font-weight:bold;}
+        #controlpanel li.selected li
+            {font-weight: normal;}
 
     #mailnavigation
         {margin-bottom:1em; padding:0.2em 0.5em;}
@@ -49,7 +53,7 @@ td, th
 
 @media print {
     *   { position: static !important; overflow: visible !important; float: none !important; }
-    #controlpanel, #quicksearch, #message_actions, th.actions, td.actions
+    #controlpanel, #quicksearch, .message_actions, th.actions, td.actions
         { display: none; }
     body, html, #content
         { height: auto; }

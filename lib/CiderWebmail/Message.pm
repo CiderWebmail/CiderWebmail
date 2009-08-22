@@ -1,57 +1,46 @@
 package CiderWebmail::Message;
 
-use warnings;
-use strict;
-
-use Mail::IMAPClient::BodyStructure;
-
-use DateTime;
-use Mail::Address;
-use DateTime::Format::Mail;
-use HTML::Scrubber;
-use Text::Iconv;
+use Moose;
 
 use CiderWebmail::Message::Forwarded;
 
-sub new {
-    my ($class, $c, $o) = @_;
+use Mail::IMAPClient::BodyStructure;
 
-    die unless $o->{mailbox};
-    die unless $o->{uid};
+use Data::ICal;
+use DateTime;
+use DateTime::Format::ISO8601;
+use DateTime::Format::Mail;
+use HTML::Scrubber;
+use HTML::Tidy;
+use Mail::Address;
+use Text::Iconv;
 
-    #TODO add headers passed here to the header cache
-    my $message = {
-        c       => $c,
-        mailbox => $o->{mailbox},
-        uid     => $o->{uid}
-    };
+use Data::ICal;
+use DateTime::Format::ISO8601;
 
-    bless $message, $class;
-}
+use CiderWebmail::Message::Forwarded;
 
-sub uid {
-    my ($self) = @_;
+has c           => (is => 'ro', isa => 'Object');
+has mailbox     => (is => 'ro', isa => 'Str');
+has uid         => (is => 'ro', isa => 'Int');
+has renderable  => (is => 'rw', isa => 'HashRef');
+has attachments => (is => 'rw', isa => 'HashRef');
+has loaded      => (is => 'rw');
 
-    return $self->{uid};
-}
-
-sub mailbox {
-    my ($self) = @_;
-
-    return $self->{mailbox};
-}
+has entity      => (is => 'ro', isa => 'Object');
+has path        => (is => 'ro', isa => 'Str');
 
 sub get_header {
     my ($self, $header) = @_;
 
-    return scalar $self->{c}->model('IMAPClient')->get_headers($self->{c}, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
+    return scalar $self->c->model('IMAPClient')->get_headers($self->c, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
 #TODO formatting
 sub header_formatted {
     my ($self) = @_;
 
-    return $self->{c}->model('IMAPClient')->get_headers_string($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+    return $self->c->model('IMAPClient')->get_headers_string($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
 sub subject {
@@ -88,7 +77,7 @@ sub cc {
 sub mark_read {
     my ($self) = @_;
 
-    $self->{c}->model('IMAPClient')->mark_read($self->{c}, { uid => $self->{uid}, mailbox => $self->{mailbox} });
+    $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
 sub get_headers {
@@ -113,33 +102,23 @@ sub date {
 sub load_body {
     my ($self) = @_;
 
-    return if defined $self->{renderable};
+    return if $self->loaded;
+    $self->loaded(1);
 
-    my $body_parts = $self->body_parts($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    my $body_parts = $self->body_parts($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
    
-    $self->{renderable} = $body_parts->{renderable};
-    $self->{attachments} = $body_parts->{attachments};
+    $self->renderable($body_parts->{renderable});
+    $self->attachments($body_parts->{attachments});
 }
 
-sub renderable {
+before qw(renderable attachments) => sub {
     my ($self) = @_;
-
-    $self->load_body unless exists $self->{renderable};
-
-    return $self->{renderable};
-}
+    $self->load_body();
+};
 
 sub renderable_list {
     my ($self) = @_;
     return [ sort { $a->{id} <=> $b->{id} } values %{ $self->renderable } ];
-}
-
-sub attachments {
-    my ($self) = @_;
-
-    $self->load_body unless exists $self->{attachments};
-
-    return wantarray ? sort { $a->{id} <=> $b->{id} } values %{ $self->{attachments} } : $self->{attachments};
 }
 
 sub attachment_list {
@@ -150,7 +129,7 @@ sub attachment_list {
 sub delete {
     my ($self) = @_;
 
-    $self->{c}->model('IMAPClient')->delete_messages($self->{c}, { uids => [ $self->uid ], mailbox => $self->mailbox } );
+    $self->c->model('IMAPClient')->delete_messages($self->c, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
 sub move {
@@ -158,26 +137,24 @@ sub move {
 
     die 'target_folder not set' unless defined $o->{target_folder};
 
-    $self->{c}->model('IMAPClient')->move_message($self->{c}, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
+    $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
 }
 
 sub as_string {
     my ($self) = @_;
 
-    $self->{c}->model('IMAPClient')->message_as_string($self->{c}, { uid => $self->uid, mailbox => $self->mailbox } );
+    $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 sub main_body_part {
     my ($self, $c, $o) = @_;
-
-    die 'mailbox not set' unless defined $self->{mailbox};
-    die 'uid not set' unless defined $self->{uid};
 
     my $renderable = $self->renderable;
   
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
     #to use when forwarding/replying to messages and return it
+    #FIXME this code does not actually get the first body part. Should use renderable_list here.
     foreach (values %{ $renderable }) {
         my $part = $_;
         if (($part->{is_text} or 0) == 1) {
@@ -186,25 +163,43 @@ sub main_body_part {
     }
 }
 
+=head2 get_embedded_message
+
+Recursively get an embedded message according to a given path.
+
+=cut
+
+sub get_embedded_message {
+    my ( $self, $c, @path ) = @_;
+
+    my $body = $self;
+    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} gets initialized with an empty hash
+
+    foreach (@path) {
+        $body = $body->renderable->{$_}{data};
+        return unless $body;
+    }
+
+    return $body;
+}
+
 my %part_types = (
     'text/plain'     => \&_render_text_plain,
     'text/html'      => \&_render_text_html,
+    'text/calendar'  => \&_render_text_calendar,
     'message/rfc822' => \&_render_message_rfc822,
 );
 
 sub body_parts {
     my ($self, $c, $o) = @_;
 
-    die 'mailbox not set' unless defined $self->{mailbox};
-    die 'uid not set' unless defined $self->{uid};
+    die 'mailbox not set' unless defined $self->mailbox;
+    die 'uid not set' unless defined $self->uid;
 
-    my $entity;
+    my $entity = $self->entity;
 
-    if ($self->{entity}) {
-        $entity = $self->{entity};
-    }
-    else {
-        my $message = $c->model('IMAPClient')->message_as_string($c, { mailbox => $self->{mailbox}, uid => $self->{uid} });
+    unless ($entity) {
+        my $message = $c->model('IMAPClient')->message_as_string($c, { mailbox => $self->mailbox, uid => $self->uid });
 
         my $parser = MIME::Parser->new();
         $parser->output_to_core(1);
@@ -235,7 +230,7 @@ sub body_parts {
                 name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
                 data => $part->bodyhandle->as_string,
                 id   => $id,
-                path => ((exists $self->{path} and defined $self->{path}) ? "$self->{path}/" : '') . $id,
+                path => ((defined $self->path) ? "$self->path/" : '') . $id,
             } if $part->bodyhandle;
         }
 
@@ -250,24 +245,45 @@ sub _render_text_plain {
 
     die 'no part set' unless defined $o->{part};
 
-    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $part_string = $self->_decode_charset($o);
 
     my $part = {};
-    my $part_string;
-    unless ($charset
-        and eval {
-            my $converter = Text::Iconv->new($charset, "utf-8");
-            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
-        }) {
+    $part->{data} = Text::Flowed::reformat($part_string);
+    $part->{is_text} = 1;
 
-        warn "unsupported encoding: $charset" if $charset;
-        $part_string = $o->{part}->bodyhandle->as_string;
+    return $part;
+}
+
+sub _render_text_calendar {
+    my ($self, $c, $o) = @_;
+
+    die 'no part set' unless defined $o->{part};
+
+    my $part_string = $self->_decode_charset($o);
+
+    my $cal = Data::ICal->new(data => $part_string);
+    my $dt = DateTime::Format::ISO8601->new;
+
+    my @events;
+    foreach ( @{$cal->entries} ) {
+        my $entry = $_;
+        my $start = $entry->property('dtstart') || next;
+        my $end = $entry->property('dtend') || next;
+        my $summary = $entry->property('summary') || next;
+       
+        my $dt_start = $dt->parse_datetime($start->[0]->value);
+        my $dt_end = $dt->parse_datetime($end->[0]->value);
+
+        push(@events, {
+            start => join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")),
+            end => join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")), 
+            summary => $summary->[0]->value, }
+        );
     }
 
-    utf8::decode($part_string);
-    $part->{data} = Text::Flowed::reformat($part_string);
-
-    $part->{is_text} = 1;
+    my $part = {};
+    $part->{data} = \@events;
+    $part->{is_calendar} = 1;
 
     return $part;
 }
@@ -277,11 +293,9 @@ sub _render_text_html {
 
     die 'no part set' unless defined $o->{part};
 
-    my $part = {};
-    
-    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $tidy = HTML::Tidy->new( { output_xhtml => 1, bare => 1, clean => 1, doctype => 'omit', enclose_block_text => 1, show_errors => 0, char_encoding => 'utf8', show_body_only => 1, tidy_mark => 0 } );
     my $scrubber = HTML::Scrubber->new( allow => [ qw/p b strong i u hr br div span table thead tbody tr th td/ ] );
- 
+
     my @default = (
         0   =>    # default rule, deny all tags
         {
@@ -292,20 +306,15 @@ sub _render_text_html {
             'style'       => 1,
         }
     );
-
-    my $part_string = $o->{part}->bodyhandle->as_string;
-    eval {
-        my $converter = Text::Iconv->new($charset, "utf-8");
-        $part_string = $converter->convert($part_string);
-    } or warn "unsupported encoding: $charset" if $charset;
-    utf8::decode($part_string);
-
+    
     $scrubber->default( @default );
-    $part->{data} = $scrubber->scrub($part_string);
-    use HTML::Tidy;
-    my $tidy = HTML::Tidy->new( { output_xhtml => 1, bare => 1, clean => 1, doctype => 'omit', enclose_block_text => 1, show_errors => 0, char_encoding => 'utf8', show_body_only => 1, tidy_mark => 0 } );
-    $part->{data} = $tidy->clean($part->{data});
 
+
+    my $part_string = $self->_decode_charset($o);
+    
+    my $part = {};
+    $part->{data} = $scrubber->scrub($part_string);
+    $part->{data} = $tidy->clean($part->{data});
     $part->{is_html} = 1;
 
     return $part;
@@ -318,12 +327,34 @@ sub _render_message_rfc822 {
 
     my $part = {};
     
-    $part->{data} = CiderWebmail::Message::Forwarded->new($c, { entity => $o->{part}->parts(0), mailbox => $self->{mailbox}, uid => $self->{uid}, path => ((exists $self->{path} and defined $self->{path}) ? "$self->{path}/" : '') . $o->{id} } );
+    $part->{data} = CiderWebmail::Message::Forwarded->new(c => $c, entity => $o->{part}->parts(0), mailbox => $self->mailbox, uid => $self->uid, path => (defined $self->path ? "$self->path/" : '') . $o->{id});
     $part->{data}->load_body();
 
     $part->{is_message} = 1;
 
     return $part;
+}
+
+sub _decode_charset {
+    my ($self, $o) = @_;
+    die 'no part set' unless defined $o->{part};
+
+    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+
+    my $part_string;
+    unless ($charset
+        and eval {
+            my $converter = Text::Iconv->new($charset, "utf-8");
+            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
+        }) {
+
+        warn "unsupported encoding: $charset" if $charset;
+        $part_string = $o->{part}->bodyhandle->as_string;
+    }
+
+    utf8::decode($part_string);
+
+    return $part_string;
 }
 
 1;

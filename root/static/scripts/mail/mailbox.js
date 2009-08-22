@@ -1,4 +1,5 @@
 var droppables;
+var current_message;
 
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
@@ -36,22 +37,30 @@ window.addEvent('load', function() {
         }
     }
 
+    function show_message(target) {
+        var uid = target.id.replace('link_', '');
+        $(target.parentNode.parentNode).addClass('seen');
+        $('message_view').innerHTML = loading_message;
+        $('loading_message').style.display = 'block';
+        $('help_message').style.display = 'none';
+        $('message_view').style.top = '30%';
+        $('content').addClass('message_display');
+        current_message = target.parentNode.parentNode;
+        var myHTMLRequest = new Request.HTML({
+            onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
+                var parsed = responseHTML.match(/([\s\S]*?)<div[^>]*>([\s\S]*)<\/div>/);
+                $('message_view').innerHTML = parsed[2];
+                update_foldertree(parsed[1], responseTree);
+            }
+        }).get(target.href + "?layout=ajax");
+    }
+
     function handle_click(event) {
         var target = get_target_node(event);
         var tagname = target.tagName.toLowerCase();
 
         if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
-            var uid = target.id.replace('link_', '');
-            $('message_view').innerHTML = loading_message;
-            $('loading_message').style.display = 'block';
-            $('help_message').style.display = 'none';
-            $('message_view').style.top = '30%';
-            $('content').addClass('message_display');
-            var myHTMLRequest = new Request.HTML({
-                onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-                    $('message_view').innerHTML = responseHTML;
-                }
-            }).get(target.href + "?layout=ajax");
+            show_message(target);
             stop_propagation(event);
         }
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
@@ -85,45 +94,74 @@ window.addEvent('load', function() {
         }
     }
 
-    if (document.addEventListener) document.addEventListener('mousedown', start, false);
-    else document.attachEvent('onmousedown', start);
+    add_event_listener('mousedown', start, false);
+    add_event_listener('click', handle_click, false);
+    add_event_listener('keyup', function (event) {
+            switch (event.keyCode) {
+                case 37:
+                    var previous = current_message.previousSibling;
+                    if (previous && previous.nodeType != 1) previous = previous.previousSibling;
+                    if (! previous || ! previous.id) { // first row is the group header
+                        var prev_group = current_message.parentNode.previousSibling;
+                        if (prev_group) {
+                            var prev_messages = prev_group.getElementsByTagName('tr');
+                            previous = prev_messages[prev_messages.length - 1];
+                        }
+                    }
+                    if (previous && previous.id) // first row of the table is table header
+                        show_message(document.getElementById(previous.id.replace('message', 'link'))); //left
+                    break;
+                case 39: ; //right
+                    var next = current_message.nextSibling;
+                    if (next && next.nodeType != 1) next = next.nextSibling;
+                    if (! next) {
+                        var next_group = current_message.parentNode.nextSibling;
+                        if (next_group)
+                            next = next_group.getElementsByTagName('tr')[1]; // first row is the group header
+                    }
+                    if (next)
+                        show_message(document.getElementById(next.id.replace('message', 'link'))); //left
+                    break;
+            }
+        }, false);
 
-    if (document.addEventListener) document.addEventListener('click', handle_click, false);
-    else document.attachEvent('onclick', handle_click);
-
-    if (location.search.match(/start=/)) {
-        /start=(\d+)/.exec(location.search);
-        var start_index = parseInt(RegExp.$1);
-        /length=(\d+)/.exec(location.search);
-        var length = parseInt(RegExp.$1);
-        start_index += length;
-        fetch_new_rows(start_index, length)
-    }
+    var length = 250;
+    fetch_new_rows(length, length)
 });
 
 function fetch_new_rows(start_index, length) {
-        var href = location.href.replace(/start=\d+/, 'start=' + start_index);
+    var start = 'start=' + start_index
+    var href = location.search.match(/start=/) ? location.href.replace(/start=\d+/, start) : (location.href.match(/\?/) ? location.href + '&' + start : location.href + '?' + start);
 
-        new Request({url: href + ';layout=ajax', onSuccess: function(responseText, responseXML) {
-            var new_rows = responseXML.getElementById('message_list');
-            while (new_rows.firstChild.nodeType == 3)
-                new_rows.removeChild(new_rows.firstChild);
+    new Request({url: href + ';layout=ajax', onSuccess: function(responseText, responseXML) {
+        // this hack is presented to you by Microsoft
+        var dummy = document.createElement('span');
+        dummy.innerHTML = '<table>' + responseText.match(/<table[^>]+id="message_list"[^>]*>([\S\s]*)<\/table>/)[1] + '</table>'; // responseXML.getElementById doesn't work in IE
+        var new_rows = dummy.firstChild;
+
+        while (new_rows.firstChild.nodeType == 3)
             new_rows.removeChild(new_rows.firstChild);
+        new_rows.removeChild(new_rows.firstChild);
 
-            // this hack is presented to you by Microsoft
-            var dummy = document.createElement('span');
-            dummy.innerHTML = new_rows.parentNode.innerHTML;
-            new_rows = dummy.firstChild.nodeType == 1 ? dummy.firstChild : dummy.firstChild.nextSibling;
+        dummy.innerHTML = new_rows.parentNode.innerHTML;
+        new_rows = dummy.firstChild.nodeType == 1 ? dummy.firstChild : dummy.firstChild.nextSibling;
 
-            if (new_rows.childNodes.length) {
-                message_list = document.getElementById('message_list');
-                for (var i = 0; i < new_rows.childNodes.length ; i++)
-                    message_list.appendChild(new_rows.childNodes[i].cloneNode(true));
-                fetch_new_rows(start_index + length, length);
+        var child = new_rows.firstChild;
+        while (child) { // remove text and comment nodes as we are only really interested in tbodys
+            var next = child.nextSibling;
+            if (child.nodeType != 1) {
+                new_rows.removeChild(child);
             }
+            child = next;
+        }
 
-            document.removeChild(dummy);
-        }}).send();
+        if (new_rows.childNodes.length && new_rows.firstChild.childNodes.length) { // IE has an empty tbody if now rows were added
+            var message_list = document.getElementById('message_list');
+            for (var i = 0; i < new_rows.childNodes.length ; i++)
+                message_list.appendChild(new_rows.childNodes[i].cloneNode(true));
+            fetch_new_rows(start_index + length, length);
+        }
+    }}).send();
 }
 
 function update_foldertree(responseText, responseXML) {
