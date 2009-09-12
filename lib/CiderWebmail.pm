@@ -19,11 +19,12 @@ use Catalyst qw/
     StackTrace
 
     Static::Simple
+    Authentication
+    Unicode
+
     Session
     Session::Store::FastMmap
     Session::State::Cookie
-    Authentication
-    Unicode
 /;
 
 our $VERSION = '1.00';
@@ -44,8 +45,7 @@ __PACKAGE__->config(
         realms => {
             imap => {
                 credential => {
-                    class => 'HTTP',
-                    type =>  'basic',
+                    class => 'Password',
                     password_type => 'self_check',
                     password_field =>  'password',
                 },

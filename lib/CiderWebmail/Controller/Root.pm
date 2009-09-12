@@ -34,7 +34,7 @@ Only logged in users may use this product.
 sub auto : Private {
     my ($self, $c) = @_;
 
-    if ($c->sessionid and not $c->session->{ended} and $c->authenticate({ realm => 'CiderWebmail' })) {
+    if ($c->sessionid and $c->session->{username} and $c->authenticate({ id => $c->session->{username}, password => $c->session->{password} })) {
         $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
 
         #IMAPClient setup
@@ -50,30 +50,55 @@ sub auto : Private {
         return 1;
     }
 
-    if ($c->sessionid and $c->session->{ended}) {
-        $c->delete_session('logged out');
-    }
-
-    $c->session; # start new session
-
-    my $realm = $c->get_auth_realm($c->config->{authentication}{default_realm});
-    $realm->credential->authorization_required_response($c, $realm, { realm => 'CiderWebmail' });
-
+    # Give the user a chance to authenticate
+    $c->forward('login');
     return 0;
 }
 
+=head2 login
+
+Login action.
+Private action that auto forwards to so we can prepend it do a login on any URI and on successful login show the requested page.
+
+=cut
+
+sub login : Private {
+    my ( $self, $c ) = @_;
+
+    my %user_data = (
+            username => $c->req->param('username'),
+            password => $c->req->param('password'),
+        );
+
+    if ($user_data{username} and $user_data{password}) {
+        if ($c->authenticate(\%user_data)) {
+            $c->session->{$_} = $user_data{$_} foreach qw(username password); # save for repeated IMAP authentication
+
+            return $c->res->redirect($c->req->uri);
+        }
+        else {
+            $c->stash({ message => 'Invalid username/password' }); #TODO I18N
+        }
+    }
+
+    $c->stash({ template => 'login.xml' });
+}
+
+
 =head2 logout
 
-Logout action: markes the current session as ended
+Logout action: drops the current session and logs out the user.
+Redirects to / so we can start a new session.
 
 =cut
 
 sub logout : Local {
     my ( $self, $c ) = @_;
 
-    $c->session->{ended} = 1;
+    $c->logout;
+    $c->delete_session('logged out');
 
-    $c->stash({ template => 'logout.xml' });
+    $c->res->redirect($c->uri_for('/'));
 }
 
 =head2 index
@@ -100,6 +125,8 @@ sub index : Private {
 }
 
 =head2 mailboxes
+
+Lists the folders of this user. Used by AJAX to update the folder tree.
 
 =cut
 

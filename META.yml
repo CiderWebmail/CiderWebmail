@@ -31,7 +31,9 @@ requires:
   Catalyst::Runtime: 5.7012
   Catalyst::View::Petal: 0
   Clone: 0
+  Data::ICal: 0
   DateTime: 0
+  DateTime::Format::ISO8601: 0
   DateTime::Format::Mail: 0
   Email::Address: 0
   Email::Simple: 0
