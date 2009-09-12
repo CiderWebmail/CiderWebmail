@@ -25,7 +25,7 @@
             <div id="logo">
                 <a tal:attributes="href uri_root">CiderWebmail</a>
             </div>
-            <div id="mailnavigation">
+            <div id="mailnavigation" tal:condition="true: folder_tree">
                 <ul class="actions">
                     <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose" i18n:translate="">Compose new mail</a></li>
                     <li tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes" i18n:translate="">Manage folders</a></li>
