@@ -27,14 +27,22 @@ td, th
         {padding: 0; margin-left: 0; list-style: none;}
         #controlpanel ul ul
             { margin-left: 0.7em; }
+        #controlpanel ul li
+            {clear: both;}
         #controlpanel ul a
-            {text-decoration:none;}
+            {text-decoration:none; overflow: auto;}
+        #controlpanel ul li span /* workaround for IE6 */
+            {cursor: pointer;}
         #controlpanel ul a:hover
             {text-decoration:underline;}
         #controlpanel li.selected
             {font-weight:bold;}
         #controlpanel li.selected li
             {font-weight: normal;}
+        #controlpanel li span.name
+            {float: left;}
+        #controlpanel li span.counts
+            {float: right;}
 
     #mailnavigation
         {margin-bottom:1em; padding:0.2em 0.5em;}

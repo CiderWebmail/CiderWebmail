@@ -8,11 +8,11 @@
     metal:use-macro="layout.xml#layout">
     <head>
         <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
-        <tal:div metal:fill-slot="css">
+        <tal:div metal:fill-slot="css" tal:omit-tag="">
             <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" />
             <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" />
         </tal:div>
-        <tal:div metal:fill-slot="scripts">
+        <tal:div metal:fill-slot="scripts" tal:omit-tag="">
             <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/mailbox.js" />
             <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/message.js" />
         </tal:div>

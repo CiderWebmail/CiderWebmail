@@ -11,6 +11,7 @@ html, body {
     border-color: lightgrey;
     border-width: 0px 0px 1px 0px;
     font-size: 0.8em;
+    vertical-align: middle;
 }
 
 .message_list tr th {
@@ -52,6 +53,7 @@ ul#folder_tree a.hover {
 
 .message_list img {
     position: relative;
+    vertical-align: middle;
 }
 
 .message_list td.sender {
@@ -95,8 +97,9 @@ ul#folder_tree a.hover {
     top: 70%;
     bottom: 0;
     left: 0;
-    width: 100%;
+    right: 0;
     overflow: auto;
+    padding: 0 0.5em;
 }
 
 #message_view .move_message {
@@ -124,7 +127,7 @@ ul#folder_tree a.hover {
 
 #folder_headline {
     margin: 0;
-    padding: 0;
+    padding: 0 0.5em;
     float: left;
 }
 
@@ -136,6 +139,11 @@ h1 {
     float: right;
     margin: 0;
     padding: 0;
+    vertical-align: bottom;
+}
+
+#quicksearch button {
+    margin: 0;
     vertical-align: bottom;
 }
 

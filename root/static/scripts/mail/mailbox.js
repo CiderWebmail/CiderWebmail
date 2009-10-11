@@ -98,7 +98,7 @@ window.addEvent('load', function() {
     add_event_listener('click', handle_click, false);
     add_event_listener('keyup', function (event) {
             switch (event.keyCode) {
-                case 37:
+                case 37: // left
                     var previous = current_message.previousSibling;
                     if (previous && previous.nodeType != 1) previous = previous.previousSibling;
                     if (! previous || ! previous.id) { // first row is the group header
@@ -111,7 +111,7 @@ window.addEvent('load', function() {
                     if (previous && previous.id) // first row of the table is table header
                         show_message(document.getElementById(previous.id.replace('message', 'link'))); //left
                     break;
-                case 39: ; //right
+                case 39: // right
                     var next = current_message.nextSibling;
                     if (next && next.nodeType != 1) next = next.nextSibling;
                     if (! next) {
