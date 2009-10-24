@@ -8,11 +8,9 @@ use DateTime::Format::Mail;
 
 =head1 FUNCTIONS
 
-=head2 add_foldertree_uris
+=head2 add_foldertree_uris($c, {folders => $folder_tree, path => 'folder/path', uris => [{action => 'view', uri => 'view_folder'}, ...]})
 
 Adds some URIs to a folder tree.
-Accepts a parameter hash:
-    { folders => $folder_tree, path => 'folder/path', uris => [{action => 'view', uri => 'view_folder'}, ...] }
 
 =cut
 
@@ -42,7 +40,7 @@ sub add_foldertree_uris {
     return;
 }
 
-=head2 add_foldertree_to_stash
+=head2 add_foldertree_to_stash($c)
 
 Gets a folder tree and folders hash from the model, adds 'view' uris and puts them on the stash.
 
@@ -60,7 +58,7 @@ sub add_foldertree_to_stash {
     });
 }
 
-=head2 send_foldertree_update
+=head2 send_foldertree_update($c)
 
 Common function to reply to a request with a new folder tree. Used in AJAX commands.
 
@@ -72,6 +70,16 @@ sub send_foldertree_update {
     $c->stash->{folders_hash}{$c->stash->{folder}}{selected} = 'selected';
     $c->stash({ template => 'folder_tree.xml' });
     $c->res->content_type('text/xml');
+}
+
+=head2 filter_unusable_addresses(@addresses)
+
+Filters a list of addresses (string or Mail::Address) to get rid of stuff like 'undisclosed-recipients:'
+
+=cut
+
+sub filter_unusable_addresses {
+    return grep {(ref $_ ? $_->address : $_) !~ /\A \s* undisclosed [-\s]* recipients:? \s* \z/ixm} @_;
 }
 
 1;

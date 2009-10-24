@@ -14,7 +14,9 @@ my $mech = Test::WWW::Mechanize->new;
 
 $mech->get( 'http://localhost:3000/' )->is_success or die 'This test requires a running Catalyst server on port 3000. Recommending using the -fork option!';
 
-$mech->submit_form(with_fields => { username => 'test@atikon.at', password => 'quech0Ae' }); #FIXME should be a test, too, but we don't know the test plan yet...
+plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};
+
+$mech->submit_form(with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} }); #FIXME should be a test, too, but we don't know the test plan yet...
 
 # Find all message links:
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
@@ -30,30 +32,27 @@ for my $link (@links) {
     # <input value="johann.aglas@atikon.com" name="to">
     # <input value="ss@atikon.com" name="from">
 
-    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="to">/, 'To: field does not contain an email address')) {
-        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="to">)';
-    }
-    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
-        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
-    }
+    check_email($mech, 'to');
+    check_email($mech, 'from', 1);
 
     $mech->back;
 
     $mech->follow_link_ok({ url_regex => qr{/forward/?\z} }, "forwarding");
 
-    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
-        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
-    }
+    check_email($mech, 'from', 1);
 
     $mech->back;
 
     $mech->follow_link_ok({ url_regex => qr{/reply/all/?\z} }, "reply to all");
 
-    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}(?:\s*;\s*$RE{Email}{Address})*" name="to">/, 'To: field does not contain an email address')) {
-        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="to">)';
-    }
+    check_email($mech, 'to');
+    check_email($mech, 'from', 1);
+}
 
-    unless ($mech->content_like(qr/<input value="$RE{Email}{Address}" name="from">/, 'From: field does not contain an email address')) {
-        warn $link->url, ': ', $mech->content =~ m'(<input value="[^"]+" name="from">)';
-    }
+sub check_email {
+    my ($mech, $field, $empty) = @_;
+
+    my $value = $mech->value(lc $field);
+    $empty = $empty ? '^$|' :  '';
+    like($value, qr($empty$RE{Email}{Address}), $mech->uri . ": '$field' field contains an email address");
 }

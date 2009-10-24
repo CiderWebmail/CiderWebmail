@@ -14,11 +14,9 @@ use HTML::Scrubber;
 use HTML::Tidy;
 use Mail::Address;
 use Text::Iconv;
-
 use Data::ICal;
 use DateTime::Format::ISO8601;
-
-use CiderWebmail::Message::Forwarded;
+use CiderWebmail::Util;
 
 has c           => (is => 'ro', isa => 'Object');
 has mailbox     => (is => 'ro', isa => 'Str');
@@ -30,11 +28,23 @@ has loaded      => (is => 'rw');
 has entity      => (is => 'ro', isa => 'Object');
 has path        => (is => 'ro', isa => 'Str');
 
+=head2 get_header($header)
+
+Returns the first value found for the named header
+
+=cut
+
 sub get_header {
     my ($self, $header) = @_;
 
     return scalar $self->c->model('IMAPClient')->get_headers($self->c, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
+
+=head2 header_formatted()
+
+Returns the full message header formatted for output
+
+=cut
 
 #TODO formatting
 sub header_formatted {
@@ -43,11 +53,23 @@ sub header_formatted {
     return $self->c->model('IMAPClient')->get_headers_string($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
+=head2 subject()
+
+Shortcut getting the subject or 'No Subject' if none is available.
+
+=cut
+
 sub subject {
     my ($self) = @_;
 
     return ($self->get_header('subject') or 'No Subject');
 }
+
+=head2 from()
+
+Shortcut for getting the 'from' header
+
+=cut
 
 sub from {
     my ($self) = @_;
@@ -55,11 +77,23 @@ sub from {
     return $self->get_header('from');
 }
 
+=head2 to()
+
+Shortcut for getting the 'to' header
+
+=cut
+
 sub to {
     my ($self) = @_;
 
     return $self->get_header('to');
 }
+
+=head2 reply_to()
+
+Shortcut for getting the 'reply-to' header
+
+=cut
 
 sub reply_to {
     my ($self) = @_;
@@ -68,17 +102,49 @@ sub reply_to {
 }
 
 
+=head2 cc()
+
+Shortcut for getting the 'CC' header
+
+=cut
+
 sub cc {
     my ($self) = @_;
 
     return $self->get_header('cc');
 }
 
+=head2 guess_recipient()
+
+Tries to guess the recipient address used to deliver this message to this mailbox.
+Used for suggesting a From address on reply/forward.
+
+=cut
+
+sub guess_recipient {
+    my ($self) = @_;
+
+    return [ CiderWebmail::Util::filter_unusable_addresses(@{ $self->to }) ]
+}
+
+=head2 mark_read()
+
+Mark the message as read
+
+=cut
+
 sub mark_read {
     my ($self) = @_;
 
     $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
+
+=head2 get_headers()
+
+Returns a standard set of headers as hashref:
+    { subject => 'Subject', from => Email::Address->new(...), date => '2009-10-01 00:00:00', uid => 'UID123' }
+
+=cut
 
 sub get_headers {
     my ($self) = @_;
@@ -91,13 +157,23 @@ sub get_headers {
     };
 }
 
+=head2 date()
 
-#returns a datetime object
+Returns the 'date' header as datetime object
+
+=cut
+
 sub date {
     my ($self) = @_;
 
     return $self->get_header('date');
 }
+
+=head2 load_body()
+
+Loads the message body and populates the renderable and attachments structures if not already done.
+
+=cut
 
 sub load_body {
     my ($self) = @_;
@@ -116,21 +192,45 @@ before qw(renderable attachments) => sub {
     $self->load_body();
 };
 
+=head2 renderable_list()
+
+Returns a sorted list of renderable body parts.
+
+=cut
+
 sub renderable_list {
     my ($self) = @_;
     return [ sort { $a->{id} <=> $b->{id} } values %{ $self->renderable } ];
 }
+
+=head2 attachment_list()
+
+Returns a sorted list of attachments.
+
+=cut
 
 sub attachment_list {
     my ($self) = @_;
     return [ sort { $a->{id} <=> $b->{id} } values %{ $self->attachments } ];
 }
 
+=head2 delete()
+
+Deletes the message from the server.
+
+=cut
+
 sub delete {
     my ($self) = @_;
 
     $self->c->model('IMAPClient')->delete_messages($self->c, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
+
+=head2 move({target_folder => 'Folder 1'})
+
+Moves the message on the server to the named folder.
+
+=cut
 
 sub move {
     my ($self, $o) = @_;
@@ -140,20 +240,31 @@ sub move {
     $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
 }
 
+=head2 as_string
+
+Returns the full message source text.
+
+=cut
+
 sub as_string {
     my ($self) = @_;
 
     $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
+=head2 main_body_part()
+
+Returns the main body part for using when forwarding/replying the message.
+
+=cut
+
 sub main_body_part {
-    my ($self, $c, $o) = @_;
+    my ($self) = @_;
 
     my $renderable = $self->renderable;
   
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
-    #to use when forwarding/replying to messages and return it
     #FIXME this code does not actually get the first body part. Should use renderable_list here.
     foreach (values %{ $renderable }) {
         my $part = $_;
@@ -190,8 +301,26 @@ my %part_types = (
     'message/rfc822' => \&_render_message_rfc822,
 );
 
+=head2 body_parts($c)
+
+Returns the body parts of this message as hashref of renderable parts and attachments:
+    {
+        renderable => {0 => 'Testmessage'},
+        attachments => {
+            1 => {
+                id   => 1,
+                type => 'application/binary',
+                name => 'testfile',
+                data => '...',
+                path => '1',
+            },
+        },
+    }
+
+=cut
+
 sub body_parts {
-    my ($self, $c, $o) = @_;
+    my ($self, $c) = @_;
 
     die 'mailbox not set' unless defined $self->mailbox;
     die 'uid not set' unless defined $self->uid;
@@ -240,6 +369,12 @@ sub body_parts {
     return { renderable => $body_parts, attachments => $attachments };
 }
 
+=head2 _render_text_plain({part => $part})
+
+Internal method rendering a text/plain body part.
+
+=cut
+
 sub _render_text_plain {
     my ($self, $c, $o) = @_;
 
@@ -253,6 +388,12 @@ sub _render_text_plain {
 
     return $part;
 }
+
+=head2 _render_text_calendar({part => $part})
+
+Internal method rendering a text/calendar body part.
+
+=cut
 
 sub _render_text_calendar {
     my ($self, $c, $o) = @_;
@@ -288,6 +429,12 @@ sub _render_text_calendar {
     return $part;
 }
 
+=head2 _render_text_html({part => $part})
+
+Internal method rendering a text/html body part.
+
+=cut
+
 sub _render_text_html {
     my ($self, $c, $o) = @_;
 
@@ -320,6 +467,12 @@ sub _render_text_html {
     return $part;
 }
 
+=head2 _render_message_rfc822({part => $part})
+
+Internal method rendering a message/rfc822 body part.
+
+=cut
+
 sub _render_message_rfc822 {
     my ($self, $c, $o) = @_;
 
@@ -334,6 +487,12 @@ sub _render_message_rfc822 {
 
     return $part;
 }
+
+=head2 _decode_charset({part => $part})
+
+Internal method decoding a body part according to it's stated character set and returning it in Perl's internal encoding.
+
+=cut
 
 sub _decode_charset {
     my ($self, $o) = @_;

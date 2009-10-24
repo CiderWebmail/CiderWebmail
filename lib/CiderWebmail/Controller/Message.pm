@@ -147,7 +147,9 @@ sub compose : Chained('/mailbox/setup') Args(0) {
     $c->stash->{message} ||= {};
 
     my $settings = $c->model('DB::Settings')->find($c->user->id);
-    $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ] if $settings and $settings->from_address;
+    if ($settings and $settings->from_address) {
+        $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
+    }
 
     my $folders = clone($c->stash->{folders_hash});
     delete $_->{selected} foreach values %$folders; # clean any selectedness
@@ -188,23 +190,25 @@ sub reply : Chained('setup') Args() {
     $body .= "\n\n";
 
     my $new_message = {
-        from    => $message->to, # If no user-specified from address is available, the to address of the replied-to mail is a good guess
+        from    => $message->guess_recipient, # If no user-specified from address is available, the to address of the replied-to mail is a good guess
         subject => 'Re: ' . $message->subject,
         body    => $body,
     };
 
+    my @recipients;
+
     if ($who eq 'sender') {
         my $recipient = ($message->reply_to or $message->from);
-        $new_message->{to} = $recipient->[0]->address;
+        @recipients = $recipient->[0]->address;
     } elsif ($who eq 'all') {
-        my @recipients;
         foreach( ( ( $message->reply_to or $message->from ), $message->cc, $message->to ) ) {
             push(@recipients, $_->address) foreach( @$_ );
         }
-        $new_message->{to} = join('; ', @recipients);
     } else {
         die("invalid reply destination");
     }
+
+    $new_message->{to} = join('; ', CiderWebmail::Util::filter_unusable_addresses(@recipients));
 
     $c->stash({
         in_reply_to => $message,
@@ -231,7 +235,7 @@ sub forward : Chained('setup') Args() {
     $c->stash({
         forward => $message,
         message => {
-            from    => $message->to,
+            from    => $message->guess_recipient,
             subject => 'Fwd: ' . $message->subject,
         },
     });
