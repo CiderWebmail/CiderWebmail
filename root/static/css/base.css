@@ -30,7 +30,7 @@ td, th
         #controlpanel ul li
             {clear: both;}
         #controlpanel ul a
-            {text-decoration:none; overflow: auto;}
+            {text-decoration:none; display: block; overflow: auto;}
         #controlpanel ul li span /* workaround for IE6 */
             {cursor: pointer;}
         #controlpanel ul a:hover
@@ -47,6 +47,37 @@ td, th
     #mailnavigation
         {margin-bottom:1em; padding:0.2em 0.5em;}
 
+    #controlpanel #folder_tree {
+        border-style: solid;
+        border-color: #80c0ff;
+        border-width: 1px 1px 1px 0;
+        border-bottom-right-radius: 8px;
+        -khtml-border-bottom-right-radius: 8px;
+        -moz-border-radius-bottomright: 8px;
+        -webkit-border-bottom-right-radius: 8px;
+        border-top-right-radius: 8px;
+        -khtml-border-top-right-radius: 8px;
+        -moz-border-radius-topright: 8px;
+        -webkit-border-top-right-radius: 8px;
+        padding: 0.2em 0.5em;
+        margin-left: -0.5em;
+        overflow: auto;
+    }
+
+    #controlpanel #folder_tree a:hover {
+        background: #80c0ff;
+    }
+
+    #controlpanel .activeborder {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        cursor: pointer;
+        background-color: gray;
+    }
+
 #headline
     {position:absolute; top:0px; height:2em; left:13em; right:0px; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc;}
     #headline h1
@@ -54,7 +85,17 @@ td, th
 
 #content
     {position:absolute; top:0; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; overflow:auto;}
-#compose { padding: 0 0.5em; }
+#compose, #login { padding: 0 0.5em; }
+
+#login label {
+    display: block;
+    clear: left;
+}
+
+#login label span {
+    float: left;
+    width: 7em;
+}
 
 #loading_message
     {display: none;}

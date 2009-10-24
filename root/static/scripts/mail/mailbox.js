@@ -3,17 +3,10 @@ var current_message;
 
 window.addEvent('load', function() {
     var start_time = (new Date()).getTime();
-    var selected = new Array();
+    var selected = [];
     droppables = $('folder_tree').getElements('.folder');
     var loading_message = $('message_view').innerHTML;
-
-    function stop_propagation(event) {
-        if (event.stopPropagation) event.stopPropagation();
-        event.cancelBubble = true;
-
-        if (event.preventDefault) event.preventDefault();
-        else event.returnValue = false;
-    }
+    var cancelled = false;
 
     function get_target_node(event) {
         var target = event.target || event.srcElement;
@@ -23,16 +16,24 @@ window.addEvent('load', function() {
 
     function start(event) {
         var target = get_target_node(event);
+        var tag_name = target.tagName.toLowerCase();
 
-        if (target.tagName.toLowerCase() == 'img' && target.id && target.id.indexOf('icon_') == 0) {
+        if (tag_name == 'img' && target.id && target.id.indexOf('icon_') == 0) {
             if (! selected.length) selected.push(target.parentNode.parentNode);
             add_drag_and_drop(target, event, droppables, selected);
             stop_propagation(event);
         }
-        else if (target.tagName.toLowerCase() == 'td' && target.parentNode.id && target.parentNode.id.indexOf('message_') == 0) {
+        else if (tag_name == 'td' && target.parentNode.id && target.parentNode.id.indexOf('message_') == 0) {
             if (! selected.length) selected.push(target.parentNode);
             var icon = target.parentNode.getElementsByTagName('img')[0];
             add_drag_and_drop(icon, event, droppables, selected);
+            stop_propagation(event);
+        }
+        else if (tag_name == 'a' && target.id && target.id.indexOf('link_') == 0) {
+            if (! selected.length) selected.push(target.parentNode.parentNode);
+            var icon = target.parentNode.parentNode.getElementsByTagName('img')[0];
+            cancelled = false;
+            setTimeout(function () { if (!cancelled) add_drag_and_drop(icon, event, droppables, selected); }, 200);
             stop_propagation(event);
         }
     }
@@ -60,6 +61,7 @@ window.addEvent('load', function() {
         var tagname = target.tagName.toLowerCase();
 
         if (tagname == 'a' && target.id && target.id.indexOf('link_') == 0) {
+            cancelled = true;
             show_message(target);
             stop_propagation(event);
         }
@@ -126,7 +128,7 @@ window.addEvent('load', function() {
         }, false);
 
     var length = 250;
-    fetch_new_rows(length, length)
+    fetch_new_rows(length, length);
 });
 
 function fetch_new_rows(start_index, length) {
@@ -172,7 +174,7 @@ function update_foldertree(responseText, responseXML) {
 
 function add_drag_and_drop(message, event, droppables, selected) {
     var overed_prev;
-    var droppables_positions = new Object();
+    var droppables_positions = {};
     droppables.each(function (droppable) {
         droppables_positions[droppable.title] = droppable.getCoordinates();
     });

@@ -33,9 +33,7 @@
                 </ul>
                 <ul metal:use-macro="folder_tree.xml#folder_tree"/>
             </div>
-        </div>
-        <div id="headline">
-            <div metal:define-slot="headline"></div>
+            <div class="activeborder"/>
         </div>
         <div id="content">
             <div metal:define-slot="content" tal:omit-tag=""/>
