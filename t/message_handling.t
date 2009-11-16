@@ -12,9 +12,9 @@ if ($@) {
 
 my $mech = Test::WWW::Mechanize->new;
 
-$mech->get( 'http://localhost:3000/' )->is_success or die 'This test requires a running Catalyst server on port 3000. Recommending using the -fork option!';
+return plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};
 
-plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};
+return plan skip_all => 'This test requires a running Catalyst server on port 3000. Recommending using the -fork option!' if $mech->get( 'http://localhost:3000/' )->is_error;
 
 $mech->submit_form(with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} }); #FIXME should be a test, too, but we don't know the test plan yet...
 
