@@ -82,6 +82,8 @@ sub login : Private {
     }
 
     $c->stash({ template => 'login.xml' });
+
+    return;
 }
 
 
@@ -98,7 +100,7 @@ sub logout : Local {
     $c->logout;
     $c->delete_session('logged out');
 
-    $c->res->redirect($c->uri_for('/'));
+    return $c->res->redirect($c->uri_for('/'));
 }
 
 =head2 index
@@ -114,14 +116,14 @@ sub index : Private {
     my $inbox;
 
     if (@$folders > 1) {
-        $_->{name} =~ /\Ainbox\z/i and $inbox = $_ foreach @$folders; # try to find a folder named INBOX
+        $_->{name} =~ /\Ainbox\z/xmi and $inbox = $_ foreach @$folders; # try to find a folder named INBOX
         $inbox ||= reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # no folder named INBOX
     }
     else {
         $inbox = $folders->[0]; # only one folder, so this must be INBOX
     }
 
-    $c->res->redirect($inbox->{uri_view});
+    return $c->res->redirect($inbox->{uri_view});
 }
 
 =head2 mailboxes
@@ -134,6 +136,7 @@ sub mailboxes : Local {
     my ( $self, $c ) = @_;
 
     my $tree = $c->stash->{folder_tree};
+
     CiderWebmail::Util::add_foldertree_uris($c, {
         path    => undef,
         folders => $tree->{folders},
@@ -148,6 +151,8 @@ sub mailboxes : Local {
         template          => 'mailboxes.xml',
         uri_create_folder => $c->uri_for('create_folder'),
     });
+
+    return;
 }
 
 =head2 create_folder
@@ -161,12 +166,15 @@ sub create_folder : Local {
 
     if (my $name = $c->req->param('name')) {
         $c->model('IMAPClient')->create_mailbox($c, {name => $name});
-        $c->res->redirect($c->uri_for('mailboxes'));
+
+        return $c->res->redirect($c->uri_for('mailboxes'));
     }
 
     $c->stash({
         template => 'create_mailbox.xml',
     });
+
+    return;
 }
 
 =head2 end

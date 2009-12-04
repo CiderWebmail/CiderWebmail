@@ -46,7 +46,7 @@ sub process {
 
     $c->res->content_type('text/xml') if ($c->req->param('layout') or '') eq 'ajax';
 
-    $self->SUPER::process($c);
+    return $self->SUPER::process($c);
 }
 
 =head1 AUTHOR

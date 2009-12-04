@@ -29,9 +29,12 @@ Gets the selected mailbox from the URI path and sets up the stash.
 
 sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     my ( $self, $c, $mailbox ) = @_;
+
     $c->stash->{folder} = $mailbox;
     $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
     $c->stash->{uri_compose} = $c->uri_for("/mailbox/$mailbox/compose");
+
+    return;
 }
 
 my $local_timezone = (eval { DateTime::TimeZone->new(name => "local"); } or 'UTC');
@@ -54,14 +57,14 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my @uids = $mailbox->uids({ sort => [ $sort ], filter => $filter });
 
-    my $reverse = $sort =~ s/\Areverse\W+//;
+    my $reverse = $sort =~ s/\Areverse\W+//xm;
 
     my (@messages, @groups);
     my ($start, $length);
 
-    ($start)  = ($c->req->param('start') or '')  =~ /(\d+)/;
+    ($start)  = ($c->req->param('start') or '')  =~ /(\d+)/xm;
     $start ||= 0;
-    ($length) = ($c->req->param('length') or '') =~ /(\d+)/;
+    ($length) = ($c->req->param('length') or '') =~ /(\d+)/xm;
     $length ||= 250;
     @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
@@ -82,16 +85,16 @@ sub view : Chained('setup') PathPart('') Args(0) {
                 $name = $_->{head}->{date}->ymd;
             }
 
-            if ($sort =~ m/(from|to)/) {
+            if ($sort =~ m/(from|to)/xm) {
                 my $address = $_->{head}->{$1}->[0];
                 $name = $address ? ($address->name ? $address->address . ': ' . $address->name : $address->address) : 'Unknown';
             }
 
             if ($sort eq 'subject') {
                 $name = $_->{head}->{subject};
-                $name =~ s/\A\s+//;
-                $name =~ s/\A(re:|fwd?:)\s*//i;
-                $name =~ s/\s+\z//;
+                $name =~ s/\A \s+//xm;
+                $name =~ s/\A (re: | fwd?:) \s*//ixm;
+                $name =~ s/\s+ \z//xm;
             }
             
             if (not @groups or $groups[-1]{name} ne ($name or '')) {
@@ -122,6 +125,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
             ("uri_sorted_$_" => $sort_uri->as_string)
         } qw(from subject date)),
     });
+
+    return;
 }
 
 =head2 create_subfolder
@@ -141,6 +146,8 @@ sub create_subfolder : Chained('setup') PathPart {
     $c->stash({
         template => 'create_mailbox.xml',
     });
+
+    return;
 }
 
 =head2 delete
@@ -154,7 +161,7 @@ sub delete : Chained('setup') PathPart {
     
     $c->model('IMAPClient')->delete_mailbox($c, {mailbox => $c->stash->{folder}});
 
-    $c->res->redirect($c->uri_for('/mailboxes'));
+    return $c->res->redirect($c->uri_for('/mailboxes'));
 }
 
 =head1 AUTHOR

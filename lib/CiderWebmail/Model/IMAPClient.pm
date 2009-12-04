@@ -46,6 +46,8 @@ sub _die_on_error {
         warn $error if $error;
         croak $error if $error;
     }
+
+    return;
 }
 
 =head2 separator($c)
@@ -83,7 +85,7 @@ sub folder_tree {
     my $separator = $self->separator($c);
 
     foreach my $folder (@folders) {
-        my ($parent, $name) = $folder =~ /\A (?: (.*) \Q$separator\E)? (.*?) \z/x;
+        my ($parent, $name) = $folder =~ /\A (?: (.*) \Q$separator\E)? (.*?) \z/xm;
         $parent = $folder_index{$parent || ''};
 
         push @{ $parent->{folders} }, $folder_index{$folder} = {
@@ -113,6 +115,8 @@ sub select {
         $c->stash->{imapclient}->select( $o->{mailbox} );
         $self->_die_on_error($c);
     }
+
+    return;
 }
 
 =head2 message_count($c, { mailbox => $mailbox })
@@ -143,6 +147,20 @@ sub unseen_count {
     return $c->stash->{imapclient}->unseen_count($o->{mailbox});
 }
 
+=head2 check_sort($sort)
+
+Checks if the given sort criteria is valid.
+
+=cut
+
+sub check_sort {
+    my ($sort) = @_;
+
+    die "illegal char in sort: $_" if $_ !~ /\A (?:reverse \s+)? (arrival | cc | date | from | size | subject | to) \z/ixm;
+
+    return;
+}
+
 =head2 get_folder_uids($c, { mailbox => $mailbox })
 
 Returns a MessageSet object representing all UIDs in a mailbox
@@ -158,7 +176,7 @@ sub get_folder_uids {
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     foreach (@{ $o->{sort} }) {
-        die "illegal char in sort: $_" if $_ !~ /\A(?:reverse )?(arrival|cc|date|from|size|subject|to)\z/i;
+        check_sort($_);
     }
 
     #TODO empty result
@@ -207,7 +225,7 @@ sub get_headers_hash() {
         die "uids needs to be an arrayref" unless ( ref($o->{uids}) eq "ARRAY" );
 
         foreach (@{ $o->{uids} }) {
-            die "illegal char in uid $_" if /\D/;
+            die "illegal char in uid $_" if /\D/xm;
         }
 
         $uids = Mail::IMAPClient::MessageSet->new($o->{uids});
@@ -223,7 +241,7 @@ sub get_headers_hash() {
         die "sort needs to be an arrayref" unless ( ref($o->{sort}) eq "ARRAY" );
        
         foreach (@{ $o->{sort} }) {
-            die "illegal char in sort: $_" if $_ !~ /\A(?:reverse )?(arrival|cc|date|from|size|subject|to)\z/i;
+            check_sort($_);
         }
 
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
@@ -242,9 +260,9 @@ sub get_headers_hash() {
         my $data;           #header data of the current message
       
         next unless $line;
-        next if ($line =~ m/UID FETCH/);
+        next if ($line =~ m/UID \s+ FETCH/xm);
 
-        $uid = $line =~ /\bUID\s+(\d+)/i ? $1 : undef;
+        $uid = $line =~ /\bUID \s+ (\d+)/ixm ? $1 : undef;
         next unless defined $uid;
 
         $message->{uid}     = $uid;
@@ -252,9 +270,9 @@ sub get_headers_hash() {
       
         #from Mail::IMAPClient
         foreach my $w (@words) {
-            if($line =~ /\Q$w\E\s*$/i ) {
+            if($line =~ /\Q$w\E \s* $/ixm ) {
                $entry->{$w} = $lines->[$index+1];
-               $entry->{$w} =~ s/(?:\n?\r)+$//g;
+               $entry->{$w} =~ s/(?: \n? \r)+ $//gxm;
                chomp $entry->{$w};
             } else {
                 $line =~ /\(      # open paren followed by ...
@@ -271,7 +289,7 @@ sub get_headers_hash() {
                     (\S+))     # unquoted string
                     (?:\s.*)?  # possibly followed by space-stuff
                     \)         # close paren
-                /xi;
+                /xim;
                 $entry->{$w} = defined $1 ? $1 : defined $2 ? $2 : $3;
             }
         }
@@ -292,8 +310,8 @@ sub get_headers_hash() {
         #this is FUBAR we should return an array with the flags and use this in the template
         if ($entry->{FLAGS}) {
             $message->{flags} = lc($entry->{FLAGS});
-            $message->{flags} =~ s/\\//g;
-            $message->{flag}{$_} = $_ foreach split /\s+/, $message->{flags};
+            $message->{flags} =~ s/\\//gxm;
+            $message->{flag}{$_} = $_ foreach split /\s+/xm, $message->{flags};
         }
 
         push(@messages, $message);
@@ -328,7 +346,7 @@ sub simple_search {
     my @uids;
     if ($o->{sort}) {
         foreach (@{ $o->{sort} }) {
-            die "illegal char in sort: $_" if $_ !~ /\A(?:reverse )?(arrival|cc|date|from|size|subject|to)\z/i;
+            check_sort($_);
         }
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8' );
         @uids = $c->stash->{imapclient}->sort(@sort, @search);
@@ -440,6 +458,8 @@ sub mark_read {
 
     $self->select($c, { mailbox => $o->{mailbox} });
     $c->stash->{imapclient}->set_flag("Seen", $o->{uid});
+
+    return;
 }
 
 =head2 message_as_string($c, { mailbox => $mailbox, uid => $uid })
@@ -485,6 +505,8 @@ sub delete_messages {
 
     $c->stash->{imapclient}->expunge($o->{mailbox});
     $self->_die_on_error($c);
+
+    return;
 }
 
 =head2 append_message($c, { mailbox => $mailbox, message_text => $message_text })
@@ -495,7 +517,7 @@ low level method to append an RFC822-formatted message to a mailbox
 
 sub append_message {
     my ($self, $c, $o) = @_;
-    $c->stash->{imapclient}->append($o->{mailbox}, $o->{message_text});
+    return $c->stash->{imapclient}->append($o->{mailbox}, $o->{message_text});
 }
 
 =head2 move_message($c, { mailbox => $mailbox, target_mailbox => $target_mailbox, uid => $uid })
@@ -513,6 +535,8 @@ sub move_message {
     
     $c->stash->{imapclient}->expunge($o->{mailbox});
     $self->_die_on_error($c);
+
+    return;
 }
 
 =head2 create_mailbox($c, { mailbox => $mailbox, name => $name })
@@ -526,7 +550,7 @@ sub create_mailbox {
 
     die unless $o->{name};
 
-    $c->stash->{imapclient}->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
+    return $c->stash->{imapclient}->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
 }
 
 =head2 delete_mailbox($c, { mailbox => $mailbox })
@@ -540,7 +564,7 @@ sub delete_mailbox {
 
     die unless $o->{mailbox};
 
-    $c->stash->{imapclient}->delete($o->{mailbox});
+    return $c->stash->{imapclient}->delete($o->{mailbox});
 }
 
 =head2 transform_header($c, { header => $header_name, data => $header_data })
@@ -568,7 +592,7 @@ sub transform_header {
     my ($self, $c, $o) = @_;
 
     die unless defined $o->{header};
-    return undef unless defined $o->{data};
+    return unless defined $o->{data};
 
     $o->{header} = lc($o->{header});
 
@@ -589,7 +613,7 @@ sub transform_header {
 sub _transform_address {
     my ($self, $c, $o) = @_;
 
-    return undef unless defined $o->{data};
+    return unless defined $o->{data};
 
     my @address = Mail::Address->parse($self->_decode_header($c, $o));
    
@@ -603,7 +627,7 @@ sub _transform_date {
 
     #some mailers specify (CEST)... Format::Mail isn't happy about this
     #TODO better solution
-    $o->{data} =~ s/\([a-zA-Z]+\)$//;
+    $o->{data} =~ s/\( [a-zA-Z]+ \) $//xm;
 
     my $dt = DateTime::Format::Mail->new();
     $dt->loose;

@@ -136,7 +136,7 @@ Mark the message as read
 sub mark_read {
     my ($self) = @_;
 
-    $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
+    return $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
 =head2 get_headers()
@@ -185,6 +185,8 @@ sub load_body {
    
     $self->renderable($body_parts->{renderable});
     $self->attachments($body_parts->{attachments});
+
+    return;
 }
 
 before qw(renderable attachments) => sub {
@@ -223,7 +225,7 @@ Deletes the message from the server.
 sub delete {
     my ($self) = @_;
 
-    $self->c->model('IMAPClient')->delete_messages($self->c, { uids => [ $self->uid ], mailbox => $self->mailbox } );
+    return $self->c->model('IMAPClient')->delete_messages($self->c, { uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
 =head2 move({target_folder => 'Folder 1'})
@@ -237,7 +239,7 @@ sub move {
 
     die 'target_folder not set' unless defined $o->{target_folder};
 
-    $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
+    return $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
 }
 
 =head2 as_string
@@ -249,7 +251,7 @@ Returns the full message source text.
 sub as_string {
     my ($self) = @_;
 
-    $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
+    return $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 =head2 main_body_part()
@@ -272,6 +274,8 @@ sub main_body_part {
             return $part->{data};
         }
     }
+
+    return;
 }
 
 =head2 get_embedded_message
@@ -345,12 +349,12 @@ sub body_parts {
     while (@parts) {
         my $part = shift @parts;
 
-        if (exists $part_types{$part->effective_type} and not (($part->head->get('content-disposition') or '') =~ /\Aattachment\b/x)) {
+        if (exists $part_types{$part->effective_type} and not (($part->head->get('content-disposition') or '') =~ /\Aattachment\b/xm)) {
             my $rendered_part = $part_types{$part->effective_type}->($self, $c, { part => $part, id => $id });
             $rendered_part->{id} = $id;
             $body_parts->{$id} = $rendered_part;
         }
-        elsif ($part->effective_type =~ m!\Amultipart/!) {
+        elsif ($part->effective_type =~ m!\Amultipart/!xm) {
             push @parts, $part->parts;
         }
         else {
@@ -447,8 +451,8 @@ sub _render_text_html {
         0   =>    # default rule, deny all tags
         {
             '*'           => 0, # default rule, deny all attributes
-            'href'        => qr{^(?!(?:java)?script)}i,
-            'src'         => qr{^(?!(?:java)?script)}i,
+            'href'        => qr{^(?! (?: java)? script )}ixm,
+            'src'         => qr{^(?! (?: java)? script )}ixm,
             'class'       => 1,
             'style'       => 1,
         }

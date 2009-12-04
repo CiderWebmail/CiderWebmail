@@ -93,7 +93,7 @@ sub from_session {
 
     return $id if ref $id;
 
-    $self->find_user( { id => $id } );
+    return $self->find_user( { id => $id } );
 }
 
 =head2 find_user

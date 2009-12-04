@@ -31,7 +31,10 @@ Gets the selected message from the URI path and sets up the stash.
 
 sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
     my ( $self, $c, $uid ) = @_;
+
     $c->stash->{message} = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid);
+
+    return;
 }
 
 
@@ -60,6 +63,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
         uri_move            => $c->uri_for("/mailbox/$mailbox/$uid/move"),
         uri_view_attachment => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $message->uid . '/attachment'),
     });
+
+    return;
 }
 
 =head2 attachment
@@ -69,7 +74,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
 sub attachment : Chained('setup') Args {
     my ( $self, $c, @path ) = @_;
 
-    return $c->res->body('invalid attachment path') unless all {/\A\d+\z/} @path;
+    return $c->res->body('invalid attachment path') unless all { /\A \d+ \z/xm } @path;
 
     my $mailbox = $c->stash->{folder};
 
@@ -81,7 +86,7 @@ sub attachment : Chained('setup') Args {
 
     $c->res->content_type($attachment->{type});
     $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
-    $c->res->body($attachment->{data});
+    return $c->res->body($attachment->{data});
 }
 
 =head2 view_source
@@ -95,7 +100,7 @@ sub view_source : Chained('setup') Args(0) {
     my $uid = $message->uid;
 
     $c->res->content_type('text/plain');
-    $c->res->body($c->model('IMAPClient')->message_as_string($c, { mailbox => $mailbox, uid => $uid }));
+    return $c->res->body($c->model('IMAPClient')->message_as_string($c, { mailbox => $mailbox, uid => $uid }));
 }
 
 =head2 delete
@@ -108,7 +113,7 @@ sub delete : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
 
     my $folders = $c->stash->{folders_hash};
-    my $trash = first { $_ =~ /\btrash|papierkorb\b/i } keys %$folders; # try to find a folder called "Trash"
+    my $trash = first { $_ =~ /\b trash | papierkorb \b/ixm } keys %$folders; # try to find a folder called "Trash"
 
     if ($trash and $c->stash->{folder} ne $trash) {
         $c->stash->{message}->move({target_folder => $trash});
@@ -117,7 +122,7 @@ sub delete : Chained('setup') Args(0) {
         $c->stash->{message}->delete();
     }
     
-    CiderWebmail::Util::send_foldertree_update($c); # update folder display
+    return CiderWebmail::Util::send_foldertree_update($c); # update folder display
 }
 
 =head2 move
@@ -132,7 +137,7 @@ sub move : Chained('setup') Args(0) {
 
     $c->stash->{message}->move({target_folder => $target_folder});
 
-    CiderWebmail::Util::send_foldertree_update($c); # update folder display
+    return CiderWebmail::Util::send_foldertree_update($c); # update folder display
 }
 
 =head2 compose
@@ -158,7 +163,7 @@ sub compose : Chained('/mailbox/setup') Args(0) {
         $folders->{$settings->sent_folder}{selected} = 'selected';
     }
     else {
-        my $sent = first { $_ =~ /\bsent\b/i } keys %$folders; # try to find a folder called "Sent"
+        my $sent = first { $_ =~ /\bsent\b/ixm } keys %$folders; # try to find a folder called "Sent"
         $folders->{$sent}{selected} = 'selected' if $sent;
     }
 
@@ -167,6 +172,8 @@ sub compose : Chained('/mailbox/setup') Args(0) {
         sent_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %$folders ],
         template     => 'compose.xml',
     });
+
+    return;
 }
 
 =head2 reply
@@ -185,8 +192,8 @@ sub reply : Chained('setup') Args() {
 
     #FIXME: we need a way to find the 'main part' of a message and use this here
     my $body = $message->main_body_part($c);
-    $body =~ s/[\s\r\n]+\z//s;
-    $body =~ s/^/> /gm;
+    $body =~ s/[\s\r\n]+ \z//sxm;
+    $body =~ s/^/> /gxm;
     $body .= "\n\n";
 
     my $new_message = {
@@ -216,6 +223,8 @@ sub reply : Chained('setup') Args() {
     });
 
     $c->forward('compose');
+
+    return;
 }
 
 =head2 forward
@@ -241,6 +250,8 @@ sub forward : Chained('setup') Args() {
     });
 
     $c->forward('compose');
+
+    return;
 }
 
 =head2 send
@@ -290,7 +301,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (my $forward = $c->req->param('forward')) {
         my $mailbox = $c->stash->{folder};
-        my ($forward, @path) = split m!/!, $forward;
+        my ($forward, @path) = split m!/!xm, $forward;
         my $message = CiderWebmail::Message->new(c => $c, mailbox => $mailbox, uid => $forward);
         $message = $message->get_embedded_message($c, @path);
 
@@ -307,7 +318,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
             my $message_id = $in_reply_to->get_header('Message-ID');
             $mail->add('In-Reply-To', $message_id);
             my $references = $in_reply_to->get_header('References');
-            $mail->add('References', join ' ', $references ? split /\s+/s, $references : (), $message_id);
+            $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
         }
     }
 
@@ -318,7 +329,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
         $c->model('IMAPClient')->append_message($c, {mailbox => $sent_folder, message_text => $msg_text});
     }
 
-    $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
+    return $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
 }
 
 =head1 AUTHOR

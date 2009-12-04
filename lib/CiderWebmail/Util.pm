@@ -56,6 +56,8 @@ sub add_foldertree_to_stash {
         folder_tree   => $tree,
         folders_hash  => $folders_hash,
     });
+
+    return;
 }
 
 =head2 send_foldertree_update($c)
@@ -66,10 +68,15 @@ Common function to reply to a request with a new folder tree. Used in AJAX comma
 
 sub send_foldertree_update {
     my ($c) = @_;
+
     CiderWebmail::Util::add_foldertree_to_stash($c); # update folder display
+
     $c->stash->{folders_hash}{$c->stash->{folder}}{selected} = 'selected';
-    $c->stash({ template => 'folder_tree.xml' });
+    $c->stash->{template} = 'folder_tree.xml';
+
     $c->res->content_type('text/xml');
+
+    return;
 }
 
 =head2 filter_unusable_addresses(@addresses)

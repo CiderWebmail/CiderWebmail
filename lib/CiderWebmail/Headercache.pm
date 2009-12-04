@@ -32,7 +32,7 @@ sub get {
         return $self->cache->get( join('_', $o->{uid}, lc($o->{header}), $self->c->user->id) );
     }
 
-    return undef;
+    return;
 }
 
 =head2 set()
@@ -55,6 +55,8 @@ sub set {
     if (exists($ondisk{$o->{header}})) {
         $self->cache->set( join('_', $o->{uid}, lc($o->{header}), $self->c->user->id), $o->{data} ) or die "could not cache $o->{header} => $o->{data}";
     }
+
+    return;
 }
 
 1;
