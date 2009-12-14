@@ -11,6 +11,9 @@ msgstr ""
 msgid "Attachment:"
 msgstr "Anhang:"
 
+msgid "Begin:"
+msgstr "Begin:"
+
 msgid "Cc:"
 msgstr "Cc:"
 
@@ -43,6 +46,9 @@ msgstr ""
 "Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen "
 "Ordner zu verschieben."
 
+msgid "End:"
+msgstr "End:"
+
 msgid "Folders"
 msgstr "Ordner"
 
@@ -64,6 +70,9 @@ msgstr "Von:"
 msgid "Loading message"
 msgstr "Lade Email"
 
+msgid "Login"
+msgstr "Login"
+
 msgid "Logout"
 msgstr "Ausloggen"
 
@@ -78,6 +87,12 @@ msgstr "Neuer Unterordner"
 
 msgid "No Subject"
 msgstr "Kein Betreff"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "Please login using your mailbox credentials:"
+msgstr "Bitte loggen Sie sich mit den Zugangsdaten Ihrer Mailbox ein:"
 
 msgid "Reply"
 msgstr "Antworten"
@@ -106,6 +121,9 @@ msgstr "Betreff"
 msgid "Subject:"
 msgstr "Betreff:"
 
+msgid "Summary:"
+msgstr "Summary:"
+
 msgid "Target folder:"
 msgstr "Zielordner:"
 
@@ -115,8 +133,14 @@ msgstr "Text:"
 msgid "To:"
 msgstr "An:"
 
+msgid "Username"
+msgstr "Benutzername"
+
 msgid "View source"
 msgstr "Quelltext anzeigen"
+
+msgid "Welcome to CiderWebmail"
+msgstr "Willkommen bei CiderWebmail"
 
 msgid "messages"
 msgstr "Mails"

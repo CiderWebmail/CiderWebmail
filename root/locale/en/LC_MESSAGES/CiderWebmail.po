@@ -11,6 +11,9 @@ msgstr ""
 msgid "Attachment:"
 msgstr "Attachment:"
 
+msgid "Begin:"
+msgstr "Begin:"
+
 msgid "Cc:"
 msgstr "Cc:"
 
@@ -41,6 +44,9 @@ msgstr "Delete"
 msgid "Drag a mail's icon to a folder name to move that mail to that folder."
 msgstr "Drag a mail's icon to a folder name to move that mail to that folder."
 
+msgid "End:"
+msgstr "End:"
+
 msgid "Folders"
 msgstr "Folders"
 
@@ -62,6 +68,9 @@ msgstr "From:"
 msgid "Loading message"
 msgstr "Loading message"
 
+msgid "Login"
+msgstr "Login"
+
 msgid "Logout"
 msgstr "Logout"
 
@@ -76,6 +85,12 @@ msgstr "New subfolder"
 
 msgid "No Subject"
 msgstr "No Subject"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Please login using your mailbox credentials:"
+msgstr "Please login using your mailbox credentials:"
 
 msgid "Reply"
 msgstr "Reply"
@@ -104,6 +119,9 @@ msgstr "Subject"
 msgid "Subject:"
 msgstr "Subject:"
 
+msgid "Summary:"
+msgstr "Summary:"
+
 msgid "Target folder:"
 msgstr "Target folder:"
 
@@ -113,8 +131,14 @@ msgstr "Text:"
 msgid "To:"
 msgstr "To:"
 
+msgid "Username"
+msgstr "Username"
+
 msgid "View source"
 msgstr "View source"
+
+msgid "Welcome to CiderWebmail"
+msgstr "Welcome to CiderWebmail"
 
 msgid "messages"
 msgstr "messages"

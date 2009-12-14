@@ -20,8 +20,8 @@
     </head>
     <body>
         <div id="login" metal:fill-slot="content">
-            <h1>Welcome to CiderWebmail</h1>
-            <p>Please login using your mailbox credentials:</p>
+            <h1 i18n:translate="">Welcome to CiderWebmail</h1>
+            <p i18n:translate="">Please login using your mailbox credentials:</p>
             <form method="post">
                 <p tal:condition="true: message" tal:content="message"/>
                 <label>
