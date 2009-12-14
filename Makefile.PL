@@ -4,6 +4,7 @@ name 'CiderWebmail';
 all_from 'lib/CiderWebmail.pm';
 
 requires 'parent';
+requires 'Moose';
 requires 'Catalyst::Runtime' => '5.7012';
 
 requires 'Catalyst::Plugin::ConfigLoader';
