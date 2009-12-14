@@ -75,7 +75,7 @@ td, th
         height: 100%;
         width: 3px;
         cursor: pointer;
-        background-color: gray;
+        background-color: lightgray;
     }
 
 #headline
