@@ -204,23 +204,26 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
         dragger.parentNode.removeChild(dragger);
 
-        if (! overed_prev) return;
+        if (overed_prev) {
+            selected.each(function (message) {
+                var uid = message.id.replace('message_', '');
+                var href = location.href.replace(/\/?(\?.*)?$/, '');
+                new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree}).send();
 
-        selected.each(function (message) {
-            var uid = message.id.replace('message_', '');
-            var href = location.href.replace(/\/?(\?.*)?$/, '');
-            new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree}).send();
+                var tbody = message.parentNode
+                tbody.removeChild(message);
 
-            var tbody = message.parentNode
-            tbody.removeChild(message);
+                var children = 0;
+                for (var i = 0; i < tbody.childNodes.length; i++)
+                    if (tbody.childNodes[i].nodeType == 1) children++;
+                if (children == 1)
+                    tbody.parentNode.removeChild(tbody);
+            });
+        }
 
-            var children = 0;
-            for (var i = 0; i < tbody.childNodes.length; i++)
-                if (tbody.childNodes[i].nodeType == 1) children++;
-            if (children == 1)
-                tbody.parentNode.removeChild(tbody);
+        selected.each(function(message) {
+            message.removeClass('selected');
         });
-
         selected.splice(0, selected.length);
     }
 
