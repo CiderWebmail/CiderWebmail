@@ -7,7 +7,6 @@
 * IMAP IDLE support
 * Adjustable "frame" size
 * Composing HTML mails
-* better header formatting in message view
 * *make it look shiny*
 * make it work without JavaScript
 * move JavaScript code to JQuery

@@ -48,9 +48,17 @@ This file documents the revision history for Perl extension CiderWebmail.
 	- Bugfixes
 	- Polishing
 
-1.01 XXXX-XX-XX XX:XX:XX
+1.01 2009-12-14 17:00:00
 	- Finished incremental message loading
 	- Use different icons according to message state
 	- Cursor left/right as shortcuts for displaying previous/next message
+	- Shortcut for moving the current message
 	- Allow reply/forward to attached messages
 	- Render ICal attachments
+	- Using form based login now instead of relying on HTTP basic auth
+
+	Development:
+	- Ported CiderWebmail to Moose
+	- Created a usable test suite and added lots of tests
+	- Fixed quite a few bugs
+	- Fixed perl critic level 5 violations
