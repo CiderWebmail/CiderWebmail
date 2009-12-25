@@ -301,8 +301,8 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (my $forward = $c->req->param('forward')) {
         my $mailbox = $c->stash->{folder};
-        my ($forward, @path) = split m!/!xm, $forward;
-        my $message = CiderWebmail::Message->new(c => $c, mailbox => $mailbox, uid => $forward);
+        my ($uid, @path) = split m!/!xm, $forward;
+        my $message = CiderWebmail::Message->new(c => $c, mailbox => $mailbox, uid => $uid);
         $message = $message->get_embedded_message($c, @path);
 
         $mail->attach(
@@ -313,11 +313,14 @@ sub send : Chained('/mailbox/setup') Args(0) {
     }
 
     if (my $in_reply_to = $c->req->param('in_reply_to')) {
-        $in_reply_to = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $in_reply_to);
-        if ($in_reply_to) {
-            my $message_id = $in_reply_to->get_header('Message-ID');
+        my ($uid, @path) = split m!/!xm, $in_reply_to;
+        my $message = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid);
+        $message = $message->get_embedded_message($c, @path);
+
+        if ($message) {
+            my $message_id = $message->get_header('Message-ID');
             $mail->add('In-Reply-To', $message_id);
-            my $references = $in_reply_to->get_header('References');
+            my $references = $message->get_header('References');
             $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
         }
     }
