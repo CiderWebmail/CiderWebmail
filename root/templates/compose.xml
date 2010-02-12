@@ -55,7 +55,7 @@
                         <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
                     </select>
                 </label>
-                <button type="submit" i18n:translate="">Send</button>
+                <button name="send" type="submit" i18n:translate="">Send</button>
             </form>
         </div>
     </body>
