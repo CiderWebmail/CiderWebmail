@@ -1,1 +1,3 @@
 Run script/ciderwebmail_server.pl to test the application.
+
+The user running the application (e.g. wwwrun) needs write access to the root/var directory. 
