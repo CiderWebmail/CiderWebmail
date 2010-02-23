@@ -1,6 +1,5 @@
 * Design for the homepage
 * Get a logo
-* Icon for mails with attachments
 * Preselect the folder to move a message to
 * On scroll message list loading via AJAX (50% done)
 * Calendar functions
