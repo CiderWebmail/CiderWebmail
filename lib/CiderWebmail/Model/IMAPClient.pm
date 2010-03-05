@@ -211,12 +211,9 @@ sub get_headers_hash() {
 
     my $uids;           #uids we will fetch, MessageSet object!
     my @messages;       #messages wo got back, contains 'transformed' headers
-    my @words;     #things we expect in return from the imap server
+    my @words;          #things we expect in return from the imap server
 
-    my $headers_to_fetch = join(" ", @{ $o->{headers} });
-    push (@words, 'FLAGS');
-    push(@words, "BODY[HEADER.FIELDS ($headers_to_fetch)]");
-
+    my $headers_to_fetch = uc(join(" ", @{ $o->{headers} }));
     
     $self->select($c, { mailbox => $o->{mailbox} } );
     
@@ -249,50 +246,20 @@ sub get_headers_hash() {
         return [] unless @$uids;
     }
 
-    my $lines = $c->stash->{imapclient}->fetch($uids, "(BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");
+    my $lines = $c->stash->{imapclient}->fetch($uids, "(BODYSTRUCTURE BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");
+
+    my @items;
+    push(@items, "BODYSTRUCTURE");
+    push(@items, "FLAGS");
+    push(@items, "BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)]");
+    my $hash = $c->stash->{imapclient}->fetch_hash($uids, @items);
+
     $self->_die_on_error($c);
 
-    for (my $index = 0;  $index <= scalar(@$lines) ; $index++) {
-        my $line = $lines->[$index];
-        my $entry = {};     #not processed data of the current message
-        my $message = {};   #final data of the current message
-        my $uid;            #uid of the current message
-        my $data;           #header data of the current message
-      
-        next unless $line;
-        next if ($line =~ m/UID \s+ FETCH/xm);
-
-        $uid = $line =~ /\bUID \s+ (\d+)/ixm ? $1 : undef;
-        next unless defined $uid;
-
+    while (my ($uid, $entry) = each(%$hash)) {
+        my $message;
         $message->{uid}     = $uid;
         $message->{mailbox} = $o->{mailbox};
-      
-        #from Mail::IMAPClient
-        foreach my $w (@words) {
-            if($line =~ /\Q$w\E \s* $/ixm ) {
-               $entry->{$w} = $lines->[$index+1];
-               $entry->{$w} =~ s/(?: \n? \r)+ $//gxm;
-               chomp $entry->{$w};
-            } else {
-                $line =~ /\(      # open paren followed by ...
-                    (?:.*\s)?  # ...optional stuff and a space
-                    \Q$w\E\s   # escaped fetch field<sp>
-                    (?:"       # then: a dbl-quote
-                      (\\.|    # then bslashed anychar(s) or ...
-                       [^"]+)  # ... nonquote char(s)
-                    "|         # then closing quote; or ...
-                    \(         # ...an open paren
-                      (\\.|    # then bslashed anychar or ...
-                       [^\)]+) # ... non-close-paren char
-                    \)|        # then closing paren; or ...
-                    (\S+))     # unquoted string
-                    (?:\s.*)?  # possibly followed by space-stuff
-                    \)         # close paren
-                /xim;
-                $entry->{$w} = defined $1 ? $1 : defined $2 ? $2 : $3;
-            }
-        }
 
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
@@ -306,12 +273,19 @@ sub get_headers_hash() {
             $message->{head}->{$header} = $self->transform_header($c, { header => $header, data => ($value or '') }),
         }
 
-
         #this is FUBAR we should return an array with the flags and use this in the template
         if ($entry->{FLAGS}) {
             $message->{flags} = lc($entry->{FLAGS});
             $message->{flags} =~ s/\\//gxm;
             $message->{flag}{$_} = $_ foreach split /\s+/xm, $message->{flags};
+        }
+
+        if($entry->{BODYSTRUCTURE}) {
+            my $data = '* '.$uid.' FETCH (UID '.$uid.' BODYSTRUCTURE ('.$entry->{BODYSTRUCTURE}.'))';
+            my $bodystruct = Mail::IMAPClient::BodyStructure->new($data);
+            if ( ($bodystruct->{bodytype} =~ m/MULTIPART/i) && ($bodystruct->{bodysubtype} =~ m/mixed/i) ) {
+                $message->{attachments} = 1;
+            }
         }
 
         push(@messages, $message);
