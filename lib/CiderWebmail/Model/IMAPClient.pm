@@ -287,11 +287,12 @@ sub get_headers_hash() {
             $message->{head}->{$header} = $self->transform_header($c, { header => $header, data => ($value or '') }),
         }
 
-        #this is FUBAR we should return an array with the flags and use this in the template
+        $message->{flag} = {};
         if ($entry->{FLAGS}) {
-            $message->{flags} = lc($entry->{FLAGS});
-            $message->{flags} =~ s/\\//gxm;
-            $message->{flag}{$_} = $_ foreach split /\s+/xm, $message->{flags};
+            my $flags = lc $entry->{FLAGS};
+            $flags =~ s/\\//gxm;
+            $message->{flags} = $flags;
+            $message->{flag}{$_} = $_ foreach split /\s+/xm, $flags;
         }
 
         if($entry->{BODYSTRUCTURE}) {
