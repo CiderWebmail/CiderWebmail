@@ -49,6 +49,7 @@ Gets a folder tree and folders hash from the model, adds 'view' uris and puts th
 sub add_foldertree_to_stash {
     my ($c) = @_;
 
+    return if defined($c->stash->{folder_tree});
     my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
     CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
 

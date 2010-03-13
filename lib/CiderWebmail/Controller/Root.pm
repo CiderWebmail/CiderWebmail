@@ -40,8 +40,6 @@ sub auto : Private {
         #IMAPClient setup
         $c->stash->{imapclient}->Ranges(1);
 
-        CiderWebmail::Util::add_foldertree_to_stash($c);
-
         $c->stash({
             uri_mailboxes => $c->uri_for('/mailboxes'),
             uri_logout    => $c->uri_for('/logout'),
@@ -112,9 +110,11 @@ Redirect to the INBOX view
 sub index : Private {
     my ( $self, $c ) = @_;
     my $model = $c->model('IMAPClient');
-    my $folders = $c->stash->{folder_tree}{folders};
-    my $inbox;
 
+    CiderWebmail::Util::add_foldertree_to_stash($c);
+
+    my $inbox;
+    my $folders = $c->stash->{folder_tree}{folders};
     if (@$folders > 1) {
         $_->{name} =~ /\Ainbox\z/xmi and $inbox = $_ foreach @$folders; # try to find a folder named INBOX
         $inbox ||= reduce { $a->{name} lt $b->{name} ? $a : $b } @$folders; # no folder named INBOX
@@ -135,6 +135,7 @@ Lists the folders of this user. Used by AJAX to update the folder tree.
 sub mailboxes : Local {
     my ( $self, $c ) = @_;
 
+    CiderWebmail::Util::add_foldertree_to_stash($c); 
     my $tree = $c->stash->{folder_tree};
 
     CiderWebmail::Util::add_foldertree_uris($c, {

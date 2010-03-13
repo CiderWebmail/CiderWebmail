@@ -46,6 +46,8 @@ my $local_timezone = (eval { DateTime::TimeZone->new(name => "local"); } or 'UTC
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
 
+    CiderWebmail::Util::add_foldertree_to_stash($c);
+
     my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
