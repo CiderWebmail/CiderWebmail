@@ -62,6 +62,8 @@ sub disconnect {
     if (defined($c->stash->{imapclient}) && $c->stash->{imapclient}->IsConnected ) {
         $c->stash->{imapclient}->disconnect();
     }
+
+    return;
 }
 
 =head2 separator($c)
@@ -298,7 +300,7 @@ sub get_headers_hash() {
         if($entry->{BODYSTRUCTURE}) {
             my $data = '* '.$uid.' FETCH (UID '.$uid.' BODYSTRUCTURE ('.$entry->{BODYSTRUCTURE}.'))';
             my $bodystruct = Mail::IMAPClient::BodyStructure->new($data);
-            if ( ($bodystruct->{bodytype} =~ m/MULTIPART/i) && ($bodystruct->{bodysubtype} =~ m/mixed/i) ) {
+            if ( ($bodystruct->{bodytype} =~ m/MULTIPART/mi) && ($bodystruct->{bodysubtype} =~ m/mixed/mi) ) {
                 $message->{attachments} = 1;
             }
         }

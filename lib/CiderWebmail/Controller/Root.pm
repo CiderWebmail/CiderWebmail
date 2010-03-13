@@ -198,6 +198,8 @@ sub end : Private {
     $c->forward('render');
 
     $c->model('IMAPClient')->disconnect($c);
+
+    return;
 }
 
 =head1 AUTHOR
