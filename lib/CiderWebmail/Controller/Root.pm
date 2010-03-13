@@ -177,17 +177,32 @@ sub create_folder : Local {
     return;
 }
 
-=head2 end
+=head2 render
 
 Attempt to render a view, if needed.
 
 =cut 
 
-sub end : ActionClass('RenderView') {}
+sub render : ActionClass('RenderView') {}
+
+=head2 end
+
+Cleanup after a request is rendered
+
+=cut
+
+sub end : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('render');
+
+    $c->model('IMAPClient')->disconnect($c);
+}
 
 =head1 AUTHOR
 
 Stefan Seifert
+Mathias Reitinger <mathias.reitinger@loop0.org>
 
 =head1 LICENSE
 
