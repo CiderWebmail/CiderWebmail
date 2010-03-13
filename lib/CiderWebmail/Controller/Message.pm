@@ -318,10 +318,11 @@ sub send : Chained('/mailbox/setup') Args(0) {
         $message = $message->get_embedded_message($c, @path);
 
         if ($message) {
-            my $message_id = $message->get_header('Message-ID');
-            $mail->add('In-Reply-To', $message_id);
-            my $references = $message->get_header('References');
-            $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
+            if (my $message_id = $message->get_header('Message-ID')) {
+                $mail->add('In-Reply-To', $message_id);
+                my $references = $message->get_header('References');
+                $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
+            }
         }
     }
 
