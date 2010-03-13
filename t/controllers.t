@@ -25,7 +25,7 @@ MIME::Lite->send(sub => sub {
     };
 });
 
-plan tests => 20;
+plan tests => 24;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -92,6 +92,24 @@ check_email($mech, 'from', 1);
 $mech->back;
 
 $mech->follow_link_ok({ url_regex => qr{/view_source} }, 'view source');
+
+$mech->get_ok( 'http://localhost:3000/mailbox/INBOX/compose' );
+
+my $searchmessage_time = time();
+
+$mech->submit_form_ok({
+    with_fields => {
+        from        => "$uname\@localhost",
+        to          => "$uname\@localhost",
+        sent_folder => 'INBOX',
+        subject     => 'searchmessage-'.$searchmessage_time,
+        body        => 'searchmessage',
+    },
+});
+
+$mech->get_ok( 'http://localhost:3000/mailbox/INBOX?filter=searchmessage-'.$searchmessage_time, 'search request successful' );
+
+$mech->content_like( qr/link_\d+\">searchmessage-$searchmessage_time/, 'searchmessage' );
 
 sub check_email {
     my ($mech, $field, $empty) = @_;
