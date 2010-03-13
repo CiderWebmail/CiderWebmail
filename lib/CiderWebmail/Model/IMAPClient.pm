@@ -50,6 +50,20 @@ sub _die_on_error {
     return;
 }
 
+=head2 disconnect
+
+disconnect from IMAP Server, if connected
+
+=cut
+
+sub disconnect {
+    my ($self, $c) = @_;
+
+    if (defined($c->stash->{imapclient}) && $c->stash->{imapclient}->IsConnected ) {
+        $c->stash->{imapclient}->disconnect();
+    }
+}
+
 =head2 separator($c)
 
 Returnes the folder separator
