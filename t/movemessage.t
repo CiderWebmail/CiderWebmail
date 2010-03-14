@@ -13,7 +13,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 13;
+plan tests => 16;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -58,3 +58,9 @@ $mech->get_ok('http://localhost/mailbox/testfolder-'.$unix_time);
 @messages = $mech->find_all_links( text_regex => qr{\Amovemessage-$unix_time\z});
 
 ok((@messages == 1), 'message found in target folder');
+
+$mech->get_ok('http://localhost/mailbox/testfolder-'.$unix_time.'/delete');
+
+$mech->get_ok('http://localhost/mailboxes');
+
+$mech->content_lacks('testfolder-'.$unix_time);

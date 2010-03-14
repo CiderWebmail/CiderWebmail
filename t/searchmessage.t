@@ -13,7 +13,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 7;
+plan tests => 10;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -21,19 +21,25 @@ $mech->get_ok( 'http://localhost/' );
 $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} } });
 $mech->follow_link_ok({ url_regex => qr{/compose} }, 'Compose a new message');
 
-my $searchmessage_time = time();
+my $unix_time = time();
 
 $mech->submit_form_ok({
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
         sent_folder => 'INBOX',
-        subject     => 'searchmessage-'.$searchmessage_time,
+        subject     => 'searchmessage-'.$unix_time,
         body        => 'searchmessage',
     },
 });
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?filter=searchmessage-'.$searchmessage_time, 'search request successful' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?filter=searchmessage-'.$unix_time, 'search request successful' );
 
-$mech->content_like( qr/link_\d+\">searchmessage-$searchmessage_time/, 'searchmessage' );
+$mech->content_like( qr/link_\d+\">searchmessage-$unix_time/, 'searchmessage' );
 
+my @messages = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
+$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+
+$mech->get_ok( 'http://localhost' );
+
+$mech->content_lacks('searchmessage-'.$unix_time);
