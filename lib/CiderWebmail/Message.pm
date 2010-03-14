@@ -345,7 +345,7 @@ sub body_parts {
                 name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
                 data => $part->bodyhandle->as_string,
                 id   => $id,
-                path => ((defined $self->path) ? "$self->path/" : '') . $id,
+                path => ((defined $self->path) ? $self->path."/" : '') . $id,
             } if $part->bodyhandle;
         }
 
