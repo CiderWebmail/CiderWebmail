@@ -139,24 +139,6 @@ sub mark_read {
     return $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
-=head2 get_headers()
-
-Returns a standard set of headers as hashref:
-    { subject => 'Subject', from => Email::Address->new(...), date => '2009-10-01 00:00:00', uid => 'UID123' }
-
-=cut
-
-sub get_headers {
-    my ($self) = @_;
-    
-    return {
-        subject     => $self->subject(),
-        from        => $self->from,
-        date        => $self->date->strftime("%F %T"),
-        uid         => $self->uid,
-    };
-}
-
 =head2 date()
 
 Returns the 'date' header as datetime object
