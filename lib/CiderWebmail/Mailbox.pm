@@ -67,21 +67,6 @@ sub uids {
         : $self->c->model('IMAPClient')->get_folder_uids($self->c, { mailbox => $self->mailbox, sort => $o->{sort} });
 }
 
-=head2 simple_search
-
-Searches the from and subject fields of the messages in this folder and returns the uids of matching messages.
-
-=cut
-
-sub simple_search {
-    my ($self, $o) = @_;
-   
-    $o->{searchfor} = "ALL" unless $o->{searchfor};
-
-    return $self->c->model('IMAPClient')->simple_search($self->c, { mailbox => $self->mailbox, searchfor => $o->{searchfor}, sort => $o->{sort} });
-}
-
-
 =head1 AUTHORS
 
 Mathias Reitinger <mathias.reitinger@loop0.org>
