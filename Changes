@@ -1,3 +1,13 @@
+1.02 2010-03-16 17:00:00
+	Bugfix release
+	- Increased test suite coverage to 85%
+	- Fixed replying to normal messages directly
+	- Fixed rendering of messages without From and/or To
+	- Fixed attachment downloading of forwarded messages
+	- Implemented in-reply-to for embedded messages
+	- Close IMAP connection at the end of request (Fixed leaked connections)
+	- Dramatic speed increase due to no longer fetching an additional folder tree
+
 1.01 2009-12-14 17:00:00
 	- Finished incremental message loading
 	- Use different icons according to message state
