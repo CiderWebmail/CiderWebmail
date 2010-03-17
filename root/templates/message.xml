@@ -67,7 +67,7 @@
                         <span i18n:translate="">Summary: </span> <span tal:content="data/summary">end</span><br />
                     </div>
                 </div>
-                <div tal:condition="body_part/is_html" tal:content="structure body_part/data">mail body</div>
+                <div tal:condition="body_part/is_html" tal:content="structure body_part/data" class="html_message">mail body</div>
                 <div tal:condition="body_part/is_message" tal:define="message body_part/data" class="forwarded">
                     <h2 i18n:translate="">Forwarded message</h2>
                     <div metal:use-macro="#view_message" />
