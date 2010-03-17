@@ -1,35 +1,20 @@
 From nine@detonation.org Tue Feb  2 11:16:09 2010
 From: Stefan Seifert <nine@detonation.org>
 X-KMail-Fcc: .439106160.directory/Sent
-Subject: ICAL-Testmail
+Subject: icaltest-TIME
 Date: Tue, 2 Feb 2010 11:16:09 +0100
-User-Agent: KMail/1.13.0 (Linux/2.6.31.8-0.1-desktop; KDE/4.3.95; x86_64; ; )
 Content-Type: text/calendar;
   method=REQUEST;
   charset="utf-8"
 MIME-Version: 1.0
 Status: RO
-X-Status: O
-X-KMail-EncryptionState:  
-X-KMail-SignatureState:  
-X-KMail-MDN-Sent:  
-X-UID: 25341
-X-Length: 887
 
 BEGIN:VCALENDAR
-PRODID:-//K Desktop Environment//NONSGML libkcal 4.3//EN
 VERSION:2.0
-METHOD:REQUEST
-BEGIN:VTODO
-DTSTAMP:20100202T101708Z
-ORGANIZER;CN="Stefan Seifert":MAILTO:nine@detonation.org
-CREATED:20100202T101609Z
-UID:libkcal-1004951615.803
-SEQUENCE:3
-LAST-MODIFIED:20100202T101708Z
-SUMMARY:News Altes System: Button für alle generieren
-PRIORITY:1
-RELATED-TO:libkcal-1406056132.227
-PERCENT-COMPLETE:0
-END:VTODO
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
+BEGIN:VEVENT
+DTSTART:19970714T170000Z
+DTEND:19970715T035959Z
+SUMMARY:Bastille Day Party
+END:VEVENT
 END:VCALENDAR
