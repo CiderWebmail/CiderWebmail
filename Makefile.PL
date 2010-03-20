@@ -56,7 +56,7 @@ requires 'List::MoreUtils';
 requires 'Data::ICal';
 requires 'DateTime::Format::ISO8601';
 
-catalyst;
+#catalyst;
 
 install_script glob('script/*.pl');
 auto_install;
