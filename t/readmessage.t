@@ -13,7 +13,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 10;
+plan tests => 14;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -28,18 +28,30 @@ $mech->submit_form_ok({
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
         sent_folder => 'INBOX',
-        subject     => 'searchmessage-'.$unix_time,
-        body        => 'searchmessage',
+        subject     => 'readmessage-'.$unix_time,
+        body        => 'readmessage',
     },
 });
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?filter=searchmessage-'.$unix_time, 'search request successful' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX' );
 
-$mech->content_like( qr/link_\d+\">searchmessage-$unix_time/, 'searchmessage' );
+my @messages = $mech->find_all_links( text_regex => qr{\Areadmessage-$unix_time\z});
 
-my @messages = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
+$messages[0]->attrs->{id} =~ m/link_(\d+)/m;
+
+my $message_id = $1;
+
+ok( (length($message_id) > 0), 'got message id');
+
+$mech->content_contains('<tr id="message_'.$message_id.'">', 'message is unread');
+
+$mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id, 'open message');
+
+$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->content_contains('<tr id="message_'.$message_id.'" class="seen">', 'message is read');
+
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
-$mech->get_ok( 'http://localhost' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX' );
 
 $mech->content_lacks('searchmessage-'.$unix_time);

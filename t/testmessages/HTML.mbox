@@ -1,0 +1,39 @@
+From nine@detonation.org Sun Mar 14 15:08:33 2010
+From: Stefan Seifert <nine@detonation.org>
+Subject: htmltest-TIME
+Date: Sun, 14 Mar 2010 15:08:33 +0100
+User-Agent: KMail/1.13.1 (Linux/2.6.33-31-desktop; KDE/4.4.1; x86_64; ; )
+X-KMail-Transport: Atikon
+X-KMail-QuotePrefix: >
+X-KMail-Markup: true
+MIME-Version: 1.0
+Status: RO
+X-Status: RQ
+To: nine@detonation.org
+Content-Type: multipart/alternative;
+  boundary="Boundary-01=_h3OnL21+KsOyxnu"
+Content-Transfer-Encoding: 7bit
+X-KMail-Recipients: nine@detonation.org
+Message-Id: <201003141508.33163.nine@detonation.org>
+X-KMail-EncryptionState: N
+X-KMail-SignatureState: N
+X-KMail-MDN-Sent:  
+
+--Boundary-01=_h3OnL21+KsOyxnu
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+This is an HTML testmail.
+
+--Boundary-01=_h3OnL21+KsOyxnu
+Content-Type: text/html;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><style type="text/css">
+p, li { white-space: pre-wrap; }
+</style></head><body style=" font-family:'Sans Serif'; font-size:7pt; font-weight:400; font-style:normal;">
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;"><b>This is an HTML testmail.</b></p></body></html>
+--Boundary-01=_h3OnL21+KsOyxnu--

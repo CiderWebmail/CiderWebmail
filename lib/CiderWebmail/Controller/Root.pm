@@ -197,7 +197,7 @@ sub end : Private {
 
     $c->forward('render');
 
-    $c->model('IMAPClient')->disconnect($c);
+    $c->model('IMAPClient')->disconnect($c) unless $ENV{CIDERWEBMAIL_NODISCONNECT}; # disconnect but not for some tests that still need the connection
 
     return;
 }

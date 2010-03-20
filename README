@@ -1,3 +1,14 @@
+perl Makefile.PL && make
+should install required perl modules for CiderWebmail.
+
 Run script/ciderwebmail_server.pl to test the application.
 
 The user running the application (e.g. wwwrun) needs write access to the root/var directory. 
+
+The path to the user_settings.sql file can be configured by adding something like the following to ciderwebmail.yml. This is needed for example when deploying using mod_perl:
+
+Model::DB:
+    connect_info:
+        - 'dbi:SQLite:/srv/www/cgi-bin/CiderWebmail/root/var/user_settings.sql'
+
+Please have a look at http://wiki.catalystframework.org/wiki/deployment for further information about deployment on a web server.

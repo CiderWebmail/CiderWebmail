@@ -124,6 +124,7 @@ Used for suggesting a From address on reply/forward.
 sub guess_recipient {
     my ($self) = @_;
 
+    return [] unless defined $self->to;
     return [ CiderWebmail::Util::filter_unusable_addresses(@{ $self->to }) ]
 }
 
@@ -345,7 +346,7 @@ sub body_parts {
                 name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
                 data => $part->bodyhandle->as_string,
                 id   => $id,
-                path => ((defined $self->path) ? "$self->path/" : '') . $id,
+                path => ((defined $self->path) ? $self->path."/" : '') . $id,
             } if $part->bodyhandle;
         }
 

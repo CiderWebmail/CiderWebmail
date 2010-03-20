@@ -1,0 +1,20 @@
+From nine@detonation.org Tue Feb  2 11:16:09 2010
+From: Stefan Seifert <nine@detonation.org>
+X-KMail-Fcc: .439106160.directory/Sent
+Subject: icaltest-TIME
+Date: Tue, 2 Feb 2010 11:16:09 +0100
+Content-Type: text/calendar;
+  method=REQUEST;
+  charset="utf-8"
+MIME-Version: 1.0
+Status: RO
+
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hacksw/handcal//NONSGML v1.0//EN
+BEGIN:VEVENT
+DTSTART:19970714T170000Z
+DTEND:19970715T035959Z
+SUMMARY:Bastille Day Party
+END:VEVENT
+END:VCALENDAR

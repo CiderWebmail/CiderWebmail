@@ -25,7 +25,7 @@ MIME::Lite->send(sub => sub {
     };
 });
 
-plan tests => 20;
+plan tests => 24;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -37,12 +37,14 @@ $mech->follow_link_ok({ url_regex => qr{/compose} }, 'Compose a new message');
 
 my $uname = getpwuid $UID;
 
+my $unix_time = time();
+
 $mech->submit_form_ok({
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
         sent_folder => 'INBOX',
-        subject     => 'testmessage1',
+        subject     => 'testmessage-'.$unix_time,
         body        => 'foo bar baz',
     },
 });
@@ -100,3 +102,12 @@ sub check_email {
     $empty = $empty ? '^$|' :  '';
     like($value, qr($empty$RE{Email}{Address}), $mech->uri . ": '$field' field contains an email address");
 }
+
+$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+
+my @messages = $mech->find_all_links( text_regex => qr{\Atestmessage-$unix_time\z});
+$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+
+$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+
+$mech->content_lacks('testmessage-'.$unix_time);
