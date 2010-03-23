@@ -3,8 +3,11 @@ package CiderWebmail::Headercache;
 use Moose;
 
 use Cache::FastMmap;
+use File::Spec;
 
-my $headercache = Cache::FastMmap->new( share_file => '/tmp/headercache', cache_size => '64m' );
+my $tmpdir = File::Spec->tmpdir();
+
+my $headercache = Cache::FastMmap->new( share_file => $tmpdir.'/headercache', cache_size => '64m' );
 
 has c     => (is => 'ro', isa => 'Object');
 has cache => (is => 'ro', isa => 'Object', default => sub { return $headercache });
