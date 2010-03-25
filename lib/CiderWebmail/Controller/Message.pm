@@ -151,6 +151,8 @@ sub compose : Chained('/mailbox/setup') Args(0) {
 
     $c->stash->{message} ||= {};
 
+    CiderWebmail::Util::add_foldertree_to_stash($c);
+
     my $settings = $c->model('DB::Settings')->find($c->user->id);
     if ($settings and $settings->from_address) {
         $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
