@@ -43,7 +43,6 @@ requires 'Text::Flowed';
 requires 'IO::Socket::SSL';
 requires 'Mail::IMAPClient' => '3.23';
 
-requires 'Cache::FastMmap';
 requires 'Clone';
 requires 'HTML::Scrubber';
 requires 'HTML::Tidy';
