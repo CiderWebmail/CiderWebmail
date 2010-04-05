@@ -488,13 +488,13 @@ sub _decode_charset {
     my $charset = $o->{part}->head->mime_attr("content-type.charset");
 
     my $part_string;
-    unless ($charset
+    unless ($charset and $charset !~ /utf-8/i
         and eval {
             my $converter = Text::Iconv->new($charset, "utf-8");
             $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
         }) {
 
-        warn "unsupported encoding: $charset" if $charset;
+        warn "unsupported encoding: $charset" if $@;
         $part_string = $o->{part}->bodyhandle->as_string;
     }
 

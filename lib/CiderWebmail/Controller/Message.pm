@@ -165,7 +165,7 @@ sub compose : Chained('/mailbox/setup') Args(0) {
         $folders->{$settings->sent_folder}{selected} = 'selected';
     }
     else {
-        my $sent = first { $_ =~ /\bsent\b/ixm } keys %$folders; # try to find a folder called "Sent"
+        my $sent = first { $_ =~ /\b (?: sent | outbox |gesendete? ) \b/ixm } sort keys %$folders; # try to find a folder called "Sent"
         $folders->{$sent}{selected} = 'selected' if $sent;
     }
 
@@ -194,9 +194,11 @@ sub reply : Chained('setup') Args() {
 
     #FIXME: we need a way to find the 'main part' of a message and use this here
     my $body = $message->main_body_part($c);
-    $body =~ s/[\s\r\n]+ \z//sxm;
-    $body =~ s/^/> /gxm;
-    $body .= "\n\n";
+    if ($body) {
+        $body =~ s/[\s\r\n]+ \z//sxm;
+        $body =~ s/^/> /gxm;
+        $body .= "\n\n";
+    }
 
     my $new_message = {
         from    => $message->guess_recipient, # If no user-specified from address is available, the to address of the replied-to mail is a good guess
