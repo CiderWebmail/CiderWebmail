@@ -110,4 +110,4 @@ $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX' );
 
-$mech->content_lacks('testmessage-'.$unix_time);
+$mech->content_lacks('>testmessage-'.$unix_time);
