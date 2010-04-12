@@ -46,8 +46,6 @@ my $local_timezone = (eval { DateTime::TimeZone->new(name => "local"); } or 'UTC
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
 
-    CiderWebmail::Util::add_foldertree_to_stash($c);
-
     my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
@@ -69,6 +67,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
     ($length) = ($c->req->param('length') or '') =~ /(\d+)/xm;
     $length ||= 250;
     @uids = $start <= @uids ? splice @uids, $start, $length : ();
+
+    CiderWebmail::Util::add_foldertree_to_stash($c) unless $start; # $start is only > 0 for AJAX requests loading more messages. No need for a foldertree in that case.
 
     if (@uids) {
         my %messages = map { ($_->{uid} => {
@@ -112,6 +112,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
             $_->{name} .= ', ' . DateTime->new(year => substr($_->{name}, 0, 4), month => substr($_->{name}, 5, 2), day => substr($_->{name}, 8))->day_name foreach @groups;
         }
     }
+
+    $c->stash->{no_translation} = 1 if $start; # $start is only > 0 for AJAX requests loading more messages. No need for translataion in that case.
 
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
