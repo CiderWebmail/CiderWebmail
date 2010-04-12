@@ -2,7 +2,6 @@ var droppables;
 var current_message;
 
 window.addEvent('load', function() {
-    var start_time = (new Date()).getTime();
     var selected = [];
     droppables = $('folder_tree').getElements('.folder');
     var loading_message = $('message_view').innerHTML;
