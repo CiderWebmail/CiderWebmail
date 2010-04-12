@@ -82,11 +82,11 @@ sub attachment : Chained('setup') Args {
     my $body = $c->stash->{message}->get_embedded_message($c, @path);
     return $c->res->body('attachment not found') unless $body;
 
-    $attachment = $body->attachments->{$attachment};
+    $attachment = $body->all_parts->[$attachment]->handler;
 
-    $c->res->content_type($attachment->{type});
-    $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=$attachment->{name}");
-    return $c->res->body($attachment->{data});
+    $c->res->content_type($attachment->type);
+    $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=".$attachment->name);
+    return $c->res->body($attachment->as_string);
 }
 
 =head2 view_source

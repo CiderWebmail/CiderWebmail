@@ -2,31 +2,20 @@ package CiderWebmail::Message;
 
 use Moose;
 
-use CiderWebmail::Message::Forwarded;
-
-use Mail::IMAPClient::BodyStructure;
-
-use Data::ICal;
-use DateTime;
-use DateTime::Format::ISO8601;
-use DateTime::Format::Mail;
-use HTML::Scrubber;
-use HTML::Tidy;
-use Mail::Address;
-use Text::Iconv;
-use Data::ICal;
-use DateTime::Format::ISO8601;
-use CiderWebmail::Util;
+use CiderWebmail::Part;
 
 has c           => (is => 'ro', isa => 'Object');
 has mailbox     => (is => 'ro', isa => 'Str');
 has uid         => (is => 'ro', isa => 'Int');
-has renderable  => (is => 'rw', isa => 'HashRef');
-has attachments => (is => 'rw', isa => 'HashRef');
+
+has renderable  => (is => 'rw', isa => 'ArrayRef');
+has attachments => (is => 'rw', isa => 'ArrayRef');
+has all_parts   => (is => 'rw', isa => 'ArrayRef');
+
 has loaded      => (is => 'rw');
 
 has entity      => (is => 'ro', isa => 'Object');
-has path        => (is => 'ro', isa => 'Str');
+has path        => (is => 'rw', isa => 'Str');
 
 =head2 get_header($header)
 
@@ -168,36 +157,15 @@ sub load_body {
    
     $self->renderable($body_parts->{renderable});
     $self->attachments($body_parts->{attachments});
+    $self->all_parts($body_parts->{all_parts});
 
     return;
 }
 
-before qw(renderable attachments) => sub {
+before qw(renderable attachments all_parts get_embedded_message) => sub {
     my ($self) = @_;
     $self->load_body();
 };
-
-=head2 renderable_list()
-
-Returns a sorted list of renderable body parts.
-
-=cut
-
-sub renderable_list {
-    my ($self) = @_;
-    return [ sort { $a->{id} <=> $b->{id} } values %{ $self->renderable } ];
-}
-
-=head2 attachment_list()
-
-Returns a sorted list of attachments.
-
-=cut
-
-sub attachment_list {
-    my ($self) = @_;
-    return [ sort { $a->{id} <=> $b->{id} } values %{ $self->attachments } ];
-}
 
 =head2 delete()
 
@@ -271,22 +239,17 @@ sub get_embedded_message {
     my ( $self, $c, @path ) = @_;
 
     my $body = $self;
-    $body->load_body; # Don't know, why this is needed. Somewhere $body->{renderable} gets initialized with an empty hash
 
+    my $count = 0;
     foreach (@path) {
-        $body = $body->renderable->{$_}{data};
+        $body = $body->all_parts->[$_]->render;
+
         return unless $body;
+        $count++;
     }
 
     return $body;
 }
-
-my %part_types = (
-    'text/plain'     => \&_render_text_plain,
-    'text/html'      => \&_render_text_html,
-    'text/calendar'  => \&_render_text_calendar,
-    'message/rfc822' => \&_render_message_rfc822,
-);
 
 =head2 body_parts($c)
 
@@ -325,182 +288,44 @@ sub body_parts {
 
     my @parts = ($entity);
  
-    my $body_parts  = {}; #body parts we render (text/plain, text/html, etc)
-    my $attachments = {}; #body parts we don't render (everything else)
-    
+    my $renderable  = []; #body parts we render (text/plain, text/html, etc)
+    my $attachments = []; #body parts we don't render (everything else)
+    my $all_parts   = []; #all body parts
+
     my $id = 0;
     while (@parts) {
         my $part = shift @parts;
 
-        if (exists $part_types{$part->effective_type} and not (($part->head->get('content-disposition') or '') =~ /\Aattachment\b/xm)) {
-            my $rendered_part = $part_types{$part->effective_type}->($self, $c, { part => $part, id => $id });
-            $rendered_part->{id} = $id;
-            $body_parts->{$id} = $rendered_part;
-        }
-        elsif ($part->effective_type =~ m!\Amultipart/!xm) {
-            push @parts, $part->parts;
-        }
-        else {
-            $attachments->{$id} = {
-                type => $part->effective_type,
-                name => ($part->head->mime_attr("content-type.name") or "attachment (".$part->effective_type.")"),
-                data => $part->bodyhandle->as_string,
-                id   => $id,
-                path => ((defined $self->path) ? $self->path."/" : '') . $id,
-            } if $part->bodyhandle;
-        }
-
-        $id++;
+        $self->_process_body_part({ renderable => $renderable, attachments => $attachments, all_parts => $all_parts, entity => $part, id => \$id });
     }
 
-    return { renderable => $body_parts, attachments => $attachments };
+    return { renderable => $renderable, attachments => $attachments, all_parts => $all_parts };
 }
 
-=head2 _render_text_plain({part => $part})
-
-Internal method rendering a text/plain body part.
-
-=cut
-
-sub _render_text_plain {
-    my ($self, $c, $o) = @_;
-
-    die 'no part set' unless defined $o->{part};
-
-    my $part_string = $self->_decode_charset($o);
-
-    my $part = {};
-    $part->{data} = Text::Flowed::reformat($part_string);
-    $part->{is_text} = 1;
-
-    return $part;
-}
-
-=head2 _render_text_calendar({part => $part})
-
-Internal method rendering a text/calendar body part.
-
-=cut
-
-sub _render_text_calendar {
-    my ($self, $c, $o) = @_;
-
-    die 'no part set' unless defined $o->{part};
-
-    my $part_string = $self->_decode_charset($o);
-
-    my $cal = Data::ICal->new(data => $part_string);
-    my $dt = DateTime::Format::ISO8601->new;
-
-    my @events;
-    foreach ( @{$cal->entries} ) {
-        my $entry = $_;
-        my $start = $entry->property('dtstart') || next;
-        my $end = $entry->property('dtend') || next;
-        my $summary = $entry->property('summary') || next;
-       
-        my $dt_start = $dt->parse_datetime($start->[0]->value);
-        my $dt_end = $dt->parse_datetime($end->[0]->value);
-
-        push(@events, {
-            start => join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")),
-            end => join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")), 
-            summary => $summary->[0]->value, }
-        );
-    }
-
-    my $part = {};
-    $part->{data} = \@events;
-    $part->{is_calendar} = 1;
-
-    return $part;
-}
-
-=head2 _render_text_html({part => $part})
-
-Internal method rendering a text/html body part.
-
-=cut
-
-sub _render_text_html {
-    my ($self, $c, $o) = @_;
-
-    die 'no part set' unless defined $o->{part};
-
-    my $tidy = HTML::Tidy->new( { output_xhtml => 1, bare => 1, clean => 1, doctype => 'omit', enclose_block_text => 1, show_errors => 0, char_encoding => 'utf8', show_body_only => 1, tidy_mark => 0 } );
-    my $scrubber = HTML::Scrubber->new( allow => [ qw/p b strong i u hr br div span table thead tbody tr th td/ ] );
-
-    my @default = (
-        0   =>    # default rule, deny all tags
-        {
-            '*'           => 0, # default rule, deny all attributes
-            'href'        => qr{^(?! (?: java)? script )}ixm,
-            'src'         => qr{^(?! (?: java)? script )}ixm,
-            'class'       => 1,
-            'style'       => 1,
-        }
-    );
-    
-    $scrubber->default( @default );
-
-
-    my $part_string = $self->_decode_charset($o);
-    
-    my $part = {};
-    $part->{data} = $scrubber->scrub($part_string);
-    $part->{data} = $tidy->clean($part->{data});
-    $part->{is_html} = 1;
-
-    return $part;
-}
-
-=head2 _render_message_rfc822({part => $part})
-
-Internal method rendering a message/rfc822 body part.
-
-=cut
-
-sub _render_message_rfc822 {
-    my ($self, $c, $o) = @_;
-
-    die 'no part set' unless defined $o->{part};
-
-    my $part = {};
-    
-    $part->{data} = CiderWebmail::Message::Forwarded->new(c => $c, entity => $o->{part}->parts(0), mailbox => $self->mailbox, uid => $self->uid, path => (defined $self->path ? "$self->path/" : '') . $o->{id});
-    $part->{data}->load_body();
-
-    $part->{is_message} = 1;
-
-    return $part;
-}
-
-=head2 _decode_charset({part => $part})
-
-Internal method decoding a body part according to it's stated character set and returning it in Perl's internal encoding.
-
-=cut
-
-sub _decode_charset {
+sub _process_body_part {
     my ($self, $o) = @_;
-    die 'no part set' unless defined $o->{part};
 
-    my $charset = $o->{part}->head->mime_attr("content-type.charset");
+    my $id = ${ $o->{id} };
 
-    my $part_string;
-    unless ($charset and $charset !~ /utf-8/i
-        and eval {
-            my $converter = Text::Iconv->new($charset, "utf-8");
-            $part_string = $converter->convert($o->{part}->bodyhandle->as_string);
-        }) {
+    my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, id => $id, path => (defined $self->path ? $self->path."/" : '').$id })->handler;
 
-        warn "unsupported encoding: $charset" if $@;
-        $part_string = $o->{part}->bodyhandle->as_string;
+    if ($part->attachment) {
+        push(@{ $o->{attachments} }, $part);
+        push(@{ $o->{all_parts} }, $part);
+    }
+    elsif ($part->renderable or $part->message) {
+        push(@{ $o->{renderable} }, $part);
+        push(@{ $o->{all_parts} }, $part);
+    }
+    elsif ($part->subparts) {
+        foreach($part->subparts) {
+            $self->_process_body_part({ renderable => $o->{renderable}, attachments => $o->{attachments}, all_parts => $o->{all_parts}, entity => $_, id => $o->{id} });
+        }
     }
 
-    utf8::decode($part_string);
+    ${ $o->{id} }++;
 
-    return $part_string;
+    return;
 }
 
 1;
