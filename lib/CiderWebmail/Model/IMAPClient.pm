@@ -10,6 +10,7 @@ use Mail::IMAPClient::MessageSet;
 use Email::Simple;
 use Text::Flowed;
 use Mail::Address;
+use Text::Iconv;
 use Carp qw(croak confess);
 
 use CiderWebmail::Message;
