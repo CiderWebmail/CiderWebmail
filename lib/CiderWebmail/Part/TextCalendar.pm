@@ -9,7 +9,7 @@ extends 'CiderWebmail::Part';
 
 =head2 render()
 
-Internal method rendering a text/plain body part.
+Render a text/calendar body part.
 
 =cut
 
@@ -41,13 +41,21 @@ sub render {
     return $self->c->view->render_template({ c => $self->c, template => 'TextCalendar.xml', stash => { events => \@events } });
 }
 
+=head2 content_type()
+
+returns the cntent type this plugin can handle
+
+=cut
+
 sub content_type {
     return 'text/calendar';
 }
 
-sub is_html {
-    return 1;
-}
+=head2 renderable()
+
+returns true if this part is renderable
+
+=cut
 
 sub renderable {
     return 1;

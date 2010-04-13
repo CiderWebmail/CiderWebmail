@@ -27,7 +27,7 @@ sub body {
     my $charset = $self->entity->head->mime_attr("content-type.charset");
 
     my $part_string;
-    unless ($charset and $charset !~ /utf-8/i
+    unless ($charset and $charset !~ /utf-8/ixm
         and eval {
             my $converter = Text::Iconv->new($charset, "utf-8");
             $part_string = $converter->convert($self->entity->bodyhandle->as_string);
@@ -42,11 +42,23 @@ sub body {
     return $part_string;
 }
 
+=head2 type()
+
+returns the MIME Type of the part
+
+=cut
+
 sub type {
     my ($self) = @_;
 
     return $self->entity->effective_type;
 }
+
+=head2 handler()
+
+returns the 'handler' for the part: a CiderWebmail::Part::FooBar object that can be used to ->render the part.
+
+=cut
 
 sub handler {
     my ($self) = @_;
@@ -57,6 +69,12 @@ sub handler {
         return $self;
     }
 }
+
+=head2 subparts()
+
+returns the subparts (MIME::Entity objects) of the current part (in case of multipart/* parts)
+
+=cut
 
 sub subparts {
     my ($self) = @_;
@@ -69,17 +87,35 @@ sub subparts {
     }
 }
 
+=head2 render()
+
+render a CiderWebmail::Part. just a stub - override in CiderWebmail::Part::FooBar
+
+=cut
+
 sub render {
     my ($self) = @_;
 
     return;
 }
 
+=head2 as_string()
+
+returns the body of the part as a string
+
+=cut
+
 sub as_string {
     my ($self) = @_;
 
     return $self->entity->bodyhandle->as_string;
 }
+
+=head2 attachment()
+
+returns true if the part is a attachment (if content-disposition eq 'attachment')
+
+=cut
 
 sub attachment {
     my ($self) = @_;
@@ -91,13 +127,43 @@ sub attachment {
     return;
 }
 
+=head2 renderable()
+
+returns true if the part is renderable (just a stub, override in CiderWebmail::Part::FooBar)
+
+=cut
+
 sub renderable {
     return;
 }
 
+=head2 message()
+
+returns true if the part is a message (message/rfc822) (just a stub, override in CiderWebmail::Part::FooBar)
+
+=cut
+
 sub message {
     return;
 }
+
+=head2 content_type()
+
+returns the content type the CiderWebmail::Part Plugin can handle (just a stub, override in CiderWebmail::Part::FooBar)
+
+=cut
+
+#TODO: stupid name
+sub content_type {
+    return;
+}
+
+
+=head2 name()
+
+returns the name of the part or "attachment content/type"
+
+=cut
 
 sub name {
     my ($self) = @_;

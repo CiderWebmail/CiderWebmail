@@ -19,13 +19,21 @@ sub render {
     return $self->c->view->render_template({ c => $self->c, template => 'TextPlain.xml', stash => { part_content => Text::Flowed::reformat($self->body) } });
 }
 
+=head2 content_type()
+
+returns the cntent type this plugin can handle
+
+=cut
+
 sub content_type {
     return 'text/plain';
 }
 
-sub is_text {
-    return 1;
-}
+=head2 renderable()
+
+returns true if this part is renderable
+
+=cut
 
 sub renderable {
     return 1;

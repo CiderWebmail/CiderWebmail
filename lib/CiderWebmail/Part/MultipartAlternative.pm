@@ -6,6 +6,12 @@ has chosen_alternative => (is => 'rw', isa => 'Object');
 
 extends 'CiderWebmail::Part';
 
+=head2 content_type()
+
+returns the content type the CiderWebmail::Part Plugin can handle (just a stub, override in CiderWebmail::Part::FooBar)
+
+=cut
+
 sub content_type {
     return 'multipart/alternative';
 }
@@ -25,15 +31,23 @@ before render => sub {
 
 };
 
+=head2 render()
+
+render a multipart/alternative
+
+=cut
+
 sub render {
     my ($self) = @_;
 
-    $self->chosen_alternative->render;
+    return $self->chosen_alternative->render;
 }
 
-sub is_html {
-    return 1;
-}
+=head2 renderable()
+
+returns true if the part is renderable.
+
+=cut
 
 sub renderable {
     return 1;

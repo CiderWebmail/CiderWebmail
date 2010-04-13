@@ -63,6 +63,12 @@ sub process {
     return $self->SUPER::process($c);
 }
 
+=head2 render_template()
+
+renders a template
+
+=cut
+
 sub render_template {
     my ($self, $o) = @_;
 
