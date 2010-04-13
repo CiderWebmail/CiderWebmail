@@ -214,15 +214,13 @@ Returns the main body part for using when forwarding/replying the message.
 sub main_body_part {
     my ($self) = @_;
 
-    my $renderable = $self->renderable;
-  
     #just return the first text/plain part
     #here we should determine the main 'body part' (text/plain > text/html > ???)
     #FIXME this code does not actually get the first body part. Should use renderable_list here.
-    foreach (values %{ $renderable }) {
+    foreach (@{ $self->renderable }) {
         my $part = $_;
-        if (($part->{is_text} or 0) == 1) {
-            return $part->{data};
+        if ( ($part->content_type or '') eq 'text/plain') {
+            return $part->body;
         }
     }
 
