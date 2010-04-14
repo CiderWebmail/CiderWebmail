@@ -1,13 +1,49 @@
+#message_view h1 {
+    margin: 0;
+    padding: 0.1em 0.5em;
+    border-bottom: 1px solid black;
+    background-color: #418bd4;
+    color: white;
+    font-size: 100%;
+}
+
+.message_actions {
+    margin: 0.1em 0;
+    padding: 0.1em 0.5em;
+    border-bottom: 1px solid black;
+    overflow: auto;
+}
+
+.message_actions a {
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.message_actions a:hover {
+    border-color: #418bd4;
+}
+
+.message_main_actions {
+    float: left;
+}
+
+.message_view_head {
+    margin-top: 0.5em;
+    padding: 0;
+    border: 1px solid black;
+    background-color: #efefef;
+}
+
 .message_header {
     margin-bottom: 1em;
     overflow: auto;
 }
 
 .message_header table {
-    float: left;
+    margin: 0;
 }
 
-.message_header_details {
+.message_detail_actions {
     font-size: 75%;
     float: right;
     color: gray;

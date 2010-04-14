@@ -1,7 +1,5 @@
 function toggleHeader(node, on) {
-    var header = node.parentNode.parentNode.nextSibling;
-    if (header.nodeType != 1) header = header.nextSibling;
-    header.getElementsByTagName('pre')[0].style.display = on ? '' : 'none';
+    node.parentNode.parentNode.parentNode.getElementsByTagName('pre')[0].style.display = on ? '' : 'none';
 }
 
 add_event_listener('keyup', function (event) {
