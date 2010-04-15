@@ -1,0 +1,5 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" class="calendar" tal:repeat="data events">
+    <span i18n:translate="">Begin: </span> <span tal:content="data/start">start</span><br />
+    <span i18n:translate="">End: </span> <span tal:content="data/end">end</span><br />
+    <span i18n:translate="">Summary: </span> <span tal:content="data/summary">end</span><br />
+</div>

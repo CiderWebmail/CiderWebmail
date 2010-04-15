@@ -63,6 +63,23 @@ sub process {
     return $self->SUPER::process($c);
 }
 
+=head2 render_template()
+
+renders a template
+
+=cut
+
+sub render_template {
+    my ($self, $o) = @_;
+
+    my $root = $o->{c}->config->{root};
+    my $base_dir = ["$root/templates/parts"];
+
+    my $template = Petal->new( base_dir => $base_dir, file => $o->{template});
+    return $template->process( $o->{stash} );
+}
+
+
 =head1 AUTHOR
 
 Stefan Seifert

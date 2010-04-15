@@ -1,0 +1,1 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" class="html_message" tal:content="structure part_content">HTML Content</div>

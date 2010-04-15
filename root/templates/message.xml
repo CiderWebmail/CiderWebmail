@@ -5,7 +5,6 @@
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="CiderWebmail"
-    metal:use-macro="layout.xml#layout"
     >
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
@@ -58,24 +57,16 @@
                     <pre class="all_headers" style="display: none;" tal:content="message/header_formatted">header</pre>
                 </div>
             </div>
-            <div class="body_part" tal:repeat="body_part message/renderable_list">
-                <pre tal:condition="body_part/is_text" tal:content="body_part/data">mail body</pre>
-                <div tal:condition="body_part/is_calendar" class="calendar">
-                    <div tal:repeat="data body_part/data" class="calendar_entry">
-                        <span i18n:translate="">Begin: </span> <span tal:content="data/start">start</span><br />
-                        <span i18n:translate="">End: </span> <span tal:content="data/end">end</span><br />
-                        <span i18n:translate="">Summary: </span> <span tal:content="data/summary">end</span><br />
-                    </div>
-                </div>
-                <div tal:condition="body_part/is_html" tal:content="structure body_part/data" class="html_message">mail body</div>
-                <div tal:condition="body_part/is_message" tal:define="message body_part/data" class="forwarded">
+            <div class="body_part" tal:repeat="body_part message/renderable">
+                <div tal:condition="body_part/renderable" tal:replace="structure body_part/render"></div>
+                <div tal:condition="body_part/message" tal:define="message body_part/render" class="forwarded">
                     <h2 i18n:translate="">Forwarded message</h2>
                     <div metal:use-macro="#view_message" />
                 </div>
                 <hr />
             </div>
-            <div class="attachments" tal:condition="true:message/attachment_list">
-                <div class="attachment" tal:repeat="attachment message/attachment_list">
+            <div class="attachments" tal:condition="true:message/attachments">
+                <div class="attachment" tal:repeat="attachment message/attachments">
                     <p><a tal:content="attachment/name" tal:attributes="href string:${uri_view_attachment}/${attachment/path}; title attachment/type" /></p>
                 </div>
             </div>
