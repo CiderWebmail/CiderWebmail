@@ -17,9 +17,10 @@ sub render {
 
     die 'no part set' unless defined $self->body;
 
-    my $cleaner = HTML::Cleaner->new({ input => $self->body });
+    my $cleaner = HTML::Cleaner->new();
 
-    return $self->c->view->render_template({ c => $self->c, template => 'TextHtml.xml', stash => { part_content => $cleaner->process } });
+    my $output = $cleaner->process({ input => $self->body });
+    return $self->c->view->render_template({ c => $self->c, template => 'TextHtml.xml', stash => { part_content => $output } });
 }
 
 =head2 content_type()
