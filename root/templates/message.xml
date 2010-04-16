@@ -30,7 +30,7 @@
                     <label>
                         <span i18n:translate="">Target folder:</span>
                         <select name="target_folder">
-                            <option tal:repeat="folder target_folders" tal:content="folder/id"/>
+                            <option tal:repeat="folder target_folders" tal:attributes="value folder/id" tal:content="folder/name"/>
                         </select>
                     </label>
                     <button type="submit" i18n:translate="">Move message</button>
