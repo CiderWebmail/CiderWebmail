@@ -40,7 +40,8 @@ render a multipart/alternative
 sub render {
     my ($self) = @_;
 
-    my $output = $self->chosen_alternative->render if $self->chosen_alternative;
+    my $output = undef;
+    $output = $self->chosen_alternative->render if $self->chosen_alternative;
     return ($output or '');
 }
 
