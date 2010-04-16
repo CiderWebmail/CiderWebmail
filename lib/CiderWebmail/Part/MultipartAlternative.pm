@@ -40,7 +40,8 @@ render a multipart/alternative
 sub render {
     my ($self) = @_;
 
-    return $self->chosen_alternative->render;
+    my $output = $self->chosen_alternative->render if $self->chosen_alternative;
+    return ($output or '');
 }
 
 =head2 renderable()
