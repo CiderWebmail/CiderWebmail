@@ -7,6 +7,12 @@ use HTML::Scrubber;
 
 has input => ( is => 'ro', isa => 'Str' );
 
+=head2 process()
+
+processes the input, returnes clean XHTML
+
+=cut
+
 sub process {
     my ($self) = @_;
 
