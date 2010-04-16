@@ -36,7 +36,8 @@ returns true if this part is renderable
 =cut
 
 sub renderable {
-    return 1;
+    my ($self) = @_;
+    return (($self->body or '') =~ /\S/xms);
 }
 
 1;
