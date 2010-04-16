@@ -40,7 +40,7 @@ $mech->get_ok( 'http://localhost/' );
 $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} } });
 $mech->follow_link_ok({ text => 'htmltest-'.$unix_time });
 
-$mech->content_contains('<div class="html_message"><p class="c1">This is an HTML testmail.', 'check content');
+$mech->content_contains('<div class="html_message renderable"><p class="c1">This is an HTML testmail.', 'check content');
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX/' );
 my @messages = $mech->find_all_links( text_regex => qr{\Ahtmltest-$unix_time\z});

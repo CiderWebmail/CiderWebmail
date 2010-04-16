@@ -28,15 +28,15 @@
 }
 
 .message_view_head {
-    margin-top: 0.5em;
-    padding: 0;
+    margin: 0.5em 0em 0em 0em;
     border: 1px solid black;
     background-color: #efefef;
 }
 
 .message_header {
-    margin-bottom: 1em;
     overflow: auto;
+    margin: 0px;
+    padding: 0px;
 }
 
 .message_header table {
@@ -60,11 +60,20 @@
     clear: both;
 }
 
-.forwarded {
-    border: 1px solid black;
-    padding: 3px;
-    margin: 3px;
-    overflow: auto;
+.message_body {
+    border-color: black;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
 }
 
+.renderable {
+    margin: 0px;
+    padding: 3px;
+}
+
+.forwarded {
+    margin: 0px;
+    padding: 1px;
+    overflow: auto;
+}
 

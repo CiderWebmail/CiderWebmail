@@ -61,15 +61,17 @@ ul#folder_tree a.hover {
 }
 
 .attachment {
-    border: 1px lightgrey solid;
-    margin: 0.5em;
-    padding: 0.5em;
+    border: 1px grey solid;
     float: left;
+    padding: 4px;
+    margin: 4px;
 }
 
 .attachment p {
+    margin: 0px;
+    padding: 0px;
+    font-size: 75%;
     text-align: center;
-    font-size: 0.8em;
 }
 
 
@@ -126,20 +128,30 @@ ul#folder_tree a.hover {
 }
 
 #folder_headline {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    color: white;
     margin: 0;
     padding: 0 0.5em;
-    float: left;
+    background-color: #418bd4;
 }
+
+#folder_headline h1 {
+    margin: 0px;
+    padding: 0px;
+}
+
 
 h1 {
     font-size: 140%;
 }
 
 #quicksearch {
-    float: right;
-    margin: 0;
-    padding: 0;
-    vertical-align: bottom;
+    position: absolute;
+    top: 0px;
+    right: 5px;
 }
 
 #quicksearch button {
