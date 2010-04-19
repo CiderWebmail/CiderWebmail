@@ -154,8 +154,14 @@ sub compose : Chained('/mailbox/setup') Args(0) {
     CiderWebmail::Util::add_foldertree_to_stash($c);
 
     my $settings = $c->model('DB::Settings')->find($c->user->id);
-    if ($settings and $settings->from_address) {
-        $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
+
+    if ($c->config->{username_is_address}) {
+        $c->stash->{message}{from} = [ Mail::Address->parse($c->session->{username}) ]
+    }
+    else {
+        if ($settings and $settings->from_address) {
+            $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
+        }
     }
 
     my $folders = clone($c->stash->{folders_hash});
