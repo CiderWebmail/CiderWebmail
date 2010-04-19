@@ -238,12 +238,8 @@ sub get_embedded_message {
 
     my $body = $self;
 
-    my $count = 0;
     foreach (@path) {
         $body = $body->all_parts->[$_]->render;
-
-        return unless $body;
-        $count++;
     }
 
     return $body;
@@ -309,17 +305,17 @@ sub _process_body_part {
 
     if ($part->attachment) {
         push(@{ $o->{attachments} }, $part);
-        push(@{ $o->{all_parts} }, $part);
     }
     elsif ($part->renderable or $part->message) {
         push(@{ $o->{renderable} }, $part);
-        push(@{ $o->{all_parts} }, $part);
     }
     elsif ($part->subparts) {
         foreach($part->subparts) {
             $self->_process_body_part({ renderable => $o->{renderable}, attachments => $o->{attachments}, all_parts => $o->{all_parts}, entity => $_, id => $o->{id} });
         }
     }
+    
+    push(@{ $o->{all_parts} }, $part);
 
     ${ $o->{id} }++;
 
