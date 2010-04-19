@@ -22,7 +22,7 @@ sub process {
 
     $self->handler(start => "_start_handler", 'self, tagname, attr');
     $self->handler(end => "_end_handler", 'self, tagname');
-    $self->handler(text => "_text_handler", 'self, text');
+    $self->handler(text => "_text_handler", 'self, text, is_cdata');
 
     $self->parse($tidy->clean($o->{input}));
 
@@ -33,12 +33,13 @@ my $tags = {
     table   => { allowed => 1, start_filter => \&_filter_tag_table  },
     tr      => { allowed => 1, attributes => { rowspan => { allowed => 1 } }},
     td      => { allowed => 1, attributes => { colspan => { allowed => 1 } }},
+    th      => { allowed => 1, attributes => { colspan => { allowed => 1 } }},
 
     p       => { allowed => 1 },
 
     style   => { allowed => 1, start_filter => \&_filter_tag_style, end_filter => \&_filter_discard },
 
-    img     => { allowed => 1, start_filter => \&_filter_tag_img, end_filter => \&_filter_discard, attributes => { src => { allowed => 1}, alt => { allowed => 1} } },
+    img     => { allowed => 1, start_filter => \&_filter_tag_img, end_filter => \&_filter_discard, attributes => { src => { allowed => 1}, alt => { allowed => 1, add => 1} } },
 
     font    => { allowed => 1, start_filter => \&_filter_tag_font, end_filter => \&_filter_tag_font_end, attributes => { color => { filter => \&_filter_font_color } } },
     span    => { allowed => 1, },
@@ -98,13 +99,13 @@ internal method for processing text events
 =cut
 
 sub _text_handler {
-    my ($self, $text) = @_;
+    my ($self, $text, $cdata) = @_;
 
     if ($self->{_state}->{text_filter}) {
         $self->{output} .= $self->{_state}->{text_filter}->($self, { text => $text });
         $self->{_state}->{text_filter} = undef;
     } else {
-        $self->{output} .= $text;
+        $self->{output} .= $text unless $cdata;
     }
 
     return;
@@ -120,7 +121,13 @@ sub _handle_attributes {
     my ($self, $o) = @_;
 
     $tags->{$o->{tagname}}->{attributes}->{style}->{filter} = \&_filter_style;
-    
+
+    while(my ($key, $value) = each(%{ $tags->{$o->{tagname}}->{attributes} })) {
+        if (($value->{add} or 0) == 1) {
+            $o->{attr}->{$key} = 'none' unless(defined($o->{attr}->{$key}));
+        }
+    }
+
     my $output = '';
     while(my ($key, $value) = each(%{ $o->{attr} })) {
         if (defined($tags->{$o->{tagname}}->{attributes}->{$key}->{filter})) {
