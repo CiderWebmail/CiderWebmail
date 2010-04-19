@@ -155,13 +155,11 @@ sub compose : Chained('/mailbox/setup') Args(0) {
 
     my $settings = $c->model('DB::Settings')->find($c->user->id);
 
-    if ($c->config->{username_is_address}) {
-        $c->stash->{message}{from} = [ Mail::Address->parse($c->session->{username}) ]
+    if ($settings and $settings->from_address) {
+        $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
     }
-    else {
-        if ($settings and $settings->from_address) {
-            $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
-        }
+    elsif ($c->config->{username_default_address}) {
+        $c->stash->{message}{from} = [ Mail::Address->parse($c->session->{username}) ]
     }
 
     my $folders = clone($c->stash->{folders_hash});

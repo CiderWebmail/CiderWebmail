@@ -3,4 +3,4 @@ server:
     host: localhost
     port: 143
 language: de
-username_is_address: false
+username_default_address: true
