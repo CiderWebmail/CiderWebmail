@@ -626,7 +626,7 @@ sub _transform_date {
 
     my $date = ($o->{data} and eval { $dt->parse_datetime($o->{data}) });
     unless ($date) {
-        warn "$@ parsing $o->{data}" if $@;
+        warn "$@ parsing $o->{data}" if ($c->debug and $@);
         $date = DateTime->from_epoch(epoch => 0); # just return a DateTime object so we can continue
     }
 
