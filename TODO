@@ -10,3 +10,9 @@
 * make it work without JavaScript
 * move JavaScript code to JQuery
 * Display embedded images in HTML mails
+
+* larger fields for TO, CC, subject
+* mark as unread
+* forward inline (optional)
+* display TO instead of FROM in Sent folder
+* display number of unread messages in <title>
