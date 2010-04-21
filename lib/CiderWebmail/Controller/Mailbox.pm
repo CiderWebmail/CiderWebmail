@@ -78,8 +78,17 @@ sub view : Chained('setup') PathPart('') Args(0) {
                 }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
         @messages = map $messages{$_}, @uids;
 
+        # yes, this is ugly as hell
+        $Petal::I18N::Domain = 'CiderWebmail';
+        my $translation_service = Petal::TranslationService::Gettext->new(
+            domain => 'CiderWebmail',
+            locale_dir => $c->config->{root} . '/locale',
+            target_lang => $c->config->{language} || 'en',
+        );
+
         foreach (@messages) {
             $_->{head}->{date}->set_time_zone($c->config->{time_zone} or $local_timezone);
+            $_->{head}->{subject} = $translation_service->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
 
             my $name;
 
