@@ -5,6 +5,7 @@ use strict;
 use base qw( HTML::Parser );
 
 use HTML::Tidy;
+use HTML::Entities qw/ encode_entities decode_entities /;
 
 =head2 process({ input => $html_string })
 
@@ -19,6 +20,7 @@ sub process {
 
     $self->{_output} = '';
     $self->{_state} = {};
+    $self->{_mime_cids} = $o->{mime_cids};
 
     $self->handler(start => "_start_handler", 'self, tagname, attr');
     $self->handler(end => "_end_handler", 'self, tagname');
@@ -32,19 +34,24 @@ sub process {
 my $tags = {
     table   => { allowed => 1, start_filter => \&_filter_tag_table  },
     tr      => { allowed => 1, attributes => { rowspan => { allowed => 1 } }},
-    td      => { allowed => 1, attributes => { colspan => { allowed => 1 } }},
+    td      => { allowed => 1, start_filter => \&_filter_tag_td, attributes => { colspan => { allowed => 1 } }},
     th      => { allowed => 1, attributes => { colspan => { allowed => 1 } }},
 
     p       => { allowed => 1 },
 
+    br      => { allowed => 1 },
+
     style   => { allowed => 1, start_filter => \&_filter_tag_style, end_filter => \&_filter_discard },
 
-    img     => { allowed => 1, start_filter => \&_filter_tag_img, end_filter => \&_filter_discard, attributes => { src => { allowed => 1}, alt => { allowed => 1, add => 1} } },
+    img     => { allowed => 1, start_filter => \&_filter_tag_img, end_filter => \&_filter_discard, attributes => { src => { allowed => 1}, alt => { allowed => 1, add => 1 } } },
 
     font    => { allowed => 1, start_filter => \&_filter_tag_font, end_filter => \&_filter_tag_font_end, attributes => { color => { filter => \&_filter_font_color } } },
-    span    => { allowed => 1, },
+    b       => { allowed => 1, start_filter => \&_filter_tag_b, end_filter => \&_filter_tag_b_end },
 
-    a       => { allowerd => 1, attributes => { href => { allowed => 1 } } },
+    span    => { allowed => 1, },
+    center  => { allowed => 1, },
+
+    a       => { allowed => 1, attributes => { href => { allowed => 1 } } },
 
     div     => { allowed => 1 },
 };
@@ -130,8 +137,10 @@ sub _handle_attributes {
 
     my $output = '';
     while(my ($key, $value) = each(%{ $o->{attr} })) {
+        $value = encode_entities(decode_entities($value));
+
         if (defined($tags->{$o->{tagname}}->{attributes}->{$key}->{filter})) {
-            $output .= $tags->{$o->{tagname}}->{attributes}->{$key}->{filter}->({ tagname => $o->{tagname}, value => $value });
+            $output .= $tags->{$o->{tagname}}->{attributes}->{$key}->{filter}->($self, { tagname => $o->{tagname}, value => $value });
         } else {
             $output .= " $key=\"$value\"" if (($tags->{$o->{tagname}}->{attributes}->{$key}->{allowed} or 0) == 1);
         }
@@ -177,7 +186,7 @@ sub _filter_tag_style_text {
     return '';
 }
 
-=head2 _filter_tag_style_img
+=head2 _filter_tag_img
 
 html tag filter: processes img tags
 
@@ -191,6 +200,10 @@ sub _filter_tag_img {
     if (($o->{attr}->{border} or '') =~ m/^(0|1)$/xm) {
         $o->{attr}->{style} .= " border: $1px;"
     };
+
+    if (($o->{attr}->{src} or '') =~ m/^cid:(.*)$/xm) {
+        $o->{attr}->{src} = $self->{_mime_cids}->{$1};
+    }
 
     $output .= $self->_handle_attributes({ tagname => 'img', attr => $o->{attr} });
 
@@ -221,6 +234,19 @@ sub _filter_tag_font {
     return $output;
 }
 
+=head2 _filter_tag_b
+
+html tag filter: processes b tags, converts them to span tags
+
+=cut
+
+sub _filter_tag_b {
+    my ($self, $o) = @_;
+
+    return "<span style='font-weight: bold;'>";
+}
+
+
 =head2 _filter_tag_table
 
 html tag filter: processes table tags
@@ -233,10 +259,36 @@ sub _filter_tag_table {
     my $output = "<table";
 
     if ((lc($o->{attr}->{width}) or '') =~ m/^(\d{1,4})$/xm) {
-        $o->{attr}->{style} .= "width: $1px;";
+        $o->{attr}->{style} .= " width: $1px;";
+    }
+
+    if ((lc($o->{attr}->{align}) or '') =~ m/^(left|center|right)$/xm) {
+        $o->{attr}->{style} .= " text-align: $1;";
     }
 
     $output .= $self->_handle_attributes({ tagname => 'table', attr => $o->{attr} });
+
+    $output .= ">";
+
+    return $output;
+}
+
+=head2 _filter_tag_td
+
+html tag filter: processes table data tags
+
+=cut
+
+sub _filter_tag_td {
+    my ($self, $o) = @_;
+
+    my $output = "<td";
+
+    if ((lc($o->{attr}->{width}) or '') =~ m/^(\d{1,4})$/xm) {
+        $o->{attr}->{style} .= "width: $1px;";
+    }
+
+    $output .= $self->_handle_attributes({ tagname => 'td', attr => $o->{attr} });
 
     $output .= ">";
 
@@ -252,15 +304,35 @@ html tag filter: processes font end tag, converts to span tag
 sub _filter_tag_font_end {
     my ($self, $o) = @_;
 
-    my $output = "</span>";
-    return $output;
+    return "</span>";
 }
 
+=head2 _filter_tag_b_end
+
+html tag filter: processes b end tag, converts to span tag
+
+=cut
+
+sub _filter_tag_b_end {
+    my ($self, $o) = @_;
+
+    return "</span>";
+}
+
+
 #filter for attributes
+my $default_styles = {
+    font => { allowed => 1},
+    text_decoration => { allowed => 1},
+    color => { allowed => 1 },
+};
+
 my $styles = {
-    img => { border => {} },
-    span => { color => {} },
-    table => { width => {} },
+    img => { %$default_styles, border => { allowed => 1} },
+    span => { %$default_styles },
+    table => { %$default_styles, width => { allowed => 1 }, text_align => { allowed => 1 }, },
+    td => { %$default_styles, width => { allowed => 1} },
+    a => { %$default_styles },
 };
 
 =head2 _filter_style
@@ -279,10 +351,11 @@ sub _filter_style {
 
     foreach(@css_attr) {
         my ($key, $value) = split(/:/xm, $_);
-        $output .= "$key: $value;" if $styles->{$o->{tagname}}->{$key};
+        $key =~ s/[^a-z]//gixm;
+        $output .= "$key: $value;" if (defined($styles->{$o->{tagname}}->{$key}) && ($styles->{$o->{tagname}}->{$key}->{allowed} == 1));
     }
 
-    return $output;
+    return ' style="'.$output.'"';
 }
 
 1;

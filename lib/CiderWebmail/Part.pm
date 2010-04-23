@@ -13,6 +13,8 @@ has entity      => (is => 'ro', isa => 'Object');
 has path        => (is => 'ro', isa => 'Str');
 has id          => (is => 'ro', isa => 'Int');
 
+has parent_message     => (is => 'ro', isa => 'Object'); #ref to the CiderWebmail::Message object this part is part of
+
 my %renderers = map{ $_->content_type => $_ } __PACKAGE__->plugins();
 
 =head2 body()
@@ -64,7 +66,7 @@ sub handler {
     my ($self) = @_;
     
     if (defined($renderers{$self->type})) {
-        return $renderers{$self->type}->new({ entity => $self->entity, uid => $self->uid, mailbox => $self->mailbox, c => $self->c, id => $self->id, path => $self->path });
+        return $renderers{$self->type}->new({ entity => $self->entity, uid => $self->uid, mailbox => $self->mailbox, c => $self->c, parent_message => $self->parent_message, id => $self->id, path => $self->path });
     } else {
         return $self;
     }
@@ -110,6 +112,23 @@ sub as_string {
 
     return $self->entity->bodyhandle->as_string;
 }
+
+=head2 cid()
+
+returns the Content-ID of the part
+
+=cut
+
+sub cid {
+    my ($self) = @_;
+
+    my $cid = ($self->entity->head->get('Content-ID') or '');
+    chomp($cid);
+    $cid =~ s/[<>]//gxm;
+
+    return $cid;
+}
+
 
 =head2 attachment()
 

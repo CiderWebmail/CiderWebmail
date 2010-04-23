@@ -19,7 +19,13 @@ sub render {
 
     my $cleaner = HTML::Cleaner->new();
 
-    my $output = $cleaner->process({ input => $self->body });
+    my $cid_uris = {};
+    while (my ($cid, $part_path) = each(%{ $self->parent_message->cid_to_part })) {
+        $cid_uris->{$cid} = $self->c->uri_for("/mailbox/".$self->mailbox."/".$self->uid."/attachment/".$part_path);
+    }
+
+    #TODO ugly hack... HTML Cleaner should never have to know about mime content ids etc
+    my $output = $cleaner->process({ input => $self->body, mime_cids => $cid_uris });
     return $self->c->view->render_template({ c => $self->c, template => 'TextHtml.xml', stash => { part_content => $output } });
 }
 

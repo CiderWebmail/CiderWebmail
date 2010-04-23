@@ -11,6 +11,7 @@ has uid         => (is => 'ro', isa => 'Int');
 has renderable  => (is => 'rw', isa => 'ArrayRef');
 has attachments => (is => 'rw', isa => 'ArrayRef');
 has all_parts   => (is => 'rw', isa => 'ArrayRef');
+has cid_to_part => (is => 'rw', isa => 'HashRef');
 
 has loaded      => (is => 'rw');
 
@@ -158,6 +159,8 @@ sub load_body {
     $self->renderable($body_parts->{renderable});
     $self->attachments($body_parts->{attachments});
     $self->all_parts($body_parts->{all_parts});
+    $self->all_parts($body_parts->{all_parts});
+    $self->cid_to_part($body_parts->{cid_to_part});
 
     return;
 }
@@ -289,15 +292,16 @@ sub body_parts {
     my $renderable  = []; #body parts we render (text/plain, text/html, etc)
     my $attachments = []; #body parts we don't render (everything else)
     my $all_parts   = []; #all body parts
+    my $cid_to_part = {}; #Content-ID to CiderWebmail::Part mapping
 
     my $id = 0;
     while (@parts) {
         my $part = shift @parts;
 
-        $self->_process_body_part({ renderable => $renderable, attachments => $attachments, all_parts => $all_parts, entity => $part, id => \$id });
+        $self->_process_body_part({ renderable => $renderable, attachments => $attachments, all_parts => $all_parts, cid_to_part => $cid_to_part, entity => $part, id => \$id });
     }
 
-    return { renderable => $renderable, attachments => $attachments, all_parts => $all_parts };
+    return { renderable => $renderable, attachments => $attachments, all_parts => $all_parts, cid_to_part => $cid_to_part };
 }
 
 sub _process_body_part {
@@ -305,21 +309,25 @@ sub _process_body_part {
 
     my $id = ${ $o->{id} };
 
-    my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, id => $id, path => (defined $self->path ? $self->path."/" : '').$id })->handler;
+    my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, parent_message => $self, id => $id, path => (defined $self->path ? $self->path."/" : '').$id })->handler;
 
     if ($part->attachment) {
         push(@{ $o->{attachments} }, $part);
-        push(@{ $o->{all_parts} }, $part);
     }
     elsif ($part->renderable or $part->message) {
         push(@{ $o->{renderable} }, $part);
-        push(@{ $o->{all_parts} }, $part);
     }
     elsif ($part->subparts) {
         foreach($part->subparts) {
-            $self->_process_body_part({ renderable => $o->{renderable}, attachments => $o->{attachments}, all_parts => $o->{all_parts}, entity => $_, id => $o->{id} });
+            $self->_process_body_part({ renderable => $o->{renderable}, attachments => $o->{attachments}, all_parts => $o->{all_parts}, cid_to_part => $o->{cid_to_part}, entity => $_, id => $o->{id} });
         }
     }
+
+    if($part->cid) {
+        $o->{cid_to_part}->{$part->cid} = $part->path;
+    }
+
+    push(@{ $o->{all_parts} }, $part);
 
     ${ $o->{id} }++;
 
