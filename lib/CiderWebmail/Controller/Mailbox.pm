@@ -49,7 +49,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
-    my $sort = ($c->req->param('sort') or $settings->sort_order or 'date');
+    my $sort = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
     $settings->set_column(sort_order => $sort);
     $settings->update_or_insert();
 
