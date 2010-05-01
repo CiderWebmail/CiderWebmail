@@ -23,7 +23,7 @@ function stop_propagation(event) {
     else event.returnValue = false;
 }
 
-function start_resize(event) {
+function start_controlpanel_resize(event) {
     var controlpanel = document.getElementById('controlpanel');
     var content = document.getElementById('content');
     function drag(event) {
@@ -38,6 +38,22 @@ function start_resize(event) {
     stop_propagation(event);
 }
 
+function start_message_view_resize(event) {
+    var messages_pane = document.getElementById('messages_pane');
+    var message_view  = document.getElementById('message_view');
+    function drag(event) {
+        messages_pane.style.bottom = messages_pane.parentNode.offsetHeight - event.client.y + 'px';
+        message_view.style.top = event.client.y + 'px';
+    }
+    function drop(event) {
+        document.removeEvent('mousemove', drag);
+        document.removeEvent('mouseup', drop);
+    }
+    document.addEvents({mousemove: drag, mouseup: drop});
+    stop_propagation(event);
+}
+
 window.addEvent('load', function() {
-    $$('.activeborder').addEvent('mousedown', start_resize);
+    $$('#controlpanel .activeborder').addEvent('mousedown', start_controlpanel_resize);
+    $$('#messages_pane .activeborder').addEvent('mousedown', start_message_view_resize);
 });

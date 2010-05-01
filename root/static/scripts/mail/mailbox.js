@@ -45,6 +45,7 @@ window.addEvent('load', function() {
         $('help_message').style.display = 'none';
         $('message_view').style.top = '30%';
         $('content').addClass('message_display');
+        $('messages_pane').style.bottom = '70%';
         current_message = target.parentNode.parentNode;
         var myHTMLRequest = new Request.HTML({
             onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {

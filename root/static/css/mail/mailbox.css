@@ -83,11 +83,9 @@ ul#folder_tree a.hover {
     width: 100%;
     overflow: auto;
     margin-bottom: 2px;
-    border-bottom: 2px solid gray;
 }
 
 #content.message_display #messages_pane {
-    bottom: 70%;
 }
 
 #messages_pane tr.selected {
@@ -102,6 +100,16 @@ ul#folder_tree a.hover {
     right: 0;
     overflow: auto;
     padding: 0 0.5em;
+}
+
+#messages_pane .activeborder {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 4px;
+    cursor: n-resize;
+    background-color: lightgray;
 }
 
 #message_view .move_message {
