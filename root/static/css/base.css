@@ -74,7 +74,7 @@ td, th
         top: 0;
         height: 100%;
         width: 3px;
-        cursor: pointer;
+        cursor: w-resize;
         background-color: lightgray;
     }
 
