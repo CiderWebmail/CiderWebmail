@@ -1,0 +1,7 @@
+/blib
+/Makefile
+/Makefile.old
+/cover_db
+/inc
+/pm_to_blib
+/runtests
