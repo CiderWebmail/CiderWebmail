@@ -13,7 +13,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 9;
+plan tests => 10;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -33,13 +33,14 @@ $mech->submit_form_ok({
     },
 });
 
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my (@messages) = $mech->find_all_links( text_regex => qr{\Adeletemessage-$unix_time\z});
 
 ok((@messages == 1), 'messages found');
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
-$mech->get_ok( 'http://localhost' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 @messages = $mech->find_all_links( text_regex => qr{\Adeletemessage-$unix_time\z});
 
 ok((@messages == 0), 'messages deleted');

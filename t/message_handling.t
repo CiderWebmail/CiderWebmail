@@ -34,7 +34,7 @@ $mech->submit_form(
     },
 );
 
-$mech->get( 'http://localhost/mailbox/INBOX' );
+$mech->get( 'http://localhost/mailbox/INBOX?length=99999' );
 
 # Find all message links:
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
@@ -67,12 +67,12 @@ for my $link (@links) {
     check_email($mech, 'from', 1);
 }
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Amessagehandling-$unix_time\z});
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 @messages = $mech->find_all_links( text_regex => qr{\Amessagehandling-$unix_time\z});
 ok((@messages == 0), 'messages deleted');
 

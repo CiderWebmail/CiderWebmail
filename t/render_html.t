@@ -32,17 +32,19 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 8;
+plan tests => 9;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/' );
 $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} } });
+
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'htmltest-'.$unix_time });
 
-$mech->content_contains('<div class="html_message renderable"><p>This is an HTML testmail.', 'check content');
+$mech->content_contains('<div class="html_message renderable"><p><span style="font-weight: bold;">This is an HTML testmail.</span></p></div>', 'check content');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX/' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Ahtmltest-$unix_time\z});
 ok((@messages == 1), 'messages found');
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");

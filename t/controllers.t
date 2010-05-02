@@ -103,11 +103,11 @@ sub check_email {
     like($value, qr($empty$RE{Email}{Address}), $mech->uri . ": '$field' field contains an email address");
 }
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
 my @messages = $mech->find_all_links( text_regex => qr{\Atestmessage-$unix_time\z});
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
 $mech->content_lacks('>testmessage-'.$unix_time);
