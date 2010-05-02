@@ -34,7 +34,7 @@ sub process {
 my $tags = {
     table   => { allowed => 1, start_filter => \&_filter_tag_table  },
     tr      => { allowed => 1, attributes => { rowspan => { allowed => 1 } }},
-    td      => { allowed => 1, start_filter => \&_filter_tag_td, attributes => { colspan => { allowed => 1 } }},
+    td      => { allowed => 1, start_filter => \&_filter_tag_td, attributes => { colspan => { allowed => 1 } } },
     th      => { allowed => 1, attributes => { colspan => { allowed => 1 } }},
 
     p       => { allowed => 1 },
@@ -45,11 +45,11 @@ my $tags = {
 
     img     => { allowed => 1, start_filter => \&_filter_tag_img, end_filter => \&_filter_discard, attributes => { src => { allowed => 1}, alt => { allowed => 1, add => 1 } } },
 
-    font    => { allowed => 1, start_filter => \&_filter_tag_font, end_filter => \&_filter_tag_font_end, attributes => { color => { filter => \&_filter_font_color } } },
+    font    => { allowed => 1, start_filter => \&_filter_tag_font, end_filter => \&_filter_tag_font_end, attributes => { color => { allowed => 1 } } },
     b       => { allowed => 1, start_filter => \&_filter_tag_b, end_filter => \&_filter_tag_b_end },
 
     span    => { allowed => 1, },
-    center  => { allowed => 1, },
+    center  => { allowed => 1, start_filter => \&_filter_tag_center, end_filter => \&_filter_tag_center_end },
 
     a       => { allowed => 1, attributes => { href => { allowed => 1 } } },
 
@@ -131,7 +131,7 @@ sub _handle_attributes {
 
     while(my ($key, $value) = each(%{ $tags->{$o->{tagname}}->{attributes} })) {
         if (($value->{add} or 0) == 1) {
-            $o->{attr}->{$key} = 'none' unless(defined($o->{attr}->{$key}));
+            $o->{attr}->{$key} = '&nbsp;' unless(defined($o->{attr}->{$key}) && (length($o->{attr}->{$key}) > 0));
         }
     }
 
@@ -142,6 +142,7 @@ sub _handle_attributes {
         if (defined($tags->{$o->{tagname}}->{attributes}->{$key}->{filter})) {
             $output .= $tags->{$o->{tagname}}->{attributes}->{$key}->{filter}->($self, { tagname => $o->{tagname}, value => $value });
         } else {
+            next unless(length($value) > 0);
             $output .= " $key=\"$value\"" if (($tags->{$o->{tagname}}->{attributes}->{$key}->{allowed} or 0) == 1);
         }
     }
@@ -223,8 +224,27 @@ sub _filter_tag_font {
 
     my $output = "<span";
 
-    if ((lc($o->{attr}->{color}) or '') =~ m/([a-f]+|\#[\da-f]{3,6})/xm) {
+    if ((lc($o->{attr}->{color}) or '') =~ m/([a-f]+|\#[\da-f]{3,6})/ixm) {
         $o->{attr}->{style} .= "color: $1;";
+    }
+
+    if ((lc($o->{attr}->{face}) or '') =~ m/^([a-z\-]+)$/ixm) {
+        $o->{attr}->{style} .= "font-family: $1;";
+    }
+
+
+    #form to http://www.w3.org/TR/CSS2/fonts.html#font-styling
+    my $font_size_to_css = {
+        1 => 'xx-small',
+        2 => 'small',
+        3 => 'medium',
+        4 => 'large',
+        5 => 'x-large',
+        6 => 'xx-large',
+    };
+
+    if ((lc($o->{attr}->{size}) or '') =~ m/^([1-6]+)$/xm) {
+        $o->{attr}->{style} .= "font-size: ".$font_size_to_css->{$1}.";";
     }
 
     $output .= $self->_handle_attributes({ tagname => 'span', attr => $o->{attr} });
@@ -288,6 +308,18 @@ sub _filter_tag_td {
         $o->{attr}->{style} .= "width: $1px;";
     }
 
+    if ((lc($o->{attr}->{height}) or '') =~ m/^(\d{1,4})$/xm) {
+        $o->{attr}->{style} .= "height: $1px;";
+    }
+
+    if ((lc($o->{attr}->{align}) or '') =~ m/^(left|center|right)$/xm) {
+        $o->{attr}->{style} .= "text-align: $1;";
+    }
+
+    if ((lc($o->{attr}->{bgcolor}) or '') =~ m/([a-f]+|\#[\da-f]{3,6})/ixm) {
+        $o->{attr}->{style} .= "background-color: $1;";
+    }
+
     $output .= $self->_handle_attributes({ tagname => 'td', attr => $o->{attr} });
 
     $output .= ">";
@@ -319,19 +351,50 @@ sub _filter_tag_b_end {
     return "</span>";
 }
 
+=head2 _filter_tag_center
+
+html tag filter: processes center tag, converts to div tag
+
+=cut
+
+sub _filter_tag_center {
+    my ($self, $o) = @_;
+
+    return "<div style=\"text-align: center\">";
+}
+
+=head2 _filter_tag_center_end
+
+html tag filter: processes center end tag, converts to div tag
+
+=cut
+
+sub _filter_tag_center_end {
+    my ($self, $o) = @_;
+
+    return "</div>";
+}
+
+
 
 #filter for attributes
 my $default_styles = {
     font => { allowed => 1},
+    width => { allowed => 1},
+    height => { allowed => 1},
     text_decoration => { allowed => 1},
     color => { allowed => 1 },
+    'font-family' => { allowed => 1 },
+    'font-size' => { allowed => 1 },
+    'font-weight' => { allowed => 1 },
+    'background-color' => { allowed => 1 },
 };
 
 my $styles = {
     img => { %$default_styles, border => { allowed => 1} },
     span => { %$default_styles },
-    table => { %$default_styles, width => { allowed => 1 }, text_align => { allowed => 1 }, },
-    td => { %$default_styles, width => { allowed => 1} },
+    table => { %$default_styles, width => { allowed => 1 }, 'text-align' => { allowed => 1 }, },
+    td => { %$default_styles, width => { allowed => 1}, 'text-align' => { allowed => 1 }, },
     a => { %$default_styles },
 };
 
@@ -351,11 +414,19 @@ sub _filter_style {
 
     foreach(@css_attr) {
         my ($key, $value) = split(/:/xm, $_);
-        $key =~ s/[^a-z]//gixm;
-        $output .= "$key: $value;" if (defined($styles->{$o->{tagname}}->{$key}) && ($styles->{$o->{tagname}}->{$key}->{allowed} == 1));
+        next unless (defined($key) && (length($key) > 0));
+        next unless (defined($value) && (length($value) > 0));
+        $key =~ s/[^a-z\-]//gixm;
+        if (defined($styles->{$o->{tagname}}->{$key}) && ($styles->{$o->{tagname}}->{$key}->{allowed} == 1)) {
+            $output .= "$key: $value;" 
+        }
     }
 
-    return ' style="'.$output.'"';
+    if (length($output) > 0) {
+        return ' style="'.$output.'"';
+    } else {
+        return '';
+    }
 }
 
 1;
