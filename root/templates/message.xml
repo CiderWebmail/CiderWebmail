@@ -67,9 +67,11 @@
             </div>
             <div class="message_body">
                 <div class="body_part" tal:repeat="body_part message/renderable">
-                    <div tal:condition="body_part/renderable" tal:replace="structure body_part/render"></div>
-                    <div tal:condition="body_part/message" tal:define="message body_part/render" class="forwarded">
-                        <div metal:use-macro="#view_message" />
+                    <div tal:omit-tag="" tal:condition="false: body_part/message"><div tal:condition="true: body_part/renderable" tal:replace="structure body_part/render"/></div>
+                    <div tal:omit-tag="" tal:condition="true: body_part/message">
+                        <div tal:define="message body_part/render" class="forwarded">
+                            <div metal:use-macro="#view_message" />
+                        </div>
                     </div>
                 </div>
             </div>
