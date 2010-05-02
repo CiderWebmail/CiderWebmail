@@ -33,6 +33,7 @@ function start_controlpanel_resize(event) {
     function drop(event) {
         document.removeEvent('mousemove', drag);
         document.removeEvent('mouseup', drop);
+        Cookie.write('control_panel_width', event.client.x, {duration: 365});
     }
     document.addEvents({mousemove: drag, mouseup: drop});
     stop_propagation(event);
@@ -50,6 +51,7 @@ function start_message_view_resize(event) {
     function drop(event) {
         document.removeEvent('mousemove', drag);
         document.removeEvent('mouseup', drop);
+        Cookie.write($('content').hasClass('message_display') ? 'message_divider_message_display_top' : 'message_divider_top', event.client.y, {duration: 365});
     }
     document.addEvents({mousemove: drag, mouseup: drop});
     stop_propagation(event);
@@ -57,5 +59,19 @@ function start_message_view_resize(event) {
 
 window.addEvent('load', function() {
     $$('#controlpanel .activeborder').addEvent('mousedown', start_controlpanel_resize);
+
+    var control_panel_width = Cookie.read('control_panel_width')
+    if (control_panel_width) {
+        $('controlpanel').style.width = control_panel_width + 'px';
+        $('content').style.left = control_panel_width + 'px';
+    }
+
     $('message_divider').addEvent('mousedown', start_message_view_resize);
+
+    var message_divider_top = Cookie.read('message_divider_top');
+    if ($('messages_pane') && message_divider_top) {
+        $('messages_pane').style.bottom = $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px';
+        $('message_view').style.top     = message_divider_top + 'px';
+        $('message_divider').style.top  = message_divider_top + 'px';
+    }
 });
