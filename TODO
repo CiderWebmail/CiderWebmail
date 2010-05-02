@@ -4,7 +4,6 @@
 * On scroll message list loading via AJAX (50% done)
 * Calendar functions
 * IMAP IDLE support
-* Adjustable "frame" size
 * Composing HTML mails
 * *make it look shiny*
 * make it work without JavaScript
