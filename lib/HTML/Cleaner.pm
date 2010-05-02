@@ -54,6 +54,10 @@ my $tags = {
     a       => { allowed => 1, attributes => { href => { allowed => 1 } } },
 
     div     => { allowed => 1 },
+
+    li      => { allowed => 1 },
+    ul      => { allowed => 1 },
+    ol      => { allowed => 1 },
 };
 
 =head2 _start_handler
