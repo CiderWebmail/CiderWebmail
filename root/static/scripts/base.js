@@ -39,11 +39,13 @@ function start_controlpanel_resize(event) {
 }
 
 function start_message_view_resize(event) {
-    var messages_pane = document.getElementById('messages_pane');
-    var message_view  = document.getElementById('message_view');
+    var messages_pane   = document.getElementById('messages_pane');
+    var message_view    = document.getElementById('message_view');
+    var message_divider = document.getElementById('message_divider');
     function drag(event) {
         messages_pane.style.bottom = messages_pane.parentNode.offsetHeight - event.client.y + 'px';
         message_view.style.top = event.client.y + 'px';
+        message_divider.style.top = event.client.y + 'px';
     }
     function drop(event) {
         document.removeEvent('mousemove', drag);
@@ -55,5 +57,5 @@ function start_message_view_resize(event) {
 
 window.addEvent('load', function() {
     $$('#controlpanel .activeborder').addEvent('mousedown', start_controlpanel_resize);
-    $$('#messages_pane .activeborder').addEvent('mousedown', start_message_view_resize);
+    $('message_divider').addEvent('mousedown', start_message_view_resize);
 });

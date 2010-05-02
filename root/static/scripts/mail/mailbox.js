@@ -43,9 +43,12 @@ window.addEvent('load', function() {
         $('message_view').innerHTML = loading_message;
         $('loading_message').style.display = 'block';
         $('help_message').style.display = 'none';
-        $('message_view').style.top = '30%';
-        $('content').addClass('message_display');
-        $('messages_pane').style.bottom = '70%';
+        if (! $('content').hasClass('message_display')) {
+            $('message_view').style.top = '30%';
+            $('content').addClass('message_display');
+            $('messages_pane').style.bottom = '70%';
+            $('message_divider').style.top = '30%';
+        }
         current_message = target.parentNode.parentNode;
         var myHTMLRequest = new Request.HTML({
             onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {

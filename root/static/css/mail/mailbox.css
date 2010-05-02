@@ -82,7 +82,6 @@ ul#folder_tree a.hover {
     left: 0;
     width: 100%;
     overflow: auto;
-    margin-bottom: 2px;
 }
 
 #content.message_display #messages_pane {
@@ -100,12 +99,13 @@ ul#folder_tree a.hover {
     right: 0;
     overflow: auto;
     padding: 0 0.5em;
+    margin-top: 4px;
 }
 
-#messages_pane .activeborder {
+#message_divider {
     position: absolute;
     left: 0;
-    bottom: 0;
+    top: 70%;
     width: 100%;
     height: 4px;
     cursor: n-resize;
