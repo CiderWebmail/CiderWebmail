@@ -55,8 +55,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="activeborder"/>
             </div>
+            <div id="message_divider"/>
             <div id="message_view">
                 <p id="help_message" i18n:translate="">Drag a mail's icon to a folder name to move that mail to that folder.</p>
                 <p id="loading_message" i18n:translate="">Loading message</p>
