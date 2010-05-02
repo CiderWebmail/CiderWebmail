@@ -44,10 +44,11 @@ window.addEvent('load', function() {
         $('loading_message').style.display = 'block';
         $('help_message').style.display = 'none';
         if (! $('content').hasClass('message_display')) {
-            $('message_view').style.top = '30%';
+            var message_divider_top = Cookie.read('message_divider_message_display_top');
             $('content').addClass('message_display');
-            $('messages_pane').style.bottom = '70%';
-            $('message_divider').style.top = '30%';
+            $('messages_pane').style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
+            $('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
+            $('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
         }
         current_message = target.parentNode.parentNode;
         var myHTMLRequest = new Request.HTML({
