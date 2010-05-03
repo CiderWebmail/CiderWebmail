@@ -294,6 +294,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     $mail->attr("content-type"         => "text/plain");
     $mail->attr("content-type.charset" => 'UTF-8');
+    $mail->replace("x-mailer"             => "CiderWebmail ".$CiderWebmail::VERSION);
 
     if (my @attachments = $c->req->param('attachment')) {
         foreach ($c->req->upload('attachment')) {
