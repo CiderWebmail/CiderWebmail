@@ -22,7 +22,7 @@ before render => sub {
     my @parts = reverse($self->subparts);
 
     foreach(@parts) {
-        my $part = CiderWebmail::Part->new({ c => $self->c, entity => $_, uid => $self->uid, mailbox => $self->mailbox, path => defined $self->path, id => 0 })->handler;
+        my $part = CiderWebmail::Part->new({ c => $self->c, entity => $_, uid => $self->uid, parent_message => $self->parent_message, mailbox => $self->mailbox, path => defined $self->path, id => 0 })->handler;
         if ($part->renderable) {
             $self->chosen_alternative($part);
             last;
@@ -40,7 +40,9 @@ render a multipart/alternative
 sub render {
     my ($self) = @_;
 
-    return $self->chosen_alternative->render;
+    my $output = undef;
+    $output = $self->chosen_alternative->render if $self->chosen_alternative;
+    return ($output or '');
 }
 
 =head2 renderable()

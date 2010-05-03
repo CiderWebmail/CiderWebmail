@@ -33,7 +33,7 @@ $mech->submit_form_ok({
     },
 });
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?filter=searchmessage-'.$unix_time, 'search request successful' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999&filter=searchmessage-'.$unix_time, 'search request successful' );
 
 $mech->content_like( qr/link_\d+\">searchmessage-$unix_time/, 'searchmessage' );
 

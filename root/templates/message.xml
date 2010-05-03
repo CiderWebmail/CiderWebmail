@@ -4,6 +4,7 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="layout.xml#layout">
     i18n:domain="CiderWebmail"
     >
     <head>
@@ -27,13 +28,15 @@
                     </span>
                 </p>
                 <form class="move_message" tal:attributes="action uri_move" method="post">
-                    <label>
-                        <span i18n:translate="">Target folder:</span>
-                        <select name="target_folder">
-                            <option tal:repeat="folder target_folders" tal:attributes="value folder/id" tal:content="folder/name"/>
-                        </select>
-                    </label>
-                    <button type="submit" i18n:translate="">Move message</button>
+                    <fieldset>
+                        <label>
+                            <span i18n:translate="">Target folder:</span>
+                            <select name="target_folder">
+                                <option tal:repeat="folder target_folders" tal:content="folder/id"/>
+                            </select>
+                        </label>
+                        <button type="submit" i18n:translate="">Move message</button>
+                    </fieldset>
                 </form>
                 <div class="message_header">
                     <table>
@@ -64,9 +67,11 @@
             </div>
             <div class="message_body">
                 <div class="body_part" tal:repeat="body_part message/renderable">
-                    <div tal:condition="body_part/renderable" tal:replace="structure body_part/render"></div>
-                    <div tal:condition="body_part/message" tal:define="message body_part/render" class="forwarded">
-                        <div metal:use-macro="#view_message" />
+                    <div tal:omit-tag="" tal:condition="false: body_part/message"><div tal:condition="true: body_part/renderable" tal:replace="structure body_part/render"/></div>
+                    <div tal:omit-tag="" tal:condition="true: body_part/message">
+                        <div tal:define="message body_part/render" class="forwarded">
+                            <div metal:use-macro="#view_message" />
+                        </div>
                     </div>
                 </div>
             </div>

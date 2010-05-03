@@ -14,7 +14,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 21;
+plan tests => 22;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -36,6 +36,8 @@ $mech->submit_form_ok({
         attachment  => $attachment_file,
     },
 });
+
+$mech->get( 'http://localhost/mailbox/INBOX?length=99999' );
 
 my (@messages) = $mech->find_all_links( text_regex => qr{\Aattachment-$unix_time\z});
 
@@ -60,6 +62,7 @@ $mech->submit_form_ok({
     },
 }, 'forward message');
 
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @forw_messages = $mech->find_all_links( text_regex => qr{\Aattachmentforward-$unix_time\z});
 ok((@forw_messages == 1), 'messages found');
 
@@ -70,9 +73,9 @@ $mech->follow_link_ok({ text_regex => qr{testattachment.txt} }, 'Open Forwarded 
 ok(($mech->content =~ m/testattachment-content/), 'verify attachment content');
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
-$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->content_lacks('attachment-'.$unix_time);
 
 $mech->get_ok($forw_messages[0]->url.'/delete', "Delete message");
-$mech->get_ok( 'http://localhost/mailbox/INBOX' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->content_lacks('attachmentforward-'.$unix_time);

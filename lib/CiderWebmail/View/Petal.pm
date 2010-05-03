@@ -76,7 +76,10 @@ sub render_template {
     my $base_dir = ["$root/templates/parts"];
 
     my $template = Petal->new( base_dir => $base_dir, file => $o->{template});
-    return $template->process( $o->{stash} );
+    my $output = $template->process( $o->{stash} );
+    $output =~ s/[^\x01-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]//gxmo;
+    $output =~    s/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F]//gxmo;
+    return $output;
 }
 
 

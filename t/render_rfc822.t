@@ -13,7 +13,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 14;
+plan tests => 15;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -33,6 +33,7 @@ $mech->submit_form_ok({
     },
 });
 
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Arfc822test-$unix_time\z});
 $mech->get_ok($messages[0]->url.'/forward');
 
@@ -46,12 +47,12 @@ $mech->submit_form_ok({
     },
 });
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX/' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 @messages = $mech->find_all_links( text_regex => qr{\Arfc822forwarded-$unix_time\z});
 $mech->get_ok( $messages[0]->url );
 $mech->content_contains('<h1>rfc822test-'.$unix_time.'</h1>');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX/' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 @messages = $mech->find_all_links( text_regex => qr{\Arfc822(test|forwarded)-$unix_time\z});
 ok((@messages == 2), 'messages found');
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");

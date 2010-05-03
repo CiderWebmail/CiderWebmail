@@ -33,7 +33,7 @@ $mech->submit_form_ok({
     },
 });
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
 
 my @messages = $mech->find_all_links( text_regex => qr{\Aajaxmessage-$unix_time\z});
 
@@ -47,11 +47,11 @@ $mech->content_contains('<tr id="message_'.$message_id.'">', 'message is unread'
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id.'?layout=ajax', 'open message');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
 $mech->content_contains('<tr id="message_'.$message_id.'" class="seen">', 'message is read');
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
 
 $mech->content_lacks('ajaxmessage-'.$unix_time);
