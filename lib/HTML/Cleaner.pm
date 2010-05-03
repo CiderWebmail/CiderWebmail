@@ -290,6 +290,15 @@ sub _filter_tag_table {
         $o->{attr}->{style} .= " text-align: $1;";
     }
 
+    if ((lc($o->{attr}->{cellspacing}) or '') eq 0) {
+        $o->{attr}->{style} .= " border-collapse: collapse;";
+    }
+
+    if ((lc($o->{attr}->{cellpadding}) or '') =~ m/^(\d+px)$/xm) {
+        $o->{attr}->{style} .= " padding: $1;";
+    }
+
+
     $output .= $self->_handle_attributes({ tagname => 'table', attr => $o->{attr} });
 
     $output .= ">";
@@ -392,12 +401,13 @@ my $default_styles = {
     'font-size' => { allowed => 1 },
     'font-weight' => { allowed => 1 },
     'background-color' => { allowed => 1 },
+    display => { allowed => 1 },
 };
 
 my $styles = {
     img => { %$default_styles, border => { allowed => 1} },
     span => { %$default_styles },
-    table => { %$default_styles, width => { allowed => 1 }, 'text-align' => { allowed => 1 }, },
+    table => { %$default_styles, width => { allowed => 1 }, 'text-align' => { allowed => 1 }, padding => { allowed => 1 }, 'border-collapse' => { allowed => 1 }},
     td => { %$default_styles, width => { allowed => 1}, 'text-align' => { allowed => 1 }, },
     a => { %$default_styles },
 };
