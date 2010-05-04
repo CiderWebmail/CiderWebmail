@@ -77,3 +77,18 @@
     overflow: auto;
 }
 
+.attachment {
+    border: 1px grey solid;
+    float: left;
+    padding: 4px;
+    margin: 4px;
+}
+
+.attachment p {
+    margin: 0px;
+    padding: 0px;
+    font-size: 75%;
+    text-align: center;
+}
+
+

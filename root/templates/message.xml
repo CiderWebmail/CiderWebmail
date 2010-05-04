@@ -60,7 +60,10 @@
                     <pre class="all_headers" style="display: none;" tal:content="message/header_formatted">header</pre>
                     <div class="attachments" tal:condition="true:message/attachments">
                         <div class="attachment" tal:repeat="attachment message/attachments">
-                            <p><a tal:content="attachment/name" tal:attributes="href string:${uri_view_attachment}/${attachment/path}; title attachment/type" /></p>
+                            <a tal:attributes="href string:${uri_view_attachment}/${attachment/path}; title attachment/type">
+                                <p><img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}" /></p>
+                                <p tal:content="attachment/name" />
+                            </a>
                         </div>
                     </div>
                 </div>
