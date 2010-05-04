@@ -15,3 +15,5 @@
 * forward inline (optional)
 * display TO instead of FROM in Sent folder
 * display number of unread messages in <title>
+
+* display attachments (images, ...) inline
