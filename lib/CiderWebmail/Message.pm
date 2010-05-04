@@ -317,6 +317,8 @@ sub _process_body_part {
         foreach($part->subparts) {
             $self->_process_body_part({ renderable => $o->{renderable}, attachments => $o->{attachments}, all_parts => $o->{all_parts}, cid_to_part => $o->{cid_to_part}, entity => $_, id => $o->{id} });
         }
+    } else {
+        push(@{ $o->{attachments} }, $part);
     }
     
     push(@{ $o->{all_parts} }, $part);
