@@ -91,4 +91,21 @@
     text-align: center;
 }
 
+div.calendar table {
+    border: 1px black solid;
+    border-collapse: collapse;
+}
+
+div.calendar table th {
+    font-weight: bold;
+}
+
+div.calendar table tr {
+    border: 1px black solid;
+}
+
+div.calendar .heading {
+    background-color: #418bd4;
+    color: white;
+}
 

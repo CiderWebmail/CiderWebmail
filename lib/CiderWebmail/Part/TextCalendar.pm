@@ -5,6 +5,8 @@ use Moose;
 use Data::ICal;
 use DateTime::Format::ISO8601;
 
+use Text::Flowed;
+
 extends 'CiderWebmail::Part';
 
 =head2 render()
@@ -27,6 +29,10 @@ sub render {
         my $start = $entry->property('dtstart') || next;
         my $end = $entry->property('dtend') || next;
         my $summary = $entry->property('summary') || next;
+        my $description = ($entry->property('description') or '');
+
+        $description = Text::Flowed::reformat($description->[0]->value);
+        $description =~ s/\n/<br \/>/g;
        
         my $dt_start = $dt->parse_datetime($start->[0]->value);
         my $dt_end = $dt->parse_datetime($end->[0]->value);
@@ -34,7 +40,8 @@ sub render {
         push(@events, {
             start => join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")),
             end => join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")),
-            summary => $summary->[0]->value, }
+            summary => $summary->[0]->value, 
+            description => $description, }
         );
     }
 

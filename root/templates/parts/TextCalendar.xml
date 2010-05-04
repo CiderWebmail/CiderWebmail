@@ -1,5 +1,18 @@
 <div xmlns:tal="http://purl.org/petal/1.0/" class="calendar renderable" tal:repeat="data events">
-    <span i18n:translate="">Begin: </span> <span tal:content="data/start">start</span><br />
-    <span i18n:translate="">End: </span> <span tal:content="data/end">end</span><br />
-    <span i18n:translate="">Summary: </span> <span tal:content="data/summary">end</span><br />
+    <table>
+        <tr>
+            <th class="heading" colspan="2" tal:content="data/summary" />
+        </tr>
+        <tr>
+            <th>Begin</th>
+            <td tal:content="data/start" />
+        </tr>
+        <tr>
+            <th>End</th>
+            <td tal:content="data/end" />
+        </tr>
+        <tr tal:condition="data/description">
+            <td colspan="2" tal:content="structure data/description" />
+        </tr>
+    </table>
 </div>
