@@ -5,11 +5,11 @@
         </tr>
         <tr>
             <th>Begin</th>
-            <td tal:content="data/start" />
+            <td class="begin" tal:content="data/start" />
         </tr>
         <tr>
             <th>End</th>
-            <td tal:content="data/end" />
+            <td class="end" tal:content="data/end" />
         </tr>
         <tr tal:condition="data/description">
             <td colspan="2" tal:content="structure data/description" />
