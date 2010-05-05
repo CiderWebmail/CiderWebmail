@@ -4,6 +4,23 @@ html, body {
 
 .message_list {
     width: 100%;
+    table-layout: fixed;
+}
+
+.message_list th.icons {
+    width: 26px;
+}
+
+.message_list th.from {
+    width: 25%;
+}
+
+.message_list th.date {
+    width: 4em;
+}
+
+.message_list th.actions {
+    width: 15px;
 }
 
 .message_list tbody tr td {
@@ -12,6 +29,7 @@ html, body {
     border-width: 0px 0px 1px 0px;
     font-size: 0.8em;
     vertical-align: middle;
+    overflow: hidden;
 }
 
 .message_list tr th {
