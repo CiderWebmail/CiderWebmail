@@ -226,4 +226,20 @@ sub name {
     return ($self->entity->head->recommended_filename or "attachment (".$self->type.")");
 }
 
+=head2 is_empty()
+
+returns true if the part contains no data
+
+=cut
+
+sub is_empty {
+    my ($self) = @_;
+
+    if (($self->body or '') =~ /^\s*$/xms) {
+        return 1;
+    }
+
+    return;
+}
+
 1;
