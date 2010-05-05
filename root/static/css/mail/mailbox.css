@@ -138,23 +138,6 @@ ul#folder_tree a.hover {
     padding: 0;
 }
 
-#folder_headline {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    color: white;
-    margin: 0;
-    padding: 0 0.5em;
-    background-color: #418bd4;
-}
-
-#folder_headline h1 {
-    margin: 0px;
-    padding: 0px;
-}
-
-
 h1 {
     font-size: 140%;
 }

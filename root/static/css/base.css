@@ -85,7 +85,9 @@ td, th
 
 #content
     {position:absolute; top:0; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; overflow:auto;}
-#compose, #login { padding: 0 0.5em; }
+    #content h1
+        {margin: 0 0 0.5em 0; padding: 0 0.5em; background-color: #418bd4; color: white; font-size: 140%;}
+#compose form, #login form { padding: 0 0.5em; }
 
 #login label {
     display: block;
