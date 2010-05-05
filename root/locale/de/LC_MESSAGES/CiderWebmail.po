@@ -11,6 +11,9 @@ msgstr ""
 msgid "Attachment:"
 msgstr "Anhang:"
 
+msgid "Attachments"
+msgstr "Anhänge"
+
 msgid "Begin:"
 msgstr "Begin:"
 
@@ -108,6 +111,9 @@ msgstr "Suchen"
 
 msgid "Send"
 msgstr "Senden"
+
+msgid "Send and save"
+msgstr "Senden und speichern"
 
 msgid "Session ended"
 msgstr "Sitzung beendet"
