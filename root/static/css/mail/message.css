@@ -19,6 +19,10 @@
     border: 1px solid transparent;
 }
 
+.message_actions img {
+    vertical-align: bottom;
+}
+
 .message_actions a:hover {
     border-color: #418bd4;
 }
