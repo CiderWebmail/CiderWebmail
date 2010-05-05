@@ -29,10 +29,13 @@ sub render {
         my $start = $entry->property('dtstart') || next;
         my $end = $entry->property('dtend') || next;
         my $summary = $entry->property('summary') || next;
-        my $description = ($entry->property('description') or '');
 
-        $description = Text::Flowed::reformat($description->[0]->value);
-        $description =~ s/\n/<br \/>/g;
+        my $description;
+        if ($entry->property('description')) {
+            my $description = $entry->property('description');
+            $description = Text::Flowed::reformat( ($description->[0]->value or '') );
+            $description =~ s/\n/<br \/>/gxm;
+        }
        
         my $dt_start = $dt->parse_datetime($start->[0]->value);
         my $dt_end = $dt->parse_datetime($end->[0]->value);
