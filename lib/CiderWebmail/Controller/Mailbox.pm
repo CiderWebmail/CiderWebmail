@@ -37,8 +37,6 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     return;
 }
 
-my $local_timezone = (eval { DateTime::TimeZone->new(name => "local"); } or 'UTC');
-
 =head2 view
 
 =cut
@@ -87,7 +85,6 @@ sub view : Chained('setup') PathPart('') Args(0) {
         );
 
         foreach (@messages) {
-            $_->{head}->{date}->set_time_zone($c->config->{time_zone} or $local_timezone);
             $_->{head}->{subject} = $translation_service->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
 
             my $name;

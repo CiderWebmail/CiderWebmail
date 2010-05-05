@@ -13,6 +13,9 @@ use Mail::Address;
 use Text::Iconv;
 use Carp qw(croak confess);
 
+use Time::Piece;
+use Date::Parse;
+
 use CiderWebmail::Message;
 use CiderWebmail::Mailbox;
 use CiderWebmail::Util;
@@ -574,7 +577,7 @@ the following 'transformations' take place:
 
 =item * cc -> Mail::Address object
 
-=item * date -> DateTime object
+=item * date -> CiderWebmail::Date object
 
 =back
 
@@ -615,20 +618,9 @@ sub _transform_address {
 sub _transform_date {
     my ($self, $c, $o) = @_;
 
-    return '' unless defined $o->{data};
+    die("data not set") unless defined $o->{data};
 
-    #some mailers specify (CEST)... Format::Mail isn't happy about this
-    #TODO better solution
-    $o->{data} =~ s/\( [a-zA-Z]+ \) $//xm;
-
-    my $dt = DateTime::Format::Mail->new();
-    $dt->loose;
-
-    my $date = ($o->{data} and eval { $dt->parse_datetime($o->{data}) });
-    unless ($date) {
-        warn "$@ parsing $o->{data}" if ($c->debug and $@);
-        $date = DateTime->from_epoch(epoch => 0); # just return a DateTime object so we can continue
-    }
+    my $date = Time::Piece->new(Date::Parse::str2time $o->{data});
 
     return $date;
 }
