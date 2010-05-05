@@ -1,13 +1,30 @@
 label {
     display: block;
     clear: left;
+    text-align: right;
 }
 label span {
     float: left;
-    width: 7em;
+    text-align: left;
+    width: 14%;
+}
+label.text span {
+    float: none;
+    display: block;
+}
+input {
+    width: 85%;
 }
 
 textarea {
-    width: 50em;
+    width: 100%;
     height: 30em;
+}
+
+label.attachment, label.sent_folder {
+    text-align: left;
+}
+label.attachment span, label.sent_folder span, label.attachment input, label.sent_folder.input {
+    float: none;
+    width: auto;
 }

@@ -17,45 +17,51 @@
             <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
                 <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value string:${forward/uid}/${forward/path}"/>
                 <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/uid}/${in_reply_to/path}"/>
-                <label>
+                <label class="from">
                     <span i18n:translate="">From:</span>
                     <input name="from" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>
                     <input name="from" tal:condition="false: message/from"/>
                 </label>
-                <label>
+                <label class="to">
                     <span i18n:translate="">To:</span>
                     <input name="to" tal:condition="true: message/to" tal:attributes="value message/to"/>
                     <input name="to" tal:condition="false: message/to"/>
                 </label>
-                <label>
+                <label class="cc">
                     <span i18n:translate="">Cc:</span>
                     <input name="cc" tal:attributes="value message/cc"/>
                 </label>
-                <label>
+                <label class="subject">
                     <span i18n:translate="">Subject:</span>
                     <input name="subject" tal:attributes="value message/subject"/>
                 </label>
-                <label>
+                <label class="text">
                     <span i18n:translate="">Text:</span>
                     <textarea name="body" tal:content="message/body"/>
                 </label>
-                <p tal:condition="true: forward" class="forwarding">
-                    <span i18n:translate="" class="label">Forwarding</span>:
-                    <span tal:content="forward/subject" class="subject"/>
-                    (<span tal:condition="true: forward/from/0/name" tal:content="forward/from/0/name" class="address"/><span tal:condition="false: forward/from/0/name" tal:content="forward/from/0/address" class="address"/>, <span tal:condition="true: forward/date" tal:content="forward/date/strftime '%F %T'" class="date"/>)
-                </p>
-                <label>
-                    <span i18n:translate="">Attachment:</span>
-                    <input type="file" name="attachment"/>
-                    <a onclick="add_attachment(this)">[+]</a>
-                </label>
-                <label>
-                    <span i18n:translate="">Save message to:</span>
-                    <select name="sent_folder">
-                        <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
-                    </select>
-                </label>
-                <button name="send" type="submit" i18n:translate="">Send</button>
+                <fieldset>
+                    <p tal:condition="true: forward" class="forwarding">
+                        <span i18n:translate="" class="label">Forwarding</span>:
+                        <span tal:content="forward/subject" class="subject"/>
+                        (<span tal:condition="true: forward/from/0/name" tal:content="forward/from/0/name" class="address"/><span tal:condition="false: forward/from/0/name" tal:content="forward/from/0/address" class="address"/>, <span tal:condition="true: forward/date" tal:content="forward/date/strftime '%F %T'" class="date"/>)
+                    </p>
+                    <legend i18n:translate="">Attachments</legend>
+                    <label class="attachment">
+                        <span i18n:translate="">Attachment:</span>
+                        <input type="file" name="attachment"/>
+                        <a onclick="add_attachment(this)">[+]</a>
+                    </label>
+                </fieldset>
+                <fieldset>
+                    <legend i18n:translate="">Send and save</legend>
+                    <label class="sent_folder">
+                        <span i18n:translate="">Save message to:</span>
+                        <select name="sent_folder">
+                            <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
+                        </select>
+                    </label>
+                    <button name="send" type="submit" i18n:translate="">Send</button>
+                </fieldset>
             </form>
         </div>
     </body>
