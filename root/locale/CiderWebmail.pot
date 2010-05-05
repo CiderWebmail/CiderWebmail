@@ -1,6 +1,9 @@
 msgid "Attachment:"
 msgstr "Attachment:"
 
+msgid "Attachments"
+msgstr "Attachments"
+
 msgid "Begin:"
 msgstr "Begin:"
 
@@ -97,6 +100,9 @@ msgstr "Search"
 msgid "Send"
 msgstr "Send"
 
+msgid "Send and save"
+msgstr "Send and save"
+
 msgid "Session ended"
 msgstr "Session ended"
 
@@ -132,4 +138,3 @@ msgstr "Welcome to CiderWebmail"
 
 msgid "messages"
 msgstr "messages"
-
