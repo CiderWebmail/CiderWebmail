@@ -82,13 +82,17 @@
     float: left;
     padding: 4px;
     margin: 4px;
+    text-align: center;
 }
 
-.attachment p {
+.attachment a {
+    text-decoration: none;
+}
+
+.attachment a span {
     margin: 0px;
     padding: 0px;
     font-size: 75%;
-    text-align: center;
 }
 
 div.calendar table {

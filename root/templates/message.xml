@@ -61,8 +61,8 @@
                     <div class="attachments" tal:condition="true:message/attachments">
                         <div class="attachment" tal:repeat="attachment message/attachments">
                             <a tal:attributes="href string:${uri_view_attachment}/${attachment/path}; title attachment/type">
-                                <p><img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}" /></p>
-                                <p tal:content="attachment/name" />
+                                    <img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}; alt attachment/type" /><br />
+                                    <span tal:content="attachment/name" />
                             </a>
                         </div>
                     </div>
