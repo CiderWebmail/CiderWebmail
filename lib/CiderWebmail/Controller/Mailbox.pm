@@ -47,13 +47,14 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
-    my $sort = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
-    $settings->set_column(sort_order => $sort);
+    my $full_sort = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
+    my $sort = $full_sort;
+    $settings->set_column(sort_order => $full_sort);
     $settings->update_or_insert();
 
     my $filter = $c->req->param('filter');
 
-    my @uids = $mailbox->uids({ sort => [ $sort ], filter => $filter });
+    my @uids = $mailbox->uids({ sort => [ $full_sort ], filter => $filter });
 
     my $reverse = $sort =~ s/\Areverse\W+//xm;
 
@@ -128,8 +129,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
         template        => 'mailbox.xml',
         groups          => \@groups,
         filter          => $filter,
-        sort            => scalar $c->req->param('sort'),
-        "sort_$sort"    => 1,
+        sort            => $full_sort,
+        "sort_$sort"    => 'sorted',
+        reverse         => $reverse ? 'reverse' : undef,
         (map {
             $sort_uri->query_param(sort => ($_ eq $sort and not $reverse) ? "reverse $_" : $_);
             ("uri_sorted_$_" => $sort_uri->as_string)

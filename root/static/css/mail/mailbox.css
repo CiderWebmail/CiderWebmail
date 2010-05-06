@@ -78,6 +78,15 @@ ul#folder_tree a.hover {
     white-space: nowrap;
 }
 
+.message_list th.sorted a {
+    background: url(../../images/sort_up.png) no-repeat right center;
+    padding-right: 9px;
+}
+
+.message_list th.sorted.reverse a {
+    background-image: url(../../images/sort_down.png);
+}
+
 #messages_pane {
     position: absolute;
     top: 2.5em;
