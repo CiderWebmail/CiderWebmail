@@ -307,7 +307,7 @@ sub _process_body_part {
 
     my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, parent_message => $self, id => $id, path => (defined $self->path ? $self->path."/" : '').$id })->handler;
 
-    if ($part->attachment) {
+    if ($part->attachment and not $part->is_empty) {
         push(@{ $o->{attachments} }, $part);
     }
     elsif ($part->renderable or $part->message) {
@@ -321,7 +321,7 @@ sub _process_body_part {
     elsif (!$part->is_empty) {
         push(@{ $o->{attachments} }, $part);
     }
-    
+
     push(@{ $o->{all_parts} }, $part);
 
     if($part->cid) {
