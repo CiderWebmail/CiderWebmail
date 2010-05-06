@@ -339,7 +339,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
         }
     }
 
-    if ($c->config->{send}->{method} eq 'smtp') {
+    if (($c->config->{send}->{method} or '') eq 'smtp') {
         die 'smtp host not set' unless defined $c->config->{send}->{host};
         $mail->send('smtp', $c->config->{send}->{host}) or die 'unable to send message';
     }
