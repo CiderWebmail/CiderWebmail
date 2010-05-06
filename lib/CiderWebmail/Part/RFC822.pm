@@ -39,4 +39,14 @@ sub message {
     return 1;
 }
 
+=head2 attachment()
+
+return false even if Content-Disposition is set to attachment.
+
+=cut
+
+sub attachment {
+    return 0;
+}
+
 1;

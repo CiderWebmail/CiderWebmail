@@ -18,9 +18,9 @@ my $uname = getpwuid $UID;
 my $mech = Test::WWW::Mechanize::Catalyst->new;
 
 $mech->get( 'http://localhost/' );
-$mech->submit_form(with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} }); #FIXME should be a test, too, but we don't know the test plan yet...
+$mech->submit_form(with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} });
 
-$mech->get('http://localhost/mailbox/INBOX/compose');
+$mech->get_ok('http://localhost/mailbox/INBOX/compose');
 
 my $unix_time = time();
 
@@ -40,7 +40,6 @@ $mech->get( 'http://localhost/mailbox/INBOX?length=99999' );
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
 
 my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
-plan tests => (9 * @links) + 4; #+ the number of tests after the for loop
 
 for my $link (@links) {
     $mech->get_ok($link->url);
@@ -65,6 +64,13 @@ for my $link (@links) {
 
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
+
+    $mech->back;
+
+    my @attachments = $mech->find_all_links(url_regex => qr{/attachment/\d+});
+    foreach(@attachments) {
+        $mech->get_ok($_->url, 'open attachment');
+    }
 }
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
@@ -83,3 +89,5 @@ sub check_email {
     $empty = $empty ? '^$|' :  '';
     like($value, qr($empty$RE{Email}{Address}), $mech->uri . ": '$field' field contains an email address");
 }
+
+done_testing;
