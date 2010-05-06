@@ -71,7 +71,7 @@ window.addEvent('load', function() {
         }
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
             var uid = target.id.replace('delete_', '');
-            new Request({url: target.parentNode.href, onSuccess: update_foldertree}).send();
+            new Request({url: target.parentNode.href, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
             var group = target.parentNode.parentNode.parentNode.parentNode;
             group.removeChild(target.parentNode.parentNode.parentNode);
             if (group.childNodes.length == 1)
@@ -212,7 +212,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
             selected.each(function (message) {
                 var uid = message.id.replace('message_', '');
                 var href = location.href.replace(/\/?(\?.*)?$/, '');
-                new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree}).send();
+                new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
 
                 var tbody = message.parentNode
                 tbody.removeChild(message);
