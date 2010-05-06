@@ -131,7 +131,7 @@ window.addEvent('load', function() {
             }
         }, false);
 
-    var length = 250;
+    var length = 100;
     fetch_new_rows(length, length);
 });
 
