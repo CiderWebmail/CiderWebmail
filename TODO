@@ -20,3 +20,5 @@
 
 * Address book
 * allow to copy the address from message view (To/From address is only shown on mouseover)
+
+* a way to get 'usefull' error messages to the user (invalid email address etc)
