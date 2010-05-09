@@ -5,8 +5,7 @@ attachment.png and message*.png are taken from the KDE 4 Oxygen icon theme and
 are covered by LGPL version 2.1 or later
 http://www.gnu.org/licenses/lgpl-2.1.txt
 
-mimeicons/* are taken from Apache and covered by the Apache License, Version 2.0
-http://www.apache.org/licenses/LICENSE-2.0
+mimeicons/* are taken from Apache and are in the Public Domain (see mimicons/README).
 
 Terms as Perl itself:
 
