@@ -28,12 +28,12 @@
                 </form>
             </div>
             <div id="messages_pane">
-                <table id="message_list" class="message_list">
+                <table id="message_list" tal:attributes="class string:message_list">
                     <tr>
                         <th class="icons"></th>
-                        <th class="from"><a tal:attributes="href uri_sorted_from" i18n:translate="">From</a></th>
-                        <th class="subject"><a tal:attributes="href uri_sorted_subject" i18n:translate="">Subject</a></th>
-                        <th class="date"><a tal:attributes="href uri_sorted_date" i18n:translate="">Date</a></th>
+                        <th tal:attributes="class string:from ${sort_from} ${reverse}"><a tal:attributes="href uri_sorted_from" i18n:translate="">From</a></th>
+                        <th tal:attributes="class string:subject ${sort_subject} ${reverse}"><a tal:attributes="href uri_sorted_subject" i18n:translate="">Subject</a></th>
+                        <th tal:attributes="class string:date ${sort_date} ${reverse}"><a tal:attributes="href uri_sorted_date" i18n:translate="">Date</a></th>
                         <th class="actions"></th>
                     </tr>
                     <tbody tal:repeat="group groups">

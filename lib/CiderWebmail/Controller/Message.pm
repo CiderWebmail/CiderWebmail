@@ -122,7 +122,9 @@ sub delete : Chained('setup') Args(0) {
         $c->stash->{message}->delete();
     }
     
-    return CiderWebmail::Util::send_foldertree_update($c); # update folder display
+    return ($c->req->header('X-Request') or '') eq 'AJAX'
+        ? CiderWebmail::Util::send_foldertree_update($c) # update folder display
+        : $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
 }
 
 =head2 move
@@ -137,7 +139,9 @@ sub move : Chained('setup') Args(0) {
 
     $c->stash->{message}->move({target_folder => $target_folder});
 
-    return CiderWebmail::Util::send_foldertree_update($c); # update folder display
+    return ($c->req->header('X-Request') or '') eq 'AJAX'
+        ? CiderWebmail::Util::send_foldertree_update($c) # update folder display
+        : $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
 }
 
 =head2 compose
@@ -335,7 +339,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
         }
     }
 
-    if ($c->config->{send}->{method} eq 'smtp') {
+    if (($c->config->{send}->{method} or '') eq 'smtp') {
         die 'smtp host not set' unless defined $c->config->{send}->{host};
         $mail->send('smtp', $c->config->{send}->{host}) or die 'unable to send message';
     }

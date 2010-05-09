@@ -13,7 +13,7 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 17;
+plan tests => 18;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -48,9 +48,10 @@ $mech->submit_form_ok({
 
 $mech->get_ok($messages[0]->url.'/move?target_folder=testfolder-'.$unix_time, "Move Message");
 
-@messages = $mech->find_all_links( text_regex => qr{\Amovemessage-$unix_time\z});
-
+$mech->title_like(qr/INBOX/, 'got a folder view');
 $mech->get_ok('http://localhost/mailbox/INBOX?length=99999');
+
+@messages = $mech->find_all_links( text_regex => qr{\Amovemessage-$unix_time\z});
 
 ok((@messages == 0), 'message gone from source folder');
 

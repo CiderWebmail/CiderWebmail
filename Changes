@@ -1,3 +1,14 @@
+1.03 XXX
+	- We have a logo! Thanks to Andreas Marschke
+	- Fixed missing folder tree on compose message
+	- Completely reworked MIME handling. Should render everything possible.
+	- Massive improvement of rendering HTML mails.
+	- Huge speedup of message list display
+	- Much improved design courtesy of kmail developers
+	- Navigation column and message list are resizable and retain those sizes
+	- Option to send via SMTP instead of sendmail
+	- List/view/move/delete message again works with disabled JavaScript.
+
 1.02 2010-03-16 17:00:00
 	Bugfix release
 	- Increased test suite coverage to 85%
