@@ -17,3 +17,6 @@
 * display number of unread messages in <title>
 
 * display attachments (images, ...) inline
+
+* Address book
+* allow to copy the address from message view (To/From address is only shown on mouseover)
