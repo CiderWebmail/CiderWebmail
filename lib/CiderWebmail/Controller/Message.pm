@@ -7,6 +7,7 @@ use parent 'Catalyst::Controller';
 use CiderWebmail::Message;
 use MIME::Lite;
 use MIME::Words qw(encode_mimeword);
+use Email::Valid;
 use Clone qw(clone);
 use List::Util qw(first);
 use List::MoreUtils qw(all);
@@ -154,6 +155,10 @@ sub compose : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
     $c->stash->{message} ||= {};
+
+    if ($c->req->param('to') && Email::Valid->address($c->req->param('to'))) {
+        $c->stash->{message}{to} = $c->req->param('to');
+    }
 
     CiderWebmail::Util::add_foldertree_to_stash($c);
 

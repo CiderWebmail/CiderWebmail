@@ -43,7 +43,7 @@ my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
 
 for my $link (@links) {
     $mech->get_ok($link->url);
-    $mech->follow_link_ok({ url_regex => qr{/reply/sender/?\z} }, "replying");
+    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/sender/?\z} }, "replying");
 
     # check if address fields are filled like:
     # <input value="johann.aglas@atikon.com" name="to">
@@ -54,22 +54,29 @@ for my $link (@links) {
 
     $mech->back;
 
-    $mech->follow_link_ok({ url_regex => qr{/forward/?\z} }, "forwarding");
+    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/forward/?\z} }, "forwarding");
 
     check_email($mech, 'from', 1);
 
     $mech->back;
 
-    $mech->follow_link_ok({ url_regex => qr{/reply/all/?\z} }, "reply to all");
+    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/all/?\z} }, "reply to all");
 
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
 
     $mech->back;
 
-    my @attachments = $mech->find_all_links(url_regex => qr{/attachment/\d+});
+    my @attachments = $mech->find_all_links(url_regex => qr{http://localhost/.*/attachment/\d+});
     foreach(@attachments) {
         $mech->get_ok($_->url, 'open attachment');
+    }
+
+    my @sendto_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/compose/?\?to=[a-z]});
+    foreach(@sendto_links) {
+        $mech->get_ok($_->url, 'sendto');
+        check_email($mech, 'from');
+        check_email($mech, 'to', 1);
     }
 }
 

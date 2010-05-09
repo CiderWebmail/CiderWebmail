@@ -42,15 +42,15 @@
                     <table>
                         <tr tal:condition="true: message/from">
                             <th i18n:translate="">From:</th>
-                            <td><span tal:repeat="address message/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span></td>
+                            <td><a class="from_address" tal:repeat="address message/from" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a></td>
                         </tr>
                         <tr tal:condition="true: message/to">
                             <th i18n:translate="">To:</th>
-                            <td><span tal:repeat="address message/to" tal:attributes="title address/address"><span tal:content="if: address/name then: address/name else: address/address">to</span><span tal:omit-tag="" tal:condition="false: repeat/end">, </span></span></td>
+                            <td><a class="to_address" tal:repeat="address message/to" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a></td>
                         </tr>
                         <tr tal:condition="true:message/cc">
                             <th i18n:translate="">Cc:</th>
-                            <td><span tal:repeat="address message/cc" tal:attributes="title address/address"><span tal:content="if: address/name then: address/name else: address/address">to</span><span tal:omit-tag="" tal:condition="false: repeat/end">, </span></span></td>
+                            <td><a class="cc_address" tal:repeat="address message/cc" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a></td>
                         </tr>
                         <tr>
                             <th i18n:translate="">Date:</th>
