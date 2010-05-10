@@ -23,7 +23,7 @@
     <body>
         <div id="controlpanel">
             <div id="logo">
-                <a tal:attributes="href uri_root"><img tal:attributes="src string:${uri_static}/images/logo.png" alt="CiderWebmail" title="CiderWebmail"/></a>
+                <a tal:attributes="href uri_root">CiderWebmail</a>
             </div>
             <div id="mailnavigation" tal:condition="true: folder_tree">
                 <ul class="actions">
