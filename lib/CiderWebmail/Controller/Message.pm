@@ -73,8 +73,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
 =cut
 
 sub attachment : Chained('setup') Args {
-    my ( $self, $c, @path ) = @_;
+    my ( $self, $c, $path_string ) = @_;
 
+    my @path = split(/[^\d]/xm, ($path_string or ''));
     return $c->res->body('invalid attachment path') unless all { /\A \d+ \z/xm } @path;
 
     my $mailbox = $c->stash->{folder};
@@ -198,10 +199,11 @@ Reply to a message suggesting receiver, subject and message text
 =cut
 
 sub reply : Chained('setup') Args() {
-    my ( $self, $c, $who, @path ) = @_;
+    my ( $self, $c, $who, $path_string ) = @_;
     my $mailbox = $c->stash->{folder};
     my $message = $c->stash->{message};
 
+    my @path = split(/[^\d]/xm, ($path_string or ''));
     $message = $message->get_embedded_message($c, @path);
     return $c->res->body('message not found') unless $message;
 

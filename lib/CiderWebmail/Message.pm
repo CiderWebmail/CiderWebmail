@@ -305,7 +305,7 @@ sub _process_body_part {
 
     my $id = ${ $o->{id} };
 
-    my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, parent_message => $self, id => $id, path => (defined $self->path ? $self->path."/" : '').$id })->handler;
+    my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, parent_message => $self, id => $id, path => (defined $self->path ? $self->path."_" : '').$id })->handler;
 
     if ($part->attachment and $part->has_body) {
         push(@{ $o->{attachments} }, $part);
