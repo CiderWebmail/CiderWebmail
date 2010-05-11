@@ -60,7 +60,7 @@ sub uids {
 
     return $o->{filter}
         ? $self->c->model('IMAPClient')->simple_search($self->c, { mailbox => $self->mailbox, searchfor => $o->{filter}, sort => $o->{sort} })
-        : $self->c->model('IMAPClient')->get_folder_uids($self->c, { mailbox => $self->mailbox, sort => $o->{sort} });
+        : $self->c->model('IMAPClient')->get_folder_uids($self->c, { mailbox => $self->mailbox, sort => $o->{sort}, range => $o->{range} });
 }
 
 =head1 AUTHORS

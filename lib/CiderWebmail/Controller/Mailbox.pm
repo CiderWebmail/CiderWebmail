@@ -54,7 +54,13 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my $filter = $c->req->param('filter');
 
-    my @uids = $mailbox->uids({ sort => [ $full_sort ], filter => $filter });
+    my $range;
+    if ($c->req->param('after_uid')) {
+        die unless $c->req->param('after_uid') =~ m/\A\d+\Z/mx;
+        $range = $c->req->param('after_uid').":*";
+    }
+
+    my @uids = $mailbox->uids({ sort => [ $full_sort ], filter => $filter, range => $range });
 
     my $reverse = $sort =~ s/\Areverse\W+//xm;
 
@@ -68,7 +74,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
     @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
     CiderWebmail::Util::add_foldertree_to_stash($c) unless $start; # $start is only > 0 for AJAX requests loading more messages. No need for a foldertree in that case.
-
+    
     if (@uids) {
         my %messages = map { ($_->{uid} => {
                     %{ $_ },
@@ -86,6 +92,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
         );
 
         foreach (@messages) {
+            #a range of 123:* *always* returns the laster message, if no messages are after UID123 the message with UID123 is returned, ignore it here
+            next if ($c->req->param('after_uid') and ($_->{uid} == $c->req->param('after_uid')));
+
             $_->{head}->{subject} = $translation_service->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
 
             my $name;
