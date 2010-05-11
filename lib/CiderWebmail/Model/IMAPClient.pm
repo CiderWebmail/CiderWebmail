@@ -181,9 +181,10 @@ sub check_sort {
     return;
 }
 
-=head2 get_folder_uids($c, { mailbox => $mailbox })
+=head2 get_folder_uids($c, { mailbox => $mailbox, sort => $sort, range => $range })
 
 Returns a MessageSet object representing all UIDs in a mailbox
+The range option accepts a range of UIDs (for example 1:100 or 1:*), if you specify a range containing '*' the last (highest UID) message will always be returned.
 
 =cut
 
@@ -193,6 +194,14 @@ sub get_folder_uids {
     die unless $o->{mailbox};
     die unless $o->{sort};
 
+    my @search;
+    if ($o->{range}) {
+        die unless ($o->{range} =~ m/\A\d+:(\d+|\*)\Z/mx);
+        @search = ( 'UID', $o->{range} );
+    } else {
+        @search = ( 'ALL' );
+    }
+
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     foreach (@{ $o->{sort} }) {
@@ -200,8 +209,9 @@ sub get_folder_uids {
     }
 
     #TODO empty result
-    my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
-    return $c->stash->{imapclient}->sort(@sort);
+    my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8' );
+
+    return $c->stash->{imapclient}->sort(@sort, @search);
 }
 
 =head2 get_headers_hash($c, { uids => [qw/ 1 .. 10 /], sort => [qw/ date /], headers => [qw/ date subject /], mailbox => 'INBOX' })
