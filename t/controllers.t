@@ -25,7 +25,7 @@ MIME::Lite->send(sub => sub {
     };
 });
 
-plan tests => 24;
+plan tests => 27;
 
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
@@ -104,10 +104,13 @@ sub check_email {
 }
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
+my @messages = $mech->find_all_links( text_regex => qr{\A((Re|Fwd): )?testmessage-$unix_time\z});
 
-my @messages = $mech->find_all_links( text_regex => qr{\Atestmessage-$unix_time\z});
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+foreach(@messages) {
+    $mech->get_ok($_->url.'/delete', "Delete message");
+}
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
-$mech->content_lacks('>testmessage-'.$unix_time);
+$mech->content_lacks('>Fwd: testmessage-'.$unix_time);
+$mech->content_lacks('>Re: testmessage-'.$unix_time);
