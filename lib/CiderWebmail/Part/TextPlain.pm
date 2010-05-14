@@ -22,9 +22,8 @@ sub render {
     carp('no part set') unless defined $self->body;
 
     my $content = $self->body;
-    $content =~ s/$RE{URI}{-keep}/<a href="$1">$1<\/a>/xmg;
-
     HTML::Entities::encode_entities($content);
+    $content =~ s/$RE{URI}{-keep}/<a href="$1">$1<\/a>/xmg;
     
     return $self->c->view->render_template({ c => $self->c, template => 'TextPlain.xml', stash => { part_content => $content } });
 }
