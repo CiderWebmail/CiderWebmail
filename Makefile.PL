@@ -36,6 +36,7 @@ requires 'MIME::Words';
 requires 'Email::Simple';
 requires 'Email::Address';
 requires 'Regexp::Common::Email::Address';
+requires 'Regexp::Common::URI';
 
 requires 'Text::Iconv';
 requires 'Text::Flowed';

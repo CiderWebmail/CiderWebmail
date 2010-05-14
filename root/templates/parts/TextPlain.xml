@@ -1,1 +1,1 @@
-<pre xmlns:tal="http://purl.org/petal/1.0/" tal:content="part_content" class="renderable">Text Content</pre>
+<div xmlns:tal="http://purl.org/petal/1.0/" tal:content="structure part_content" class="renderable monospace">Text Content</div>

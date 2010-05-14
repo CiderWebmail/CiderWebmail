@@ -117,3 +117,6 @@ div.calendar .heading {
     color: white;
 }
 
+.monospace {
+    font-family: monospace;
+}
