@@ -4,6 +4,8 @@ use Moose;
 
 use HTML::Cleaner;
 
+use Carp qw/ croak /;
+
 extends 'CiderWebmail::Part';
 
 =head2 render()
@@ -15,7 +17,7 @@ renders a text/html body part.
 sub render {
     my ($self) = @_;
 
-    die 'no part set' unless defined $self->body;
+    carp('no part set') unless defined $self->body;
 
     my $cleaner = HTML::Cleaner->new();
 

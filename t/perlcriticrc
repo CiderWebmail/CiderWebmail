@@ -65,7 +65,7 @@ severity   = 3
 severity   = 4
 
 [Perl::Critic::Policy::CodeLayout::RequireTidyCode]
-severity   = 4
+severity   = 3
 
 [Perl::Critic::Policy::CodeLayout::RequireTrailingCommas]
 severity   = 4

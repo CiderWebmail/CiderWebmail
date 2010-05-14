@@ -7,6 +7,8 @@ use DateTime::Format::ISO8601;
 
 use Text::Flowed;
 
+use Carp qw/ croak /;
+
 extends 'CiderWebmail::Part';
 
 =head2 render()
@@ -18,7 +20,7 @@ Render a text/calendar body part.
 sub render {
     my ($self) = @_;
 
-    die 'no part set' unless defined $self->body;
+    croak('no part set') unless defined $self->body;
 
     my $cal = Data::ICal->new(data => $self->body);
     my $dt = DateTime::Format::ISO8601->new;

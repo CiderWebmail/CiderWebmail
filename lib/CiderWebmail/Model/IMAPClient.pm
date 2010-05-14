@@ -11,7 +11,7 @@ use Email::Simple;
 use Text::Flowed;
 use Mail::Address;
 use Text::Iconv;
-use Carp qw(croak confess);
+use Carp qw(carp croak confess);
 
 use Time::Piece;
 use Date::Parse;
@@ -47,8 +47,7 @@ sub _die_on_error {
     if ( $c->stash->{imapclient}->LastError ) {
         
         my $error = $c->stash->{imapclient}->LastError;
-        warn $error if $error;
-        croak $error if $error;
+        confess $error if $error;
     }
 
     return;
@@ -129,7 +128,7 @@ selects a folder
 sub select {
     my ($self, $c, $o) = @_;
 
-    die 'No mailbox to select' unless $o->{mailbox};
+    croak 'No mailbox to select' unless $o->{mailbox};
 
     unless ( $c->stash->{imapclient}->Folder and $c->stash->{imapclient}->Folder eq $o->{mailbox} ) {
         $c->stash->{imapclient}->select( $o->{mailbox} );
@@ -148,7 +147,7 @@ returnes the number of messages in a mailbox
 sub message_count {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    croak unless $o->{mailbox};
 
     return $c->stash->{imapclient}->message_count($o->{mailbox});
 }
@@ -162,7 +161,7 @@ returnes the number of unseen messages in a mailbox
 sub unseen_count {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    croak unless $o->{mailbox};
 
     return $c->stash->{imapclient}->unseen_count($o->{mailbox});
 }
@@ -176,7 +175,7 @@ Checks if the given sort criteria is valid.
 sub check_sort {
     my ($sort) = @_;
 
-    die "illegal char in sort: $_" if $_ !~ /\A (?:reverse \s+)? (arrival | cc | date | from | size | subject | to) \z/ixm;
+    croak ("illegal char in sort: $_") if $_ !~ /\A (?:reverse \s+)? (arrival | cc | date | from | size | subject | to) \z/ixm;
 
     return;
 }
@@ -191,12 +190,12 @@ The range option accepts a range of UIDs (for example 1:100 or 1:*), if you spec
 sub get_folder_uids {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{sort};
+    croak unless $o->{mailbox};
+    croak unless $o->{sort};
 
     my @search;
     if ($o->{range}) {
-        die unless ($o->{range} =~ m/\A\d+:(\d+|\*)\Z/mx);
+        croak unless ($o->{range} =~ m/\A\d+:(\d+|\*)\Z/mx);
         @search = ( 'UID', $o->{range} );
     } else {
         @search = ( 'ALL' );
@@ -233,11 +232,11 @@ returnes a array of hashes for messages in a mailbox
 =cut
 
 #TODO update headercache
-sub get_headers_hash() {
+sub get_headers_hash {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{headers};
+    croak unless $o->{mailbox};
+    croak unless $o->{headers};
 
     my $uids;           #uids we will fetch, MessageSet object!
     my @messages;       #messages wo got back, contains 'transformed' headers
@@ -248,11 +247,11 @@ sub get_headers_hash() {
     $self->select($c, { mailbox => $o->{mailbox} } );
     
     if ($o->{uids}) {
-        die "sorting a list of UIDs is not implemented yet, you have to specify uids OR sort" if $o->{sort};
-        die "uids needs to be an arrayref" unless ( ref($o->{uids}) eq "ARRAY" );
+        croak("sorting a list of UIDs is not implemented yet, you have to specify uids OR sort") if $o->{sort};
+        croak("uids needs to be an arrayref") unless ( ref($o->{uids}) eq "ARRAY" );
 
         foreach (@{ $o->{uids} }) {
-            die "illegal char in uid $_" if /\D/xm;
+            croak("illegal char in uid $_") if /\D/xm;
         }
 
         $uids = Mail::IMAPClient::MessageSet->new($o->{uids});
@@ -264,8 +263,8 @@ sub get_headers_hash() {
     }
 
     if ($o->{sort}) {
-        die "sorting a list of UIDs is not implemented yet, you have to specify uids OR sort" if $o->{uids};
-        die "sort needs to be an arrayref" unless ( ref($o->{sort}) eq "ARRAY" );
+        croak("sorting a list of UIDs is not implemented yet, you have to specify uids OR sort") if $o->{uids};
+        croak("sort needs to be an arrayref") unless ( ref($o->{sort}) eq "ARRAY" );
        
         foreach (@{ $o->{sort} }) {
             check_sort($_);
@@ -293,14 +292,14 @@ sub get_headers_hash() {
 
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
-        my $email = Email::Simple->new($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || die;
+        my $email = Email::Simple->new($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || croak;
 
         my %headers = $email->header_pairs;
         defined $headers{$_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;
-            $message->{head}->{$header} = $self->transform_header($c, { header => $header, data => ($value or '') }),
+            $message->{head}->{$header} = $self->transform_header($c, { header => $header, data => ($value or '') });
         }
 
         $message->{flag} = {};
@@ -338,8 +337,8 @@ returns a arrayref containing a list of UIDs
 sub simple_search {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{searchfor};
+    croak unless $o->{mailbox};
+    croak unless $o->{searchfor};
     $self->select($c, { mailbox => $o->{mailbox} });
 
     my @search = (
@@ -373,8 +372,8 @@ returnes the fullheader of a message as a string
 sub get_headers_string {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{uid};
+    croak unless $o->{mailbox};
+    croak unless $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
@@ -395,8 +394,8 @@ fetch all headers for a message and updates the local headercache
 sub all_headers {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{uid};
+    croak unless $o->{mailbox};
+    croak unless $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
     
@@ -427,9 +426,9 @@ fetch headers for a single message from the server or (if available) the local h
 sub get_headers {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{uid};
-    die unless $o->{headers};
+    croak unless $o->{mailbox};
+    croak unless $o->{uid};
+    croak unless $o->{headers};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
@@ -458,8 +457,8 @@ mark a messages as read
 sub mark_read {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
-    die unless $o->{uid};
+    croak unless $o->{mailbox};
+    croak unless $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} });
     $c->stash->{imapclient}->set_flag("Seen", $o->{uid});
@@ -476,8 +475,8 @@ return a full message body as string
 sub message_as_string {
     my ($self, $c, $o) = @_;
 
-    die 'mailbox not set' unless defined $o->{mailbox};
-    die 'uid not set' unless defined $o->{uid};
+    croak('mailbox not set') unless defined $o->{mailbox};
+    croak('uid not set') unless defined $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
@@ -500,8 +499,8 @@ delete message(s) form the server and expunge the mailbox
 sub delete_messages {
     my ($self, $c, $o) = @_;
 
-    die 'mailbox not set' unless defined $o->{mailbox};
-    die 'uids not set' unless defined $o->{uids};
+    croak('mailbox not set') unless defined $o->{mailbox};
+    croak('uids not set') unless defined $o->{uids};
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
@@ -535,7 +534,7 @@ sub move_message {
     my ($self, $c, $o) = @_;
 
     $self->select($c, { mailbox => $o->{mailbox} });
-    $c->stash->{imapclient}->move($o->{target_mailbox}, $o->{uid}) or die "could not move message $o->{uid} to folder $o->{mailbox}";
+    $c->stash->{imapclient}->move($o->{target_mailbox}, $o->{uid}) or croak("could not move message $o->{uid} to folder $o->{mailbox}");
     $self->_die_on_error($c);
     
     $c->stash->{imapclient}->expunge($o->{mailbox});
@@ -553,7 +552,7 @@ Create a subfolder
 sub create_mailbox {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{name};
+    croak unless $o->{name};
 
     return $c->stash->{imapclient}->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
 }
@@ -567,7 +566,7 @@ Delete a complete folder
 sub delete_mailbox {
     my ($self, $c, $o) = @_;
 
-    die unless $o->{mailbox};
+    croak unless $o->{mailbox};
 
     return $c->stash->{imapclient}->delete($o->{mailbox});
 }
@@ -596,7 +595,7 @@ the following 'transformations' take place:
 sub transform_header {
     my ($self, $c, $o) = @_;
 
-    die unless defined $o->{header};
+    croak unless defined $o->{header};
     return unless defined $o->{data};
 
     $o->{header} = lc($o->{header});
@@ -628,7 +627,7 @@ sub _transform_address {
 sub _transform_date {
     my ($self, $c, $o) = @_;
 
-    die("data not set") unless defined $o->{data};
+    croak("data not set") unless defined $o->{data};
 
     my $date = Time::Piece->new(Date::Parse::str2time $o->{data});
 
@@ -650,7 +649,7 @@ sub _decode_header {
                     utf8::decode($part);
                     $header .= $part if defined $part;
                 }) {
-                warn "unsupported encoding: $_->[1]";
+                carp("unsupported encoding: $_->[1]");
                 utf8::decode($_->[0]);
                 $header .= $_->[0];
             }

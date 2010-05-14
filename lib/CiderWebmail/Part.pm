@@ -4,6 +4,8 @@ use Moose;
 use Petal;
 use Module::Pluggable require => 1, search_path => [__PACKAGE__];
 
+use Carp qw/ carp /;
+
 has c           => (is => 'ro', isa => 'Object');
 has mailbox     => (is => 'ro', isa => 'Str');
 has uid         => (is => 'ro', isa => 'Int');
@@ -35,7 +37,7 @@ sub body {
             $part_string = $converter->convert($self->entity->bodyhandle->as_string);
         }) {
 
-        warn "unsupported encoding: $charset" if $@;
+        carp "unsupported encoding: $charset" if $@;
         $part_string = $self->entity->bodyhandle->as_string;
     }
 

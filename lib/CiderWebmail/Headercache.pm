@@ -4,6 +4,7 @@ use Moose;
 
 use Cache::FastMmap;
 use File::Spec;
+use Carp qw/ croak /;
 
 has c     => (is => 'ro', isa => 'Object');
 
@@ -17,10 +18,10 @@ return undef if the header was not found in the cache
 sub get {
     my ($self, $o) = @_;
 
-    die unless defined $o->{uid};
-    die unless defined $o->{header};
+    croak unless defined $o->{uid};
+    croak unless defined $o->{header};
     
-    die "hc get w/o mailbox" unless defined $o->{mailbox};
+    croak("hc get w/o mailbox") unless defined $o->{mailbox};
 
     if (exists $self->c->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}}) {
         return $self->c->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{$o->{header}};
@@ -38,9 +39,9 @@ insert a header into the per-request cache
 sub set {
     my ($self, $o) = @_;
 
-    die unless defined $o->{uid};
-    die unless defined $o->{header};
-    die unless defined $o->{mailbox};
+    croak unless defined $o->{uid};
+    croak unless defined $o->{header};
+    croak unless defined $o->{mailbox};
 
     $self->c->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{lc($o->{header})} = $o->{data};
 

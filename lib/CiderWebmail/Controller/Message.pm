@@ -12,6 +12,8 @@ use Clone qw(clone);
 use List::Util qw(first);
 use List::MoreUtils qw(all);
 
+use Carp qw/ croak /;
+
 =head1 NAME
 
 CiderWebmail::Controller::Message - Catalyst Controller
@@ -137,7 +139,7 @@ Move a message to a different folder
 
 sub move : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
-    my $target_folder = $c->req->param('target_folder') or die "no folder to move message to";
+    my $target_folder = $c->req->param('target_folder') or croak("no folder to move message to");
 
     $c->stash->{message}->move({target_folder => $target_folder});
 
@@ -231,7 +233,7 @@ sub reply : Chained('setup') Args() {
             push(@recipients, $_->address) foreach( @$_ );
         }
     } else {
-        die("invalid reply destination");
+        croak("invalid reply destination");
     }
 
     $new_message->{to} = join('; ', CiderWebmail::Util::filter_unusable_addresses(@recipients));
@@ -347,11 +349,11 @@ sub send : Chained('/mailbox/setup') Args(0) {
     }
 
     if (($c->config->{send}->{method} or '') eq 'smtp') {
-        die 'smtp host not set' unless defined $c->config->{send}->{host};
-        $mail->send('smtp', $c->config->{send}->{host}) or die 'unable to send message';
+        croak('smtp host not set') unless defined $c->config->{send}->{host};
+        $mail->send('smtp', $c->config->{send}->{host}) or croak('unable to send message');
     }
     else {
-        $mail->send or die 'unable to send message';
+        $mail->send or croak('unable to send message');
     }
 
     if ($sent_folder) {

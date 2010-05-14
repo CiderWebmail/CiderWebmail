@@ -6,6 +6,8 @@ use strict;
 use DateTime;
 use DateTime::Format::Mail;
 
+use Carp qw/ croak /;
+
 =head1 FUNCTIONS
 
 =head2 add_foldertree_uris($c, {folders => $folder_tree, path => 'folder/path', uris => [{action => 'view', uri => 'view_folder'}, ...]})
@@ -18,7 +20,7 @@ sub add_foldertree_uris {
     my $c = shift;
     my $o = shift;
    
-    die unless defined $o->{folders};
+    croak unless defined $o->{folders};
 
     my $separator = $c->model('IMAPClient')->separator($c);
 
@@ -87,7 +89,8 @@ Filters a list of addresses (string or Mail::Address) to get rid of stuff like '
 =cut
 
 sub filter_unusable_addresses {
-    return grep {(ref $_ ? $_->address : $_) !~ /\A \s* undisclosed [-\s]* recipients:? \s* \z/ixm} @_;
+    my @addresses = @_;
+    return grep {(ref $_ ? $_->address : $_) !~ /\A \s* undisclosed [-\s]* recipients:? \s* \z/ixm} @addresses;
 }
 
 1;

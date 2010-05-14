@@ -6,6 +6,8 @@ use Petal;
 use Regexp::Common qw /URI/;
 use HTML::Entities;
 
+use Carp qw/ croak /;
+
 extends 'CiderWebmail::Part';
 
 =head2 render()
@@ -17,10 +19,10 @@ Internal method rendering a text/plain body part.
 sub render {
     my ($self) = @_;
 
-    die 'no part set' unless defined $self->body;
+    carp('no part set') unless defined $self->body;
 
     my $content = $self->body;
-    $content =~ s/$RE{URI}{-keep}/<a href="$1">$1<\/a>/g;
+    $content =~ s/$RE{URI}{-keep}/<a href="$1">$1<\/a>/xmg;
 
     HTML::Entities::encode_entities($content);
     

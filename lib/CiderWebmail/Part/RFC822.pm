@@ -3,6 +3,8 @@ package CiderWebmail::Part::RFC822;
 use Moose;
 use CiderWebmail::Message::Forwarded;
 
+use Carp qw/ croak /;
+
 extends 'CiderWebmail::Part';
 
 =head2 render()
@@ -14,7 +16,7 @@ renders a message/rfc822 body part.
 sub render {
     my ($self) = @_;
 
-    die 'no entity set' unless defined $self->entity;
+    croak('no entity set') unless defined $self->entity;
 
     return CiderWebmail::Message::Forwarded->new(c => $self->c, entity => $self->entity->parts(0), mailbox => $self->mailbox, uid => $self->uid, path => $self->path);
 }

@@ -4,6 +4,8 @@ use Moose;
 
 use CiderWebmail::Part;
 
+use Carp qw/ croak /;
+
 has c           => (is => 'ro', isa => 'Object');
 has mailbox     => (is => 'ro', isa => 'Str');
 has uid         => (is => 'ro', isa => 'Int');
@@ -191,7 +193,7 @@ Moves the message on the server to the named folder.
 sub move {
     my ($self, $o) = @_;
 
-    die 'target_folder not set' unless defined $o->{target_folder};
+    croak('target_folder not set') unless defined $o->{target_folder};
 
     return $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
 }
@@ -269,8 +271,8 @@ Returns the body parts of this message as hashref of renderable parts and attach
 sub body_parts {
     my ($self, $c) = @_;
 
-    die 'mailbox not set' unless defined $self->mailbox;
-    die 'uid not set' unless defined $self->uid;
+    croak('mailbox not set') unless defined $self->mailbox;
+    croak('uid not set') unless defined $self->uid;
 
     my $entity = $self->entity;
 

@@ -18,5 +18,5 @@ if ( $EVAL_ERROR ) {
 }
 
 my $rcfile = File::Spec->catfile( 't', 'perlcriticrc' );
-Test::Perl::Critic->import( -severity => 5, -profile => $rcfile );
+Test::Perl::Critic->import( -severity => 4, -profile => $rcfile );
 all_critic_ok('blib/lib');

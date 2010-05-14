@@ -9,6 +9,8 @@ use CiderWebmail::Util;
 use DateTime;
 use URI::QueryParam;
 
+use Carp qw/ croak /;
+
 =head1 NAME
 
 CiderWebmail::Controller::Mailbox - Catalyst Controller
@@ -56,7 +58,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my $range;
     if ($c->req->param('after_uid')) {
-        die unless $c->req->param('after_uid') =~ m/\A\d+\Z/mx;
+        croak unless $c->req->param('after_uid') =~ m/\A\d+\Z/mx;
         $range = $c->req->param('after_uid').":*";
     }
 
@@ -81,7 +83,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
                     uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
                     uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
                 }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
-        @messages = map $messages{$_}, @uids;
+        @messages = map { $messages{$_} } @uids;
 
         # yes, this is ugly as hell
         $Petal::I18N::Domain = 'CiderWebmail';

@@ -22,6 +22,8 @@ hand with L<Catalyst::Authentication::Store::IMAP>.
 use Moose;
 use Mail::IMAPClient;
 
+use Carp qw/ croak /;
+
 extends qw/Catalyst::Authentication::User/;
 
 has id => (is => 'ro', isa => 'Str');
@@ -99,8 +101,8 @@ sub check_password {
         $connect_info{Port} = $c->config->{server}{port};
         if ($connect_info{Port} == 993) { # use SSL
             require IO::Socket::SSL;
-            my $ssl = new IO::Socket::SSL("$connect_info{Server}:imaps");
-            die ("Error connecting to IMAP server: $@") unless defined $ssl;
+            my $ssl = IO::Socket::SSL->new("$connect_info{Server}:imaps");
+            croak ("Error connecting to IMAP server: $@") unless defined $ssl;
             $ssl->autoflush(1);
             %connect_info = (Socket => $ssl);
         }
@@ -109,13 +111,13 @@ sub check_password {
     my $imap = Mail::IMAPClient->new(
         %connect_info,
         Peek => 1,
-    ) or die "Error connecting to IMAP server: $@";
+    ) or croak("Error connecting to IMAP server: $@");
 
     $imap->User($id);
     $imap->Password($password);
 
     unless($imap->login) {
-        warn "Could not login to ".$c->config->{authentication}{realms}{imap}{store}{host}." with user $id: $@";
+        carp("Could not login to ".$c->config->{authentication}{realms}{imap}{store}{host}." with user $id: $@");
         return;
     }
 
