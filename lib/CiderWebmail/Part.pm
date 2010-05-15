@@ -244,4 +244,16 @@ sub has_body {
     return;
 }
 
+=head2 uri
+
+returns an http url to access the part
+
+=cut
+
+sub uri {
+    my ($self) = @_;
+
+    return $self->c->uri_for('/mailbox/' . $self->c->stash->{folder} . '/' . $self->uid . '/attachment/'.$self->path);
+}
+
 1;
