@@ -148,6 +148,7 @@ returns the body of the part as a string
 sub as_string {
     my ($self) = @_;
 
+    confess("Part->as_string called with no bodyhandle aviable") unless defined $self->entity->bodyhandle;
     return $self->entity->bodyhandle->as_string;
 }
 
