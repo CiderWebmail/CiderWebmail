@@ -30,15 +30,27 @@ sub body {
 
     my $charset = $self->entity->head->mime_attr("content-type.charset");
 
+    return $self->_decode_body({ charset => $charset, body => $self->entity->bodyhandle->as_string });
+}
+
+=head2 _decode_body()
+
+attempt a best-effort $charset to utf-8 conversion
+
+=cut
+
+sub _decode_body {
+    my ($self, $o) = @_;
+
     my $part_string;
-    unless ($charset and $charset !~ /utf-8/ixm
+    unless ($o->{charset} and $o->{charset} !~ /utf-8/ixm
         and eval {
-            my $converter = Text::Iconv->new($charset, "utf-8");
-            $part_string = $converter->convert($self->entity->bodyhandle->as_string);
+            my $converter = Text::Iconv->new($o->{charset}, "utf-8");
+            $part_string = $converter->convert($o->{body});
         }) {
 
-        carp "unsupported encoding: $charset" if $@;
-        $part_string = $self->entity->bodyhandle->as_string;
+        carp "unsupported encoding: $o->{charset}" if $@;
+        $part_string = $o->{body};
     }
 
     utf8::decode($part_string);
