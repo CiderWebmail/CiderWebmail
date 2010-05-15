@@ -16,13 +16,13 @@ sub content_type {
     return 'multipart/alternative';
 }
 
-before render => sub {
+before qw/render handler/ => sub {
     my ($self) = @_;
 
     my @parts = reverse($self->subparts);
 
     foreach(@parts) {
-        my $part = CiderWebmail::Part->new({ c => $self->c, entity => $_, uid => $self->uid, parent_message => $self->parent_message, mailbox => $self->mailbox, path => defined $self->path, id => 0 })->handler;
+        my $part = CiderWebmail::Part->new({ c => $self->c, entity => $_, uid => $self->uid, parent_message => $self->parent_message, mailbox => $self->mailbox, path => $self->path, id => 0 })->handler;
         if ($part->renderable) {
             $self->chosen_alternative($part);
             last;
@@ -43,6 +43,18 @@ sub render {
     my $output = undef;
     $output = $self->chosen_alternative->render if $self->chosen_alternative;
     return ($output or '');
+}
+
+=head2 handler()
+
+returns the 'handler' for the part: a CiderWebmail::Part::FooBar object that can be used to ->render the part.
+
+=cut
+
+sub handler {
+    my ($self) = @_;
+
+    return $self->chosen_alternative;
 }
 
 =head2 renderable()
