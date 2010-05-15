@@ -22,7 +22,10 @@ sub render {
     carp('no part set') unless defined $self->body;
 
     my $content = $self->body;
+    $content =~ s/[^\x01-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]//gxmo;
+    $content =~ s/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F]//gxmo;
     HTML::Entities::encode_entities($content);
+    $content =~ s/\n/<br \/>/xmg;
     $content =~ s/$RE{URI}{-keep}/<a href="$1">$1<\/a>/xmg;
     
     return $self->c->view->render_template({ c => $self->c, template => 'TextPlain.xml', stash => { part_content => $content } });
