@@ -22,7 +22,7 @@ hand with L<Catalyst::Authentication::Store::IMAP>.
 use Moose;
 use Mail::IMAPClient;
 
-use Carp qw/ croak /;
+use Carp qw/ croak carp /;
 
 extends qw/Catalyst::Authentication::User/;
 
