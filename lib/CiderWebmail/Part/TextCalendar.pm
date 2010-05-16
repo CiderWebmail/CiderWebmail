@@ -34,7 +34,7 @@ sub render {
 
         my $description;
         if ($entry->property('description')) {
-            my $description = $entry->property('description');
+            $description = $entry->property('description');
             $description = Text::Flowed::reformat( ($description->[0]->value or '') );
             $description =~ s/\n/<br \/>/gxm;
         }
