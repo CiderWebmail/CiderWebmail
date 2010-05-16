@@ -150,14 +150,12 @@ sub add : Chained('/addressbook/modify') PathPart('add') Args(0) {
 
     #we only have a name (for example from an email "From" header), attemt a best-effort to split it into first and surname
     if ($c->req->param('name')) {
-        $c->req->param('name') =~ m/(\w+)\s*(.*)/mx;
-
-        if ($1 =~ m/\w+/xm) {
+        if ($c->req->param('name') =~ m/^(\w+)/mx) {
             $c->stash->{firstname} = $1;
         }
-    
-        if ($2 =~ m/\w+/xm) {
-            $c->stash->{surname} = $2;
+
+        if ($c->req->param('name') =~ m/\w+\s*(.*)/mx) {
+            $c->stash->{surname} = $1;
         }
     }
 

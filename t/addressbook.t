@@ -59,6 +59,15 @@ $mech->follow_link_ok({ id => "delete_$id" });
 
 $mech->content_lacks("compose_$id", 'contact deleted from address book');
 
+$mech->get_ok('http://localhost/addressbook/modify/add?name=foo&email=foo@example.com');
+field_contains('firstname', 'foo');
+field_contains('email', 'foo@example.com');
+
+$mech->get_ok('http://localhost/addressbook/modify/add?name=foo%20bar&email=foo@example.com');
+field_contains('firstname', 'foo');
+field_contains('surname', 'bar');
+field_contains('email', 'foo@example.com');
+
 done_testing;
 
 sub check_email {
