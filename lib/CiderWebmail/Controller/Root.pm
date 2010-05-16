@@ -41,8 +41,9 @@ sub auto : Private {
         $c->stash->{imapclient}->Ranges(1);
 
         $c->stash({
-            uri_mailboxes => $c->uri_for('/mailboxes'),
-            uri_logout    => $c->uri_for('/logout'),
+            uri_mailboxes   => $c->uri_for('/mailboxes'),
+            uri_addressbook => $c->uri_for('/addressbook'),
+            uri_logout      => $c->uri_for('/logout'),
         });
 
         return 1;

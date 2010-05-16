@@ -64,6 +64,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         uri_reply_all       => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
         uri_forward         => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
         uri_move            => $c->uri_for("/mailbox/$mailbox/$uid/move"),
+        uri_add_address     => $c->uri_for("/addressbook/modify/add"),
         uri_view_attachment => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $message->uid . '/attachment'),
     });
 

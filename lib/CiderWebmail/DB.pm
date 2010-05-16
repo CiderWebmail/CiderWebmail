@@ -1,15 +1,20 @@
 package CiderWebmail::DB;
 
+# Created by DBIx::Class::Schema::Loader
+# DO NOT MODIFY THE FIRST PART OF THIS FILE
+
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Schema';
 
-__PACKAGE__->load_namespaces;
+__PACKAGE__->load_namespaces(
+    result_namespace => 'Result',
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.04005 @ 2009-06-29 18:09:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AS9Rj23Kr+KeKuYDuevubg
+# Created by DBIx::Class::Schema::Loader v0.04005 @ 2010-05-15 15:15:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xyTzZx0RAUoSgNqPR5Xayg
 
 =head1 NAME
 

@@ -4,8 +4,8 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="layout.xml#layout">
     i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
     >
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
@@ -42,7 +42,12 @@
                     <table>
                         <tr tal:condition="true: message/from">
                             <th i18n:translate="">From:</th>
-                            <td><a class="from_address" tal:repeat="address message/from" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a></td>
+                            <td>
+                                <span tal:repeat="address message/from">
+                                    <a class="from_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
+                                    <a tal:attributes="href string:${uri_add_address}?email=${address/address}&name=${address/name}" title="Add to addressbook">+</a>
+                                </span>
+                            </td>
                         </tr>
                         <tr tal:condition="true: message/to">
                             <th i18n:translate="">To:</th>
