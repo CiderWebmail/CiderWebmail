@@ -7,7 +7,7 @@
     i18n:domain="CiderWebmail"
     metal:use-macro="layout.xml#layout">
     <head>
-        <title metal:fill-slot="title" tal:content="folder">Mailbox</title>
+        <title metal:fill-slot="title" tal:content="string: ${folder} (${folder_data/unseen})">Mailbox</title>
         <tal:div metal:fill-slot="css" tal:omit-tag="">
             <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" />
             <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" />

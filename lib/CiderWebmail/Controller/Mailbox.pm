@@ -75,7 +75,11 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $length ||= 100;
     @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
-    CiderWebmail::Util::add_foldertree_to_stash($c) unless $start; # $start is only > 0 for AJAX requests loading more messages. No need for a foldertree in that case.
+    unless ($start) { # $start is only > 0 for AJAX requests loading more messages. No need for a foldertree in that case.
+        CiderWebmail::Util::add_foldertree_to_stash($c);
+
+        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
+    }
     
     if (@uids) {
         my %messages = map { ($_->{uid} => {
