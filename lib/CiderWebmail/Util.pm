@@ -74,7 +74,8 @@ sub send_foldertree_update {
 
     CiderWebmail::Util::add_foldertree_to_stash($c); # update folder display
 
-    $c->stash->{folders_hash}{$c->stash->{folder}}{selected} = 'selected';
+    $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
+    $c->stash->{folder_data}{selected} = 'selected';
     $c->stash->{template} = 'folder_tree.xml';
 
     $c->res->content_type('text/xml');

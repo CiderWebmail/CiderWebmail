@@ -23,5 +23,8 @@
                 </li>
             </div>
         </ul>
+        <div id="folder_data">
+            <div id="unseen" tal:content="folder_data/unseen"/>
+        </div>
     </body>
 </html>
