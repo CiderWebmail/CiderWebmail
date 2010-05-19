@@ -397,7 +397,14 @@ sub all_headers {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
     
-    my $fetched_headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+    my $fetched_headers;
+    if (defined $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_parsed_header}) {
+        $fetched_headers = $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_parsed_header};
+    } else {
+        $fetched_headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+        $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_parsed_header} = $fetched_headers;
+    }
+
     my $headers = {}; 
 
     my $header = "";
