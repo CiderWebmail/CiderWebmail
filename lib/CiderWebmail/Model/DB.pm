@@ -1,8 +1,8 @@
 package CiderWebmail::Model::DB;
 
-use strict;
-use warnings;
-use base 'Catalyst::Model::DBIC::Schema';
+use Moose;
+
+extends 'Catalyst::Model::DBIC::Schema';
 
 __PACKAGE__->config(
     schema_class => 'CiderWebmail::DB',
@@ -11,6 +11,29 @@ __PACKAGE__->config(
         
     ],
 );
+
+after BUILD => sub {
+    my ($self, $c) = @_;
+
+    my $dbh = $self->storage->dbh;
+
+    my $db_version = $dbh->table_info(undef, undef, 'db_version', 'TABLE')->fetchall_arrayref;
+    
+    unless (@$db_version) {
+        $dbh->do('create table db_version (version int not null primary key default 0)');
+        $dbh->do('insert into db_version values (0)');
+    }
+
+    my $version = $dbh->selectrow_array('select version from db_version');
+
+    if ($version < 1) {
+        print STDERR "upgrading database schema to version 1\n";
+        $dbh->do('create table addressbook (id INTEGER PRIMARY KEY, user varchar not null, firstname varchar not null, surname varchar not null, email varchar not null)');
+        $dbh->do('update db_version set version = 1');
+    }
+
+    return $self;
+};
 
 =head1 NAME
 
