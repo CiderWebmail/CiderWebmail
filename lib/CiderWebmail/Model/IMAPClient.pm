@@ -275,8 +275,6 @@ sub get_headers_hash {
         return [] unless @$uids;
     }
 
-    my $lines = $c->stash->{imapclient}->fetch($uids, "(BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)] FLAGS)");
-
     my @items;
     #push(@items, "BODYSTRUCTURE");
     push(@items, "FLAGS");
