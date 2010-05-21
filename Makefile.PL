@@ -34,6 +34,7 @@ requires 'MIME::Lite';
 requires 'MIME::Words';
 
 requires 'Email::Simple';
+requires 'Email::Valid';
 requires 'Email::Address';
 requires 'Regexp::Common::Email::Address';
 requires 'Regexp::Common::URI';
