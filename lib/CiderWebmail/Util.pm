@@ -26,6 +26,10 @@ sub add_foldertree_uris {
 
     foreach my $folder ( @{$o->{folders}} ) {
         my $path = (defined($o->{path}) ? join($separator, $o->{path}, $folder->{name}) : $folder->{name});
+
+        $path =~ s!;!;;!gxm;
+        $path =~ s!/!;!gxm; # mask all slashes to make URIs work
+
         foreach (@{ $o->{uris} }) {
             $folder->{"uri_$_->{action}"} = $c->uri_for("/mailbox/$path/$_->{uri}");
         }

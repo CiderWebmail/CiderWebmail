@@ -32,6 +32,9 @@ Gets the selected mailbox from the URI path and sets up the stash.
 sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     my ( $self, $c, $mailbox ) = @_;
 
+    $mailbox =~ s';(?!;)'/'gmx; # unmask / in mailbox name
+    $mailbox =~ s!;;!;!gmx;
+
     $c->stash->{folder} = $mailbox;
     $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
     $c->stash->{uri_compose} = $c->uri_for("/mailbox/$mailbox/compose");
