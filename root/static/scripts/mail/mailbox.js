@@ -131,8 +131,7 @@ window.addEvent('load', function() {
             }
         }, false);
 
-    var length = 100;
-    fetch_new_rows(length, length);
+    fetch_new_rows(100, 100);
 });
 
 function fetch_new_rows(start_index, length) {
@@ -165,7 +164,16 @@ function fetch_new_rows(start_index, length) {
             var message_list = document.getElementById('message_list');
             for (var i = 0; i < new_rows.childNodes.length ; i++)
                 message_list.appendChild(new_rows.childNodes[i].cloneNode(true));
-            fetch_new_rows(start_index + length, length);
+
+            var messages_pane = $('messages_pane');
+            var fetcher = function (event) {
+                if (messages_pane.scrollTop > messages_pane.scrollHeight - messages_pane.offsetHeight * 3) {
+                    messages_pane.removeEvent('scroll', fetcher);
+                    var length = 100;
+                    fetch_new_rows(start_index + length, length);
+                }
+            };
+            messages_pane.addEvents({scroll: fetcher});
         }
     }}).send();
 }
