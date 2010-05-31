@@ -26,12 +26,10 @@ sub add_foldertree_uris {
 
     foreach my $folder ( @{$o->{folders}} ) {
         my $path = (defined($o->{path}) ? join($separator, $o->{path}, $folder->{name}) : $folder->{name});
-
-        $path =~ s!;!;;!gxm;
-        $path =~ s!/!;!gxm; # mask all slashes to make URIs work
+        my $uri_path = uri_mask_folder_path($path);
 
         foreach (@{ $o->{uris} }) {
-            $folder->{"uri_$_->{action}"} = $c->uri_for("/mailbox/$path/$_->{uri}");
+            $folder->{"uri_$_->{action}"} = $c->uri_for("/mailbox/$uri_path/$_->{uri}");
         }
         
         if (defined($folder->{folders})) { #if we have any subfolders
@@ -46,6 +44,21 @@ sub add_foldertree_uris {
     return;
 }
 
+=head2 uri_mask_folder_path($path)
+
+Mask all slashes in folder path for use in URIs.
+
+=cut
+
+sub uri_mask_folder_path {
+    my ($path) = @_;
+
+    $path =~ s!;!;;!gxm;
+    $path =~ s!/!;!gxm;
+
+    return $path;
+}
+
 =head2 add_foldertree_to_stash($c)
 
 Gets a folder tree and folders hash from the model, adds 'view' uris and puts them on the stash.
@@ -58,6 +71,8 @@ sub add_foldertree_to_stash {
     return if defined($c->stash->{folder_tree});
     my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
     CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
+
+    $folders_hash->{$c->stash->{folder}}{selected} = 'selected' if $c->stash->{folder};
 
     $c->stash({
         folder_tree   => $tree,

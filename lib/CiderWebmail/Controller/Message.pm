@@ -47,8 +47,8 @@ sub setup : Chained('/mailbox/setup') PathPart('') CaptureArgs(1) {
 
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
-    my $mailbox = $c->stash->{folder};
-    my $message = $c->stash->{message};
+    my $uri_folder = $c->stash->{uri_folder};
+    my $message    = $c->stash->{message};
     my $uid = $message->uid;
     
     $message->load_body();
@@ -59,13 +59,13 @@ sub view : Chained('setup') PathPart('') Args(0) {
     $c->stash({
         template        => 'message.xml',
         target_folders  => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_view_source     => $c->uri_for("/mailbox/$mailbox/$uid/view_source"),
-        uri_reply           => $c->uri_for("/mailbox/$mailbox/$uid/reply/sender"),
-        uri_reply_all       => $c->uri_for("/mailbox/$mailbox/$uid/reply/all"),
-        uri_forward         => $c->uri_for("/mailbox/$mailbox/$uid/forward"),
-        uri_move            => $c->uri_for("/mailbox/$mailbox/$uid/move"),
+        uri_view_source     => "$uri_folder/$uid/view_source",
+        uri_reply           => "$uri_folder/$uid/reply/sender",
+        uri_reply_all       => "$uri_folder/$uid/reply/all",
+        uri_forward         => "$uri_folder/$uid/forward",
+        uri_move            => "$uri_folder/$uid/move",
+        uri_view_attachment => "$uri_folder/$uid/attachment",
         uri_add_address     => $c->uri_for("/addressbook/modify/add"),
-        uri_view_attachment => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/' . $message->uid . '/attachment'),
     });
 
     return;
@@ -80,8 +80,6 @@ sub attachment : Chained('setup') Args {
 
     my @path = split(/[^\d]/xm, ($path_string or ''));
     return $c->res->body('invalid attachment path') unless all { /\A \d+ \z/xm } @path;
-
-    my $mailbox = $c->stash->{folder};
 
     my $attachment = pop @path;
     my $body = $c->stash->{message}->get_embedded_message($c, @path);
@@ -129,7 +127,7 @@ sub delete : Chained('setup') Args(0) {
     
     return ($c->req->header('X-Request') or '') eq 'AJAX'
         ? CiderWebmail::Util::send_foldertree_update($c) # update folder display
-        : $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
+        : $c->res->redirect($c->stash->{uri_folder});
 }
 
 =head2 move
@@ -146,7 +144,7 @@ sub move : Chained('setup') Args(0) {
 
     return ($c->req->header('X-Request') or '') eq 'AJAX'
         ? CiderWebmail::Util::send_foldertree_update($c) # update folder display
-        : $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
+        : $c->res->redirect($c->stash->{uri_folder});
 }
 
 =head2 compose
@@ -187,7 +185,7 @@ sub compose : Chained('/mailbox/setup') Args(0) {
     }
 
     $c->stash({
-        uri_send     => $c->uri_for('/mailbox/' . $c->stash->{folder} . '/send'),
+        uri_send     => $c->stash->{uri_folder} . '/send',
         sent_folders => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %$folders ],
         template     => 'compose.xml',
     });
@@ -203,7 +201,6 @@ Reply to a message suggesting receiver, subject and message text
 
 sub reply : Chained('setup') Args() {
     my ( $self, $c, $who, $path_string ) = @_;
-    my $mailbox = $c->stash->{folder};
     my $message = $c->stash->{message};
 
     my @path = split(/[^\d]/xm, ($path_string or ''));
@@ -257,7 +254,6 @@ Forward a mail as attachment
 
 sub forward : Chained('setup') Args() {
     my ( $self, $c, @path ) = @_;
-    my $mailbox = $c->stash->{folder};
     my $message = $c->stash->{message};
 
     $message = $message->get_embedded_message($c, @path);
@@ -362,7 +358,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
         $c->model('IMAPClient')->append_message($c, {mailbox => $sent_folder, message_text => $msg_text});
     }
 
-    return $c->res->redirect($c->uri_for('/mailbox/' . $c->stash->{folder}));
+    return $c->res->redirect($c->stash->{uri_folder});
 }
 
 =head1 AUTHOR

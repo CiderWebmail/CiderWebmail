@@ -32,12 +32,13 @@ Gets the selected mailbox from the URI path and sets up the stash.
 sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     my ( $self, $c, $mailbox ) = @_;
 
+    $c->stash->{uri_folder} = $c->uri_for("/mailbox/$mailbox");
+    $c->stash->{uri_compose} = $c->stash->{uri_folder} . '/compose';
+
     $mailbox =~ s';(?!;)'/'gmx; # unmask / in mailbox name
     $mailbox =~ s!;;!;!gmx;
 
     $c->stash->{folder} = $mailbox;
-    $c->stash->{folders_hash}{$mailbox}{selected} = 'selected';
-    $c->stash->{uri_compose} = $c->uri_for("/mailbox/$mailbox/compose");
 
     return;
 }
@@ -85,10 +86,11 @@ sub view : Chained('setup') PathPart('') Args(0) {
     }
     
     if (@uids) {
+        my $uri_folder = $c->stash->{uri_folder};
         my %messages = map { ($_->{uid} => {
                     %{ $_ },
-                    uri_view => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}"),
-                    uri_delete => $c->uri_for("/mailbox/$_->{mailbox}/$_->{uid}/delete"),
+                    uri_view => "$uri_folder/$_->{uid}",
+                    uri_delete => "$uri_folder/$_->{uid}/delete",
                 }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
         @messages = map { $messages{$_} } @uids;
 
@@ -143,7 +145,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
         messages        => \@messages,
-        uri_quicksearch => $c->uri_for($c->stash->{folder}),
+        uri_quicksearch => $c->stash->{uri_folder},
         template        => 'mailbox.xml',
         groups          => \@groups,
         filter          => $filter,

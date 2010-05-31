@@ -266,7 +266,7 @@ returns an http url to access the part
 sub uri {
     my ($self) = @_;
 
-    return $self->c->uri_for('/mailbox/' . $self->c->stash->{folder} . '/' . $self->uid . '/attachment/'.$self->path);
+    return $self->c->stash->{uri_folder} . '/' . $self->uid . '/attachment/' . $self->path;
 }
 
 1;
