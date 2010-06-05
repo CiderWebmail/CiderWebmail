@@ -175,6 +175,9 @@ function fetch_new_rows(start_index, length) {
             };
             messages_pane.addEvents({scroll: fetcher});
         }
+        else {
+            $('fetching_message').style.display = 'none';
+        }
     }}).send();
 }
 

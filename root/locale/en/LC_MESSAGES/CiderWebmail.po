@@ -8,14 +8,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "Addressbook"
+msgstr "Addressbook"
+
 msgid "Attachment:"
 msgstr "Attachment:"
 
 msgid "Attachments"
 msgstr "Attachments"
-
-msgid "Begin:"
-msgstr "Begin:"
 
 msgid "Cc:"
 msgstr "Cc:"
@@ -47,17 +47,14 @@ msgstr "Delete"
 msgid "Drag a mail's icon to a folder name to move that mail to that folder."
 msgstr "Drag a mail's icon to a folder name to move that mail to that folder."
 
-msgid "End:"
-msgstr "End:"
+msgid "Fetching more messages"
+msgstr "Fetching more messages"
 
 msgid "Folders"
 msgstr "Folders"
 
 msgid "Forward"
 msgstr "Forward"
-
-msgid "Forwarded message"
-msgstr "Forwarded message"
 
 msgid "Forwarding"
 msgstr "Forwarding"
@@ -125,9 +122,6 @@ msgstr "Subject"
 msgid "Subject:"
 msgstr "Subject:"
 
-msgid "Summary:"
-msgstr "Summary:"
-
 msgid "Target folder:"
 msgstr "Target folder:"
 
@@ -148,6 +142,18 @@ msgstr "Welcome to CiderWebmail"
 
 msgid "messages"
 msgstr "messages"
+
+#~ msgid "Begin:"
+#~ msgstr "Begin:"
+
+#~ msgid "End:"
+#~ msgstr "End:"
+
+#~ msgid "Forwarded message"
+#~ msgstr "Forwarded message"
+
+#~ msgid "Summary:"
+#~ msgstr "Summary:"
 
 #~ msgid "Header:"
 #~ msgstr "Header:"

@@ -53,6 +53,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <div id="fetching_message" i18n:translate="">Fetching more messages</div>
             </div>
             <div id="message_divider"/>
             <div id="message_view">
