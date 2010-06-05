@@ -9,6 +9,7 @@ html, body {
 
 .message_list a {
     text-decoration: none;
+    display: block;
 }
 
 .message_list a:hover {
