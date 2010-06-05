@@ -7,6 +7,18 @@ html, body {
     table-layout: fixed;
 }
 
+.message_list a {
+    text-decoration: none;
+}
+
+.message_list a:hover {
+    text-decoration: underline;
+}
+
+.message_list tr.odd {
+    background-color: #efefef;
+}
+
 .message_list th.icons {
     width: 26px;
 }

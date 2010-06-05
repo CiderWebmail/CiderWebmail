@@ -37,11 +37,11 @@
                         <th class="actions"></th>
                     </tr>
                     <tbody tal:repeat="group groups">
-                        <tr>
+                        <tr class="group_head">
                             <td tal:condition="true:group/name" colspan="5" tal:content="group/name"/>
                             <td tal:condition="and: true:sort_subject false:group/name" colspan="5" i18n:translate="">No Subject</td>
                         </tr>
-                        <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class message/flags">
+                        <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class if: repeat/even then: message/flags else: string:${message/flags} odd">
                             <td class="icons"><img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats"/><img tal:condition="true: message/attachments" tal:attributes="src string:${uri_static}/images/attachment.png" alt="attachment"/></td>
                             <td class="sender" tal:attributes="id string:from_${message/uid}">
                                 <span tal:condition="false: sort_from" tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
