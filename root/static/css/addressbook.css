@@ -1,0 +1,14 @@
+label {
+    display: block;
+    clear: left;
+    text-align: right;
+}
+label span {
+    float: left;
+    text-align: left;
+    width: 14%;
+}
+input {
+    width: 85%;
+}
+

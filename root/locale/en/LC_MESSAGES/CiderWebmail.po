@@ -47,8 +47,20 @@ msgstr "Delete"
 msgid "Drag a mail's icon to a folder name to move that mail to that folder."
 msgstr "Drag a mail's icon to a folder name to move that mail to that folder."
 
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "E-Mail:"
+msgstr "E-Mail:"
+
+msgid "Edit contact"
+msgstr "Edit contact"
+
 msgid "Fetching more messages"
 msgstr "Fetching more messages"
+
+msgid "First name:"
+msgstr "First name:"
 
 msgid "Folders"
 msgstr "Folders"
@@ -65,6 +77,9 @@ msgstr "From"
 msgid "From:"
 msgstr "From:"
 
+msgid "Last name:"
+msgstr "Last name:"
+
 msgid "Loading message"
 msgstr "Loading message"
 
@@ -79,6 +94,9 @@ msgstr "Manage folders"
 
 msgid "Move message"
 msgstr "Move message"
+
+msgid "Name"
+msgstr "Name"
 
 msgid "New subfolder"
 msgstr "New subfolder"
@@ -97,6 +115,9 @@ msgstr "Reply"
 
 msgid "Reply All"
 msgstr "Reply All"
+
+msgid "Save"
+msgstr "Save"
 
 msgid "Save message to:"
 msgstr "Save message to:"
@@ -140,8 +161,20 @@ msgstr "View source"
 msgid "Welcome to CiderWebmail"
 msgstr "Welcome to CiderWebmail"
 
+msgid "add contact"
+msgstr "add contact"
+
+msgid "delete"
+msgstr "delete"
+
+msgid "edit"
+msgstr "edit"
+
 msgid "messages"
 msgstr "messages"
+
+#~ msgid "title"
+#~ msgstr "delete"
 
 #~ msgid "Begin:"
 #~ msgstr "Begin:"

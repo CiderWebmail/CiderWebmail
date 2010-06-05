@@ -4,29 +4,29 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="layout.xml#layout">
+    metal:use-macro="layout.xml#layout"
     i18n:domain="CiderWebmail"
     >
     <head>
-        <title metal:fill-slot="title">Addressbook</title>
+        <title metal:fill-slot="title" i18n:translate="">Addressbook</title>
     </head>
     <body metal:fill-slot="content" tal:omit-tag="">
-        <h1>Addressbook</h1>
+        <h1 i18n:translate="">Addressbook</h1>
         <table id="addressbook_list" class="addressbook_list">
             <tr>
-                <th>Name</th>
-                <th>E-Mail</th>
+                <th i18n:translate="">Name</th>
+                <th i18n:translate="">E-Mail</th>
                 <th />
                 <th />
             </tr>
             <tr tal:repeat="entry addresses">
                 <td tal:content="string: ${entry/firstname} ${entry/surname}" />
                 <td><a tal:attributes="href string:${uri_compose}?to=${entry/email}; id string:compose_${entry/id}" tal:content="string: ${entry/email}" /></td>
-                <td><a tal:attributes="href string:${uri_addressbook}/modify/edit/${entry/id}; id string:edit_${entry/id}">edit</a></td>
-                <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img tal:attributes="src string:${uri_static}/images/trashcan.gif" /></a></td>
+                <td><a tal:attributes="href string:${uri_addressbook}/modify/edit/${entry/id}; id string:edit_${entry/id}" i18n:translate="">edit</a></td>
+                <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img tal:attributes="src string:${uri_static}/images/trashcan.gif" alt="delete" title="delete" i18n:attributes="alt"/></a></td>
             </tr>
         </table>
 
-        <a tal:attributes="href string:${uri_addressbook}/modify/add">add contact</a>
+        <a tal:attributes="href string:${uri_addressbook}/modify/add" i18n:translate="">add contact</a>
     </body>
 </html>

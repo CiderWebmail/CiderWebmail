@@ -49,8 +49,20 @@ msgstr ""
 "Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen "
 "Ordner zu verschieben."
 
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "E-Mail:"
+msgstr "E-Mail:"
+
+msgid "Edit contact"
+msgstr "Kontakt bearbeiten"
+
 msgid "Fetching more messages"
 msgstr "Lade weitere Emails"
+
+msgid "First name:"
+msgstr "Vorname:"
 
 msgid "Folders"
 msgstr "Ordner"
@@ -67,6 +79,9 @@ msgstr "Von"
 msgid "From:"
 msgstr "Von:"
 
+msgid "Last name:"
+msgstr "Nachname:"
+
 msgid "Loading message"
 msgstr "Lade Email"
 
@@ -81,6 +96,9 @@ msgstr "Ordner bearbeiten"
 
 msgid "Move message"
 msgstr "Email verschieben"
+
+msgid "Name"
+msgstr "Name"
 
 msgid "New subfolder"
 msgstr "Neuer Unterordner"
@@ -99,6 +117,9 @@ msgstr "Antworten"
 
 msgid "Reply All"
 msgstr "Allen Antworten"
+
+msgid "Save"
+msgstr "Speichern"
 
 msgid "Save message to:"
 msgstr "Email speichern in:"
@@ -141,6 +162,15 @@ msgstr "Quelltext anzeigen"
 
 msgid "Welcome to CiderWebmail"
 msgstr "Willkommen bei CiderWebmail"
+
+msgid "add contact"
+msgstr "Kontakt hinzufügen"
+
+msgid "delete"
+msgstr "löschen"
+
+msgid "edit"
+msgstr "bearbeiten"
 
 msgid "messages"
 msgstr "Mails"

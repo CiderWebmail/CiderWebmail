@@ -4,24 +4,34 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    metal:use-macro="layout.xml#layout">
+    metal:use-macro="layout.xml#layout"
     i18n:domain="CiderWebmail"
     >
     <head>
-        <title metal:fill-slot="title" tal:content="message/subject">Message</title>
-        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
-        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/message.js" metal:fill-slot="scripts" />
+        <title metal:fill-slot="title">Edit contact</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/addressbook.css" metal:fill-slot="css"/>
     </head>
     <body metal:fill-slot="content" tal:omit-tag="">
-        <h1>Addressbook - modify</h1>
-        <span tal:condition="error" tal:content="error" />
+        <h1 i18n:translate="">Edit contact</h1>
+        <div tal:condition="error" tal:content="error" />
         <form enctype="multipart/form-data" method="post" tal:attributes="action string:${uri_modify}">
-            <input type="hidden" name="update" value="1" />
-            <input type="hidden" name="id" tal:attributes="value id" />
-            <p>Firstname: <input name="firstname" tal:attributes="value firstname" /></p>
-            <p>Surname: <input name="surname" tal:attributes="value surname" /></p>
-            <p>E-Mail: <input name="email" tal:attributes="value email" /></p>
-            <p><button type="submit">Submit</button></p>
+            <div>
+                <input type="hidden" name="id" tal:attributes="value id" />
+
+                <label>
+                    <span i18n:translate="">First name:</span>
+                    <input name="firstname" tal:attributes="value firstname" />
+                </label>
+                <label>
+                    <span i18n:translate="">Last name:</span>
+                    <input name="surname" tal:attributes="value surname" />
+                </label>
+                <label>
+                    <span i18n:translate="">E-Mail:</span>
+                    <input name="email" tal:attributes="value email" />
+                </label>
+                <button type="submit" name="update" value="1" i18n:translate="">Save</button>
+            </div>
         </form>
     </body>
 </html>

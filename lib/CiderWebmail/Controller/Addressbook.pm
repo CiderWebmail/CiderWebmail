@@ -80,7 +80,7 @@ common setup function for addressbook modify operations (add, delete, edit)
 sub modify : Chained('/addressbook/setup') Path('modify') CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    if (($c->req->param('update') or 0) == 1) {
+    if ($c->req->param('update')) {
         $c->stash->{error} = "All fields need to be filled out" unless ($c->req->param('firstname') =~ m/\w+/xm);
         $c->stash->{error} = "All fields need to be filled out" unless ($c->req->param('surname') =~ m/\w+/xm);
         $c->stash->{error} = "All fields need to be filled out" unless ($c->req->param('email') && Email::Valid->address($c->req->param('email')));
