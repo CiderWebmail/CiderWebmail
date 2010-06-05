@@ -29,6 +29,10 @@ html, body {
 }
 
 .message_list th.date {
+    width: 9em;
+}
+
+.message_list.date th.date {
     width: 4em;
 }
 
