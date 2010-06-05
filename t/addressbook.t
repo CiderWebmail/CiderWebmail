@@ -25,7 +25,7 @@ $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password =
 $mech->follow_link_ok({ url_regex => qr{/addressbook} }, 'open addressbook');
 $mech->follow_link_ok({ url_regex => qr{/modify/add} }, 'open add contact form');
 
-$mech->submit_form_ok({ with_fields => { firstname => "firstname-$unix_time", surname => "surname-$unix_time", email => "email-$unix_time\@example.com" } }, 'submit add contact form');
+$mech->submit_form_ok({ with_fields => { firstname => "firstname-$unix_time", surname => "surname-$unix_time", email => "email-$unix_time\@example.com" }, button => 'update' }, 'submit add contact form');
 
 $mech->content_contains("<td>firstname-$unix_time surname-$unix_time<\/td>", 'firstname and surname correct');
 $mech->content_contains("compose?to=email-$unix_time\@example.com", 'email address correct');
@@ -41,7 +41,7 @@ field_contains('firstname', "firstname-$unix_time");
 field_contains('surname', "surname-$unix_time");
 field_contains('email', "email-$unix_time\@example.com");
 
-$mech->submit_form_ok({ with_fields => { firstname => "firstname-edit-$unix_time", surname => "surname-edit-$unix_time", email => "email-edit-$unix_time\@example.com" } }, 'submit edit contact form');
+$mech->submit_form_ok({ with_fields => { firstname => "firstname-edit-$unix_time", surname => "surname-edit-$unix_time", email => "email-edit-$unix_time\@example.com" }, button => 'update' }, 'submit edit contact form');
 
 $mech->content_contains("<td>firstname-edit-$unix_time surname-edit-$unix_time<\/td>", 'firstname and surname correct after edit');
 $mech->content_contains("compose?to=email-edit-$unix_time\@example.com", 'email address correct after edit');
