@@ -43,12 +43,12 @@ my $message_id = $1;
 
 ok( (length($message_id) > 0), 'got message id');
 
-$mech->content_contains('<tr id="message_'.$message_id.'">', 'message is unread');
+$mech->content_like(qr/<tr id="message_$message_id" class="\s*(odd)?">/, 'message is unread');
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id, 'open message');
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_contains('<tr id="message_'.$message_id.'" class="seen">', 'message is read');
+$mech->content_like(qr/<tr id="message_$message_id" class="seen/, 'message is read');
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 

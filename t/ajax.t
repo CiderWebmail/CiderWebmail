@@ -37,18 +37,19 @@ $mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
 
 my @messages = $mech->find_all_links( text_regex => qr{\Aajaxmessage-$unix_time\z});
 
-$messages[0]->attrs->{id} =~ m/link_(\d+)/m;
+$messages[0]->attrs->{id} =~ m/link_(\d+)/xms;
 
 my $message_id = $1;
 
 ok( (length($message_id) > 0), 'got message id');
 
-$mech->content_contains('<tr id="message_'.$message_id.'">', 'message is unread');
+$mech->content_like(qr/<tr id="message_$message_id" class="\s*(odd)?">/, 'message is unread');
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id.'?layout=ajax', 'open message');
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
-$mech->content_contains('<tr id="message_'.$message_id.'" class="seen">', 'message is read');
+
+$mech->content_like(qr/<tr id="message_$message_id" class="seen/, 'message is read');
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
