@@ -105,24 +105,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
             $_->{head}->{subject} = $translation_service->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
 
-            my $name;
-
-            if ($sort eq 'date') {
-                $name = $_->{head}->{date}->ymd;
-            }
-
-            if ($sort =~ m/(from|to)/xm) {
-                my $address = $_->{head}->{$1}->[0];
-                $name = $address ? ($address->name ? $address->address . ': ' . $address->name : $address->address) : 'Unknown';
-            }
-
-            if ($sort eq 'subject') {
-                $name = $_->{head}->{subject};
-                $name =~ s/\A \s+//xm;
-                $name =~ s/\A (re: | fwd?:) \s*//ixm;
-                $name =~ s/\s+ \z//xm;
-            }
-            
+            my $name = CiderWebmail::Util::message_group_name($_, $sort);
+           
             if (not @groups or $groups[-1]{name} ne ($name or '')) {
                 push @groups, {name => $name, messages => []};
             }

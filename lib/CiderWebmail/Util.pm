@@ -113,4 +113,36 @@ sub filter_unusable_addresses {
     return grep {(ref $_ ? $_->address : $_) !~ /\A \s* undisclosed [-\s]* recipients:? \s* \z/ixm} @addresses;
 }
 
+=head2 message_group_name
+
+formats a date/subject/address for message-grouping
+for examples it removes (re:|fwd:) from subjects
+
+=cut
+
+sub message_group_name {
+    my ($message, $sort) = @_;
+
+    my $name;
+
+    if ($sort eq 'date') {
+        $name = $message->{head}->{date}->ymd;
+    }
+
+    if ($sort =~ m/(from|to)/xm) {
+        my $address = $message->{head}->{$1}->[0];
+        $name = $address ? ($address->name ? $address->address . ': ' . $address->name : $address->address) : 'Unknown';
+    }
+
+    if ($sort eq 'subject') {
+        $name = $message->{head}->{subject};
+        $name =~ s/\A \s+//xm;
+        $name =~ s/\A (re: | fwd?:) \s*//ixm;
+        $name =~ s/\s+ \z//xm;
+    }
+
+    return $name;
+}
+
+
 1;
