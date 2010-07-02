@@ -81,7 +81,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
     }
     
-    my (@messages, @groups);
+    my @groups;
     if (@uids) {
         my $uri_folder = $c->stash->{uri_folder};
         my %messages = map { ($_->{uid} => {
@@ -89,7 +89,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
                     uri_view => "$uri_folder/$_->{uid}",
                     uri_delete => "$uri_folder/$_->{uid}/delete",
                 }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
-        @messages = map { $messages{$_} } @uids;
+        my @messages = map { $messages{$_} } @uids;
 
         # yes, this is ugly as hell
         $Petal::I18N::Domain = 'CiderWebmail';
@@ -125,7 +125,6 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
-        messages        => \@messages,
         uri_quicksearch => $c->stash->{uri_folder},
         template        => 'mailbox.xml',
         groups          => \@groups,
