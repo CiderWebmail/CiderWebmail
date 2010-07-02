@@ -50,15 +50,17 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
 sub view : Chained('setup') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
 
+    my $filter = $c->req->param('filter');
+
     my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
     my $full_sort = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
     my $sort = $full_sort;
+    my $reverse = $sort =~ s/\Areverse\W+//xm;
+
     $settings->set_column(sort_order => $full_sort);
     $settings->update_or_insert();
-
-    my $filter = $c->req->param('filter');
 
     my $range;
     if ($c->req->param('after_uid')) {
@@ -68,15 +70,9 @@ sub view : Chained('setup') PathPart('') Args(0) {
 
     my @uids = $mailbox->uids({ sort => [ $full_sort ], filter => $filter, range => $range });
 
-    my $reverse = $sort =~ s/\Areverse\W+//xm;
 
-    my (@messages, @groups);
-    my ($start, $length);
-
-    ($start)  = ($c->req->param('start') or '')  =~ /(\d+)/xm;
-    $start ||= 0;
-    ($length) = ($c->req->param('length') or '') =~ /(\d+)/xm;
-    $length ||= 100;
+    my ($start)  = ($c->req->param('start') or 0)  =~ /(\d+)/xm;
+    my ($length) = ($c->req->param('length') or 100) =~ /(\d+)/xm;
     @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
     unless ($start) { # $start is only > 0 for AJAX requests loading more messages. No need for a foldertree in that case.
@@ -85,6 +81,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
     }
     
+    my (@messages, @groups);
     if (@uids) {
         my $uri_folder = $c->stash->{uri_folder};
         my %messages = map { ($_->{uid} => {
@@ -103,7 +100,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         );
 
         foreach (@messages) {
-            #a range of 123:* *always* returns the laster message, if no messages are after UID123 the message with UID123 is returned, ignore it here
+            #a range of 123:* *always* returns the last message, if there are no messages are UID123 the message with UID123 is returned, ignore it here
             next if ($c->req->param('after_uid') and ($_->{uid} == $c->req->param('after_uid')));
 
             $_->{head}->{subject} = $translation_service->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
