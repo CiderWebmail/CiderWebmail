@@ -75,12 +75,6 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my ($length) = ($c->req->param('length') or 100) =~ /(\d+)/xm;
     @uids = $start <= @uids ? splice @uids, $start, $length : ();
 
-    unless ($start) { # $start is only > 0 for AJAX requests loading more messages. No need for a foldertree in that case.
-        CiderWebmail::Util::add_foldertree_to_stash($c);
-
-        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
-    }
-    
     my @groups;
     if (@uids) {
         my $uri_folder = $c->stash->{uri_folder};
@@ -121,8 +115,15 @@ sub view : Chained('setup') PathPart('') Args(0) {
         }
     }
 
-    $c->stash->{no_translation} = 1 if $start; # $start is only > 0 for AJAX requests loading more messages. No need for translataion in that case.
-
+    if ($start) {
+        # $start is only > 0 for AJAX requests loading more messages. No need for translataion in that case.
+        $c->stash->{no_translation} = 1;
+    } else { 
+        # No AJAX request - add foldertree
+        CiderWebmail::Util::add_foldertree_to_stash($c);
+        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
+    }
+    
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
         uri_quicksearch => $c->stash->{uri_folder},
