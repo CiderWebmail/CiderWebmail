@@ -13,8 +13,6 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 14;
-
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/' );
@@ -56,3 +54,5 @@ $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 $mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
 
 $mech->content_lacks('ajaxmessage-'.$unix_time);
+
+done_testing();

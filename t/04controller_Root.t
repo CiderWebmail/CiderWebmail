@@ -12,8 +12,6 @@ if ($@) {
     exit;
 }
 
-plan tests => 10;
-
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/' );
@@ -46,3 +44,5 @@ $mech->submit_form_ok({
 $mech->follow_link_ok({ url_regex => qr{Testfolder/delete\z} });
 
 $mech->follow_link_ok({ url_regex => qr{/logout\z} });
+
+done_testing();

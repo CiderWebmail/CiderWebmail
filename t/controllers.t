@@ -25,8 +25,6 @@ MIME::Lite->send(sub => sub {
     };
 });
 
-plan tests => 27;
-
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/' );
@@ -114,3 +112,5 @@ $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
 $mech->content_lacks('>Fwd: testmessage-'.$unix_time);
 $mech->content_lacks('>Re: testmessage-'.$unix_time);
+
+done_testing();

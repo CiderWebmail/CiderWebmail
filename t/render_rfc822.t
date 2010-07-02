@@ -13,8 +13,6 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 15;
-
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/' );
@@ -58,6 +56,4 @@ ok((@messages == 2), 'messages found');
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 $mech->get_ok($messages[1]->url.'/delete', "Delete message");
 
-
-
-
+done_testing();

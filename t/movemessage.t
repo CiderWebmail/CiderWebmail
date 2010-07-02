@@ -13,8 +13,6 @@ if ($@) {
 
 my $uname = getpwuid $UID;
 
-plan tests => 18;
-
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 $mech->get_ok( 'http://localhost/' );
@@ -66,3 +64,5 @@ $mech->get_ok('http://localhost/mailbox/testfolder-'.$unix_time.'/delete');
 $mech->get_ok('http://localhost/mailboxes');
 
 $mech->content_lacks('testfolder-'.$unix_time);
+
+done_testing();

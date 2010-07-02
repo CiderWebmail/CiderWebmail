@@ -43,7 +43,6 @@ $mech->get( 'http://localhost/mailbox/INBOX?length=99999' );
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
 
 my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
-plan tests => (3 * @links) + 4; #+ the number of tests after the for loop
 
 my $v = Test::WWW::Mechanize->new();
 for my $link (@links) {
@@ -67,3 +66,5 @@ $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 @messages = $mech->find_all_links( text_regex => qr{\Autf8handling-$unix_time\z});
 ok((@messages == 0), 'messages deleted');
+
+done_testing();
