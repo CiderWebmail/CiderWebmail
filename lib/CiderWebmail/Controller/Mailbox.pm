@@ -85,19 +85,11 @@ sub view : Chained('setup') PathPart('') Args(0) {
                 }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
         my @messages = map { $messages{$_} } @uids;
 
-        # yes, this is ugly as hell
-        $Petal::I18N::Domain = 'CiderWebmail';
-        my $translation_service = Petal::TranslationService::Gettext->new(
-            domain => 'CiderWebmail',
-            locale_dir => $c->config->{root} . '/locale',
-            target_lang => $c->config->{language} || 'en',
-        );
-
         foreach (@messages) {
             #a range of 123:* *always* returns the last message, if there are no messages are UID123 the message with UID123 is returned, ignore it here
             next if ($c->req->param('after_uid') and ($_->{uid} == $c->req->param('after_uid')));
 
-            $_->{head}->{subject} = $translation_service->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
+            $_->{head}->{subject} = $c->stash->{translation_service}->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
 
             my $name = CiderWebmail::Util::message_group_name($_, $sort);
            

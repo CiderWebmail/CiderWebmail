@@ -7,6 +7,8 @@ use base 'Catalyst::Controller';
 use CiderWebmail::Headercache;
 use List::Util qw(reduce);
 
+use Petal::TranslationService::Gettext;
+
 #
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in MyApp.pm
@@ -33,6 +35,16 @@ Only logged in users may use this product.
 
 sub auto : Private {
     my ($self, $c) = @_;
+
+    $Petal::I18N::Domain = 'CiderWebmail';
+    my $translation_service = Petal::TranslationService::Gettext->new(
+            domain => 'CiderWebmail',
+            locale_dir => $c->config->{root} . '/locale',
+            target_lang => $c->config->{language} || 'en',
+        );
+
+    $c->stash->{translation_service} = $translation_service;
+
 
     if ($c->sessionid and $c->session->{username} and $c->authenticate({ id => $c->session->{username}, password => $c->session->{password} })) {
         $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );

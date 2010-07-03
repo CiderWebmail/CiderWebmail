@@ -5,7 +5,6 @@ use Moose;
 extends 'Catalyst::View::Petal';
 
 use Petal::Utils qw( :default :hash );
-use Petal::TranslationService::Gettext;
 
 =head1 NAME
 
@@ -16,24 +15,6 @@ CiderWebmail::View::Petal - Catalyst View
 Catalyst View.
 
 =head1 METHODS
-
-=head2 after COMPONENT
-
-Create a translation service for the configured language.
-
-=cut
-
-my $translation_service;
-
-after COMPONENT => sub {
-    my ($self, $c) = @_;
-    $translation_service = Petal::TranslationService::Gettext->new(
-            domain => 'CiderWebmail',
-            locale_dir => $c->config->{root} . '/locale',
-            target_lang => $c->config->{language} || 'en',
-        );
-    return;
-};
 
 =head2 process
 
@@ -48,7 +29,7 @@ sub process {
     unshift @$base_dir, "$root/ajax" if ($c->req->param('layout') or '') eq 'ajax';
     $self->config(
         base_dir => $base_dir,
-        translation_service => ($c->stash->{no_translation} ? undef : $translation_service),
+        translation_service => ($c->stash->{no_translation} ? undef : $c->stash->{translation_service}),
     ); # this sets the global config, so we have to do it for every request
 
     $c->stash({
