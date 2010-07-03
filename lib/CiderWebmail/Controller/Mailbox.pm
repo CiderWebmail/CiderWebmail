@@ -83,9 +83,8 @@ sub view : Chained('setup') PathPart('') Args(0) {
                     uri_view => "$uri_folder/$_->{uid}",
                     uri_delete => "$uri_folder/$_->{uid}/delete",
                 }) } @{ $mailbox->list_messages_hash({ uids => \@uids }) };
-        my @messages = map { $messages{$_} } @uids;
 
-        foreach (@messages) {
+        foreach ( map { $messages{$_} } @uids ) {
             #a range of 123:* *always* returns the last message, if there are no messages are UID123 the message with UID123 is returned, ignore it here
             next if ($c->req->param('after_uid') and ($_->{uid} == $c->req->param('after_uid')));
 
