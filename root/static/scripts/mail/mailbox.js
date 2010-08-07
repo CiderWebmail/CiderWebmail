@@ -1,17 +1,106 @@
 var droppables;
 var current_message;
+var loading_message;
+
+function get_target_node(event) {
+    var target = event.target || event.srcElement;
+    while (target && target.nodeType == 3) target = target.parentNode;
+    return target;
+}
+
+function show_message(target) {
+    var uid = target.id.replace('link_', '');
+    var messages_pane = $('messages_pane');
+
+    $('message_view').innerHTML = loading_message;
+    $('loading_message').style.display = 'block';
+    $('help_message').style.display = 'none';
+
+    if (! $('content').hasClass('message_display')) {
+        var message_divider_top = Cookie.read('message_divider_message_display_top');
+        $('content').addClass('message_display');
+        messages_pane.style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
+        $('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
+        $('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
+    }
+
+    if (current_message)
+        current_message.removeClass('active');
+
+    current_message = $(target.parentNode.parentNode);
+    current_message.addClass('seen');
+    current_message.addClass('active');
+
+    if (current_message.offsetTop + current_message.offsetHeight > messages_pane.scrollTop + messages_pane.offsetHeight)
+        messages_pane.scrollTop = current_message.offsetTop + current_message.offsetHeight - messages_pane.offsetHeight;
+
+    if (current_message.offsetTop < messages_pane.scrollTop)
+        messages_pane.scrollTop = current_message.offsetTop;
+
+    var myHTMLRequest = new Request.HTML({
+        onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
+            var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
+            $('message_view').innerHTML = parsed[2];
+            update_foldertree(parsed[1], responseTree);
+        }
+    }).get(target.href + "?layout=ajax");
+}
+
+function show_previous_message() {
+    var previous = current_message.previousSibling;
+
+    if (previous && previous.nodeType != 1) previous = previous.previousSibling;
+
+    if (! previous || ! previous.id) { // first row is the group header
+        var prev_group = current_message.parentNode.previousSibling;
+        if (prev_group) {
+            var prev_messages = prev_group.getElementsByTagName('tr');
+            previous = prev_messages[prev_messages.length - 1];
+        }
+    }
+
+    if (previous && previous.id) { // first row of the table is table header
+        show_message(document.getElementById(previous.id.replace('message', 'link'))); //left
+        return 1;
+    }
+
+    return 0;
+}
+
+function show_next_message() {
+    var next = current_message.nextSibling;
+
+    if (next && next.nodeType != 1) next = next.nextSibling;
+
+    if (! next) {
+        var next_group = current_message.parentNode.nextSibling;
+        if (next_group && next_group.nodeType != 1) next_group = next_group.nextSibling;
+        if (next_group)
+            next = next_group.getElementsByTagName('tr')[1]; // first row is the group header
+    }
+
+    if (next) {
+        show_message(document.getElementById(next.id.replace('message', 'link'))); //left
+        return 1;
+    }
+
+    return 0;
+}
+
+function delete_message(icon) {
+    new Request({url: icon.parentNode.href, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
+
+    var group = icon.parentNode.parentNode.parentNode.parentNode;
+    group.removeChild(icon.parentNode.parentNode.parentNode);
+    if (group.getElementsByTagName('tr').length == 1)
+        group.parentNode.removeChild(group);
+}
 
 window.addEvent('load', function() {
     var selected = [];
     droppables = $('folder_tree').getElements('.folder');
-    var loading_message = $('message_view').innerHTML;
+    loading_message = $('message_view').innerHTML;
     var cancelled = false;
-
-    function get_target_node(event) {
-        var target = event.target || event.srcElement;
-        while (target && target.nodeType == 3) target = target.parentNode;
-        return target;
-    }
 
     function start(event) {
         var target = get_target_node(event);
@@ -37,44 +126,6 @@ window.addEvent('load', function() {
         }
     }
 
-    function show_message(target) {
-        var uid = target.id.replace('link_', '');
-        var messages_pane = $('messages_pane');
-
-        $('message_view').innerHTML = loading_message;
-        $('loading_message').style.display = 'block';
-        $('help_message').style.display = 'none';
-
-        if (! $('content').hasClass('message_display')) {
-            var message_divider_top = Cookie.read('message_divider_message_display_top');
-            $('content').addClass('message_display');
-            messages_pane.style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
-            $('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
-            $('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
-        }
-
-        if (current_message)
-            current_message.removeClass('active');
-
-        current_message = $(target.parentNode.parentNode);
-        current_message.addClass('seen');
-        current_message.addClass('active');
-
-        if (current_message.offsetTop + current_message.offsetHeight > messages_pane.scrollTop + messages_pane.offsetHeight)
-            messages_pane.scrollTop = current_message.offsetTop + current_message.offsetHeight - messages_pane.offsetHeight;
-
-        if (current_message.offsetTop < messages_pane.scrollTop)
-            messages_pane.scrollTop = current_message.offsetTop;
-
-        var myHTMLRequest = new Request.HTML({
-            onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-                var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
-                $('message_view').innerHTML = parsed[2];
-                update_foldertree(parsed[1], responseTree);
-            }
-        }).get(target.href + "?layout=ajax");
-    }
-
     function handle_click(event) {
         var target = get_target_node(event);
         var tagname = target.tagName.toLowerCase();
@@ -85,12 +136,7 @@ window.addEvent('load', function() {
             stop_propagation(event);
         }
         else if (tagname == 'img' && target.id && target.id.indexOf('delete_') == 0) {
-            var uid = target.id.replace('delete_', '');
-            new Request({url: target.parentNode.href, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
-            var group = target.parentNode.parentNode.parentNode.parentNode;
-            group.removeChild(target.parentNode.parentNode.parentNode);
-            if (group.childNodes.length == 1)
-                group.parentNode.removeChild(group);
+            delete_message(target);
             stop_propagation(event);
         }
         else {
@@ -120,28 +166,10 @@ window.addEvent('load', function() {
     add_event_listener('keyup', function (event) {
             switch (event.keyCode) {
                 case 37: // left
-                    var previous = current_message.previousSibling;
-                    if (previous && previous.nodeType != 1) previous = previous.previousSibling;
-                    if (! previous || ! previous.id) { // first row is the group header
-                        var prev_group = current_message.parentNode.previousSibling;
-                        if (prev_group) {
-                            var prev_messages = prev_group.getElementsByTagName('tr');
-                            previous = prev_messages[prev_messages.length - 1];
-                        }
-                    }
-                    if (previous && previous.id) // first row of the table is table header
-                        show_message(document.getElementById(previous.id.replace('message', 'link'))); //left
+                    show_previous_message();
                     break;
                 case 39: // right
-                    var next = current_message.nextSibling;
-                    if (next && next.nodeType != 1) next = next.nextSibling;
-                    if (! next) {
-                        var next_group = current_message.parentNode.nextSibling;
-                        if (next_group)
-                            next = next_group.getElementsByTagName('tr')[1]; // first row is the group header
-                    }
-                    if (next)
-                        show_message(document.getElementById(next.id.replace('message', 'link'))); //left
+                    show_next_message();
                     break;
             }
         }, false);
