@@ -53,7 +53,7 @@ window.addEvent('load', function() {
         current_message = target.parentNode.parentNode;
         var myHTMLRequest = new Request.HTML({
             onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-                var parsed = responseHTML.match(/([\s\S]*?)<div[^>]*>([\s\S]*)<\/div>/);
+                var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
                 $('message_view').innerHTML = parsed[2];
                 update_foldertree(parsed[1], responseTree);
             }
@@ -183,7 +183,7 @@ function fetch_new_rows(start_index, length) {
 
 function update_foldertree(responseText, responseXML) {
     var folder_tree = responseText.match(/<ul[^>]*id="folder_tree"[^>]*>([\s\S]*)<\/ul>/i)[1]; // responseXML.getElementById doesn't work in IE
-    window.title = window.title.replace(/- \(\d+\)$/, '- (' + responseText.match(/<div id="unseen">(\d+)<\/div>/)[1] + ')');
+    document.title = document.title.replace(/- \(\d+\)$/, '- (' + responseText.match(/<div id="unseen">(\d+)<\/div>/)[1] + ')');
     document.getElementById('folder_tree').innerHTML = folder_tree;
     droppables = $('folder_tree').getElements('.folder');
 }

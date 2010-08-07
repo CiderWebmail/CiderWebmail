@@ -15,6 +15,7 @@
     </head>
     <body>
         <ul metal:use-macro="folder_tree.xml#folder_tree"/>
+        <div metal:use-macro="folder_tree.xml#folder_data"/>
         <div metal:define-slot="content"/>
     </body>
 </html>

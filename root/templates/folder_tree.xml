@@ -23,7 +23,7 @@
                 </li>
             </div>
         </ul>
-        <div id="folder_data">
+        <div metal:define-macro="folder_data" id="folder_data">
             <div id="unseen" tal:content="folder_data/unseen"/>
         </div>
     </body>
