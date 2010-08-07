@@ -225,7 +225,7 @@ sub reply : Chained('setup') Args() {
 
     if ($who eq 'sender') {
         my $recipient = ($message->reply_to or $message->from);
-        @recipients = $recipient->[0]->address;
+        @recipients = $recipient->[0]->address if @$recipient and $recipient->[0];
     } elsif ($who eq 'all') {
         foreach( ( ( $message->reply_to or $message->from ), $message->cc, $message->to ) ) {
             push(@recipients, $_->address) foreach( @$_ );
