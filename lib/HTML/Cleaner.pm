@@ -228,11 +228,11 @@ sub _filter_tag_font {
 
     my $output = "<span";
 
-    if ((lc($o->{attr}->{color}) or '') =~ m/([a-f]+|\#[\da-f]{3,6})/ixm) {
+    if (lc($o->{attr}->{color} or '') =~ m/([a-f]+|\#[\da-f]{3,6})/ixm) {
         $o->{attr}->{style} .= "color: $1;";
     }
 
-    if ((lc($o->{attr}->{face}) or '') =~ m/^([a-z\-]+)$/ixm) {
+    if (lc($o->{attr}->{face} or '') =~ m/^([a-z\-]+)$/ixm) {
         $o->{attr}->{style} .= "font-family: $1;";
     }
 
@@ -247,7 +247,7 @@ sub _filter_tag_font {
         6 => 'xx-large',
     };
 
-    if ((lc($o->{attr}->{size}) or '') =~ m/^([1-6]+)$/xm) {
+    if (lc($o->{attr}->{size} or '') =~ m/^([1-6]+)$/xm) {
         $o->{attr}->{style} .= "font-size: ".$font_size_to_css->{$1}.";";
     }
 
