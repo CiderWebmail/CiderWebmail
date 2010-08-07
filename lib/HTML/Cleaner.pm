@@ -282,19 +282,19 @@ sub _filter_tag_table {
 
     my $output = "<table";
 
-    if ((lc($o->{attr}->{width}) or '') =~ m/^(\d{1,4})$/xm) {
+    if ((lc($o->{attr}->{width} or '')) =~ m/^(\d{1,4})$/xm) {
         $o->{attr}->{style} .= " width: $1px;";
     }
 
-    if ((lc($o->{attr}->{align}) or '') =~ m/^(left|center|right)$/xm) {
+    if ((lc($o->{attr}->{align} or '')) =~ m/^(left|center|right)$/xm) {
         $o->{attr}->{style} .= " text-align: $1;";
     }
 
-    if ((lc($o->{attr}->{cellspacing}) or '') eq 0) {
+    if ((lc($o->{attr}->{cellspacing} or '')) eq 0) {
         $o->{attr}->{style} .= " border-collapse: collapse;";
     }
 
-    if ((lc($o->{attr}->{cellpadding}) or '') =~ m/^(\d+px)$/xm) {
+    if ((lc($o->{attr}->{cellpadding} or '')) =~ m/^(\d+px)$/xm) {
         $o->{attr}->{style} .= " padding: $1;";
     }
 
@@ -317,19 +317,19 @@ sub _filter_tag_td {
 
     my $output = "<td";
 
-    if ((lc($o->{attr}->{width}) or '') =~ m/^(\d{1,4})$/xm) {
+    if ((lc($o->{attr}->{width} or '')) =~ m/^(\d{1,4})$/xm) {
         $o->{attr}->{style} .= "width: $1px;";
     }
 
-    if ((lc($o->{attr}->{height}) or '') =~ m/^(\d{1,4})$/xm) {
+    if ((lc($o->{attr}->{height} or '')) =~ m/^(\d{1,4})$/xm) {
         $o->{attr}->{style} .= "height: $1px;";
     }
 
-    if ((lc($o->{attr}->{align}) or '') =~ m/^(left|center|right)$/xm) {
+    if ((lc($o->{attr}->{align} or '')) =~ m/^(left|center|right)$/xm) {
         $o->{attr}->{style} .= "text-align: $1;";
     }
 
-    if ((lc($o->{attr}->{bgcolor}) or '') =~ m/([a-f]+|\#[\da-f]{3,6})/ixm) {
+    if ((lc($o->{attr}->{bgcolor} or '')) =~ m/([a-f]+|\#[\da-f]{3,6})/ixm) {
         $o->{attr}->{style} .= "background-color: $1;";
     }
 
