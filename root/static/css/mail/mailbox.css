@@ -81,6 +81,10 @@ html, body {
     text-decoration: line-through;
 }
 
+#message_list tbody tr.active {
+    background-color: #80c0ff;
+}
+
 ul#folder_tree a.hover {
     color: white;
     background-color: green;

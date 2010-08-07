@@ -39,18 +39,33 @@ window.addEvent('load', function() {
 
     function show_message(target) {
         var uid = target.id.replace('link_', '');
-        $(target.parentNode.parentNode).addClass('seen');
+        var messages_pane = $('messages_pane');
+
         $('message_view').innerHTML = loading_message;
         $('loading_message').style.display = 'block';
         $('help_message').style.display = 'none';
+
         if (! $('content').hasClass('message_display')) {
             var message_divider_top = Cookie.read('message_divider_message_display_top');
             $('content').addClass('message_display');
-            $('messages_pane').style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
+            messages_pane.style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
             $('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
             $('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
         }
-        current_message = target.parentNode.parentNode;
+
+        if (current_message)
+            current_message.removeClass('active');
+
+        current_message = $(target.parentNode.parentNode);
+        current_message.addClass('seen');
+        current_message.addClass('active');
+
+        if (current_message.offsetTop + current_message.offsetHeight > messages_pane.scrollTop + messages_pane.offsetHeight)
+            messages_pane.scrollTop = current_message.offsetTop + current_message.offsetHeight - messages_pane.offsetHeight;
+
+        if (current_message.offsetTop < messages_pane.scrollTop)
+            messages_pane.scrollTop = current_message.offsetTop;
+
         var myHTMLRequest = new Request.HTML({
             onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
                 var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
