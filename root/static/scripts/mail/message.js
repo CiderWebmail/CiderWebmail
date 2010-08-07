@@ -21,5 +21,11 @@ add_event_listener('keyup', function (event) {
                     delete_message(delete_icon);
                 }
                 break;
+            case 82: // 'r'
+                window.open($$('.reply')[0].href);
+                break;
+            case 70: // 'f'
+                window.open($$('.forward')[0].href);
+                break;
         }
     }, false);

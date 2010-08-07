@@ -18,9 +18,9 @@
                 <h1 tal:content="message/subject">Subject</h1>
                 <p class="message_actions">
                     <span class="message_main_actions">
-                        <a tal:attributes="href string:${uri_reply}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
-                        <a tal:attributes="href string:${uri_reply_all}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply All</span></a>
-                        <a tal:attributes="href string:${uri_forward}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
+                        <a class="reply" tal:attributes="href string:${uri_reply}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
+                        <a class="reply_all" tal:attributes="href string:${uri_reply_all}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply All</span></a>
+                        <a class="forward" tal:attributes="href string:${uri_forward}/${message/path}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
                     </span>
                     <span class="message_detail_actions">
                         <a onclick="toggleHeader(this, 1)" i18n:translate="">Show all headers</a>
