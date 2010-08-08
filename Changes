@@ -1,84 +1,89 @@
-1.03 XXX
-	- We have a logo! Thanks to Andreas Marschke
-	- Fixed missing folder tree on compose message
-	- Completely reworked MIME handling. Should render everything possible.
-	- Massive improvement of rendering HTML mails.
-	- Huge speedup of message list display
-	- Much improved design courtesy of kmail developers
-	- Navigation column and message list are resizable and retain those sizes
-	- Option to send via SMTP instead of sendmail
-	- List/view/move/delete message again works with disabled JavaScript.
+1.03 2010-08-08 21:00:00
+    - Fixed missing folder tree on compose message
+    - Completely reworked MIME handling. Should render everything possible.
+    - Massive improvement of rendering HTML mails.
+    - Huge speedup of message list display
+    - Much improved design courtesy of kmail developers
+    - Navigation column and message list are resizable and retain those sizes
+    - Option to send via SMTP instead of sendmail
+    - List/view/move/delete message again works with disabled JavaScript.
+    - Initial addressbook implementation
+    - Auto link URIs in text/plain messages
+    - Display number of unread messages in folder title
+    - Load message list as the user is scrolling
+    - Highlight the current message and scroll it into view (for keyboard navigation)
+    - Additional keybindings for delete/reply/forward.
 
 1.02 2010-03-16 17:00:00
-	Bugfix release
-	- Increased test suite coverage to 85%
-	- Fixed replying to normal messages directly
-	- Fixed rendering of messages without From and/or To
-	- Fixed attachment downloading of forwarded messages
-	- Implemented in-reply-to for embedded messages
-	- Close IMAP connection at the end of request (Fixed leaked connections)
-	- Dramatic speed increase due to no longer fetching an additional folder tree
+    Bugfix release
+    - Increased test suite coverage to 85%
+    - Fixed replying to normal messages directly
+    - Fixed rendering of messages without From and/or To
+    - Fixed attachment downloading of forwarded messages
+    - Implemented in-reply-to for embedded messages
+    - Close IMAP connection at the end of request (Fixed leaked connections)
+    - Dramatic speed increase due to no longer fetching an additional folder tree
 
 1.01 2009-12-14 17:00:00
-	- Finished incremental message loading
-	- Use different icons according to message state
-	- Cursor left/right as shortcuts for displaying previous/next message
-	- Shortcut for moving the current message
-	- Allow reply/forward to attached messages
-	- Render ICal attachments
-	- Using form based login now instead of relying on HTTP basic auth
+    - Finished incremental message loading
+    - Use different icons according to message state
+    - Cursor left/right as shortcuts for displaying previous/next message
+    - Shortcut for moving the current message
+    - Allow reply/forward to attached messages
+    - Render ICal attachments
+    - Using form based login now instead of relying on HTTP basic auth
 
-	Development:
-	- Ported CiderWebmail to Moose
-	- Created a usable test suite and added lots of tests
-	- Fixed quite a few bugs
-	- Fixed perl critic level 5 violations
+    Development:
+    - Ported CiderWebmail to Moose
+    - Created a usable test suite and added lots of tests
+    - Fixed quite a few bugs
+    - Fixed perl critic level 5 violations
 
 1.00 2009-07-28 16:15:00
-	- Bugfixes
-	- Polishing
+    - Bugfixes
+    - Polishing
 
 0.07 2009-07-26 21:20:00
-	- Rendering of message/rfc822 attachments (forwarded messages)
-	- Sending of multiple attachments
-	- Remove empty groups on message deletion
-	- Allow dragging of mail lines and not only of icons
-	- Show details about forwarded messages in compose window
-	- Open reply and forward links in new windows
-	- Add in-reply-to and references headers on reply
-	- Bugfixes
+    - Rendering of message/rfc822 attachments (forwarded messages)
+    - Sending of multiple attachments
+    - Remove empty groups on message deletion
+    - Allow dragging of mail lines and not only of icons
+    - Show details about forwarded messages in compose window
+    - Open reply and forward links in new windows
+    - Add in-reply-to and references headers on reply
+    - Bugfixes
 
 0.06 2009-06-30 11:20:00
-	- Show attachments as attachments, even if they are renderable
+    - Show attachments as attachments, even if they are renderable
 
 0.05 2009-06-29 11:30:00
-	- Folder management: creating and deleting folders
-	- Store per user settings like From address and Sent folder
-	- Update folder counts on AJAX move/delete
-	- Use a Trash folder if available
+    - Folder management: creating and deleting folders
+    - Store per user settings like From address and Sent folder
+    - Update folder counts on AJAX move/delete
+    - Use a Trash folder if available
 
 0.04 2009-06-27 17:59:00
-	- Use server side sorting
-	- Allow reversal of sort order
-	- Convert message times to local timezone
+    - Use server side sorting
+    - Allow reversal of sort order
+    - Convert message times to local timezone
 
 0.03  2009-06-24 11:48:00
-	- Print layouts
+    - Print layouts
         - Logout
 
 0.02  2009-05-28 17:20:00
-	- Listing folders
-	- Listing messages
-	- Displaying messages
-	- Composing messages
-	- Replying to messages with quoted text
-	- Reply to all
-	- Forwarding messages as attachment
-	- Deleting messages
-	- Moving messages
-	- Marking mails read when opening
-	- Print views of message list and messages
+    - Listing folders
+    - Listing messages
+    - Displaying messages
+    - Composing messages
+    - Replying to messages with quoted text
+    - Reply to all
+    - Forwarding messages as attachment
+    - Deleting messages
+    - Moving messages
+    - Marking mails read when opening
+    - Print views of message list and messages
 
 0.01  2008-05-13 21:44:31
-        - initial revision, generated by Catalyst
+    - initial revision, generated by Catalyst
 
