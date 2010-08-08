@@ -5,7 +5,6 @@ inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
-inc/Module/Install/Catalyst.pm
 inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
@@ -16,10 +15,12 @@ inc/Module/Install/WriteAll.pm
 lib/Catalyst/Authentication/Store/IMAP.pm
 lib/Catalyst/Authentication/Store/IMAP/User.pm
 lib/CiderWebmail.pm
+lib/CiderWebmail/Controller/Addressbook.pm
 lib/CiderWebmail/Controller/Mailbox.pm
 lib/CiderWebmail/Controller/Message.pm
 lib/CiderWebmail/Controller/Root.pm
 lib/CiderWebmail/DB.pm
+lib/CiderWebmail/DB/Result/Addressbook.pm
 lib/CiderWebmail/DB/Result/Settings.pm
 lib/CiderWebmail/Headercache.pm
 lib/CiderWebmail/Mailbox.pm
@@ -27,8 +28,18 @@ lib/CiderWebmail/Message.pm
 lib/CiderWebmail/Message/Forwarded.pm
 lib/CiderWebmail/Model/DB.pm
 lib/CiderWebmail/Model/IMAPClient.pm
+lib/CiderWebmail/Part.pm
+lib/CiderWebmail/Part/MultipartAlternative.pm
+lib/CiderWebmail/Part/MultipartMixed.pm
+lib/CiderWebmail/Part/MultipartRelated.pm
+lib/CiderWebmail/Part/RFC822.pm
+lib/CiderWebmail/Part/TextCalendar.pm
+lib/CiderWebmail/Part/TextHtml.pm
+lib/CiderWebmail/Part/TextPlain.pm
 lib/CiderWebmail/Util.pm
 lib/CiderWebmail/View/Petal.pm
+lib/HTML/Cleaner.pm
+LICENSE
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -40,6 +51,7 @@ root/locale/de/LC_MESSAGES/CiderWebmail.mo
 root/locale/de/LC_MESSAGES/CiderWebmail.po
 root/locale/en/LC_MESSAGES/CiderWebmail.mo
 root/locale/en/LC_MESSAGES/CiderWebmail.po
+root/static/css/addressbook.css
 root/static/css/base.css
 root/static/css/IE6.css
 root/static/css/mail/mailbox.css
@@ -55,6 +67,8 @@ root/static/images/btn_88x31_built_shadow.png
 root/static/images/btn_88x31_powered.png
 root/static/images/btn_88x31_powered_shadow.png
 root/static/images/catalyst_logo.png
+root/static/images/delete.png
+root/static/images/logo-small.png
 root/static/images/logo.png
 root/static/images/mail_forward.png
 root/static/images/mail_reply.png
@@ -285,12 +299,16 @@ root/static/images/mimeicons/world1.gif
 root/static/images/mimeicons/world1.png
 root/static/images/mimeicons/world2.gif
 root/static/images/mimeicons/world2.png
+root/static/images/sort_down.png
+root/static/images/sort_up.png
 root/static/images/trashcan.gif
 root/static/scripts/base.js
 root/static/scripts/mail/mailbox.js
 root/static/scripts/mail/message.js
 root/static/scripts/mootools-1.2-core.js
 root/static/scripts/mootools-1.2-more.js
+root/templates/addressbook/edit.xml
+root/templates/addressbook/list.xml
 root/templates/compose.xml
 root/templates/create_mailbox.xml
 root/templates/folder_tree.xml
@@ -300,6 +318,9 @@ root/templates/logout.xml
 root/templates/mailbox.xml
 root/templates/mailboxes.xml
 root/templates/message.xml
+root/templates/parts/TextCalendar.xml
+root/templates/parts/TextHtml.xml
+root/templates/parts/TextPlain.xml
 root/var/user_settings.sql
 script/ciderwebmail_cgi.pl
 script/ciderwebmail_create.pl
@@ -311,6 +332,10 @@ t/02pod.t
 t/03podcoverage.t
 t/04controller_Root.t
 t/99style.t
+t/addressbook.t
+t/ajax.t
+t/ciderwebmail_part.t
+t/controller_Addressbook.t
 t/controller_Mailbox.t
 t/controller_Message.t
 t/controllers.t
@@ -326,9 +351,12 @@ t/readmessage.t
 t/render_html.t
 t/render_ical.t
 t/render_rfc822.t
+t/render_textplain.t
 t/searchmessage.t
 t/testattachment.txt
 t/testmessages/HTML.mbox
 t/testmessages/ICAL.mbox
+t/testmessages/TEXT.mbox
 t/view_Petal.t
+t/xhtml_validation.t
 TODO
