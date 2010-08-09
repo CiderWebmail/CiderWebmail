@@ -66,12 +66,15 @@ window.addEvent('load', function() {
         $('content').style.left = control_panel_width + 'px';
     }
 
-    $('message_divider').addEvent('mousedown', start_message_view_resize);
+    var message_divider = $('message_divider');
+    if (message_divider) {
+        message_divider.addEvent('mousedown', start_message_view_resize);
 
-    var message_divider_top = Cookie.read('message_divider_top');
-    if ($('messages_pane') && message_divider_top) {
-        $('messages_pane').style.bottom = $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px';
-        $('message_view').style.top     = message_divider_top + 'px';
-        $('message_divider').style.top  = message_divider_top + 'px';
+        var message_divider_top = Cookie.read('message_divider_top');
+        if ($('messages_pane') && message_divider_top) {
+            $('messages_pane').style.bottom = $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px';
+            $('message_view').style.top     = message_divider_top + 'px';
+            message_divider.style.top  = message_divider_top + 'px';
+        }
     }
 });
