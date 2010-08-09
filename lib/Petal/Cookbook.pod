@@ -1,0 +1,397 @@
+=head1 NAME
+
+Petal::Cookbook - Recipes for building templates with Petal
+
+
+
+=head1 DESCRIPTION
+
+This document contains some examples of L<Petal|Petal> template usage. Most of
+these examples deal with using Petal to generate HTML files from HTML
+templates.
+
+
+
+=head1 BASICS
+
+
+=head2 Template location
+
+When using Petal for web application development, your templates should not
+need to be accessible by the webserver. In fact, it could be a security
+risk if they are available since there may be code or comments which users
+should not see prior to processing by Petal. Thus, it is recommended to store
+your templates in a non-web accessible directory. Personally I prefer to place
+the directory outside of the web root but you could also use permissions or
+.htaccess files to control access to the directory. This directory path should
+go into the $Petal::BASE_DIR global setting or the 'base_dir' argument for the
+new() constructor.
+
+
+=head2 Template naming
+
+Petal is indifferent about the name of the template files. Personally, I like
+to name my templates with the .tmpl extension to help myself and designers
+distinguish templates from static html. Some GUI editors, though, will not
+open files without a htm/html extension (esp. under Windows).
+
+
+=head2 Fixing invalid templates (Is this XML well-formed?)
+
+If you are getting a parse_error when trying to process your template, you
+will need to clean up your XHTML template in order for Petal to process it.
+Two tools will be of great assistance in taking the step towards better
+standards compliance--HTML Tidy (L<http://tidy.sf.net>) and xmllint. In
+addition, you can use the page validation services at W3C
+(L<http://validator.w3.org/>). Alternatively, you could use the
+L<Petal::Parser::HTB> module which will parse non well-formed HTML documents
+using L<HTML::TreeBuilder>.
+
+HTML Tidy will rewrite your document into valid XHTML and, if requested, even
+replace legacy formatting tags with their CSS counterparts. You can safely
+ignore the warnings about proprietary attributes. Be sure to read the output
+of what HTML Tidy is doing or else you may find it removing important tags
+which it thinks are empty or invalid (e.g., inline elements outside of a
+block). One of the important options that should be set is output_xhtml
+(-asxhtml from the command-line).  Here's an example of how to use it (see the
+documentation for complete details):
+
+  tidy --asxhtml original_file.html > new_file.html
+
+Once your document is well-formed, you can use xmllint to do day-to-day
+checking that it stays well-formed without having to wade through the warnings
+that HTML Tidy will generate about proprietary attributes. The following command will check that a document is well-formed:
+
+  xmllint --noout <filename>
+
+To prevent errors about undefined namespace prefix, be sure to include these
+in your template like so:
+
+  <html xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:petal="http://purl.org/petal/1.0/"
+   xmlns:metal="http://xml.zope.org/namespaces/metal">
+
+You may receive errors from xmllint about unknown entities such as &nbsp;.
+These can be safely ignored, though you can use the numeric version &#160;
+instead to keep xmllint happy.  If you find a way to suppress these warnings,
+please let us know. In the meantime, you can pass the output through grep to
+ignore these bogus warnings:.
+
+  xmllint --noout  tmpl/contact_info.tmpl >& grep -v 'Entity'
+
+Now you have no excuse for not creating well-formed XHTML documents.
+
+
+=head2 Passing a hashreference to Petal::process
+
+An effective way to collate data to send to the Petal process command is via a
+hash reference. Used as follows, this technique allows you to build up your
+data to be passed to the template slowly:
+
+  my $hash = { string => 'Three', 'number' => 3 };
+  $hash->{'foo'} = "bar";
+  my $template = new Petal ( 'test.tmpl' );
+  my $html = $template->process($hash);
+  # Output the results
+  print "Content-type: text/html\n\n";
+  print $html;
+
+
+=head2 Basic loops with tal:repeat
+
+One way to use tal:repeat is to create an a reference to an array of anonymous
+hashes. Here is an example:
+
+  my $array_ref= [
+    { firstname=>"David",
+      surname=>"Lloyd"
+    },
+    { firstname=>"Susan",
+      surname=>"Jones"
+    }
+  ];
+
+With this array you can use the tal:repeat structure. Let's say you have this
+template - this is a snippet so don't forget the proper name space declarations
+and such:
+
+  <table>
+  <tr>
+    <th>First Name</th>
+    <th>Last Name</th>
+  </tr>
+  
+  <tr tal:repeat="name names/list_of_names">
+    <td tal:content="name/firstname">First Name</td>
+    <td tal:content="name/lastname">Last Name</td>
+  </tr>
+  </table>
+
+If you processed that template and the method call "list_of_names" returned an
+array reference as described above, you'd get:
+
+  <table>
+  <tr>
+    <th>First Name</th>
+    <th>Last Name</th>
+  </tr>
+  
+  <tr>
+    <td>David</td>
+    <td>Lloyd</td>
+  </tr>
+  
+  <tr>
+    <td>Susan</td>
+    <td>Jones</td>
+  </tr>
+  </table>
+
+So, in a tal:repeat construct:
+
+  tal:repeat="tal_variable_name EXPRESSION"
+
+tal_variable_name is the name of the variable you use in your tal template to
+refer to each row of data you are looping through.
+
+EXPRESSION should return an array reference, where each row is an anonymous
+hash, array, scalar or object.
+
+You can then refer to the members of the anonymous hash like this:
+
+   "$tal_variable_name/key_from_hash"
+
+
+=head1 INTERMEDIATE TIPS
+
+=head2 Assigning attributes (submitted by Warren Smith)
+
+Up until now, if I wanted to use petal to pre-select an item in a selectbox, I
+would have to do each item twice, like so:
+
+  <select>
+    <div petal:repeat="option options">
+      <option petal:condition="true: option/selected" petal:attributes="value option/value" petal:content="option/label" selected="selected">Option 1</option>
+      <option petal:condition="false: option/selected" petal:attributes="value option/value" petal:content="option/label">Option 2</option>
+    </div>
+  </select>
+
+  $VAR1 = [
+          { value => 1, label => 'Option 1', selected => 1 },
+          { value => 2, label => 'Option 2', selected => 0 },
+          { value => 4, label => 'Option 3', selected => 0 },
+  ];
+
+
+After reading the Petal source, I found that if you use petal:attributes
+to assign an attribute an undefined value, the attribute gets omitted,
+thus the above code can be replaced with the simpler version below:
+
+  <select>
+    <option petal:attributes="value option/value; selected option/selected" petal:content="option/label">Option 1</option>
+  </select>
+
+  $VAR1 = [
+          { value => 1, label => 'Option 1', selected => 1 },
+          { value => 2, label => 'Option 2' },
+          { value => 4, label => 'Option 3' },
+  ];
+
+It turns out that although not documented in Petal's documentation, this
+behavior is part of the TAL specification:
+
+         http://www.zope.org/Wikis/DevSite/Projects/ZPT/TAL
+
+Thanks to Fergal Daly for his knowledge of the TAL specification.
+
+
+=head2 Generating even/odd rows (submitted by Warren Smith)
+
+I developed a decode: modifier that works similar to Oracle's decode
+statement. It provides an if/then/else construct and is part of the
+L<Petal::Utils|Petal::Utils> collection of modifiers. Using decode, it is
+possible to make even/odd rows of a table different classes, which allows you
+to do things like alter color, font-size, etc, is relatively easy.
+
+Example:
+
+  <table>
+    <tr tal:repeat="emp employees" tal:attr="class decode: repeat/even 1 'even' 'odd'">
+      <td tal:content="emp/name">Employee Name</td>
+      ...
+    </tr>
+  </table>
+
+See L<Petal::Utils|Petal::Utils> for more information.
+
+Alternatively, this can be done entirely with TAL (contributed by Jonathan
+Vanasco):
+
+  <div tal:repeat="row rows">
+          <tag tal:omit-tag="string:1" tal:condition="repeat/even"><tag
+  tal:define="rowClass string:rowEven" tal:omit-tag="string:1"/></tag>
+          <tag tal:omit-tag="string:1" tal:condition="repeat/odd"><tag
+  tal:define="rowClass string:rowOdd" tal:omit-tag="string:1"/></tag>
+          <div
+                  tal:attributes="class rowClass"
+          >
+          This will use either the rowEven or rowOdd class. All of the 'tag'
+  elements are omitted on render. This uses a nested define tag in a
+  condition tag, because define precedes condition in order of operations.
+          </div>
+  <div>
+
+The simplest way to do odd/even rows may to duplicate the code entirely for
+each type or row, though this may cause maintenance headaches:
+
+  <table>
+    <tr tal:repeat="emp employees">
+      <td tal:condition="repeat/odd" class="odd" tal:content="emp/name">Employee Name</td>
+      <td tal:condition="repeat/even" class="even" tal:content="emp/name">Employee Name</td>
+      ...
+    </tr>
+  </table>
+
+
+=head1 ADVANCED
+
+
+=head2 Invoking methods on objects
+
+Petal supports the ability to call an object's methods if passed in to Petal::process via the %hash. Say you wish to check whether a particular record is contained in a recordset returned from an SQL query. Using OO-Perl techniques, you could use the following technique as described by Jean-Michel:
+
+=over 4
+
+=item * all your records are hashrefs which come from some database
+
+=item * you have a list of them to display
+
+=back
+
+Let's say that the database table looks like this:
+
+Raters (id, first_name, last_name, relation, phone, email)
+
+You could bless each record into a package as is:
+
+    use MyApplication::Record::Rater;
+    my @records = complicated_query_somewhere_else();
+    bless $_, "MyApplication::Record::Rater" for (@records);
+    $hash->{'records'} = \@records;
+
+
+Your module could look like that:
+
+    package MyApplication::Record::Rater;
+    use strict;
+    use warnings;
+    use CGI;
+    use Carp;
+
+    sub is_current_id
+    {
+        my $self = shift;
+        my $cgi  = CGI->new;
+        my $id = $cgi->param ('rater.id');
+        return unless (defined $id and $id and $id =~ /^\d+$/);
+        return $id == $self->{id};
+    }
+
+    1;
+
+Then on top of your existing data, you have a method which you can call
+from Petal, i.e.
+
+    <ul petal:repeat="record records">
+      <li petal:condition="true:record/is_current_id" petal:content="string: Current id = $record/id">Current id</li>
+    </ul>
+
+This trick can also be used when you have foreign keys in database fields.
+
+<fictious_scenario>
+
+For example, let's imagine that you have a column called 'friend_id'. It
+references another 'rater' which is supposed to be a friend of that person.
+
+You could define the following subroutine:
+
+    # give me the friend record for that person
+    sub friend
+    {
+        my $self = shift;
+        my $friend_id = $self->{friend_id};
+        my $sql = 'select * from rater where id = ?';
+        my $sth = $::DBH_CONNECTION->prepare_cached ($sql);
+        $sth->execute ($friend_id);
+        my $hash = $sth->fetchrow_hashref;
+        return unless (defined $hash);
+
+        bless $hash, "MyApplication::Record::Rater";
+        return $hash;
+    }
+
+Then in your template, you could do:
+
+  <div petal:if="true:rater/friend">
+    Your friend is: <span petal:content="string: $rater/friend/first_name $rater/friend/last_name">First Last</span>
+  </div>
+
+</fictious_scenario>
+
+Thanks to Jean-Michel Hiver for this tip.
+
+If you are doing a lot of database manipulation via Petal, you probably should
+consider an object-relational mapping library . Personally, I recommend
+L<Class::DBI|Class::DBI>.  There is a list of many of these tools at Perl
+Object Oriented Persistence (L<http://poop.sourceforge.net/>).
+
+
+=head2 Using CGI.pm to build forms
+
+Calling the HTML generating methods of CGI.pm from the Petal template provides
+an extremely simple means to develop forms.  For example, the ususal ratnest of
+loops used to populate a checkbox group can be replaced by the simple and
+elegant construct below.  You can put in a dummy checkbox to give the HTML
+designer something to look at. Be sure to call CGI with the -compile option as
+follows:
+
+  use CGI qw(-compile [:all]);
+  $hash->{'query'} = new CGI;
+  $hash->{'choices'} = [1, 2, 3, 4];
+
+  <span petal:replace="query/checkbox_group 'Choices' choices '' 'true'">
+    <input name="Choices" type="checkbox" value="test">Test</input>
+  </span>
+
+Thanks to Kurt Stephens for this tip.
+
+
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+All code examples in these files are hereby placed into the public domain. You
+are permitted and encouraged to use this code in your own programs for fun or
+for profit as you see fit. A simple comment in the code giving credit would be
+courteous but is not required.
+
+
+
+=head1 AUTHOR
+
+William McKee <william@knowmad.com>.
+
+Thanks to the following contributors: Jean-Michel Hiver, Kurt Stephens, Warren
+Smith, Fergal Daly.
+
+
+
+=head1 SEE ALSO
+
+L<Petal|Petal>, L<Petal::Utils|Petal::Utils>, the test file t/084_Cookbook.t
+and the test template t/data/cookbook.html.
+
+=cut
+
