@@ -4,7 +4,6 @@ use Test::More;
 use Regexp::Common qw(Email::Address);
 use Email::Address;
 use WWW::Mechanize;
-use WebService::Validator::HTML::W3C::Fast;
 
 use English qw(-no_match_vars);
 
