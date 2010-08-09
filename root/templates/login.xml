@@ -24,6 +24,10 @@
             <p i18n:translate="">Please login using your mailbox credentials:</p>
             <form method="post">
                 <p tal:condition="true: message" tal:content="message"/>
+                <label tal:condition="false: server">
+                    <span i18n:translate="">Server</span>
+                    <input name="server"/>
+                </label>
                 <label>
                     <span i18n:translate="">Username</span>
                     <input name="username"/>

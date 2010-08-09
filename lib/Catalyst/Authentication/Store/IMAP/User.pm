@@ -93,19 +93,22 @@ sub check_password {
     my $id = $self->id;
     my $c  = $self->{c};
 
-    my %connect_info = (
-        Server  => $c->config->{authentication}{realms}{imap}{store}{host},
-    );
+    my %connect_info;
 
-    if (exists $c->config->{server}{port}) {
-        $connect_info{Port} = $c->config->{server}{port};
-        if ($connect_info{Port} == 993) { # use SSL
-            require IO::Socket::SSL;
-            my $ssl = IO::Socket::SSL->new("$connect_info{Server}:imaps");
-            croak ("Error connecting to IMAP server: $@") unless defined $ssl;
-            $ssl->autoflush(1);
-            %connect_info = (Socket => $ssl);
-        }
+    if ($c->stash->{server}) {
+        @connect_info{qw(Server Port)} = split /:/xm, $c->stash->{server};
+    }
+    else {
+        %connect_info = ( Server => $c->config->{authentication}{realms}{imap}{store}{host} );
+    }
+
+    $connect_info{Port} ||= $c->config->{server}{port} || 143;
+    if ($connect_info{Port} == 993) { # use SSL
+        require IO::Socket::SSL;
+        my $ssl = IO::Socket::SSL->new("$connect_info{Server}:imaps");
+        croak ("Error connecting to IMAP server: $@") unless defined $ssl;
+        $ssl->autoflush(1);
+        %connect_info = (Socket => $ssl);
     }
 
     my $imap = Mail::IMAPClient->new(

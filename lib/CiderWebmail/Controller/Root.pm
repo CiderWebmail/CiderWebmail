@@ -46,19 +46,22 @@ sub auto : Private {
     $c->stash->{translation_service} = $translation_service;
 
 
-    if ($c->sessionid and $c->session->{username} and $c->authenticate({ id => $c->session->{username}, password => $c->session->{password} })) {
-        $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
+    if ($c->sessionid and $c->session->{username}) {
+        $c->stash->{server} = $c->session->{server};
+        if ($c->authenticate({ id => $c->session->{username}, password => $c->session->{password} })) {
+            $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
 
-        #IMAPClient setup
-        $c->stash->{imapclient}->Ranges(1);
+            #IMAPClient setup
+            $c->stash->{imapclient}->Ranges(1);
 
-        $c->stash({
-            uri_mailboxes   => $c->uri_for('/mailboxes'),
-            uri_addressbook => $c->uri_for('/addressbook'),
-            uri_logout      => $c->uri_for('/logout'),
-        });
+            $c->stash({
+                uri_mailboxes   => $c->uri_for('/mailboxes'),
+                uri_addressbook => $c->uri_for('/addressbook'),
+                uri_logout      => $c->uri_for('/logout'),
+            });
 
-        return 1;
+            return 1;
+        }
     }
 
     # Give the user a chance to authenticate
@@ -76,14 +79,19 @@ Private action that auto forwards to so we can prepend it do a login on any URI 
 sub login : Private {
     my ( $self, $c ) = @_;
 
+    my $server = $c->config->{server};
+
     my %user_data = (
             username => $c->req->param('username'),
             password => $c->req->param('password'),
         );
 
+    $c->stash->{server} = $c->req->param('server') if not ($server and %$server) and $c->req->param('server');
+
     if ($user_data{username} and $user_data{password}) {
         if ($c->authenticate(\%user_data)) {
-            $c->session->{$_} = $user_data{$_} foreach qw(username password); # save for repeated IMAP authentication
+            $c->session->{$_} = $user_data{$_} foreach qw(server username password); # save for repeated IMAP authentication
+            $c->session->{server} = $c->stash->{server};
 
             return $c->res->redirect($c->req->uri);
         }
@@ -92,6 +100,7 @@ sub login : Private {
         }
     }
 
+    $c->stash({ server => "$server->{host}:$server->{port}" }) if $server and %$server;
     $c->stash({ template => 'login.xml' });
 
     return;
