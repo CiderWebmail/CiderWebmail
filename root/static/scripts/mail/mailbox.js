@@ -168,7 +168,13 @@ window.addEvent('load', function() {
                 case 37: // left
                     show_previous_message();
                     break;
+                case 75: // k
+                    show_previous_message();
+                    break;
                 case 39: // right
+                    show_next_message();
+                    break;
+                case 74: // j
                     show_next_message();
                     break;
             }
