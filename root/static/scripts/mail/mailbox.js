@@ -177,6 +177,15 @@ window.addEvent('load', function() {
                 case 74: // j
                     show_next_message();
                     break;
+                case 32: // space bar
+                    document.getElementById('message_view').scrollTop = (document.getElementById('message_view').scrollTop + 250);
+                    break;
+                case 38: // arrow up
+                    document.getElementById('message_view').scrollTop = (document.getElementById('message_view').scrollTop - 25);
+                    break;
+                case 40: // arrow down
+                    document.getElementById('message_view').scrollTop = (document.getElementById('message_view').scrollTop + 25);
+                    break;
             }
         }, false);
 
