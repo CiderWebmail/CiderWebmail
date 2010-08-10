@@ -200,6 +200,22 @@ sub create_folder : Local {
     return;
 }
 
+=head2 error
+
+Display an error message found on the stash
+
+=cut
+
+sub error : Private {
+    my ( $self, $c ) = @_;
+
+    $c->stash({
+        template => 'error.xml',
+    });
+
+    return;
+}
+
 =head2 render
 
 Attempt to render a view, if needed.

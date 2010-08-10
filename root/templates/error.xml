@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
+    >
+    <head>
+        <title metal:fill-slot="title" i18n:translate="">Compose Message</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css"/>
+    </head>
+    <body>
+        <div id="error" metal:fill-slot="content">
+            <h1 i18n:translate="">Error</h1>
+            <p class="error_message" tal:content="error"/>
+        </div>
+    </body>
+</html>
+

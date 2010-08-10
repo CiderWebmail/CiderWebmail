@@ -345,12 +345,19 @@ sub send : Chained('/mailbox/setup') Args(0) {
         }
     }
 
-    if (($c->config->{send}->{method} or '') eq 'smtp') {
-        croak('smtp host not set') unless defined $c->config->{send}->{host};
-        $mail->send('smtp', $c->config->{send}->{host}) or croak('unable to send message');
-    }
-    else {
-        $mail->send or croak('unable to send message');
+    eval {
+        if (($c->config->{send}->{method} or '') eq 'smtp') {
+            croak('smtp host not set') unless defined $c->config->{send}->{host};
+            $mail->send('smtp', $c->config->{send}->{host}) or croak('unable to send message');
+        }
+        else {
+            $mail->send or croak('unable to send message');
+        }
+    };
+
+    if ($@) {
+        $c->stash->{error} = $@;
+        $c->detach('/error');
     }
 
     if ($sent_folder) {
