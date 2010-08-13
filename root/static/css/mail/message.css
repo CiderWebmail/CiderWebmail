@@ -120,3 +120,8 @@ div.calendar .heading {
 .monospace {
     font-family: monospace;
 }
+
+.rtl {
+    direction: RTL;
+    unicode-bidi: embed;
+}
