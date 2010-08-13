@@ -36,6 +36,8 @@ Only logged in users may use this product.
 sub auto : Private {
     my ($self, $c) = @_;
 
+    DB::enable_profile() if $ENV{NYTPROF};
+
     $Petal::I18N::Domain = 'CiderWebmail';
     my $translation_service = Petal::TranslationService::Gettext->new(
             domain => 'CiderWebmail',
@@ -238,6 +240,8 @@ sub end : Private {
     $c->forward('render');
 
     $c->model('IMAPClient')->disconnect($c) unless $ENV{CIDERWEBMAIL_NODISCONNECT}; # disconnect but not for some tests that still need the connection
+
+    DB::disable_profile() if $ENV{NYTPROF};
 
     return;
 }
