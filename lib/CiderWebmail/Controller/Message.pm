@@ -115,6 +115,8 @@ Move a message to the trash (if available) or delete a message from the trash.
 sub delete : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
 
+    CiderWebmail::Util::add_foldertree_to_stash($c);
+
     my $folders = $c->stash->{folders_hash};
     my $trash = first { $_ =~ /\b trash | papierkorb \b/ixm } keys %$folders; # try to find a folder called "Trash"
 
