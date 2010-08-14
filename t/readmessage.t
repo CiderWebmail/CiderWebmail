@@ -25,7 +25,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
-        sent_folder => 'INBOX',
+        sent_folder => 'Sent',
         subject     => 'readmessage-'.$unix_time,
         body        => 'readmessage',
     },

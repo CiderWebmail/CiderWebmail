@@ -30,7 +30,7 @@ $mech->submit_form(
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
-        sent_folder => 'INBOX',
+        sent_folder => 'Sent',
         subject     => 'utf8handling-'.$unix_time,
         body        => 'utf8handling',
     },

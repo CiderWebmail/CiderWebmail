@@ -28,7 +28,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
-        sent_folder => 'INBOX',
+        sent_folder => 'Sent',
         subject     => 'attachment-'.$unix_time,
         body        => 'attachment',
         attachment  => $attachment_file,
@@ -54,7 +54,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
-        sent_folder => 'INBOX',
+        sent_folder => 'Sent',
         subject     => 'attachmentforward-'.$unix_time,
         body        => 'attachmentforward',
     },

@@ -28,7 +28,7 @@ $mech->submit_form(
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
-        sent_folder => 'INBOX',
+        sent_folder => 'Sent',
         subject     => 'messagehandling-'.$unix_time,
         body        => 'messagehandling',
     },
@@ -64,6 +64,10 @@ for my $link (@links) {
 
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
+
+    $mech->back;
+
+    $mech->follow_link_ok({ url_regex => qr{/view_source} }, 'view source');
 
     $mech->back;
 
