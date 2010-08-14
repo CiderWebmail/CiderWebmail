@@ -4,6 +4,7 @@ use Moose;
 
 use Data::ICal;
 use DateTime::Format::ISO8601;
+use HTML::Entities;
 
 use Text::Flowed;
 
@@ -43,10 +44,10 @@ sub render {
         my $dt_end = $dt->parse_datetime($end->[0]->value);
 
         push(@events, {
-            start => join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")),
-            end => join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")),
-            summary => $summary->[0]->value, 
-            description => $description, }
+            start => HTML::Entities::encode(join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")), '<>&'),
+            end => HTML::Entities::encode(join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")), '<>&'),
+            summary => HTML::Entities::encode($summary->[0]->value, '<>&'),
+            description => HTML::Entities::encode($description, '<>&'), }
         );
     }
 
