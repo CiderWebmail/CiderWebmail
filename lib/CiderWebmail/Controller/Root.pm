@@ -213,6 +213,8 @@ Display an error message found on the stash
 sub error : Private {
     my ( $self, $c ) = @_;
 
+    $c->response->status(500);
+
     $c->stash({
         template => 'error.xml',
     });
