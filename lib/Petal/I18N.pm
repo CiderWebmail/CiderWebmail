@@ -10,6 +10,7 @@ use strict;
 
 use Cache::FastMmap;
 use Digest::MD5;
+use Encode qw(encode_utf8);
 
 our $Namespace = "http://xml.zope.org/namespaces/i18n";
 our $Prefix    = 'i18n';
@@ -26,7 +27,7 @@ sub process
     local $Domain    = $Domain;
 
     my $cache = Cache::FastMmap->new({ share_file => '/tmp/ciderwebmail/i18ncache', unlink_on_exit => 0 });
-    my $md5 = Digest::MD5::md5_hex($data); 
+    my $md5 = Digest::MD5::md5_hex(encode_utf8($data));
 
     my $value = $cache->get($md5);
     return $value if defined $value;
