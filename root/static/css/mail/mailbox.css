@@ -51,8 +51,9 @@ html, body {
 
 .message_list tr th {
     border-style: solid;
-    border-color: lightgrey;
-    border-width: 0px 0px 2px 0px;
+    border-color: #efefef #bebebe lightgrey #efefef;
+    background-color: #efefef;
+    border-width: 0px 1px 2px 0px;
 }
 
 
