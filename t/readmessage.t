@@ -41,7 +41,7 @@ my $message_id = $1;
 
 ok( (length($message_id) > 0), 'got message id');
 
-$mech->content_like(qr/<tr id="message_$message_id" class="\s*(odd)?">/, 'message is unread');
+$mech->content_like(qr/<tr id="message_$message_id" class="\s*(even|odd)?">/, 'message is unread');
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id, 'open message');
 

@@ -46,7 +46,7 @@ Takes a list of uids or a sort order.
 sub list_messages_hash {
     my ($self, $o) = @_;
     
-    return $self->c->model('IMAPClient')->get_headers_hash($self->c, { mailbox => $self->mailbox, uids => $o->{uids}, headers => [qw/From Subject Date/] });
+    return $self->c->model('IMAPClient')->get_headers_hash($self->c, { mailbox => $self->mailbox, uids => $o->{uids}, headers => [qw/To From Subject Date/] });
 }
 
 =head2 uids({filter => 'searchme', sort => 'date'})

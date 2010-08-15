@@ -114,20 +114,22 @@ sub view : Chained('setup') PathPart('') Args(0) {
         CiderWebmail::Util::add_foldertree_to_stash($c);
         $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
     }
-    
+
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
         uri_quicksearch => $c->stash->{uri_folder},
         template        => 'mailbox.xml',
         groups          => \@groups,
         filter          => $filter,
+        show_to         => ($c->stash->{folder} =~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
+        show_from       => ($c->stash->{folder} !~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
         sort            => $full_sort,
         "sort_$sort"    => 'sorted',
         reverse         => $reverse ? 'reverse' : undef,
         (map {
             $sort_uri->query_param(sort => ($_ eq $sort and not $reverse) ? "reverse $_" : $_);
             ("uri_sorted_$_" => $sort_uri->as_string)
-        } qw(from subject date)),
+        } qw(to from subject date)),
     });
 
     return;
