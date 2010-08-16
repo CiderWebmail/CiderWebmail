@@ -46,16 +46,27 @@
                                 <span tal:repeat="address message/from">
                                     <a class="from_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
                                     <a tal:attributes="href string:${uri_add_address}?email=${address/address}&name=${address/name}" title="Add to addressbook">+</a>
+                                    <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
                                 </span>
                             </td>
                         </tr>
                         <tr tal:condition="true: message/to">
                             <th i18n:translate="">To:</th>
-                            <td><a class="to_address" tal:repeat="address message/to" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a></td>
+                            <td>
+                                <span tal:repeat="address message/to">
+                                    <a class="to_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
+                                    <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
+                                </span>
+                            </td>
                         </tr>
                         <tr tal:condition="true:message/cc">
                             <th i18n:translate="">Cc:</th>
-                            <td><a class="cc_address" tal:repeat="address message/cc" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a></td>
+                            <td>
+                                <span tal:repeat="address message/cc">
+                                    <a class="cc_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
+                                    <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
+                                </span>
+                            </td>
                         </tr>
                         <tr>
                             <th i18n:translate="">Date:</th>
