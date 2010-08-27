@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::XPath;
 use English qw(-no_match_vars);
 
 return plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};
@@ -31,12 +32,19 @@ $mech->submit_form_ok({
     },
 });
 
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
+my @messages = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
+$messages[0]->attrs->{id} =~ m/link_(\d+)/m;
+my $message_id = $1;
+ok( (length($message_id) > 0), 'got message id');
+
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999&filter=searchmessage-'.$unix_time, 'search request successful' );
 
-$mech->content_like( qr/link_\d+\">searchmessage-$unix_time/, 'searchmessage' );
+my $tx = Test::XPath->new(xml => $mech->content, is_html => 1);
+$tx->is("//a[\@id='link_$message_id']", 'searchmessage-'.$unix_time, "correct message found" );
 
-my @messages = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+my @messages_delete = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
+$mech->get_ok($messages_delete[0]->url.'/delete', "Delete message");
 
 $mech->get_ok( 'http://localhost' );
 
