@@ -6,9 +6,13 @@ use Petal;
 use Petal::I18N;
 use Petal::TranslationService::Gettext;
 use File::Find;
+use Cwd;
 
 my @files;
 my @folders;
+
+my $cwd = getcwd();
+die("needs to be run from the root/templates folder!") unless($cwd =~ m/root\/templates$/);
 
 find(\&wanted, 'base');
 
