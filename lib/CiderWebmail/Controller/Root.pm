@@ -46,7 +46,14 @@ sub auto : Private {
         );
 
     $c->stash->{translation_service} = $translation_service;
-    $c->stash->{language} = $c->config->{language} || 'en';
+
+    if (( $c->request->headers->header('Accept-Language') or '') =~ m/^de/i) {
+        $c->stash->{language} = 'de';
+    } elsif (( $c->request->headers->header('Accept-Language') or '') =~ m/^en/i) {
+        $c->stash->{language} = 'en';
+    } else {
+        $c->stash->{language} = $c->config->{language} || 'en';
+    }
 
 
     if ($c->sessionid and $c->session->{username}) {
