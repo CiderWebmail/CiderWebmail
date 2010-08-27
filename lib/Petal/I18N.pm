@@ -8,10 +8,6 @@ use Petal::Hash::String;
 use warnings;
 use strict;
 
-use Cache::FastMmap;
-use Digest::MD5;
-use Encode qw(encode_utf8);
-
 our $Namespace = "http://xml.zope.org/namespaces/i18n";
 our $Prefix    = 'i18n';
 our $Domain    = 'default';
@@ -26,18 +22,9 @@ sub process
     local $Prefix    = $Prefix;
     local $Domain    = $Domain;
 
-    my $cache = Cache::FastMmap->new({ share_file => '/tmp/ciderwebmail/i18ncache', unlink_on_exit => 0 });
-    my $md5 = Digest::MD5::md5_hex(encode_utf8($data));
-
-    my $value = $cache->get($md5);
-    return $value if defined $value;
-
     my @nodes = MKDoc::XML::TreeBuilder->process_data ($data);
     for (@nodes) { $class->_process ($_) }
-    my $tree = MKDoc::XML::TreePrinter->process (@nodes);
-
-    $cache->set($md5, $tree);
-    return $tree;
+    return MKDoc::XML::TreePrinter->process (@nodes);
 }
 
 

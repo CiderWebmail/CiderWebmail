@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://purl.org/petal/1.0/" lang="en" xmlns:metal="http://xml.zope.org/namespaces/metal" xml:lang="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title metal:define-slot="title">Folder tree</title>
+    </head>
+    <body>
+        <ul id="folder_tree" metal:define-macro="folder_tree">
+            <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
+                <li tal:attributes="class folder/selected" metal:define-macro="folder-tree">
+                    <a href="#" tal:attributes="href folder/uri_view; title folder/id" class="folder"><span tal:content="folder/name" class="name" /> <span tal:content="string: ${folder/unseen}/${folder/total}" class="counts" /></a>
+                    <ul tal:condition="true:folders" tal:repeat="folder folders" tal:define="folders folder/folders">
+                        <li metal:use-macro="#folder-tree">Dummy Child 1</li>
+                    </ul>
+                </li>
+            </div>
+        </ul>
+        <div id="folder_data" metal:define-macro="folder_data">
+            <div tal:content="folder_data/unseen" id="unseen" />
+        </div>
+    </body>
+</html>

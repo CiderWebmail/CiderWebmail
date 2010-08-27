@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <title tal:content="message/subject" metal:fill-slot="title">Message</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css" />
+        <script tal:attributes="src string:${uri_static}/scripts/mail/message.js" type="text/javascript" metal:fill-slot="scripts" />
+    </head>
+    <body tal:omit-tag="" metal:fill-slot="content">
+        <div metal:define-macro="view_message">
+            <div class="message_view_head">
+                <h1 tal:content="message/subject">Subject</h1>
+                <p class="message_actions">
+                    <span class="message_main_actions">
+                        <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_reply}/${message/path}" class="reply"><img alt="" tal:attributes="src string:${uri_static}/images/mail_reply.png" /> <span>Reply</span></a>
+                        <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_reply_all}/${message/path}" class="reply_all"><img alt="" tal:attributes="src string:${uri_static}/images/mail_reply.png" /> <span>Reply All</span></a>
+                        <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_forward}/${message/path}" class="forward"><img alt="" tal:attributes="src string:${uri_static}/images/mail_forward.png" /> <span>Forward</span></a>
+                    </span>
+                    <span class="message_detail_actions">
+                        <a onclick="toggleHeader(this, 1)">Show all headers</a>
+                        <a onclick="return open_in_new_window(this)" tal:attributes="href uri_view_source">View source</a>
+                    </span>
+                </p>
+                <form method="post" tal:attributes="action uri_move" class="move_message">
+                    <fieldset>
+                        <label>
+                            <span>Target folder:</span>
+                            <select name="target_folder">
+                                <option tal:content="folder/id" tal:repeat="folder target_folders" />
+                            </select>
+                        </label>
+                        <button type="submit">Move message</button>
+                    </fieldset>
+                </form>
+                <div class="message_header">
+                    <table>
+                        <tr tal:condition="true: message/from">
+                            <th>From:</th>
+                            <td>
+                                <span tal:repeat="address message/from">
+                                    <a tal:content="if: address/name then: address/name else: address/address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" class="from_address">from</a>
+                                    <a title="Add to addressbook" tal:attributes="href string:${uri_add_address}?email=${address/address}&name=${address/name}">+</a>
+                                    <span tal:condition="false: repeat/end" tal:omit-tag="">, </span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr tal:condition="true: message/to">
+                            <th>To:</th>
+                            <td>
+                                <span tal:repeat="address message/to">
+                                    <a tal:content="if: address/name then: address/name else: address/address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" class="to_address">from</a>
+                                    <span tal:condition="false: repeat/end" tal:omit-tag="">, </span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr tal:condition="true:message/cc">
+                            <th>Cc:</th>
+                            <td>
+                                <span tal:repeat="address message/cc">
+                                    <a tal:content="if: address/name then: address/name else: address/address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" class="cc_address">from</a>
+                                    <span tal:condition="false: repeat/end" tal:omit-tag="">, </span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Date:</th>
+                            <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
+                        </tr>
+                    </table>
+                    <pre tal:content="message/header_formatted" style="display: none;" class="all_headers">header</pre>
+                    <div tal:condition="true:message/attachments" class="attachments">
+                        <div tal:repeat="attachment message/attachments" class="attachment">
+                            <a tal:attributes="href string:${uri_view_attachment}/${attachment/path}; title attachment/type; id string:attachment_${attachment/path}">
+                                    <img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}; alt attachment/type" /><br />
+                                    <span tal:content="attachment/name" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="message_body">
+                <div tal:repeat="body_part message/renderable" class="body_part">
+                    <div tal:condition="false: body_part/message" tal:omit-tag=""><div tal:condition="true: body_part/renderable" tal:replace="structure body_part/render" /></div>
+                    <div tal:condition="true: body_part/message" tal:omit-tag="">
+                        <div class="forwarded" tal:define="message body_part/render">
+                            <div metal:use-macro="#view_message" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

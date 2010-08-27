@@ -46,6 +46,7 @@ sub auto : Private {
         );
 
     $c->stash->{translation_service} = $translation_service;
+    $c->stash->{language} = $c->config->{language} || 'en';
 
 
     if ($c->sessionid and $c->session->{username}) {

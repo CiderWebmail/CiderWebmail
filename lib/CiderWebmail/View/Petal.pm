@@ -27,11 +27,14 @@ sub process {
 
     my $root = $c->config->{root};
 
-    my $base_dir = ["$root/templates", $root];
-    unshift @$base_dir, "$root/ajax" if ($c->req->param('layout') or '') eq 'ajax';
+    my $base_dir = [
+        join('/', $root, 'templates', $c->stash->{language}),
+    ];
+
+    unshift @$base_dir, join('/', $root, 'templates', $c->stash->{language}, 'ajax') if ($c->req->param('layout') or '') eq 'ajax';
+
     $self->config(
         base_dir => $base_dir,
-        translation_service => ($c->stash->{no_translation} ? undef : $c->stash->{translation_service}),
     ); # this sets the global config, so we have to do it for every request
 
     $c->stash({
@@ -56,12 +59,16 @@ sub render_template {
     my ($self, $o) = @_;
 
     my $root = $o->{c}->config->{root};
-    my $base_dir = ["$root/templates/parts"];
+
+    my $base_dir = [
+        join('/', $root, 'templates', $o->{c}->stash->{language}, 'parts'),
+    ];
 
     my $template = Petal->new( base_dir => $base_dir, file => $o->{template});
     my $output = $template->process( $o->{stash} );
     $output =~ s/[^\x01-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]//gxmo;
     $output =~    s/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F]//gxmo;
+
     return $output;
 }
 

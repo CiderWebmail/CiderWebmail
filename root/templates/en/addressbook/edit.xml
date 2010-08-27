@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <title metal:fill-slot="title">Edit contact</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/addressbook.css" metal:fill-slot="css" />
+    </head>
+    <body tal:omit-tag="" metal:fill-slot="content">
+        <h1>Edit contact</h1>
+        <div tal:condition="error" tal:content="error" />
+        <form enctype="multipart/form-data" tal:attributes="action string:${uri_modify}" method="post">
+            <div>
+                <input name="id" tal:attributes="value id" type="hidden" />
+
+                <label>
+                    <span>First name:</span>
+                    <input name="firstname" tal:attributes="value firstname" />
+                </label>
+                <label>
+                    <span>Last name:</span>
+                    <input name="surname" tal:attributes="value surname" />
+                </label>
+                <label>
+                    <span>E-Mail:</span>
+                    <input name="email" tal:attributes="value email" />
+                </label>
+                <button value="1" name="update" type="submit">Save</button>
+            </div>
+        </form>
+    </body>
+</html>

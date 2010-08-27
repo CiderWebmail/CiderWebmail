@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://purl.org/petal/1.0/" lang="en" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal" xml:lang="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title metal:define-slot="title">CiderWebmail</title>
+        <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/base.css" />
+        <span tal:replace="structure condcomment_lt_ie7_start" /><link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/IE6.css" type="text/css" /><span tal:replace="structure condcommentend" />
+        <script tal:attributes="src string:${uri_static}/scripts/mootools-1.2-core.js" type="text/javascript" />
+        <script tal:attributes="src string:${uri_static}/scripts/mootools-1.2-more.js" type="text/javascript" />
+        <script tal:attributes="src string:${uri_static}/scripts/base.js" type="text/javascript" />
+    </head>
+    <body>
+        <div id="login" metal:fill-slot="content">
+            <h1>Welcome to CiderWebmail</h1>
+            <p>Please login using your mailbox credentials:</p>
+            <form method="post">
+                <p tal:condition="true: message" tal:content="message" />
+                <label tal:condition="false: server">
+                    <span>Server</span>
+                    <input name="server" />
+                </label>
+                <label>
+                    <span>Username</span>
+                    <input name="username" />
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input name="password" type="password" />
+                </label>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </body>
+</html>
