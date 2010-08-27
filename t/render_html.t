@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::XPath;
 use English qw(-no_match_vars);
 use FindBin qw($Bin);
 
@@ -40,15 +41,11 @@ $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password =
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'htmltest-'.$unix_time });
 
-$mech->content_contains('<div class="html_message renderable"><p><span style="font-weight: bold;">This is an HTML testmail.</span></p>', 'check content 1');
-$mech->content_contains('<p>teststyle</p>', 'check content 1');
-$mech->content_contains('<p><img alt="&nbsp;" src="http://localhost/nothere" /> <span style="font-size:  small;">foofontsize2</span></p>', 'check content 3');
-$mech->content_contains('<table>', 'check content 4');
-$mech->content_contains('<tr>', 'check content 5');
-$mech->content_contains('<td>test</td>', 'check content 6');
-$mech->content_contains('</tr>', 'check content 7');
-$mech->content_contains('</table>', 'check content 8');
-$mech->content_contains('<div style="text-align: center">CENTERTEXT</div></div>', 'check content 9');
+
+my $tx = Test::XPath->new(xml => $mech->content, is_html => 1);
+$tx->ok( "//div[\@class='html_message renderable']", sub {
+    $_->is( './p[1]/span', 'This is an HTML testmail.', 'p/span ok' );
+}, 'check html' );
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Ahtmltest-$unix_time\z});
