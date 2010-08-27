@@ -20,6 +20,8 @@ Catalyst View.
 
 =cut
 
+__PACKAGE__->config(input => 'XHTML', output => 'XHTML');
+
 sub process {
     my ($self, $c) = @_;
 

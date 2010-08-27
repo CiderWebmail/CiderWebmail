@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::XPath;
 use English qw(-no_match_vars);
 
 return plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};
@@ -41,7 +42,8 @@ my $message_id = $1;
 
 ok( (length($message_id) > 0), 'got message id');
 
-$mech->content_like(qr/<tr id="message_$message_id" class="\s*(even|odd)?">/, 'message is unread');
+my $tx_unread = Test::XPath->new(xml => $mech->content, is_html => 1);
+$tx_unread->unlike("//tr[\@id='message_$message_id']/\@class", qr/seen/, "message is unread" );
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id.'?layout=ajax', 'open message');
 
@@ -49,7 +51,8 @@ $mech->content_like(qr/ajaxmessage-body-$unix_time/, 'message body there');
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?layout=ajax&length=99999' );
 
-$mech->content_like(qr/<tr id="message_$message_id" class="seen/, 'message is read');
+my $tx_read = Test::XPath->new(xml => $mech->content, is_html => 1);
+$tx_read->like("//tr[\@id='message_$message_id']/\@class", qr/seen/, "message is read" );
 
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
