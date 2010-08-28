@@ -43,7 +43,7 @@ requires 'Text::Iconv';
 requires 'Text::Flowed';
 
 requires 'IO::Socket::SSL';
-requires 'Mail::IMAPClient' => '3.23';
+requires 'Mail::IMAPClient' => '3.25';
 
 requires 'Clone';
 requires 'HTML::Scrubber';
