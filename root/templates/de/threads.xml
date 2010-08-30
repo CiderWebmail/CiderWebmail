@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://purl.org/petal/1.0/" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <tal:div tal:omit-tag="" metal:fill-slot="css">
+            <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" />
+            <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" />
+        </tal:div>
+        <tal:div tal:omit-tag="" metal:fill-slot="scripts">
+            <script tal:attributes="src string:${uri_static}/scripts/mail/mailbox.js" type="text/javascript" />
+            <script tal:attributes="src string:${uri_static}/scripts/mail/message.js" type="text/javascript" />
+        </tal:div>
+    </head>
+    <body>
+        <div tal:omit-tag="" metal:fill-slot="content">
+            <div id="folder_headline">
+                <h1 tal:content="folder">Mailbox</h1>
+                <form method="GET" tal:attributes="action uri_quicksearch" id="quicksearch">
+                    <input name="sort" tal:attributes="value sort" type="hidden" />
+                    <input name="filter" tal:attributes="value filter" />
+                    <button type="submit">Suchen</button>
+                </form>
+            </div>
+            <div id="messages_pane">
+                <table tal:attributes="class string:message_list ${sort}" id="message_list">
+                    <tr>
+                        <th class="icons"></th>
+                        <th tal:condition="true: show_from" tal:attributes="class string:from ${sort_from} ${reverse}"><a tal:attributes="href uri_sorted_from">Von</a></th>
+                        <th tal:condition="true: show_to" tal:attributes="class string:to ${sort_to} ${reverse}"><a tal:attributes="href uri_sorted_to">To</a></th>
+                        <th tal:attributes="class string:subject ${sort_subject} ${reverse}"><a tal:attributes="href uri_sorted_subject">Betreff</a></th>
+                        <th tal:attributes="class string:date ${sort_date} ${reverse}"><a tal:attributes="href uri_sorted_date">Datum</a></th>
+                        <th class="actions"></th>
+                    </tr>
+                    <tbody tal:repeat="message threads">
+                        <tr tal:attributes="id string:message_${message/uid}; class if: repeat/even then: string:${message/flags} even else: string:${message/flags} odd">
+                            <td class="icons"><img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats" /><img tal:condition="true: message/attachments" alt="attachment" tal:attributes="src string:${uri_static}/images/attachment.png" /></td>
+                            <td tal:condition="true: show_from" tal:attributes="id string:from_${message/uid}" class="sender">
+                                <span tal:condition="false: sort_from" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/from" tal:attributes="title address/address">from</span>
+                            </td>
+                            <td tal:condition="true: show_to" tal:attributes="id string:to_${message/uid}" class="recipient">
+                                <span tal:condition="false: sort_to" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/to" tal:attributes="title address/address">from</span>
+                            </td>
+                            <td class="subject"><a tal:content="message/head/subject" tal:attributes="href message/uri_view; id string:link_${message/uid}" onclick="return false" /></td>
+                            <td tal:condition="true: sort_date" tal:content="message/head/date/strftime '%T'">date</td>
+                            <td tal:condition="false: sort_date" tal:content="message/head/date/strftime '%F %T'">date</td>
+                            <td class="actions"><a tal:attributes="href message/uri_delete"><img alt="delete" tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" /></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="fetching_message">Lade weitere Emails</div>
+            </div>
+            <div id="message_divider" />
+            <div id="message_view">
+                <p id="help_message">Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen Ordner zu verschieben.</p>
+                <p id="loading_message">Lade Email</p>
+            </div>
+        </div>
+    </body>
+</html>

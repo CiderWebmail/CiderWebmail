@@ -361,6 +361,17 @@ sub simple_search {
     return wantarray ? @uids : \@uids; 
 }
 
+sub get_threads {
+    my ($self, $c, $o) = @_;
+
+    croak unless $o->{mailbox};
+    $self->select($c, { mailbox => $o->{mailbox} });
+
+    my $threads = $c->stash->{imapclient}->thread('REFERENCES', 'UTF-8', 'ALL');
+
+    return $threads;
+}
+
 =head2 get_headers_string($c, { mailbox => $mailbox, uid => $uid })
 
 returnes the fullheader of a message as a string

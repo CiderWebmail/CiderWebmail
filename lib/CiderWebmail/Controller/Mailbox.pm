@@ -135,6 +135,74 @@ sub view : Chained('setup') PathPart('') Args(0) {
     return;
 }
 
+sub threads : Chained('setup') PathPart {
+    my ( $self, $c ) = @_;
+
+    my $mailbox = $c->model('IMAPClient')->get_threads($c, {mailbox => $c->stash->{folder}});
+
+    my $level = 0;
+    my @messages = ();
+    $self->_process_thread({ item => $mailbox, level => \$level, messages => \@messages });
+
+    use Data::Dumper::Concise;
+    my @uids = map( $_->{uid}, @messages );
+
+    my ($start)  = ($c->req->param('start') or 0)  =~ /(\d+)/xm;
+    my @groups;
+    if ($start) { @uids = (); } #wo don't implement incremental message loading yet...
+    if(@uids) {
+        #quick and dirty hack to make this work
+        my %level = map { $_->{uid} => $_->{level} } @messages;
+
+        my %headers = map { ($_->{uid} => {
+                        %{ $_ },
+                        uri_view => $c->stash->{uri_folder}."/$_->{uid}",
+                        uri_delete => $c->stash->{uri_folder}."/$_->{uid}/delete",
+                    }) } @{ $c->model('IMAPClient')->get_headers_hash($c, { mailbox => $c->stash->{folder}, uids => \@uids, headers => [qw/To From Subject Date/] }) } ;
+
+        foreach ( map { $headers{$_} } @uids ) {
+            $_->{head}->{subject} = $c->stash->{translation_service}->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
+            $_->{style} = "padding-left: ".( $level{$_->{uid}} - 1)."em";
+            
+            my $name = $_->{head}->{subject};
+            if ($level{$_->{uid}} == 1) {
+                push @groups, {name => $name, messages => []};
+            }
+
+            push @{ $groups[-1]{messages} }, $_;
+        }
+
+        CiderWebmail::Util::add_foldertree_to_stash($c);
+        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
+    } 
+
+    my $sort_uri = $c->req->uri->clone;
+    $c->stash({
+        uri_quicksearch => $c->stash->{uri_folder},
+        template        => 'mailbox_threads.xml',
+        groups          => \@groups,
+        show_to         => ($c->stash->{folder} =~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
+        show_from       => ($c->stash->{folder} !~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
+    });
+
+    return;
+}
+
+sub _process_thread {
+    my ($self, $o) = @_;
+    
+    if (ref($o->{item}) eq 'ARRAY') {
+        my $startlevel = ${ $o->{level} };
+        foreach(@{ $o->{item} }) {
+            $self->_process_thread({ item => $_, level => $o->{level}, messages => $o->{messages} });
+        }
+        ${ $o->{level} } = $startlevel;
+    } else {
+        ${ $o->{level} }++;
+        push(@{ $o->{messages} }, { level => ${ $o->{level} }, uid => $o->{item}  });
+    }
+}
+
 =head2 create_subfolder
 
 Create a subfolder of this mailbox

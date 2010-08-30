@@ -49,6 +49,11 @@ sub list_messages_hash {
     return $self->c->model('IMAPClient')->get_headers_hash($self->c, { mailbox => $self->mailbox, uids => $o->{uids}, headers => [qw/To From Subject Date/] });
 }
 
+sub threads {
+    my ($self, $o) = @_;
+    
+    return $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox });
+}
 =head2 uids({filter => 'searchme', sort => 'date'})
 
 Returns the uids of the messages in this folder. Takes an optional filter and a sort order.

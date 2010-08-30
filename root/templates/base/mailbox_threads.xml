@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
+    >
+    <head>
+        <title metal:fill-slot="title" tal:content="string: ${folder} (${folder_data/unseen})">Mailbox</title>
+        <tal:div metal:fill-slot="css" tal:omit-tag="">
+            <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" />
+            <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" />
+        </tal:div>
+        <tal:div metal:fill-slot="scripts" tal:omit-tag="">
+            <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/mailbox.js" />
+            <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/message.js" />
+        </tal:div>
+    </head>
+    <body>
+        <div metal:fill-slot="content" tal:omit-tag="">
+            <div id="folder_headline">
+                <h1 tal:content="folder">Mailbox</h1>
+                <form id="quicksearch" tal:attributes="action uri_quicksearch" method="GET">
+                    <input type="hidden" name="sort" tal:attributes="value sort"/>
+                    <input name="filter" tal:attributes="value filter"/>
+                    <button type="submit" i18n:translate="">Search</button>
+                </form>
+            </div>
+            <div id="messages_pane">
+                <table id="message_list" tal:attributes="class string:message_list ${sort}">
+                    <tr>
+                        <th class="icons"></th>
+                        <th tal:condition="true: show_from" tal:attributes="class string:from ${sort_from} ${reverse}"><a tal:attributes="href uri_sorted_from" i18n:translate="">From</a></th>
+                        <th tal:condition="true: show_to" tal:attributes="class string:to ${sort_to} ${reverse}"><a tal:attributes="href uri_sorted_to" i18n:translate="">To</a></th>
+                        <th tal:attributes="class string:subject ${sort_subject} ${reverse}"><a tal:attributes="href uri_sorted_subject" i18n:translate="">Subject</a></th>
+                        <th tal:attributes="class string:date ${sort_date} ${reverse}"><a tal:attributes="href uri_sorted_date" i18n:translate="">Date</a></th>
+                        <th class="actions"></th>
+                    </tr>
+                    <tbody tal:repeat="group groups">
+                        <tr class="group_head">
+                            <td tal:condition="true:group/name" colspan="5" tal:content="group/name"/>
+                            <td tal:condition="and: true:sort_subject false:group/name" colspan="5" i18n:translate="">No Subject</td>
+                        </tr>
+                        <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class if: repeat/even then: string:${message/flags} even else: string:${message/flags} odd">
+                            <td class="icons"><img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats"/><img tal:condition="true: message/attachments" tal:attributes="src string:${uri_static}/images/attachment.png" alt="attachment"/></td>
+                            <td tal:condition="true: show_from" class="sender" tal:attributes="id string:from_${message/uid}">
+                                <span tal:condition="false: sort_from" tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
+                            </td>
+                            <td tal:condition="true: show_to" class="recipient" tal:attributes="id string:to_${message/uid}">
+                                <span tal:condition="false: sort_to" tal:repeat="address message/head/to" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
+                            </td>
+                            <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}; style message/style" tal:content="message/head/subject"/></td>
+                            <td tal:condition="true: sort_date" tal:content="message/head/date/strftime '%T'">date</td>
+                            <td tal:condition="false: sort_date" tal:content="message/head/date/strftime '%F %T'">date</td>
+                            <td class="actions"><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="fetching_message" i18n:translate="">Fetching more messages</div>
+            </div>
+            <div id="message_divider"/>
+            <div id="message_view">
+                <p id="help_message" i18n:translate="">Drag a mail's icon to a folder name to move that mail to that folder.</p>
+                <p id="loading_message" i18n:translate="">Loading message</p>
+            </div>
+        </div>
+    </body>
+</html>
+
