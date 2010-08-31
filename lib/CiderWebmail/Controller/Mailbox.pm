@@ -179,7 +179,7 @@ sub threads : Chained('setup') PathPart {
     my $sort_uri = $c->req->uri->clone;
     $c->stash({
         uri_quicksearch => $c->stash->{uri_folder},
-        template        => 'mailbox_threads.xml',
+        template        => 'mailbox.xml',
         groups          => \@groups,
         show_to         => ($c->stash->{folder} =~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
         show_from       => ($c->stash->{folder} !~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
