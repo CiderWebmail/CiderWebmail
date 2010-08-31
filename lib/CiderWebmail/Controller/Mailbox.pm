@@ -160,7 +160,7 @@ sub threads : Chained('setup') PathPart {
             $_->{head}->{subject} = $c->stash->{translation_service}->maketext('No Subject') unless defined $_->{head}->{subject} and length $_->{head}->{subject}; # '0' is an allowed subject...
             $_->{style} = "padding-left: ".( $level{$_->{uid}} - 1)."em";
             
-            my $name = $_->{head}->{subject};
+            my $name = CiderWebmail::Util::message_group_name($_, 'subject');
             if ($level{$_->{uid}} == 1) {
                 push @groups, {name => $name, messages => []};
             }
