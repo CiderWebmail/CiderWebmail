@@ -52,8 +52,31 @@ sub list_messages_hash {
 sub threads {
     my ($self, $o) = @_;
     
-    return $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox });
+    my $mailbox = $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox });
+    
+    my $level = 0;
+    my @messages = ();
+    $self->_process_thread({ item => $mailbox, level => \$level, messages => \@messages });
+
+    return \@messages;
 }
+
+sub _process_thread {
+    my ($self, $o) = @_;
+    
+    if (ref($o->{item}) eq 'ARRAY') {
+        my $startlevel = ${ $o->{level} };
+        foreach(@{ $o->{item} }) {
+            $self->_process_thread({ item => $_, level => $o->{level}, messages => $o->{messages} });
+        }
+        ${ $o->{level} } = $startlevel;
+    } else {
+        ${ $o->{level} }++;
+        push(@{ $o->{messages} }, { level => ${ $o->{level} }, uid => $o->{item}  });
+    }
+}
+
+
 =head2 uids({filter => 'searchme', sort => 'date'})
 
 Returns the uids of the messages in this folder. Takes an optional filter and a sort order.

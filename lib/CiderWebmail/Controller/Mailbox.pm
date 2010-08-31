@@ -138,21 +138,17 @@ sub view : Chained('setup') PathPart('') Args(0) {
 sub threads : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
-    my $mailbox = $c->model('IMAPClient')->get_threads($c, {mailbox => $c->stash->{folder}});
+    my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
+    my $messages = $mailbox->threads;
 
-    my $level = 0;
-    my @messages = ();
-    $self->_process_thread({ item => $mailbox, level => \$level, messages => \@messages });
-
-    use Data::Dumper::Concise;
-    my @uids = map( $_->{uid}, @messages );
+    my @uids = map( $_->{uid}, @$messages );
 
     my ($start)  = ($c->req->param('start') or 0)  =~ /(\d+)/xm;
     my @groups;
     if ($start) { @uids = (); } #wo don't implement incremental message loading yet...
     if(@uids) {
         #quick and dirty hack to make this work
-        my %level = map { $_->{uid} => $_->{level} } @messages;
+        my %level = map { $_->{uid} => $_->{level} } @$messages;
 
         my %headers = map { ($_->{uid} => {
                         %{ $_ },
@@ -186,21 +182,6 @@ sub threads : Chained('setup') PathPart {
     });
 
     return;
-}
-
-sub _process_thread {
-    my ($self, $o) = @_;
-    
-    if (ref($o->{item}) eq 'ARRAY') {
-        my $startlevel = ${ $o->{level} };
-        foreach(@{ $o->{item} }) {
-            $self->_process_thread({ item => $_, level => $o->{level}, messages => $o->{messages} });
-        }
-        ${ $o->{level} } = $startlevel;
-    } else {
-        ${ $o->{level} }++;
-        push(@{ $o->{messages} }, { level => ${ $o->{level} }, uid => $o->{item}  });
-    }
 }
 
 =head2 create_subfolder
