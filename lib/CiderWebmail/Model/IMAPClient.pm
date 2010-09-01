@@ -339,22 +339,18 @@ sub simple_search {
     croak unless $o->{searchfor};
     $self->select($c, { mailbox => $o->{mailbox} });
 
-    my @search = (
-        'OR',
-        'SUBJECT', $c->stash->{imapclient}->Quote($o->{searchfor}),
-        'FROM', $c->stash->{imapclient}->Quote($o->{searchfor}),
-    );
-
+    my $search = $self->_generate_search($c, { searchfor => $o->{searchfor}, searchin => ['SUBJECT', 'FROM'] });
+    
     my @uids;
     if ($o->{sort}) {
         foreach (@{ $o->{sort} }) {
             check_sort($_);
         }
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8' );
-        @uids = $c->stash->{imapclient}->sort(@sort, @search);
+        @uids = $c->stash->{imapclient}->sort(@sort, @$search);
     }
     else {
-        @uids = $c->stash->{imapclient}->search(@search);
+        @uids = $c->stash->{imapclient}->search(@$search);
     }
     $self->_die_on_error($c);
 
@@ -370,6 +366,25 @@ sub get_threads {
     my $threads = $c->stash->{imapclient}->thread('REFERENCES', 'UTF-8', 'ALL');
 
     return $threads;
+}
+
+=head2 _generate_search({ searchfor => $searchstring, searchin => [qw/FROM SUBJECT/] })
+
+generates a string that can be safely passed to the IMAP server for searching
+
+=cut
+
+sub _generate_search {
+    my ($self, $c, $o) = @_; 
+
+    my @search = ('OR');
+
+    foreach(@{ $o->{searchin} }) {
+        push(@search, $_);
+        push(@search, $c->stash->{imapclient}->Quote($o->{searchfor}));
+    }
+
+    return \@search;
 }
 
 =head2 get_headers_string($c, { mailbox => $mailbox, uid => $uid })
