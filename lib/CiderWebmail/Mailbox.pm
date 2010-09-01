@@ -52,8 +52,8 @@ sub list_messages_hash {
 sub threads {
     my ($self, $o) = @_;
     
-    my $mailbox = $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox });
-    
+    my $mailbox = $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox, searchfor => $o->{filter} });
+
     my $level = 0;
     my @messages = ();
     $self->_process_thread({ item => $mailbox, level => \$level, messages => \@messages });

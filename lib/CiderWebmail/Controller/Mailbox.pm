@@ -138,8 +138,10 @@ sub view : Chained('setup') PathPart('') Args(0) {
 sub threads : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
+    my $filter = $c->req->param('filter');
+
     my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
-    my $messages = $mailbox->threads;
+    my $messages = $mailbox->threads({ filter => $filter });
 
     my @uids = map( $_->{uid}, @$messages );
 
