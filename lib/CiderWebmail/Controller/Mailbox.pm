@@ -40,6 +40,10 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
 
     $c->stash->{folder} = $mailbox;
 
+    unless($c->stash->{mbox}) {
+        $c->stash->{mbox} = CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
+    }
+
     return;
 }
 
@@ -65,9 +69,10 @@ sub view : Chained('setup') PathPart('') Args(0) {
 sub message_list : Private {
     my ( $self, $c ) = @_;
 
+    my $mailbox = $c->stash->{mbox};
+
     my $filter = $c->req->param('filter');
 
-    my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
     my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
 
     my $full_sort = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
@@ -155,7 +160,7 @@ sub thread_list : Chained('setup') PathPart {
 
     my $filter = $c->req->param('filter');
 
-    my $mailbox = $c->stash->{mbox} ||= CiderWebmail::Mailbox->new(c => $c, mailbox => $c->stash->{folder});
+    my $mailbox = $c->stash->{mbox};
     my $messages = $mailbox->threads({ filter => $filter });
 
     my @uids = map( $_->{uid}, @$messages );
