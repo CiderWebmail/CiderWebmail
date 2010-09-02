@@ -32,8 +32,11 @@ Gets the selected mailbox from the URI path and sets up the stash.
 sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     my ( $self, $c, $mailbox ) = @_;
 
+    $c->stash->{settings} = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
+
     $c->stash->{uri_folder} = $c->uri_for("/mailbox/$mailbox");
     $c->stash->{uri_compose} = $c->stash->{uri_folder} . '/compose';
+    $c->stash->{uri_quicksearch} = $c->stash->{uri_folder};
 
     $mailbox =~ s';(?!;)'/'gmx; # unmask / in mailbox name
     $mailbox =~ s!;;!;!gmx;
@@ -50,14 +53,48 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
 sub view : Chained('setup') PathPart('') Args(0) {
     my ($self, $c) = @_;
 
+    my $settings = $c->stash->{settings};
+
+    #Template
+    $c->stash->{template} = 'mailbox.xml';
+
+    #Search
+    $c->stash->{filter}   = $c->req->param('filter');
+
+    #Column Setup
+    $c->stash({
+        show_to         => ($c->stash->{folder} =~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
+        show_from       => ($c->stash->{folder} !~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
+    });
+
+    #Sorting
+    $c->stash->{full_sort} = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
+    $c->stash->{sort} = $c->stash->{full_sort};
+    $c->stash->{reverse} = $c->stash->{sort} =~ s/\Areverse\W+//xm;
+
+    $settings->set_column(sort_order => $c->stash->{full_sort});
+    $settings->update_or_insert();
+
+    my $sort_uri = $c->req->uri->clone;
+    $c->stash({
+        "sort_".$c->stash->{sort}    => 'sorted',
+        reverse         => $c->stash->{reverse} ? 'reverse' : undef,
+        (map {
+            $sort_uri->query_param(sort => ($_ eq $c->stash->{sort} and not $c->stash->{reverse}) ? "reverse $_" : $_);
+            ("uri_sorted_$_" => $sort_uri->as_string)
+        } qw(to from subject date)),
+    });
+
+
+    #display mode (list vs. threads view)
     my $display = ($c->req->param('display') or '');
 
     if ($display eq 'threads') {
-        $c->forward('thread_list');
+        $c->stash->{groups} = $c->forward('thread_list');
     } elsif ($display eq 'message_list') {
-        $c->forward('message_list');
+        $c->stash->{groups} = $c->forward('message_list');
     } else {
-        $c->forward('message_list');
+        $c->stash->{groups} = $c->forward('message_list');
     }
 
 }
@@ -70,17 +107,11 @@ sub message_list : Private {
     my ( $self, $c ) = @_;
 
     my $mailbox = $c->stash->{mbox};
+    my $settings = $c->stash->{settings};
 
-    my $filter = $c->req->param('filter');
-
-    my $settings = $c->model('DB::Settings')->find_or_new({user => $c->user->id});
-
-    my $full_sort = ($c->req->param('sort') or $settings->sort_order or 'reverse date');
-    my $sort = $full_sort;
-    my $reverse = $sort =~ s/\Areverse\W+//xm;
-
-    $settings->set_column(sort_order => $full_sort);
-    $settings->update_or_insert();
+    my $full_sort = $c->stash->{full_sort};
+    my $sort = $c->stash->{sort};
+    my $reverse = $c->stash->{reverse};
 
     my $range;
     if ($c->req->param('after_uid')) {
@@ -88,8 +119,7 @@ sub message_list : Private {
         $range = $c->req->param('after_uid').":*";
     }
 
-    my @uids = $mailbox->uids({ sort => [ $full_sort ], filter => $filter, range => $range });
-
+    my @uids = $mailbox->uids({ sort => [ $full_sort ], filter => $c->stash->{filter}, range => $range });
 
     my ($start)  = ($c->req->param('start') or 0)  =~ /(\d+)/xm;
     my ($length) = ($c->req->param('length') or 100) =~ /(\d+)/xm;
@@ -135,33 +165,14 @@ sub message_list : Private {
         $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
     }
 
-    my $sort_uri = $c->req->uri->clone;
-    $c->stash({
-        uri_quicksearch => $c->stash->{uri_folder},
-        template        => 'mailbox.xml',
-        groups          => \@groups,
-        filter          => $filter,
-        show_to         => ($c->stash->{folder} =~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
-        show_from       => ($c->stash->{folder} !~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
-        sort            => $full_sort,
-        "sort_$sort"    => 'sorted',
-        reverse         => $reverse ? 'reverse' : undef,
-        (map {
-            $sort_uri->query_param(sort => ($_ eq $sort and not $reverse) ? "reverse $_" : $_);
-            ("uri_sorted_$_" => $sort_uri->as_string)
-        } qw(to from subject date)),
-    });
-
-    return;
+    return \@groups;
 }
 
 sub thread_list : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
-    my $filter = $c->req->param('filter');
-
     my $mailbox = $c->stash->{mbox};
-    my $messages = $mailbox->threads({ filter => $filter });
+    my $messages = $mailbox->threads({ filter => $c->stash->{filter} });
 
     my @uids = map( $_->{uid}, @$messages );
 
@@ -194,16 +205,7 @@ sub thread_list : Chained('setup') PathPart {
         $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
     } 
 
-    my $sort_uri = $c->req->uri->clone;
-    $c->stash({
-        uri_quicksearch => $c->stash->{uri_folder},
-        template        => 'mailbox.xml',
-        groups          => \@groups,
-        show_to         => ($c->stash->{folder} =~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
-        show_from       => ($c->stash->{folder} !~ m/(Sent|Gesendet|Postausgang|Ausgangsnachrichten)/i ? 1 : 0),
-    });
-
-    return;
+    return \@groups;
 }
 
 =head2 create_subfolder
