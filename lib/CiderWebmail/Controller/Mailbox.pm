@@ -43,11 +43,26 @@ sub setup : Chained('/') PathPart('mailbox') CaptureArgs(1) {
     return;
 }
 
+sub view : Chained('setup') PathPart('') Args(0) {
+    my ($self, $c) = @_;
+
+    my $display = ($c->req->param('display') or '');
+
+    if ($display eq 'threads') {
+        $c->forward('thread_list');
+    } elsif ($display eq 'message_list') {
+        $c->forward('message_list');
+    } else {
+        $c->forward('message_list');
+    }
+
+}
+
 =head2 view
 
 =cut
 
-sub view : Chained('setup') PathPart('') Args(0) {
+sub message_list : Private {
     my ( $self, $c ) = @_;
 
     my $filter = $c->req->param('filter');
@@ -135,7 +150,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
     return;
 }
 
-sub threads : Chained('setup') PathPart {
+sub thread_list : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
     my $filter = $c->req->param('filter');
