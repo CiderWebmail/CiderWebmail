@@ -97,6 +97,12 @@ sub view : Chained('setup') PathPart('') Args(0) {
         $c->stash->{groups} = $c->forward('message_list');
     }
 
+    unless($c->req->param('start')) {
+        #add foldertree unless it's an ajax request
+        CiderWebmail::Util::add_foldertree_to_stash($c);
+        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
+    }
+
 }
 
 =head2 view
@@ -156,15 +162,6 @@ sub message_list : Private {
         }
     }
 
-    if ($start) {
-        # $start is only > 0 for AJAX requests loading more messages. No need for translataion in that case.
-        $c->stash->{no_translation} = 1;
-    } else { 
-        # No AJAX request - add foldertree
-        CiderWebmail::Util::add_foldertree_to_stash($c);
-        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
-    }
-
     return \@groups;
 }
 
@@ -200,9 +197,6 @@ sub thread_list : Chained('setup') PathPart {
 
             push @{ $groups[-1]{messages} }, $_;
         }
-
-        CiderWebmail::Util::add_foldertree_to_stash($c);
-        $c->stash->{folder_data} = $c->stash->{folders_hash}{$c->stash->{folder}};
     } 
 
     return \@groups;
