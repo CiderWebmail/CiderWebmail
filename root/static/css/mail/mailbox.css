@@ -17,7 +17,7 @@ html, body {
 }
 
 .message_list tr.odd {
-    background-color: #efefef;
+    background-color: #f8f7f6;
 }
 
 .message_list th.icons {
@@ -47,6 +47,10 @@ html, body {
     font-size: 0.8em;
     vertical-align: middle;
     overflow: hidden;
+}
+
+.message_list tbody tr.group_head {
+    background-color: #c5c5c4;
 }
 
 .message_list tr th {
