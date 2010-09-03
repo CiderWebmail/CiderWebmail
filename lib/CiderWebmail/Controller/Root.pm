@@ -90,6 +90,7 @@ sub login : Private {
     my ( $self, $c ) = @_;
 
     my $server = $c->config->{server};
+    $c->stash({ template => 'login.xml' });
 
     my %user_data = (
             username => $c->req->param('username'),
@@ -103,6 +104,16 @@ sub login : Private {
             $c->session->{$_} = $user_data{$_} foreach qw(server username password); # save for repeated IMAP authentication
             $c->session->{server} = $c->stash->{server};
 
+            my @supported = $c->stash->{imapclient}->capability;
+
+            foreach(qw/ SORT THREAD=REFS /) {
+                my $capability = $_;
+                unless( grep { $_ eq $capability } @supported ) {
+                    $c->stash({ message => "Your IMAP Server does not advertise the $_ capability" }); #TODO I18N
+                    return;
+                }
+            }
+
             return $c->res->redirect($c->req->uri);
         }
         else {
@@ -111,7 +122,6 @@ sub login : Private {
     }
 
     $c->stash({ server => "$server->{host}:$server->{port}" }) if $server and %$server;
-    $c->stash({ template => 'login.xml' });
 
     return;
 }
