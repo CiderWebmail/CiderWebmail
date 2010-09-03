@@ -366,9 +366,14 @@ sub get_threads {
     my $threads;
     if ($o->{searchfor}) {
         my $search = $self->_generate_search($c, { searchfor => $o->{searchfor}, searchin => ['SUBJECT', 'FROM'] });
-        $threads = $c->stash->{imapclient}->thread('REFERENCES', 'UTF-8', @$search);
+        $threads = $c->stash->{imapclient}->thread('REFS', 'UTF-8', @$search);
     } else {
-        $threads = $c->stash->{imapclient}->thread('REFERENCES', 'UTF-8', 'ALL');
+        $threads = $c->stash->{imapclient}->thread('REFS', 'UTF-8', 'ALL');
+    }
+
+    #default search is by date
+    if (($o->{sort} or '') eq 'reverse date') {
+        @$threads = reverse(@$threads);
     }
 
     return $threads;

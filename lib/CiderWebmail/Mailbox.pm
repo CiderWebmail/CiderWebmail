@@ -52,7 +52,7 @@ sub list_messages_hash {
 sub threads {
     my ($self, $o) = @_;
     
-    my $mailbox = $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox, searchfor => $o->{filter} });
+    my $mailbox = $self->c->model('IMAPClient')->get_threads($self->c, { mailbox => $self->mailbox, searchfor => $o->{filter}, sort => $o->{sort} });
 
     my $level = 0;
     my @messages = ();

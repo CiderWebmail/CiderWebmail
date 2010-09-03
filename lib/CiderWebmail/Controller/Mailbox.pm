@@ -168,8 +168,10 @@ sub message_list : Private {
 sub thread_list : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
+    my $full_sort = $c->stash->{full_sort};
+
     my $mailbox = $c->stash->{mbox};
-    my $messages = $mailbox->threads({ filter => $c->stash->{filter} });
+    my $messages = $mailbox->threads({ filter => $c->stash->{filter}, sort => $full_sort });
 
     my @uids = map( $_->{uid}, @$messages );
 
