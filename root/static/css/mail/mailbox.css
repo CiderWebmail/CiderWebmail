@@ -109,7 +109,7 @@ ul#folder_tree a.hover {
     padding-right: 9px;
 }
 
-.message_list th.sorted.reverse a {
+.message_list th.reverse a {
     background-image: url(../../images/sort_down.png);
 }
 

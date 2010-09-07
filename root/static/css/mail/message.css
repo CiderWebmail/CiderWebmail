@@ -16,7 +16,7 @@
 
 .message_actions a {
     text-decoration: none;
-    border: 1px solid transparent;
+    border: 1px solid #efefef;
 }
 
 .message_actions img {

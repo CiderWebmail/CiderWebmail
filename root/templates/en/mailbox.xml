@@ -25,10 +25,10 @@
                 <table tal:attributes="class string:message_list ${sort}" id="message_list">
                     <tr>
                         <th class="icons"></th>
-                        <th tal:condition="true: show_from" tal:attributes="class string:from ${sort_from} ${reverse}"><a tal:attributes="href uri_sorted_from">From</a></th>
-                        <th tal:condition="true: show_to" tal:attributes="class string:to ${sort_to} ${reverse}"><a tal:attributes="href uri_sorted_to">To</a></th>
-                        <th tal:attributes="class string:subject ${sort_subject} ${reverse}"><a tal:attributes="href uri_sorted_subject">Subject</a></th>
-                        <th tal:attributes="class string:date ${sort_date} ${reverse}"><a tal:attributes="href uri_sorted_date">Date</a></th>
+                        <th tal:condition="true: show_from" tal:attributes="class if: sort_from then: string:from ${sort_from} ${reverse} else: string:from"><a tal:attributes="href uri_sorted_from">From</a></th>
+                        <th tal:condition="true: show_to" tal:attributes="class if: sort_to then: string:to ${sort_to} ${reverse} else: string:to"><a tal:attributes="href uri_sorted_to">To</a></th>
+                        <th tal:attributes="class if: sort_subject then: string:subject ${sort_subject} ${reverse} else: string:subject"><a tal:attributes="href uri_sorted_subject">Subject</a></th>
+                        <th tal:attributes="class if: sort_date then: string:date ${sort_date} ${reverse} else: string:date"><a tal:attributes="href uri_sorted_date">Date</a></th>
                         <th class="actions"></th>
                     </tr>
                     <tbody tal:repeat="group groups">
