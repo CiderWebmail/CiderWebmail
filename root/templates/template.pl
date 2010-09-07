@@ -7,6 +7,7 @@ use Petal::I18N;
 use Petal::TranslationService::Gettext;
 use File::Find;
 use Cwd;
+use open qw(:utf8);
 
 my @files;
 my @folders;
