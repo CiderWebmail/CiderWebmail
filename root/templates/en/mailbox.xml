@@ -55,7 +55,7 @@
             </div>
             <div id="message_divider" />
             <div id="message_view">
-                <p id="help_message">Drag a mail's icon to a folder name to move that mail to that folder.</p>
+                <p id="help_message">Drag a mail's icon to a folder name to move that mail to that folder.<br /> Use cursor left/right for displaying the previous/next message.<br /> Cursor up/down for scrolling within a message.<br /> 'd' or the delete key for deleting the current message.<br /> 'm' for moving the current message to a different folder.<br /> 'r' for replying to the current message.<br /> 'f' for forwarding the current message.</p>
                 <p id="loading_message">Loading message</p>
             </div>
         </div>

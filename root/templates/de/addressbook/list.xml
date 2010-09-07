@@ -16,10 +16,10 @@
                 <td tal:content="string: ${entry/firstname} ${entry/surname}" />
                 <td><a tal:content="string: ${entry/email}" tal:attributes="href string:${uri_compose}?to=${entry/email}; id string:compose_${entry/id}" /></td>
                 <td><a tal:attributes="href string:${uri_addressbook}/modify/edit/${entry/id}; id string:edit_${entry/id}">bearbeiten</a></td>
-                <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img alt="löschen" title="delete" tal:attributes="src string:${uri_static}/images/trashcan.gif" /></a></td>
+                <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img alt="lÃ¶schen" title="delete" tal:attributes="src string:${uri_static}/images/trashcan.gif" /></a></td>
             </tr>
         </table>
 
-        <a tal:attributes="href string:${uri_addressbook}/modify/add">Kontakt hinzufügen</a>
+        <a tal:attributes="href string:${uri_addressbook}/modify/add">Kontakt hinzufÃ¼gen</a>
     </body>
 </html>

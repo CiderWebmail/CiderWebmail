@@ -34,8 +34,8 @@ msgstr "Date:"
 msgid "Delete"
 msgstr "Delete"
 
-msgid "Drag a mail's icon to a folder name to move that mail to that folder."
-msgstr "Drag a mail's icon to a folder name to move that mail to that folder."
+msgid "Drag a mail's icon to a folder name to move that mail to that folder.${1} Use cursor left/right for displaying the previous/next message.${2} Cursor up/down for scrolling within a message.${3} 'd' or the delete key for deleting the current message.${4} 'm' for moving the current message to a different folder.${5} 'r' for replying to the current message.${6} 'f' for forwarding the current message."
+msgstr "Drag a mail's icon to a folder name to move that mail to that folder.${1} Use cursor left/right for displaying the previous/next message.${2} Cursor up/down for scrolling within a message.${3} 'd' or the delete key for deleting the current message.${4} 'm' for moving the current message to a different folder.${5} 'r' for replying to the current message.${6} 'f' for forwarding the current message."
 
 msgid "E-Mail"
 msgstr "E-Mail"
@@ -45,6 +45,9 @@ msgstr "E-Mail:"
 
 msgid "Edit contact"
 msgstr "Edit contact"
+
+msgid "Error"
+msgstr "Error"
 
 msgid "Fetching more messages"
 msgstr "Fetching more messages"
@@ -121,6 +124,9 @@ msgstr "Send"
 msgid "Send and save"
 msgstr "Send and save"
 
+msgid "Server"
+msgstr "Server"
+
 msgid "Session ended"
 msgstr "Session ended"
 
@@ -138,6 +144,9 @@ msgstr "Target folder:"
 
 msgid "Text:"
 msgstr "Text:"
+
+msgid "To"
+msgstr "To"
 
 msgid "To:"
 msgstr "To:"

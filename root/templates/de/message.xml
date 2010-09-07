@@ -28,7 +28,7 @@
                                 <option tal:content="folder/id" tal:repeat="folder target_folders" />
                             </select>
                         </label>
-                        <button type="submit">Email verschieben</button>
+                        <button type="submit">E-Mail verschieben</button>
                     </fieldset>
                 </form>
                 <div class="message_header">

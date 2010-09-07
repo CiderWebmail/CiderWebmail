@@ -15,7 +15,7 @@
                     <li tal:attributes="class folder/selected" metal:define-macro="folder-tree">
                         <a href="#" tal:attributes="href folder/uri_view; title folder/id" class="folder"><span tal:content="folder/name" class="name" /></a>
                         <span class="counts">(<span tal:replace="string: ${folder/total}" /> <span>Mails</span>)</span>
-                        <span class="actions"><a tal:attributes="href folder/uri_create_subfolder">Neuer Unterordner</a> <a tal:attributes="href folder/uri_delete">Löschen</a></span>
+                        <span class="actions"><a tal:attributes="href folder/uri_create_subfolder">Neuer Unterordner</a> <a tal:attributes="href folder/uri_delete">LÃ¶schen</a></span>
                         <ul tal:condition="true:folders" tal:repeat="folder folders" tal:define="folders folder/folders">
                             <li metal:use-macro="#folder-tree">Dummy Child 1</li>
                         </ul>

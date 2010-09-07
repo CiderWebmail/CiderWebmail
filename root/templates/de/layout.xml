@@ -20,7 +20,7 @@
             </div>
             <div tal:condition="true: folder_tree" id="mailnavigation">
                 <ul class="actions">
-                    <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose">Neue Email schreiben</a></li>
+                    <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose">Neue E-Mail schreiben</a></li>
                     <li tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes">Ordner bearbeiten</a></li>
                     <li tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook">Addressbuch</a></li>
                     <li tal:condition="true: uri_logout"><a tal:attributes="href uri_logout">Ausloggen</a></li>

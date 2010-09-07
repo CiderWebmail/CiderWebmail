@@ -21,13 +21,13 @@ msgid "Cc:"
 msgstr "Cc:"
 
 msgid "Compose Message"
-msgstr "Neue Email schreiben"
+msgstr "Neue E-Mail schreiben"
 
 msgid "Compose new mail"
-msgstr "Neue Email schreiben"
+msgstr "Neue E-Mail schreiben"
 
 msgid "Compose new mail message"
-msgstr "Neue Email schreiben"
+msgstr "Neue E-Mail schreiben"
 
 msgid "Create"
 msgstr "Anlegen"
@@ -44,10 +44,21 @@ msgstr "Datum:"
 msgid "Delete"
 msgstr "Löschen"
 
-msgid "Drag a mail's icon to a folder name to move that mail to that folder."
+msgid ""
+"Drag a mail's icon to a folder name to move that mail to that folder.${1} "
+"Use cursor left/right for displaying the previous/next message.${2} Cursor "
+"up/down for scrolling within a message.${3} 'd' or the delete key for "
+"deleting the current message.${4} 'm' for moving the current message to a "
+"different folder.${5} 'r' for replying to the current message.${6} 'f' for "
+"forwarding the current message."
 msgstr ""
-"Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen "
-"Ordner zu verschieben."
+"Ziehen Sie das Icon einer E-Mail auf einen Ordner um die E-Mail in diesen "
+"Ordner zu verschieben.${1} "
+"Pfeil links/rechts um die vorherige/nächste E-Mail anzuzeigen.${2} Pfeil "
+"oben/unten um in einer E-Mail zu scrollen.${3} 'd' oder die Löschen-Taste um "
+"die aktuelle E-Mail zu löschen.${4} 'm' um die aktuelle E-Mail zu in einen"
+"anderen Ordner zu verschieben.${5} 'r' um auf die aktuelle E-Mail zu "
+"antworten.${6} 'f' um die aktuelle E-Mail weiterzuleiten."
 
 msgid "E-Mail"
 msgstr "E-Mail"
@@ -58,8 +69,11 @@ msgstr "E-Mail:"
 msgid "Edit contact"
 msgstr "Kontakt bearbeiten"
 
+msgid "Error"
+msgstr "Error"
+
 msgid "Fetching more messages"
-msgstr "Lade weitere Emails"
+msgstr "Lade weitere E-Mails"
 
 msgid "First name:"
 msgstr "Vorname:"
@@ -83,7 +97,7 @@ msgid "Last name:"
 msgstr "Nachname:"
 
 msgid "Loading message"
-msgstr "Lade Email"
+msgstr "Lade E-Mail"
 
 msgid "Login"
 msgstr "Login"
@@ -95,7 +109,7 @@ msgid "Manage folders"
 msgstr "Ordner bearbeiten"
 
 msgid "Move message"
-msgstr "Email verschieben"
+msgstr "E-Mail verschieben"
 
 msgid "Name"
 msgstr "Name"
@@ -122,7 +136,7 @@ msgid "Save"
 msgstr "Speichern"
 
 msgid "Save message to:"
-msgstr "Email speichern in:"
+msgstr "E-Mail speichern in:"
 
 msgid "Search"
 msgstr "Suchen"
@@ -132,6 +146,9 @@ msgstr "Senden"
 
 msgid "Send and save"
 msgstr "Senden und speichern"
+
+msgid "Server"
+msgstr "Server"
 
 msgid "Session ended"
 msgstr "Sitzung beendet"
@@ -150,6 +167,9 @@ msgstr "Zielordner:"
 
 msgid "Text:"
 msgstr "Text:"
+
+msgid "To"
+msgstr "To"
 
 msgid "To:"
 msgstr "An:"
@@ -174,6 +194,12 @@ msgstr "bearbeiten"
 
 msgid "messages"
 msgstr "Mails"
+
+#~ msgid ""
+#~ "Drag a mail's icon to a folder name to move that mail to that folder."
+#~ msgstr ""
+#~ "Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen "
+#~ "Ordner zu verschieben."
 
 #~ msgid "Begin:"
 #~ msgstr "Begin:"

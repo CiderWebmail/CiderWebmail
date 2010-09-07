@@ -51,12 +51,12 @@
                         </tr>
                     </tbody>
                 </table>
-                <div id="fetching_message">Lade weitere Emails</div>
+                <div id="fetching_message">Lade weitere E-Mails</div>
             </div>
             <div id="message_divider" />
             <div id="message_view">
-                <p id="help_message">Ziehen Sie das Icon einer Email auf einen Ordner um die Email in diesen Ordner zu verschieben.</p>
-                <p id="loading_message">Lade Email</p>
+                <p id="help_message">Ziehen Sie das Icon einer E-Mail auf einen Ordner um die E-Mail in diesen Ordner zu verschieben.<br /> Pfeil links/rechts um die vorherige/nächste E-Mail anzuzeigen.<br /> Pfeil oben/unten um in einer E-Mail zu scrollen.<br /> 'd' oder die Löschen-Taste um die aktuelle E-Mail zu löschen.<br /> 'm' um die aktuelle E-Mail zu in einenanderen Ordner zu verschieben.<br /> 'r' um auf die aktuelle E-Mail zu antworten.<br /> 'f' um die aktuelle E-Mail weiterzuleiten.</p>
+                <p id="loading_message">Lade E-Mail</p>
             </div>
         </div>
     </body>
