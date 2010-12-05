@@ -41,6 +41,8 @@ td, th
             {font-weight: normal;}
         #controlpanel li span.name
             {float: left;}
+        #controlpanel li img
+            {float: left; margin-right: 0.3em; }
         #controlpanel li span.counts
             {float: right;}
 

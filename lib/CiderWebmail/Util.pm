@@ -8,6 +8,9 @@ use DateTime::Format::Mail;
 
 use Carp qw/ croak /;
 
+use feature qw/ switch /;
+
+
 =head1 FUNCTIONS
 
 =head2 add_foldertree_uris($c, {folders => $folder_tree, path => 'folder/path', uris => [{action => 'view', uri => 'view_folder'}, ...]})
@@ -44,6 +47,37 @@ sub add_foldertree_uris {
     return;
 }
 
+=head2 add_foldertree_icons($c, {folders => $folder_tree})
+
+Adds some icons to a folder tree.
+
+=cut
+
+sub add_foldertree_icons {
+    my $c = shift;
+    my $o = shift;
+   
+    croak unless defined $o->{folders};
+
+    foreach my $folder ( @{$o->{folders}} ) {
+        given(lc($folder->{name})) {
+            when('inbox')       { $folder->{icon} = 'inbox.png'; }
+            when('sent')        { $folder->{icon} = 'sent.png'; }
+            when('trash')       { $folder->{icon} = 'trash.png'; }
+            default             { $folder->{icon} = 'folder.png'; }
+        }
+
+        if (defined($folder->{folders})) { #if we have any subfolders
+            add_foldertree_icons($c, {
+                folders => $folder->{folders},
+            });
+        }
+    }
+
+    return;
+}
+
+
 =head2 uri_mask_folder_path($path)
 
 Mask all slashes in folder path for use in URIs.
@@ -71,6 +105,7 @@ sub add_foldertree_to_stash {
     return if defined($c->stash->{folder_tree});
     my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
     CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
+    CiderWebmail::Util::add_foldertree_icons($c, { folders => $tree->{folders} });
 
     $folders_hash->{$c->stash->{folder}}{selected} = 'selected' if $c->stash->{folder};
 
