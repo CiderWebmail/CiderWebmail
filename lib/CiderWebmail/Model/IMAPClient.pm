@@ -97,8 +97,10 @@ sub folder_tree {
     my ($self, $c) = @_;
     
     # sorting folders makes sure branches are created before leafs
-    my @folders = sort { lc($a) cmp lc($b) } $c->stash->{imapclient}->folders;
+    my @folders = sort folder_sort $c->stash->{imapclient}->folders;
     $self->_die_on_error($c);
+
+
 
     my %folder_index = ( '' => { folders => [] } );
     my $separator = $self->separator($c);
@@ -116,6 +118,20 @@ sub folder_tree {
     }
 
     return wantarray ? ($folder_index{''}, \%folder_index) : $folder_index{''};
+}
+
+
+=head2 folder_sort
+
+custom sort for folders
+always put INBOX on top
+
+=cut
+
+sub folder_sort {
+    return 1 if (lc($b) eq 'inbox');
+
+    return lc($a) cmp lc($b);
 }
 
 
