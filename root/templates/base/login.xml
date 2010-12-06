@@ -14,7 +14,7 @@
         <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/login.css" />
         <span tal:replace="structure condcomment_lt_ie7_start"/><link rel="stylesheet" type="text/css" media="screen" tal:attributes="href string:${uri_static}/css/IE6.css" /><span tal:replace="structure condcommentend"/>
     </head>
-    <body>
+    <body onLoad="document.getElementById('username').focus();">
         <div id="title">CiderWebmail</div>
         <div id="login">
             <form method="post">
@@ -24,7 +24,7 @@
                 </label>
                 <label>
                     <span i18n:translate="">Username</span>
-                    <input name="username"/>
+                    <input name="username" id="username"/>
                 </label>
                 <label>
                     <span i18n:translate="">Password</span>
