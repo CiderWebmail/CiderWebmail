@@ -344,6 +344,8 @@ sub send : Chained('/mailbox/setup') Args(0) {
                 my $references = $message->get_header('References');
                 $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
             }
+
+            $message->mark_answered;
         }
     }
 

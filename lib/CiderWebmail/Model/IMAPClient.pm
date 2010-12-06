@@ -487,6 +487,25 @@ sub mark_read {
     return;
 }
 
+=head2 mark_answered($c, { mailbox => $mailbox, uid => $uid })
+
+mark a message as answered
+
+=cut
+
+sub mark_answered {
+    my ($self, $c, $o) = @_;
+
+    croak unless $o->{mailbox};
+    croak unless $o->{uid};
+
+    $self->select($c, { mailbox => $o->{mailbox} });
+    $c->stash->{imapclient}->set_flag("Answered", $o->{uid});
+
+    return;
+}
+
+
 =head2 message_as_string($c, { mailbox => $mailbox, uid => $uid })
 
 return a full message body as string

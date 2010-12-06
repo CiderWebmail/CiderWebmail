@@ -132,6 +132,19 @@ sub mark_read {
     return $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
 }
 
+=head2 mark_answered()
+
+Mark the message as answered
+
+=cut
+
+sub mark_answered {
+    my ($self) = @_;
+
+    return $self->c->model('IMAPClient')->mark_answered($self->c, { uid => $self->uid, mailbox => $self->mailbox });
+}
+
+
 =head2 date()
 
 Returns the 'date' header as datetime object
