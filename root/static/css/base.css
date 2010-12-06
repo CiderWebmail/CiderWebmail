@@ -50,6 +50,7 @@ td, th
         {margin-bottom:1em; padding:0.2em 0.5em;}
 
     #controlpanel #folder_tree {
+        background-color: white;
         border-style: solid;
         border-color: #80c0ff;
         border-width: 1px 1px 1px 0;
