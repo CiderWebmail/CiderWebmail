@@ -104,3 +104,8 @@ td, th
         { border: none; }
     a   { text-decoration: none; }
 }
+
+
+input { border: 1px solid black; }
+textarea { border: 1px solid black; }
+button { border: 1px solid black; }
