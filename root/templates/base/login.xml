@@ -6,24 +6,18 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    i18n:domain="CiderWebmail"
-    metal:use-macro="layout.xml#layout">
+    i18n:domain="CiderWebmail">
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title metal:define-slot="title">CiderWebmail</title>
-        <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/base.css" />
+        <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/login.css" />
         <span tal:replace="structure condcomment_lt_ie7_start"/><link rel="stylesheet" type="text/css" media="screen" tal:attributes="href string:${uri_static}/css/IE6.css" /><span tal:replace="structure condcommentend"/>
-        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mootools-1.2-core.js" />
-        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mootools-1.2-more.js" />
-        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/base.js" />
     </head>
     <body>
-        <div id="login" metal:fill-slot="content">
-            <h1 i18n:translate="">Welcome to CiderWebmail</h1>
-            <p i18n:translate="">Please login using your mailbox credentials:</p>
+        <div id="title">CiderWebmail</div>
+        <div id="login">
             <form method="post">
-                <p tal:condition="true: message" tal:content="message"/>
                 <label tal:condition="false: server">
                     <span i18n:translate="">Server</span>
                     <input name="server"/>

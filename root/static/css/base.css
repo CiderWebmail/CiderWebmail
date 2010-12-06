@@ -91,16 +91,6 @@ td, th
         {margin: 0 0 0.5em 0; padding: 0 0.5em; background-color: #418bd4; color: white; font-size: 140%;}
 #compose form, #login form { padding: 0 0.5em; }
 
-#login label {
-    display: block;
-    clear: left;
-}
-
-#login label span {
-    float: left;
-    width: 8em;
-}
-
 #loading_message
     {display: none;}
 
