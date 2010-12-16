@@ -106,7 +106,7 @@ sub login : Private {
 
             my @supported = $c->stash->{imapclient}->capability;
 
-            foreach(qw/ SORT THREAD=REFS /) {
+            foreach(qw/ SORT /) {
                 my $capability = $_;
                 unless( grep { $_ eq $capability } @supported ) {
                     $c->stash({ message => "Your IMAP Server does not advertise the $_ capability" }); #TODO I18N
