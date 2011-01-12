@@ -17,7 +17,7 @@ requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Authentication::Credential::HTTP';
 requires 'Catalyst::Model::DBIC::Schema' => '0.41';
 
-requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Action::RenderView' => '0.16';
 requires 'YAML'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 
