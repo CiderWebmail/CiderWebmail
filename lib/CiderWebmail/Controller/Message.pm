@@ -7,6 +7,8 @@ use parent 'Catalyst::Controller';
 use CiderWebmail::Message;
 use MIME::Lite;
 use MIME::Words qw(encode_mimeword);
+use DateTime;
+use DateTime::Format::Mail;
 use Email::Valid;
 use Clone qw(clone);
 use List::Util qw(first);
@@ -307,6 +309,9 @@ sub send : Chained('/mailbox/setup') Args(0) {
     $mail->attr("content-type"         => "text/plain");
     $mail->attr("content-type.charset" => 'UTF-8');
     $mail->replace("x-mailer"             => "CiderWebmail ".$CiderWebmail::VERSION);
+
+
+    $mail->add("Received"             => "from $ENV{REMOTE_ADDR} by $ENV{SERVER_NAME} with HTTP;\n\t".DateTime::Format::Mail->new->format_datetime(DateTime->now));
 
     if (my @attachments = $c->req->param('attachment')) {
         foreach ($c->req->upload('attachment')) {
