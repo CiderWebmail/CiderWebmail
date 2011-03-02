@@ -304,11 +304,11 @@ sub get_headers_hash {
         $message->{uid}     = $uid;
         $message->{mailbox} = $o->{mailbox};
 
-        #my $headers = $c->stash->{imapclient}->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
+        my $headers = $c->stash->{imapclient}->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
 
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
-        my $email = Email::Simple->new($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"}."\n") || croak;
+        my $email = Email::Simple->new($headers."\n") || croak;
 
         my %headers = $email->header_pairs;
         defined $headers{$_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
