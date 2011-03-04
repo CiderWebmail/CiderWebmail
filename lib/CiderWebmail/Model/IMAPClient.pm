@@ -34,6 +34,25 @@ You should *really* read rfc3501 if you want to use this.
 
 =head1 METHODS
 
+=head2 new()
+
+creates a new CiderWebmail::Model::IMAPClient
+
+=cut
+
+sub new {
+    my $self = shift->next::method(@_);
+
+    if ($Mail::IMAPClient::VERSION =~ m/^3\.2(6|7)/) {
+        warn "Mail::IMAPClient V3.2(6|7) Unescape workaround enabled. Please upgrade to Mail::IMAPClient >= 3.28\n";
+        $self->{_imapclient_unescape_workaround} = 1;
+    }
+
+
+    return $self;
+}
+
+
 =head2 _die_on_error($c)
 
 die if the last IMAP command sent to the server caused an error
@@ -304,7 +323,13 @@ sub get_headers_hash {
         $message->{uid}     = $uid;
         $message->{mailbox} = $o->{mailbox};
 
-        my $headers = $c->stash->{imapclient}->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
+        my $headers;
+
+        if (defined($self->{_imapclient_unescape_workaround})) {
+            $headers = $c->stash->{imapclient}->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
+        } else {
+            $headers = $entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"};
+        }
 
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
