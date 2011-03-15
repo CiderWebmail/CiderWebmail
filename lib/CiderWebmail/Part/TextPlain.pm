@@ -30,7 +30,8 @@ sub render {
 
     $content =~ s/^([\p{Bidi_Class:R}\s]+)/<div class='rtl'>$1<\/div>/g;
 
-    $content =~ s/$RE{URI}{-keep}/<a href="$1">$1<\/a>/xmg;
+    my $uri_regex = $RE{URI}{HTTP}{-scheme => 'https?'}{-keep};
+    $content =~ s/$uri_regex/<a href="$1">$1<\/a>/xmg;
 
     $content =~ s/\n/<br \/>/xmg;
     return $self->c->view->render_template({ c => $self->c, template => 'TextPlain.xml', stash => { part_content => $content } });
