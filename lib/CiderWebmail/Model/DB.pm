@@ -30,6 +30,7 @@ after BUILD => sub {
         print STDERR "upgrading database schema to version 1\n";
         $dbh->do('create table addressbook (id INTEGER PRIMARY KEY, user varchar not null, firstname varchar not null, surname varchar not null, email varchar not null)');
         $dbh->do('update db_version set version = 1');
+        $version++;
     }
 
     return $self;
