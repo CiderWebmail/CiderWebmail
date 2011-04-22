@@ -183,29 +183,28 @@ sub message_group_name {
     return $name;
 }
 
-=head2 crypt({ username => $username, string => $string })
+=head2 encrypt({ string => $string })
 
 encrypt a string
 
 =cut
 
-sub crypt {
+sub encrypt {
     my ($c, $o) = @_;
 
-    croak unless defined $o->{username};
-    die("empty string passed to CiderWebmail::Util::crypt") unless defined($o->{string});
+    croak("empty string passed to CiderWebmail::Util::decrypt") unless defined($o->{string});
+    croak("cannot encrypt without active session") unless $c->sessionid;
+
     my $util = Crypt::Util->new;
 
-    my $key = CiderWebmail::Util::get_key($c, $o);
+    my $key = CiderWebmail::Util::get_key($c);
     croak("invalid key passed to CiderWebmail::Util::crypt") unless (defined($key) && (length($key) > 20));
 
     $util->default_key($key);
-    my $string = $util->encode_string_uri_base64( $util->encrypt_string($o->{string}) );
-
-    return $string;
+    return $util->encode_string_uri_base64( $util->encrypt_string($o->{string}) );
 }
 
-=head2 decrypt({ username => $username, string => $string })
+=head2 decrypt({ string => $string })
 
 decrypt a string
 
@@ -214,16 +213,16 @@ decrypt a string
 sub decrypt {
     my ($c, $o) = @_;
 
-    croak unless defined $o->{username};
     croak("empty string passed to CiderWebmail::Util::decrypt") unless defined($o->{string});
+    croak("cannot decrypt without active session") unless $c->sessionid;
+
     my $util = Crypt::Util->new;
+    my $key = CiderWebmail::Util::get_key($c);
 
-    my $key = CiderWebmail::Util::get_key($c, $o);
     croak("invalid key passed to CiderWebmail::Util::crypt") unless (defined($key) && (length($key) > 20));
-    $util->default_key($key);
-    my $string = $util->decrypt_string( $util->decode_string_uri_base64( $o->{string} ) );
 
-    return $string;
+    $util->default_key($key);
+    return $util->decrypt_string( $util->decode_string_uri_base64( $o->{string} ) );
 }
 
 =head2 get_key()
@@ -237,18 +236,14 @@ if no key exists one will be created
 sub get_key {
     my ($c, $o) = @_;
 
-    croak unless defined $o->{username};
+    croak("cannot fetch encryption key without active session") unless $c->sessionid;
 
-    my $settings = $c->model('DB::Settings')->find_or_new({user => $o->{'username'} });
-
-    if (defined($settings->encryption_key) && (length($settings->encryption_key) > 20)) {
-        return $settings->encryption_key;
+    if (defined($c->session->{encryption_key}) && (length($c->session->{encryption_key}) > 20)) {
+        return $c->session->{encryption_key};
     }  else {
-        my $new_key = encode_base64(get_weak(35));
-        chomp($new_key);
-        $settings->set_column(encryption_key => $new_key);
-        $settings->update_or_insert();
-        return $settings->encryption_key;
+        $c->session->{encryption_key} = encode_base64(get_weak(35));
+        chomp($c->session->{encryption_key});
+        return $c->session->{encryption_key};
     }
 }
 

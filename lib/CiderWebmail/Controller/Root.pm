@@ -58,7 +58,7 @@ sub auto : Private {
 
     if ($c->sessionid and $c->session->{'username'} and $c->req->cookie('password')) {
         $c->stash->{server} = $c->session->{server};
-        if ($c->authenticate({id => $c->session->{'username'}, password => CiderWebmail::Util::decrypt($c, { username => $c->session->{'username'}, string => $c->req->cookie('password')->value }) })) {
+        if ($c->authenticate({id => $c->session->{'username'}, password => CiderWebmail::Util::decrypt($c, { string => $c->req->cookie('password')->value }) })) {
             $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
 
             #IMAPClient setup
@@ -102,8 +102,8 @@ sub login : Private {
 
     if ($user_data{username} and $user_data{password}) {
         if ($c->authenticate(\%user_data)) {
-            $c->res->cookies->{$_} = { expires => '+1d', value => CiderWebmail::Util::crypt($c, { username => $user_data{'username'}, string => $user_data{$_} }) } foreach qw(password); # save for repeated IMAP authentication
             $c->session->{$_} = $user_data{$_} foreach qw(username server); # save for repeated IMAP authentication
+            $c->res->cookies->{$_} = { expires => '+1d', value => CiderWebmail::Util::encrypt($c, { string => $user_data{$_} }) } foreach qw(password); # save for repeated IMAP authentication
 
             my @supported = $c->stash->{imapclient}->capability;
 
