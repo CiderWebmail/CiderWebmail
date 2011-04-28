@@ -6,6 +6,10 @@ use strict;
 use DateTime;
 use DateTime::Format::Mail;
 
+use Crypt::Util;
+use Crypt::Random::Source qw/get_weak/;
+use MIME::Base64;
+
 use Carp qw/ croak /;
 
 use feature qw/ switch /;
@@ -179,5 +183,68 @@ sub message_group_name {
     return $name;
 }
 
+=head2 encrypt({ string => $string })
+
+encrypt a string
+
+=cut
+
+sub encrypt {
+    my ($c, $o) = @_;
+
+    croak("empty string passed to CiderWebmail::Util::decrypt") unless defined($o->{string});
+    croak("cannot encrypt without active session") unless $c->sessionid;
+
+    my $util = Crypt::Util->new;
+
+    my $key = CiderWebmail::Util::get_key($c);
+    croak("invalid key passed to CiderWebmail::Util::crypt") unless (defined($key) && (length($key) == 48));
+
+    $util->default_key($key);
+    return $util->encode_string_uri_base64( $util->encrypt_string($o->{string}) );
+}
+
+=head2 decrypt({ string => $string })
+
+decrypt a string
+
+=cut
+
+sub decrypt {
+    my ($c, $o) = @_;
+
+    croak("empty string passed to CiderWebmail::Util::decrypt") unless defined($o->{string});
+    croak("cannot decrypt without active session") unless $c->sessionid;
+
+    my $util = Crypt::Util->new;
+    my $key = CiderWebmail::Util::get_key($c);
+
+    croak("invalid key passed to CiderWebmail::Util::crypt") unless (defined($key) && (length($key) == 48));
+
+    $util->default_key($key);
+    return $util->decrypt_string( $util->decode_string_uri_base64( $o->{string} ) );
+}
+
+=head2 get_key()
+
+gets the server-side encryption key
+if no key exists one will be created
+
+=cut
+
+
+sub get_key {
+    my ($c, $o) = @_;
+
+    croak("cannot fetch encryption key without active session") unless $c->sessionid;
+
+    if (defined($c->session->{encryption_key}) && (length($c->session->{encryption_key}) == 48)) {
+        return $c->session->{encryption_key};
+    }  else {
+        $c->session->{encryption_key} = encode_base64(get_weak(35));
+        chomp($c->session->{encryption_key});
+        return $c->session->{encryption_key};
+    }
+}
 
 1;
