@@ -56,9 +56,9 @@ sub auto : Private {
     }
 
 
-    if ($c->sessionid and $c->session->{'username'} and $c->req->cookie('password')) {
+    if ($c->sessionid and $c->session->{username}) {
         $c->stash->{server} = $c->session->{server};
-        if ($c->authenticate({id => $c->session->{'username'}, password => CiderWebmail::Util::decrypt($c, { username => $c->session->{'username'}, string => $c->req->cookie('password')->value }) })) {
+        if ($c->authenticate({ id => $c->session->{username}, password => $c->session->{password} })) {
             $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
 
             #IMAPClient setup
@@ -92,18 +92,17 @@ sub login : Private {
     my $server = $c->config->{server};
     $c->stash({ template => 'login.xml' });
 
-    $c->stash->{server} = $c->req->param('server') if not ($server and %$server) and $c->req->param('server');
-
     my %user_data = (
             username => $c->req->param('username'),
             password => $c->req->param('password'),
-            server   => $c->stash->{server},
-    );
+        );
+
+    $c->stash->{server} = $c->req->param('server') if not ($server and %$server) and $c->req->param('server');
 
     if ($user_data{username} and $user_data{password}) {
         if ($c->authenticate(\%user_data)) {
-            $c->res->cookies->{$_} = { expires => '+1d', value => CiderWebmail::Util::crypt($c, { username => $user_data{'username'}, string => $user_data{$_} }) } foreach qw(password); # save for repeated IMAP authentication
-            $c->session->{$_} = $user_data{$_} foreach qw(username server); # save for repeated IMAP authentication
+            $c->session->{$_} = $user_data{$_} foreach qw(server username password); # save for repeated IMAP authentication
+            $c->session->{server} = $c->stash->{server};
 
             my @supported = $c->stash->{imapclient}->capability;
 
@@ -138,7 +137,6 @@ Redirects to / so we can start a new session.
 sub logout : Local {
     my ( $self, $c ) = @_;
 
-    $c->res->cookies->{'password'} = { expires => '-1y', value => 'none' };
     $c->logout;
     $c->delete_session('logged out');
 

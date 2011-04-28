@@ -6,10 +6,6 @@ use strict;
 use DateTime;
 use DateTime::Format::Mail;
 
-use Crypt::Util;
-use Crypt::Random::Source qw/get_weak/;
-use MIME::Base64;
-
 use Carp qw/ croak /;
 
 use feature qw/ switch /;
@@ -183,73 +179,5 @@ sub message_group_name {
     return $name;
 }
 
-=head2 crypt({ username => $username, string => $string })
-
-encrypt a string
-
-=cut
-
-sub crypt {
-    my ($c, $o) = @_;
-
-    croak unless defined $o->{username};
-    die("empty string passed to CiderWebmail::Util::crypt") unless defined($o->{string});
-    my $util = Crypt::Util->new;
-
-    my $key = CiderWebmail::Util::get_key($c, $o);
-    croak("invalid key passed to CiderWebmail::Util::crypt") unless (defined($key) && (length($key) > 20));
-
-    $util->default_key($key);
-    my $string = $util->encode_string_uri_base64( $util->encrypt_string($o->{string}) );
-
-    return $string;
-}
-
-=head2 decrypt({ username => $username, string => $string })
-
-decrypt a string
-
-=cut
-
-sub decrypt {
-    my ($c, $o) = @_;
-
-    croak unless defined $o->{username};
-    croak("empty string passed to CiderWebmail::Util::decrypt") unless defined($o->{string});
-    my $util = Crypt::Util->new;
-
-    my $key = CiderWebmail::Util::get_key($c, $o);
-    croak("invalid key passed to CiderWebmail::Util::crypt") unless (defined($key) && (length($key) > 20));
-    $util->default_key($key);
-    my $string = $util->decrypt_string( $util->decode_string_uri_base64( $o->{string} ) );
-
-    return $string;
-}
-
-=head2 get_key()
-
-gets the server-side encryption key
-if no key exists one will be created
-
-=cut
-
-
-sub get_key {
-    my ($c, $o) = @_;
-
-    croak unless defined $o->{username};
-
-    my $settings = $c->model('DB::Settings')->find_or_new({user => $o->{'username'} });
-
-    if (defined($settings->encryption_key) && (length($settings->encryption_key) > 20)) {
-        return $settings->encryption_key;
-    }  else {
-        my $new_key = encode_base64(get_weak(35));
-        chomp($new_key);
-        $settings->set_column(encryption_key => $new_key);
-        $settings->update_or_insert();
-        return $settings->encryption_key;
-    }
-}
 
 1;

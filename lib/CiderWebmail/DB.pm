@@ -8,11 +8,13 @@ use warnings;
 
 use base 'DBIx::Class::Schema';
 
-__PACKAGE__->load_namespaces;
+__PACKAGE__->load_namespaces(
+    result_namespace => 'Result',
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.04005 @ 2011-04-19 22:10:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:x5zKwq2iRd97+Qokb3uc/Q
+# Created by DBIx::Class::Schema::Loader v0.04005 @ 2010-05-15 15:15:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xyTzZx0RAUoSgNqPR5Xayg
 
 =head1 NAME
 
