@@ -10,10 +10,10 @@ has c           => (is => 'ro', isa => 'Object');
 has mailbox     => (is => 'ro', isa => 'Str');
 has uid         => (is => 'ro', isa => 'Int');
 
-has renderable  => (is => 'rw', isa => 'ArrayRef');
-has attachments => (is => 'rw', isa => 'ArrayRef');
-has all_parts   => (is => 'rw', isa => 'ArrayRef');
-has cid_to_part => (is => 'rw', isa => 'HashRef');
+has renderable  => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
+has attachments => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
+has all_parts   => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
+has cid_to_part => (is => 'rw', isa => 'HashRef',  default => sub { {} });
 
 has loaded      => (is => 'rw');
 
@@ -160,8 +160,15 @@ sub date {
 =head2 load_body()
 
 Loads the message body and populates the renderable and attachments structures if not already done.
+This has to be seperate from body_parts otherwise the before would cause infinite recusion (load_body_parts
+uses $self->renderable, $self_attachments, ...)!
 
 =cut
+
+before qw(renderable attachments all_parts get_embedded_message) => sub {
+    my ($self) = @_;
+    $self->load_body();
+};
 
 sub load_body {
     my ($self) = @_;
@@ -169,21 +176,10 @@ sub load_body {
     return if $self->loaded;
     $self->loaded(1);
 
-    my $body_parts = $self->body_parts($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
-   
-    $self->renderable($body_parts->{renderable});
-    $self->attachments($body_parts->{attachments});
-    $self->all_parts($body_parts->{all_parts});
-    $self->all_parts($body_parts->{all_parts});
-    $self->cid_to_part($body_parts->{cid_to_part});
+    $self->load_body_parts($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
 
     return;
 }
-
-before qw(renderable attachments all_parts get_embedded_message) => sub {
-    my ($self) = @_;
-    $self->load_body();
-};
 
 =head2 delete()
 
@@ -263,10 +259,9 @@ sub get_embedded_message {
     return $body;
 }
 
-=head2 body_parts($c)
+=head2 load_body_parts($c)
 
-Returns the body parts of this message as hashref of renderable parts and attachments:
-    {
+Returns the body parts of this message into the CiderWebmail::Message object
         renderable => {0 => 'Testmessage'},
         attachments => {
             1 => {
@@ -277,11 +272,10 @@ Returns the body parts of this message as hashref of renderable parts and attach
                 path => '1',
             },
         },
-    }
 
 =cut
 
-sub body_parts {
+sub load_body_parts {
     my ($self, $c) = @_;
 
     croak('mailbox not set') unless defined $self->mailbox;
@@ -300,19 +294,14 @@ sub body_parts {
 
     my @parts = ($entity);
  
-    my $renderable  = []; #body parts we render (text/plain, text/html, etc)
-    my $attachments = []; #body parts we don't render (everything else)
-    my $all_parts   = []; #all body parts
-    my $cid_to_part = {}; #Content-ID to CiderWebmail::Part mapping
-
     my $id = 0;
     while (@parts) {
         my $part = shift @parts;
 
-        $self->_process_body_part({ renderable => $renderable, attachments => $attachments, all_parts => $all_parts, cid_to_part => $cid_to_part, entity => $part, id => \$id });
+        $self->_process_body_part({ renderable => $self->renderable, attachments => $self->attachments, all_parts => $self->all_parts, cid_to_part => $self->cid_to_part, entity => $part, id => \$id });
     }
 
-    return { renderable => $renderable, attachments => $attachments, all_parts => $all_parts, cid_to_part => $cid_to_part };
+    return;
 }
 
 sub _process_body_part {
