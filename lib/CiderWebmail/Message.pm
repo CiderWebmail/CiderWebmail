@@ -298,7 +298,7 @@ sub load_body_parts {
     while (@parts) {
         my $part = shift @parts;
 
-        $self->_process_body_part({ renderable => $self->renderable, attachments => $self->attachments, all_parts => $self->all_parts, cid_to_part => $self->cid_to_part, entity => $part, id => \$id });
+        $self->_process_body_part({ entity => $part, id => \$id });
     }
 
     return;
@@ -312,24 +312,24 @@ sub _process_body_part {
     my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, parent_message => $self, id => $id, path => (defined $self->path ? $self->path."_" : '').$id })->handler;
 
     if ($part->attachment and $part->has_body) {
-        push(@{ $o->{attachments} }, $part);
+        push(@{ $self->attachments }, $part);
     }
     elsif ($part->renderable or $part->message) {
-        push(@{ $o->{renderable} }, $part);
+        push(@{ $self->renderable }, $part);
     }
     elsif ($part->subparts) {
         foreach($part->subparts) {
-            $self->_process_body_part({ renderable => $o->{renderable}, attachments => $o->{attachments}, all_parts => $o->{all_parts}, cid_to_part => $o->{cid_to_part}, entity => $_, id => $o->{id} });
+            $self->_process_body_part({ entity => $_, id => $o->{id} });
         }
     }
     elsif ($part->has_body) {
-        push(@{ $o->{attachments} }, $part);
+        push(@{ $self->attachments }, $part);
     }
 
-    push(@{ $o->{all_parts} }, $part);
+    push(@{ $self->all_parts }, $part);
 
     if($part->cid) {
-        $o->{cid_to_part}->{$part->cid} = $part->path;
+        $self->cid_to_part->{$part->cid} = $part->path;
     }
 
     ${ $o->{id} }++;
