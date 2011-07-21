@@ -59,6 +59,8 @@ requires 'Data::ICal';
 requires 'DateTime::Format::ISO8601';
 
 requires 'Crypt::Util';
+requires 'Crypt::CBC';
+
 requires 'Crypt::Rijndael';
 requires 'Crypt::Random::Source';
 requires 'MIME::Base64::URLSafe';
