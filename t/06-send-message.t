@@ -50,9 +50,9 @@ $mech->get_ok($inbox_messages[0]->url.'/delete', "Delete message from INBOX");
 $mech->get_ok($sent_messages[0]->url.'/delete', "Delete message from Sent folder");
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_lacks(qr/send-message-test-$unix_time/, 'message deleted from INBOX');
+$mech->content_unlike(qr/send-message-test-$unix_time/, 'message deleted from INBOX');
 
 $mech->get_ok( 'http://localhost/mailbox/Sent?length=99999' );
-$mech->content_lacks(qr/send-message-test-$unix_time/, 'message deleted from Sent folder');
+$mech->content_unlike(qr/send-message-test-$unix_time/, 'message deleted from Sent folder');
 
 done_testing();
