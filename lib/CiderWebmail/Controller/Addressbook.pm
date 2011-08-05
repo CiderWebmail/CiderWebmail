@@ -88,7 +88,13 @@ sub modify : Chained('/addressbook/setup') Path('modify') CaptureArgs(0) {
         return if $c->stash->{error};
 
         my $addressbook = $c->model('DB::Addressbook');
-        if (my $entry = $addressbook->find($c->req->param('id'))) {
+
+        my $entry;
+        if (defined $c->req->param('id') and ($c->req->param('id') =~ m/^\d+$/)) {
+            $entry = $addressbook->find($c->req->param('id'));
+        }
+
+        if (defined $entry) {
             croak("entry does not belong to user") unless $entry->user eq $c->user->id;
             $entry->update({
                 firstname => $c->req->param('firstname'),
