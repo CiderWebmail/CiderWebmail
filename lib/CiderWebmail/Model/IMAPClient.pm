@@ -548,13 +548,10 @@ sub message_as_string {
     $self->select($c, { mailbox => $o->{mailbox} } );
 
     my $message_string = $c->stash->{imapclient}->message_string( $o->{uid} );
+    $self->_die_on_error($c);
     utf8::decode($message_string);
 
-    unless($c->stash->{headercache}->get({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring'})) {
-        $c->stash->{headercache}->set({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring', data => $message_string});
-    }
-
-    return $c->stash->{headercache}->get({uid => $o->{uid}, mailbox => $o->{mailbox}, header => '_messagestring'});
+    return $message_string;
 }
 
 =head2 delete_messages($c, { mailbox => $mailbox, uid => $uid })
