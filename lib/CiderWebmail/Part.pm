@@ -148,6 +148,8 @@ render a CiderWebmail::Part. just a stub - override in CiderWebmail::Part::FooBa
 sub render {
     my ($self) = @_;
 
+    confess "[FATAL] CiderWebmail::Part->render() called but was not overridden by anything!";
+
     return;
 }
 
