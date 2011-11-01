@@ -532,6 +532,48 @@ sub mark_answered {
     return;
 }
 
+=head2 bodypart_as_string($c, { mailbox => $mailbox, uid => $uid, parts => [ $part ] })
+
+fetches body part(s) of a message - part IDs according to the bodystructure of the message
+
+=cut
+
+sub bodypart_as_string {
+    my ($self, $c, $o) = @_;
+
+    croak('mailbox not set') unless defined $o->{mailbox};
+    croak('uid not set') unless defined $o->{uid};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    my $bodypart_string = $c->stash->{imapclient}->bodypart_string( $o->{uid}, $o->{part} );
+    $self->_die_on_error($c);
+    utf8::decode($bodypart_string);
+
+    return $bodypart_string;
+}
+
+=head2 get_bodystructure($c, { mailbox => $mailbox, uid => $uid })
+
+fetches bodystructure of a message.
+returns a Mail::IMAPClient::BodyStructure object - this might change when we parse
+this into something more usefull
+
+=cut
+
+sub get_bodystructure {
+    my ($self, $c, $o) = @_;
+
+    croak('mailbox not set') unless defined $o->{mailbox};
+    croak('uid not set') unless defined $o->{uid};
+
+    $self->select($c, { mailbox => $o->{mailbox} } );
+
+    my $bodystructure = $c->stash->{imapclient}->get_bodystructure( $o->{uid} );
+    $self->_die_on_error($c);
+
+    return $bodystructure;
+}
 
 =head2 message_as_string($c, { mailbox => $mailbox, uid => $uid })
 
