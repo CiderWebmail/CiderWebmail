@@ -17,6 +17,7 @@ requires 'Catalyst::Plugin::Session::Store::FastMmap';
 requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Authentication::Credential::HTTP';
 requires 'Catalyst::Model::DBIC::Schema' => '0.41';
+requires 'Catalyst::ScriptRunner';
 
 requires 'Catalyst::Action::RenderView' => '0.16';
 requires 'YAML'; # This should reflect the config file format you've chosen
