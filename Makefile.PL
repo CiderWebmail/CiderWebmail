@@ -67,6 +67,10 @@ requires 'Crypt::Rijndael';
 requires 'Crypt::Random::Source';
 requires 'MIME::Base64::URLSafe';
 
+requires 'FCGI';
+requires 'FCGI::ProcManager';
+
+
 #catalyst;
 
 install_script glob('script/*.pl');
