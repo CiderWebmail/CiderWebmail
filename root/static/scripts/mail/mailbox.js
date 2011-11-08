@@ -241,9 +241,16 @@ function fetch_new_rows(start_index, length) {
 
 function update_foldertree(responseText, responseXML) {
     var folder_tree = responseText.match(/<ul[^>]*id="folder_tree"[^>]*>([\s\S]*)<\/ul>/i)[1]; // responseXML.getElementById doesn't work in IE
+
     document.title = document.title.replace(/- \(\d+\)$/, '- (' + responseText.match(/<div id="unseen">(\d+)<\/div>/)[1] + ')');
-    document.getElementById('folder_tree').innerHTML = folder_tree;
+    
+    //only update the foldertree if the response comes in the correct order. sometimes a request takes longer than others.
+    if (responseXML.getElementById('folder_tree').getAttribute('data-timestamp') > document.getElementById('folder_tree').getAttribute('data-timestamp')) { 
+        document.getElementById('folder_tree').innerHTML = folder_tree;
+    }
+
     droppables = $('folder_tree').getElements('.folder');
+
 }
 
 function add_drag_and_drop(message, event, droppables, selected) {

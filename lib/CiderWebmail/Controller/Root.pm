@@ -7,6 +7,8 @@ use base 'Catalyst::Controller';
 use CiderWebmail::Headercache;
 use List::Util qw(reduce);
 
+use Time::HiRes;
+
 use Petal::TranslationService::Gettext;
 
 #
@@ -54,6 +56,8 @@ sub auto : Private {
     } else {
         $c->stash->{language} = $c->config->{language} || 'en';
     }
+
+    $c->stash->{timestamp} = Time::HiRes::time();
 
 
     if ($c->sessionid and $c->session->{'username'} and $c->req->cookie('password')) {
