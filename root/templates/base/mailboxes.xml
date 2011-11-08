@@ -14,21 +14,28 @@
     <body>
         <div metal:fill-slot="content">
             <h1>Folders</h1>
-            <p>
-                <a tal:attributes="href uri_create_folder" i18n:translate="">Create folder</a>
-            </p>
-            <ul>
-                <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
-                    <li metal:define-macro="folder-tree" tal:attributes="class folder/selected">
-                        <a class="folder" href="#" tal:attributes="href folder/uri_view; title folder/id"><span class="name" tal:content="folder/name"/></a>
-                        <span class="counts">(<span tal:replace="string: ${folder/total}"/> <span i18n:translate="">messages</span>)</span>
-                        <span class="actions"><a tal:attributes="href folder/uri_create_subfolder" i18n:translate="">New subfolder</a> <a tal:attributes="href folder/uri_delete" i18n:translate="">Delete</a></span>
-                        <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
-                            <li metal:use-macro="#folder-tree">Dummy Child 1</li>
-                        </ul>
-                    </li>
-                </div>
-            </ul>
+            <div id="container">
+                <ul id="manage_folder_tree">
+                    <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
+                        <li metal:define-macro="manage-folder-tree" tal:attributes="class folder/selected">
+                            <img tal:attributes="src string:${uri_static}/images/${folder/icon}" tal:condition="true: folder/icon" />
+                            <span class="name" tal:content="folder/name"/>
+                            <span class="actions">
+                                <a tal:attributes="href folder/uri_create_subfolder" i18n:translate="">New subfolder</a>
+                                <a tal:attributes="href folder/uri_delete" i18n:translate="">Delete</a>
+                            </span>
+
+                            <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
+                                <li metal:use-macro="#manage-folder-tree">Dummy Child 1</li>
+                            </ul>
+                        </li>
+                    </div>
+                </ul>
+                
+                <p>
+                    <a tal:attributes="href uri_create_folder" i18n:translate="">Create folder</a>
+                </p>
+            </div>
         </div>
     </body>
 </html>

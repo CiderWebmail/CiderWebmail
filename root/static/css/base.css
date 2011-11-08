@@ -122,6 +122,16 @@ td, th
         overflow: auto;
     }
 
+    #content #manage_folder_tree {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    #content #manage_folder_tree ul {
+        list-style: none;
+    }
+
 #compose form, #login form { padding: 0 0.5em; }
 
 #loading_message

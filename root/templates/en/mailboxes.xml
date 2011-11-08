@@ -7,21 +7,28 @@
     <body>
         <div metal:fill-slot="content">
             <h1>Folders</h1>
-            <p>
-                <a tal:attributes="href uri_create_folder">Create folder</a>
-            </p>
-            <ul>
-                <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
-                    <li tal:attributes="class folder/selected" metal:define-macro="folder-tree">
-                        <a href="#" tal:attributes="href folder/uri_view; title folder/id" class="folder"><span tal:content="folder/name" class="name" /></a>
-                        <span class="counts">(<span tal:replace="string: ${folder/total}" /> <span>messages</span>)</span>
-                        <span class="actions"><a tal:attributes="href folder/uri_create_subfolder">New subfolder</a> <a tal:attributes="href folder/uri_delete">Delete</a></span>
-                        <ul tal:condition="true:folders" tal:repeat="folder folders" tal:define="folders folder/folders">
-                            <li metal:use-macro="#folder-tree">Dummy Child 1</li>
-                        </ul>
-                    </li>
-                </div>
-            </ul>
+            <div id="container">
+                <ul id="manage_folder_tree">
+                    <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
+                        <li tal:attributes="class folder/selected" metal:define-macro="manage-folder-tree">
+                            <img tal:condition="true: folder/icon" tal:attributes="src string:${uri_static}/images/${folder/icon}" />
+                            <span tal:content="folder/name" class="name" />
+                            <span class="actions">
+                                <a tal:attributes="href folder/uri_create_subfolder">New subfolder</a>
+                                <a tal:attributes="href folder/uri_delete">Delete</a>
+                            </span>
+
+                            <ul tal:condition="true:folders" tal:repeat="folder folders" tal:define="folders folder/folders">
+                                <li metal:use-macro="#manage-folder-tree">Dummy Child 1</li>
+                            </ul>
+                        </li>
+                    </div>
+                </ul>
+                
+                <p>
+                    <a tal:attributes="href uri_create_folder">Create folder</a>
+                </p>
+            </div>
         </div>
     </body>
 </html>
