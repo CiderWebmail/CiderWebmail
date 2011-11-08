@@ -25,6 +25,8 @@ if ($mech->content =~ m{mailbox/Trash/delete}) {
     $mech->follow_link_ok({ url_regex => qr{/mailbox/Trash/delete} }, 'delete Trash folder');
 }
 
+$mech->content_lacks('/Trash/', 'verify that there is no trashfolder');
+
 my $unix_time = time();
 
 #Test without Trash folder (directly delete message)
