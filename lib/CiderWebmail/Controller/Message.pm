@@ -117,8 +117,9 @@ Move a message to the trash (if available) or delete a message from the trash.
 sub delete : Chained('setup') Args(0) {
     my ( $self, $c ) = @_;
 
+    #create the foldertree so we can find the trash folder
     CiderWebmail::Util::add_foldertree_to_stash($c);
-
+    
     my $folders = $c->stash->{folders_hash};
     my $trash = first { $_ =~ /\b trash | papierkorb \b/ixm } keys %$folders; # try to find a folder called "Trash"
 
@@ -129,6 +130,10 @@ sub delete : Chained('setup') Args(0) {
         $c->stash->{message}->delete();
     }
     
+    #update the foldertree after we deleted the message because the foldertree changed
+    delete $c->stash->{folder_tree};
+    CiderWebmail::Util::add_foldertree_to_stash($c);
+
     return ($c->req->header('X-Request') or '') eq 'AJAX'
         ? CiderWebmail::Util::send_foldertree_update($c) # update folder display
         : $c->res->redirect($c->stash->{uri_folder});

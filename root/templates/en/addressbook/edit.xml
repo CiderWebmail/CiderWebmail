@@ -6,25 +6,27 @@
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
         <h1>Edit contact</h1>
-        <div tal:condition="error" tal:content="error" />
-        <form enctype="multipart/form-data" tal:attributes="action string:${uri_modify}" method="post">
-            <div>
-                <input name="id" tal:attributes="value id" type="hidden" />
+        <div id="container">
+            <div tal:condition="error" tal:content="error" />
+            <form enctype="multipart/form-data" tal:attributes="action string:${uri_modify}" method="post">
+                <div>
+                    <input name="id" tal:attributes="value id" type="hidden" />
 
-                <label>
-                    <span>First name:</span>
-                    <input name="firstname" tal:attributes="value firstname" />
-                </label>
-                <label>
-                    <span>Last name:</span>
-                    <input name="surname" tal:attributes="value surname" />
-                </label>
-                <label>
-                    <span>E-Mail:</span>
-                    <input name="email" tal:attributes="value email" />
-                </label>
-                <button value="1" name="update" type="submit">Save</button>
-            </div>
-        </form>
+                    <label>
+                        <span>First name:</span>
+                        <input name="firstname" tal:attributes="value firstname" />
+                    </label>
+                    <label>
+                        <span>Last name:</span>
+                        <input name="surname" tal:attributes="value surname" />
+                    </label>
+                    <label>
+                        <span>E-Mail:</span>
+                        <input name="email" tal:attributes="value email" />
+                    </label>
+                    <button value="1" name="update" type="submit">Save</button>
+                </div>
+            </form>
+        </div>
     </body>
 </html>

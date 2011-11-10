@@ -6,7 +6,7 @@
         <title metal:define-slot="title">Folder tree</title>
     </head>
     <body>
-        <ul id="folder_tree" metal:define-macro="folder_tree">
+        <ul tal:attributes="data-timestamp string:${timestamp}" id="folder_tree" metal:define-macro="folder_tree">
             <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
                 <li tal:attributes="class folder/selected" metal:define-macro="folder-tree">
                     <a href="#" tal:attributes="href folder/uri_view; title folder/id" class="folder"><img tal:condition="true: folder/icon" tal:attributes="src string:${uri_static}/images/${folder/icon}" /> <span tal:content="folder/name" class="name" /> <span tal:content="string: ${folder/unseen}/${folder/total}" class="counts" /></a>
