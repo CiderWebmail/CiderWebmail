@@ -7,13 +7,15 @@
     <body>
         <div metal:fill-slot="content">
             <h1>Folders</h1>
-            <form>
-                <label>
-                    <span>Name</span>
-                    <input name="name" />
-                </label>
-                <button type="submit">Create</button>
-            </form>
+            <div id="container">
+                <form>
+                    <label>
+                        <span>Name</span>
+                        <input name="name" />
+                    </label>
+                    <button type="submit">Create</button>
+                </form>
+            </div>
         </div>
     </body>
 </html>

@@ -12,21 +12,23 @@
     </head>
     <body metal:fill-slot="content" tal:omit-tag="">
         <h1 i18n:translate="">Addressbook</h1>
-        <table id="addressbook_list" class="addressbook_list">
-            <tr>
-                <th i18n:translate="">Name</th>
-                <th i18n:translate="">E-Mail</th>
-                <th />
-                <th />
-            </tr>
-            <tr tal:repeat="entry addresses">
-                <td tal:content="string: ${entry/firstname} ${entry/surname}" />
-                <td><a tal:attributes="href string:${uri_compose}?to=${entry/email}; id string:compose_${entry/id}" tal:content="string: ${entry/email}" /></td>
-                <td><a tal:attributes="href string:${uri_addressbook}/modify/edit/${entry/id}; id string:edit_${entry/id}" i18n:translate="">edit</a></td>
-                <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img tal:attributes="src string:${uri_static}/images/trashcan.gif" alt="delete" title="delete" i18n:attributes="alt"/></a></td>
-            </tr>
-        </table>
+        <div id="container">
+            <table id="addressbook_list" class="addressbook_list">
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <th i18n:translate="">E-Mail</th>
+                    <th />
+                    <th />
+                </tr>
+                <tr tal:repeat="entry addresses">
+                    <td tal:content="string: ${entry/firstname} ${entry/surname}" />
+                    <td><a tal:attributes="href string:${uri_compose}?to=${entry/email}; id string:compose_${entry/id}" tal:content="string: ${entry/email}" /></td>
+                    <td><a tal:attributes="href string:${uri_addressbook}/modify/edit/${entry/id}; id string:edit_${entry/id}" i18n:translate="">edit</a></td>
+                    <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img tal:attributes="src string:${uri_static}/images/trashcan.gif" alt="delete" title="delete" i18n:attributes="alt"/></a></td>
+                </tr>
+            </table>
 
-        <a tal:attributes="href string:${uri_addressbook}/modify/add" i18n:translate="">add contact</a>
+            <a tal:attributes="href string:${uri_addressbook}/modify/add" i18n:translate="">add contact</a>
+        </div>
     </body>
 </html>

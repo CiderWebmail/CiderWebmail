@@ -14,13 +14,15 @@
     <body>
         <div metal:fill-slot="content">
             <h1 i18n:translate="">Folders</h1>
-            <form>
-                <label>
-                    <span>Name</span>
-                    <input name="name"/>
-                </label>
-                <button type="submit" i18n:translate="">Create</button>
-            </form>
+            <div id="container">
+                <form>
+                    <label>
+                        <span>Name</span>
+                        <input name="name"/>
+                    </label>
+                    <button type="submit" i18n:translate="">Create</button>
+                </form>
+            </div>
         </div>
     </body>
 </html>

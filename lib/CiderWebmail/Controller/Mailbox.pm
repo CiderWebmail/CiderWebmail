@@ -149,6 +149,8 @@ sub create_subfolder : Chained('setup') PathPart {
         $c->res->redirect($c->uri_for('/mailboxes'));
     }
 
+    CiderWebmail::Util::add_foldertree_to_stash($c); 
+
     $c->stash({
         template => 'create_mailbox.xml',
     });

@@ -13,25 +13,27 @@
     </head>
     <body metal:fill-slot="content" tal:omit-tag="">
         <h1 i18n:translate="">Edit contact</h1>
-        <div tal:condition="error" tal:content="error" />
-        <form enctype="multipart/form-data" method="post" tal:attributes="action string:${uri_modify}">
-            <div>
-                <input type="hidden" name="id" tal:attributes="value id" />
+        <div id="container">
+            <div tal:condition="error" tal:content="error" />
+            <form enctype="multipart/form-data" method="post" tal:attributes="action string:${uri_modify}">
+                <div>
+                    <input type="hidden" name="id" tal:attributes="value id" />
 
-                <label>
-                    <span i18n:translate="">First name:</span>
-                    <input name="firstname" tal:attributes="value firstname" />
-                </label>
-                <label>
-                    <span i18n:translate="">Last name:</span>
-                    <input name="surname" tal:attributes="value surname" />
-                </label>
-                <label>
-                    <span i18n:translate="">E-Mail:</span>
-                    <input name="email" tal:attributes="value email" />
-                </label>
-                <button type="submit" name="update" value="1" i18n:translate="">Save</button>
-            </div>
-        </form>
+                    <label>
+                        <span i18n:translate="">First name:</span>
+                        <input name="firstname" tal:attributes="value firstname" />
+                    </label>
+                    <label>
+                        <span i18n:translate="">Last name:</span>
+                        <input name="surname" tal:attributes="value surname" />
+                    </label>
+                    <label>
+                        <span i18n:translate="">E-Mail:</span>
+                        <input name="email" tal:attributes="value email" />
+                    </label>
+                    <button type="submit" name="update" value="1" i18n:translate="">Save</button>
+                </div>
+            </form>
+        </div>
     </body>
 </html>

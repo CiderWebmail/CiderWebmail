@@ -1,17 +1,27 @@
+fieldset {
+    border-top: 1px solid;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+}
+
 label {
     display: block;
     clear: left;
     text-align: right;
 }
+
 label span {
     float: left;
     text-align: left;
     width: 14%;
 }
+
 label.text span {
     float: none;
     display: block;
 }
+
 input {
     width: 85%;
 }
@@ -24,6 +34,7 @@ textarea {
 label.attachment, label.sent_folder {
     text-align: left;
 }
+
 label.attachment span, label.sent_folder span, label.attachment input, label.sent_folder.input {
     float: none;
     width: auto;
