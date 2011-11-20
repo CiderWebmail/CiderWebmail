@@ -334,7 +334,7 @@ sub get_headers_hash {
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;
-            $message->{head}->{$header} = CiderWebmail::Header::transfrom({ type => $header, data => ($value or '') });
+            $message->{head}->{$header} = CiderWebmail::Header::transform({ type => $header, data => ($value or '') });
         }
 
         $message->{flag} = {};
