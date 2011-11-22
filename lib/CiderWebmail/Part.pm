@@ -3,6 +3,7 @@ package CiderWebmail::Part;
 use Moose;
 use Petal;
 use MIME::Base64;
+use MIME::QuotedPrint;
 use Module::Pluggable require => 1, search_path => [__PACKAGE__];
 
 use Carp qw/ carp cluck /;
@@ -68,9 +69,15 @@ sub body {
     my ($self, $o) = @_;
 
     my $body = $self->c->model('IMAPClient')->bodypart_as_string($self->c, { mailbox => $self->mailbox, uid => $self->uid, part => $self->id });
+
     if (defined($self->bodystruct->{bodyenc}) and (lc($self->bodystruct->{bodyenc}) eq 'base64')) {
         $body = decode_base64($body);
     }
+
+    if (defined($self->bodystruct->{bodyenc}) and (lc($self->bodystruct->{bodyenc}) eq 'quoted-printable')) {
+        $body = decode_qp($body);
+    }
+
 
     return (defined($o->{raw}) ? $body : $self->_decode_body({ charset => $self->charset, body => $body }));
 }
