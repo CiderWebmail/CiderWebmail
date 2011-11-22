@@ -5,6 +5,8 @@ use warnings;
 use parent 'Catalyst::Controller';
 
 use CiderWebmail::Message;
+use CiderWebmail::Util;
+
 use MIME::Lite;
 use MIME::Words qw(encode_mimeword);
 use DateTime;
@@ -318,37 +320,29 @@ sub send : Chained('/mailbox/setup') Args(0) {
         }
     }
 
-    if (my $part_to_forward = $c->req->param('forward')) {
-        if ($part_to_forward =~ m|^(\d+)/([a-z0-9\.]+)$|i) {
-            my ($uid, $part_id) = ($1, $2);
-            $c->stash->{part_to_forward} = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
-        } else {
-            croak("Unable to parse part_to_forward");
-        }
+    if (defined $c->req->param('forward')) {
+        my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('forward'));
+        my $part_to_forward = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
 
         $mail->attach(
             Type     => 'message/rfc822',
-            Filename => $c->stash->{part_to_forward}->subject . '.eml',
-            Data     => $c->stash->{part_to_forward}->body,
+            Filename => $part_to_forward->subject . '.eml',
+            Data     => $part_to_forward->body,
         );
     }
 
-    if (my $in_reply_to = $c->req->param('in_reply_to')) {
-        if ($in_reply_to =~ m|^(\d+)/([a-z0-9\.]+)$|i) {
-            my ($uid, $part_id) = ($1, $2);
-            $c->stash->{in_reply_to} = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
-        } else {
-            croak("Unable to parse in_reply_to: $in_reply_to");
-        }
+    if (defined $c->req->param('in_reply_to')) {
+        my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('in_reply_to'));
+        my $in_reply_to_part = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
 
-        if ($c->stash->{in_reply_to}) {
-            if (my $message_id = $c->stash->{in_reply_to}->message_id) {
+        if ($in_reply_to_part) {
+            if (my $message_id = $in_reply_to_part->message_id) {
                 $mail->add('In-Reply-To', $message_id);
-                my $references = $c->stash->{in_reply_to}->references;
+                my $references = $in_reply_to_part->references;
                 $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
             }
 
-            $c->stash->{in_reply_to}->mark_answered;
+            $in_reply_to_part->mark_answered;
         } 
     }
 
