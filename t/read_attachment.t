@@ -48,7 +48,7 @@ ok(($mech->content =~ m/testattachment-content/), 'verify attachment content');
 
 
 #attachment download for forwarded message
-$mech->get_ok($messages[0]->url.'/forward');
+$mech->get_ok($messages[0]->url.'/part/forward/root');
 
 $mech->submit_form_ok({
     with_fields => {

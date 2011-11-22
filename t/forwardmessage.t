@@ -43,7 +43,7 @@ ok( (length($message_id) > 0), 'got message id');
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id, 'open message');
 
-$mech->follow_link_ok({ url_regex => qr{/forward/?\z} }, "forwarding");
+$mech->follow_link_ok({ url_regex => qr{/forward/root\z} }, "forwarding");
 
 $mech->submit_form_ok({
     with_fields => {

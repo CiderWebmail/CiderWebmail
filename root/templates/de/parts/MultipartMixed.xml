@@ -1,0 +1,5 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" tal:omit-tag="">
+    <div tal:repeat="part children" tal:omit-tag="">
+        <div tal:condition="and: true:part/renderable false:part/attachment" tal:attributes="content-type part/content_type" class="body_part"><div tal:replace="structure part/render" /></div>
+    </div>
+</div>

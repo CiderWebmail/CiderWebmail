@@ -10,15 +10,48 @@ has c           => (is => 'ro', isa => 'Object');
 has mailbox     => (is => 'ro', isa => 'Str');
 has uid         => (is => 'ro', isa => 'Int');
 
-has renderable  => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
-has attachments => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
-has all_parts   => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
-has cid_to_part => (is => 'rw', isa => 'HashRef',  default => sub { {} });
+has root_part   => (is => 'rw', isa => 'Object');
+has loaded      => (is => 'rw', isa => 'Int', default => 0);
 
-has loaded      => (is => 'rw');
+has parts       => (is => 'rw', isa => 'HashRef', default => sub { {} });
 
-has entity      => (is => 'ro', isa => 'Object');
-has path        => (is => 'rw', isa => 'Str');
+sub BUILD {
+    my ($self) = @_;
+
+    $self->create_message_stubs;
+}
+
+sub create_message_stubs {
+    my ($self) = @_;
+
+    return if defined $self->root_part;
+    my $struct = $self->c->model('IMAPClient')->get_bodystructure($self->c, { mailbox => $self->mailbox, uid => $self->uid });
+    $struct->bodystructure;
+
+    my $part = CiderWebmail::Part::Root->new({ c => $self->c, root_message => $self, bodystruct => $struct });
+    $self->root_part($part);
+}
+
+=head2 get_part
+
+returns the CiderWebmail::Part object of a bodypart of this message
+
+=cut
+
+sub get_part {
+    my ($self, $o) = @_;
+
+    unless (defined $self->parts->{$o->{part_id}}) {
+        croak("get_part() failed for part $o->{part_id}");
+    }
+
+    return $self->parts->{$o->{part_id}};
+}
+
+sub render {
+    my ($self) = @_;
+    return $self->root_part->render();
+}
 
 =head2 get_header($header)
 
@@ -106,18 +139,28 @@ sub cc {
     return $self->get_header('cc');
 }
 
-=head2 guess_recipient()
+=head2 message_id()
 
-Tries to guess the recipient address used to deliver this message to this mailbox.
-Used for suggesting a From address on reply/forward.
+Shortcut for getting the 'Message-ID' header
 
 =cut
 
-sub guess_recipient {
+sub message_id {
     my ($self) = @_;
 
-    return [] unless defined $self->to;
-    return [ CiderWebmail::Util::filter_unusable_addresses(@{ $self->to }) ]
+    return $self->get_header('Message-ID');
+}
+
+=head2 references()
+
+Shortcut for getting the 'References' header
+
+=cut
+
+sub references {
+    my ($self) = @_;
+
+    return $self->get_header('References');
 }
 
 =head2 mark_read()
@@ -157,30 +200,6 @@ sub date {
     return $self->get_header('date');
 }
 
-=head2 load_body()
-
-Loads the message body and populates the renderable and attachments structures if not already done.
-This has to be seperate from body_parts otherwise the before would cause infinite recusion (load_body_parts
-uses $self->renderable, $self_attachments, ...)!
-
-=cut
-
-before qw(renderable attachments all_parts get_embedded_message) => sub {
-    my ($self) = @_;
-    $self->load_body();
-};
-
-sub load_body {
-    my ($self) = @_;
-
-    return if $self->loaded;
-    $self->loaded(1);
-
-    $self->load_body_parts($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
-
-    return;
-}
-
 =head2 delete()
 
 Deletes the message from the server.
@@ -217,124 +236,6 @@ sub as_string {
     my ($self) = @_;
 
     return $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
-}
-
-=head2 main_body_part()
-
-Returns the main body part for using when forwarding/replying the message.
-
-=cut
-
-sub main_body_part {
-    my ($self) = @_;
-
-    #just return the first text/plain part
-    #here we should determine the main 'body part' (text/plain > text/html > ???)
-    #FIXME this code does not actually get the first body part. Should use renderable_list here.
-    foreach (@{ $self->renderable }) {
-        my $part = $_;
-        if ( ($part->content_type or '') eq 'text/plain') {
-            return $part->body;
-        }
-    }
-
-    return;
-}
-
-=head2 get_embedded_message
-
-Recursively get an embedded message according to a given path.
-
-=cut
-
-sub get_embedded_message {
-    my ( $self, $c, @path ) = @_;
-
-    my $body = $self;
-
-    foreach (@path) {
-        $body = $body->all_parts->[$_]->render;
-    }
-
-    return $body;
-}
-
-=head2 load_body_parts($c)
-
-Returns the body parts of this message into the CiderWebmail::Message object
-        renderable => {0 => 'Testmessage'},
-        attachments => {
-            1 => {
-                id   => 1,
-                type => 'application/binary',
-                name => 'testfile',
-                data => '...',
-                path => '1',
-            },
-        },
-
-=cut
-
-sub load_body_parts {
-    my ($self, $c) = @_;
-
-    croak('mailbox not set') unless defined $self->mailbox;
-    croak('uid not set') unless defined $self->uid;
-
-    my $entity = $self->entity;
-
-    unless ($entity) {
-        my $message = $c->model('IMAPClient')->message_as_string($c, { mailbox => $self->mailbox, uid => $self->uid });
-
-        my $parser = MIME::Parser->new();
-        $parser->output_to_core(1);
-
-        $entity = $parser->parse_data($message);
-    }
-
-    my @parts = ($entity);
- 
-    my $id = 0;
-    while (@parts) {
-        my $part = shift @parts;
-
-        $self->_process_body_part({ entity => $part, id => \$id });
-    }
-
-    return;
-}
-
-sub _process_body_part {
-    my ($self, $o) = @_;
-
-    my $id = ${ $o->{id} };
-
-    my $part = CiderWebmail::Part->new({ c => $self->c, entity => $o->{entity}, uid => $self->uid, mailbox => $self->mailbox, parent_message => $self, id => $id, path => (defined $self->path ? $self->path."_" : '').$id })->handler;
-
-    if ($part->attachment and $part->has_body) {
-        push(@{ $self->attachments }, $part);
-    }
-    elsif ($part->renderable or $part->message) {
-        push(@{ $self->renderable }, $part);
-    }
-    elsif ($part->subparts) {
-        foreach($part->subparts) {
-            $self->_process_body_part({ entity => $_, id => $o->{id} });
-        }
-    }
-    elsif ($part->has_body) {
-        push(@{ $self->attachments }, $part);
-    }
-
-    push(@{ $self->all_parts }, $part);
-
-    if($part->cid) {
-        $self->cid_to_part->{$part->cid} = $part->path;
-    }
-
-    ${ $o->{id} }++;
-
-    return;
 }
 
 1;

@@ -38,7 +38,7 @@ sub transform {
     croak unless defined $o->{type};
     return unless defined $o->{data};
 
-    $o->{data} = lc($o->{data});
+    $o->{type} = lc($o->{type});
 
     my $headers = {
         from       => \&_transform_address,
@@ -51,7 +51,7 @@ sub transform {
     return $headers->{$o->{type}}->($o) if exists $headers->{$o->{type}};
 
     #if we have no appropriate transfrom function decode the header and return it
-    return _decode_header({ data => ($o->{data} or '')})
+    return _decode_header({ data => ($o->{data} or '')});
 }
 
 sub _transform_address {
@@ -60,7 +60,7 @@ sub _transform_address {
     return unless defined $o->{data};
 
     my @address = Mail::Address->parse(_decode_header($o));
-   
+
     return \@address;
 }
 

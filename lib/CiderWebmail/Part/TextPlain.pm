@@ -34,28 +34,21 @@ sub render {
     $content =~ s/$uri_regex/<a href="$1">$1<\/a>/xmg;
 
     $content =~ s/\n/<br \/>/xmg;
+    
     return $self->c->view->render_template({ c => $self->c, template => 'TextPlain.xml', stash => { part_content => $content } });
 }
 
-=head2 content_type()
+=head2 supported_type()
 
 returns the cntent type this plugin can handle
 
 =cut
 
-sub content_type {
+sub supported_type {
     return 'text/plain';
 }
 
-=head2 renderable()
-
-returns true if this part is renderable
-
-=cut
-
-sub renderable {
-    my ($self) = @_;
-    return (($self->body or '') =~ /\S/xms);
-}
+sub renderable        { 1; }
+sub render_by_default { 1; }
 
 1;

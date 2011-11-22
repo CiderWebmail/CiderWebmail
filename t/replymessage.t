@@ -44,7 +44,7 @@ ok( (length($message_id) > 0), 'got message id');
 
 $mech->get_ok('http://localhost/mailbox/INBOX/'.$message_id, 'open message');
 
-$mech->follow_link_ok({ url_regex => qr{/reply/sender/?\z} }, "replying");
+$mech->follow_link_ok({ url_regex => qr{/reply/sender/root\z} }, "replying");
 
 $mech->submit_form_ok({
     with_fields => {

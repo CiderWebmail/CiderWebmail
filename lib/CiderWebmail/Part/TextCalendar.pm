@@ -54,24 +54,18 @@ sub render {
     return $self->c->view->render_template({ c => $self->c, template => 'TextCalendar.xml', stash => { events => \@events } });
 }
 
-=head2 content_type()
+=head2 supported_type()
 
 returns the cntent type this plugin can handle
 
 =cut
 
-sub content_type {
+sub supported_type {
     return 'text/calendar';
 }
 
-=head2 renderable()
-
-returns true if this part is renderable
-
-=cut
-
-sub renderable {
-    return 1;
-}
+sub renderable { 1; }
+sub attachment { 0; }
+sub render_by_default { 0; }
 
 1;

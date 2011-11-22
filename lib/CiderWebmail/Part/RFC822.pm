@@ -1,11 +1,18 @@
 package CiderWebmail::Part::RFC822;
 
 use Moose;
-use CiderWebmail::Message::Forwarded;
 
 use Carp qw/ croak /;
+use CiderWebmail::Header;
+use CiderWebmail::Message::Forwarded;
 
 extends 'CiderWebmail::Part';
+
+has message_forwarded => ( isa => 'Object', is => 'rw' );
+
+sub type {
+    return 'message/rfc822';
+}
 
 =head2 render()
 
@@ -16,39 +23,86 @@ renders a message/rfc822 body part.
 sub render {
     my ($self) = @_;
 
-    croak('no entity set') unless defined $self->entity;
-
-    return CiderWebmail::Message::Forwarded->new(c => $self->c, entity => $self->entity->parts(0), mailbox => $self->mailbox, uid => $self->uid, path => $self->path);
+    return $self->c->view->render_template({ c => $self->c, template => 'RFC822.xml', stash => { message => $self } });
 }
 
-=head2 content_type()
+sub subject {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'subject', data => $self->bodystruct->envelopestruct->subject });
+}
+
+sub date {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'date', data => $self->bodystruct->envelopestruct->date });
+}
+
+sub from {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'from', data => join(', ', $self->bodystruct->envelopestruct->from_addresses) });
+}
+
+sub to {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'to', data => join(', ', $self->bodystruct->envelopestruct->to_addresses) });
+}
+
+sub cc {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'cc', data => join(', ', $self->bodystruct->envelopestruct->cc_addresses) });
+}
+
+sub bcc {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'bcc', data => join(', ', $self->bodystruct->envelopestruct->bcc_addresses) });
+}
+
+sub reply_to {
+    my ($self) = @_;
+
+    return CiderWebmail::Header::transform({ type => 'bcc', data => join(', ', $self->bodystruct->envelopestruct->bcc_addresses) });
+}
+
+sub mark_answered { 1; }
+
+before qw(message_id references) => sub {
+    my ($self) = @_;
+
+    $self->message_forwarded(CiderWebmail::Message::Forwarded->new({ message_string => $self->body }));
+};
+
+sub message_id {
+    my ($self) = @_;
+
+    return $self->message_forwarded->get_header('Message-ID');
+}
+
+sub references {
+    my ($self) = @_;
+
+    return $self->message_forwarded->get_header('References');
+}
+
+
+
+=head2 supported_type()
 
 returns the cntent type this plugin can handle
 
 =cut
 
-sub content_type {
+sub supported_type {
     return 'message/rfc822';
 }
 
-=head2 message()
-
-returns true if the part is a message (message/rfc822)
-
-=cut
-
-sub message {
-    return 1;
-}
-
-=head2 attachment()
-
-return false even if Content-Disposition is set to attachment.
-
-=cut
-
-sub attachment {
-    return 0;
-}
+sub renderable        { 1; }
+sub attachment        { 0; }
+sub render_by_default { 1; }
+sub message           { 1; }
 
 1;
