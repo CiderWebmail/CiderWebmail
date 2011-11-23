@@ -17,7 +17,6 @@ sub load_children {
     foreach(@{ $self->bodystruct->{bodystructure} }) {
         my $part = $self->handler({ bodystruct => $_ });
 
-        #warn "Part ".$part->id." (parent: ".$self->parent_message->id.") loaded with ".$part->content_type." is ".( $part->attachment ? "attachment" : "" ) ." ".($part->renderable ? "renderable" : "") . " " . ($part->render_by_default ? "render_by_default" : "" );;
         push(@{ $self->parent_message->{children} }, $part) if $part;
         $self->root_message->parts->{$part->id} = $part;
     }
