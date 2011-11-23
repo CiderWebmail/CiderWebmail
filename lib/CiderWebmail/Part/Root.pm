@@ -17,21 +17,9 @@ has parent_message => (is => 'ro', required => 0, isa => 'Object'); #ref to the 
 sub load_children {
     my ($self) = @_;
 
-    my $count = 0;
-    foreach(@{ $self->bodystruct->{bodystructure} }) {
-        my $part = $self->handler({ bodystruct => $_ });
-
-        push(@{ $self->{children} }, $part) if $part;
-        $self->root_message->parts->{$part->id} = $part;
-        $count++;
-    }
-
-    unless ($count > 0) {
-        my $part = $self->handler({ bodystruct => $self->bodystruct });
-        push(@{ $self->{children} }, $part);
-        $self->root_message->parts->{$part->id} = $part;
-    }
-
+    my $part = $self->handler({ bodystruct => $self->bodystruct });
+    push(@{ $self->{children} }, $part);
+    $self->root_message->parts->{$part->id} = $part;
     $self->root_message->parts->{root} = $self;
 }
 
