@@ -9,6 +9,10 @@ use HTML::Entities;
 use Carp qw/ croak /;
 
 extends 'CiderWebmail::Part';
+has renderable          => (is => 'rw', isa => 'Bool', default => 0 );
+has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 );
+has message             => (is => 'rw', isa => 'Bool', default => 0 );
+has attachment          => (is => 'rw', isa => 'Bool', default => 0 );
 
 sub load_children { 1; }
 
@@ -39,10 +43,5 @@ returns the cntent type this plugin can handle
 sub supported_type {
     return 'x-ciderwebmail/textdummy';
 }
-
-sub renderable { 0; }
-sub attachment { 0; }
-sub render_by_default { 0; }
-
 
 1;

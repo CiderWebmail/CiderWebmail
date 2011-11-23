@@ -17,6 +17,18 @@ has bodystruct     => (is => 'ro', isa => 'Object'); #Mail::IMAPClient::BodyStru
 
 has children       => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
 
+has renderable          => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+has message             => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+has attachment          => (is => 'rw', isa => 'Bool', default => sub {
+    my ($self) = @_;
+
+    return 0 unless defined $self->bodystruct->{bodydisp};
+    return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
+    return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
+    return 0;
+});
+
 my %renderers = map{ $_->supported_type => $_ } __PACKAGE__->plugins();
 
 sub BUILD {
@@ -244,19 +256,6 @@ sub cid {
 
     return $cid;
 }
-
-sub attachment {
-    my ($self) = @_;
-
-    return 0 unless defined $self->bodystruct->{bodydisp};
-    return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
-    return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
-    return 0;
-}
-
-sub renderable          { die("override me!"); }
-sub render_by_default   { die("override me!"); }
-sub message             { 0; }
 
 
 =head2 content_type()

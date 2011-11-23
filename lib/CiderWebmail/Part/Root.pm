@@ -5,6 +5,10 @@ use Moose;
 use Carp qw/ croak /;
 
 extends 'CiderWebmail::Part';
+has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
+has render_by_default   => (is => 'rw', isa => 'Bool', default => 1 );
+has message             => (is => 'rw', isa => 'Bool', default => 1 );
+has attachment          => (is => 'rw', isa => 'Bool', default => 0 );
 
 has parent_message => (is => 'ro', required => 0, isa => 'Object'); #ref to the CiderWebmail::Part::(Root|RFC822) object this part is part of
 
@@ -121,10 +125,5 @@ returns the cntent type this plugin can handle
 sub supported_type {
     return 'x-ciderwebmail/rootmessage';
 }
-
-sub renderable { 1; }
-sub attachment { 0; }
-sub render_by_default { 1; }
-sub message    { 1; }
 
 1;

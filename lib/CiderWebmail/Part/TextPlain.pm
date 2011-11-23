@@ -9,6 +9,9 @@ use HTML::Entities;
 use Carp qw/ croak /;
 
 extends 'CiderWebmail::Part';
+has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
+has render_by_default   => (is => 'rw', isa => 'Bool', default => 1 );
+has message             => (is => 'rw', isa => 'Bool', default => 0 );
 
 =head2 render()
 
@@ -47,8 +50,5 @@ returns the cntent type this plugin can handle
 sub supported_type {
     return 'text/plain';
 }
-
-sub renderable        { 1; }
-sub render_by_default { 1; }
 
 1;
