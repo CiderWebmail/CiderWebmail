@@ -69,7 +69,7 @@ sub bcc {
 sub reply_to {
     my ($self) = @_;
 
-    return CiderWebmail::Header::transform({ type => 'bcc', data => join(', ', $self->bodystruct->envelopestruct->bcc_addresses) });
+    return CiderWebmail::Header::transform({ type => 'replyto', data => join(', ', $self->bodystruct->envelopestruct->bcc_addresses) });
 }
 
 sub mark_answered { 1; }
