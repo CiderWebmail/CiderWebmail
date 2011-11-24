@@ -65,19 +65,6 @@ sub get_header {
     return scalar $self->c->model('IMAPClient')->get_headers($self->c, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
-=head2 header_formatted()
-
-Returns the full message header formatted for output
-
-=cut
-
-#TODO formatting
-sub header_formatted {
-    my ($self) = @_;
-
-    return $self->c->model('IMAPClient')->get_headers_string($self->c, { uid => $self->uid, mailbox => $self->mailbox });
-}
-
 =head2 subject()
 
 Shortcut getting the subject or 'No Subject' if none is available.

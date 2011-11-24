@@ -66,6 +66,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         uri_reply           => "$uri_folder/$uid/part/reply/sender",
         uri_reply_all       => "$uri_folder/$uid/part/reply/all",
         uri_forward         => "$uri_folder/$uid/part/forward",
+        uri_get_header      => "$uri_folder/$uid/part/header",
         uri_move            => "$uri_folder/$uid/move",
         uri_add_address     => $c->uri_for("/addressbook/modify/add"),
     });
@@ -86,6 +87,20 @@ sub download_attachment : Chained('setup') PathPart('part/download') Args {
     $c->res->header('content-disposition' => 'attachment' . "; filename=".$part->name);
     return $c->res->body($part->body({ raw => 1 }));
 }
+
+=head2 download header
+
+=cut
+
+sub download_header : Chained('setup') PathPart('part/header') Args {
+    my ( $self, $c, $part_id ) = @_;
+
+    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
+
+    $c->res->content_type('text/plain');
+    return $c->res->body($part->header);
+}
+
 
 =head2 view_source
 

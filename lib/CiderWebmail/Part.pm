@@ -93,6 +93,17 @@ sub body {
     return (defined($o->{raw}) ? $body : $self->_decode_body({ charset => $self->charset, body => $body }));
 }
 
+sub header {
+    my ($self) = @_;
+
+    croak("attempted to call header() on a not-message CiderWebmail::Part object. this is a ".$self->content_type." part") unless $self->message;
+
+    my $body = $self->body({ raw => 1 });
+    my $email = Email::Simple->new($body);
+    return $email->header_obj->as_string;
+}
+
+
 sub mailbox {
     my ($self) = @_;
 

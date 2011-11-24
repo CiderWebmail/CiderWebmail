@@ -84,6 +84,15 @@ for my $link (@links) {
         check_email($mech, 'from');
         check_email($mech, 'to', 1);
     }
+
+    $mech->get_ok($link->url);
+
+    my @header_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/header/.*});
+    foreach(@header_links) {
+        $mech->get_ok($_->url, 'header');
+        #every message should have a content-type header
+        $mech->content_like(qr/Content\-Type:\s/i, 'contains content-type header');
+    }
 }
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
