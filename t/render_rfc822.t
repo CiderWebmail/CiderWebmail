@@ -33,7 +33,7 @@ $mech->submit_form_ok({
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Arfc822test-$unix_time\z});
-$mech->get_ok($messages[0]->url.'/forward');
+$mech->get_ok($messages[0]->url.'/part/forward/root');
 
 $mech->submit_form_ok({
     with_fields => {

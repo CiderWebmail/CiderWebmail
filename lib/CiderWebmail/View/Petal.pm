@@ -60,6 +60,8 @@ sub render_template {
 
     my $root = $o->{c}->config->{root};
 
+    %{ $o->{stash} } = ( %{ $o->{c}->stash }, %{ $o->{stash} } );
+
     my $base_dir = [
         join('/', $root, 'templates', $o->{c}->stash->{language}, 'parts'),
     ];

@@ -5,20 +5,14 @@ use warnings;
 use parent 'Catalyst::Model';
 
 use MIME::Parser;
-use MIME::Words qw/ decode_mimewords /;
 use Mail::IMAPClient::MessageSet;
 use Email::Simple;
-use Text::Flowed;
-use Mail::Address;
-use Text::Iconv;
 use Carp qw(carp croak confess);
-
-use Time::Piece;
-use Date::Parse;
 
 use CiderWebmail::Message;
 use CiderWebmail::Mailbox;
 use CiderWebmail::Util;
+use CiderWebmail::Header;
 
 =head1 NAME
 
@@ -340,7 +334,7 @@ sub get_headers_hash {
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;
-            $message->{head}->{$header} = $self->transform_header($c, { header => $header, data => ($value or '') });
+            $message->{head}->{$header} = CiderWebmail::Header::transform({ type => $header, data => ($value or '') });
         }
 
         $message->{flag} = {};
@@ -487,9 +481,9 @@ sub get_headers {
         #if we are missing *any* of the headers fetch all headers from the imap server and store it in the request cache
         unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header }) ) {
             my $fetched_headers = $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
-            $headers->{$header} = $self->transform_header($c, { header => $header, data => $fetched_headers->{$header}});
+            $headers->{$header} = CiderWebmail::Header::transform({ type => $header, data => $fetched_headers->{$header}});
         } else {
-            $headers->{$header} = $self->transform_header($c, { header => $header, data => $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header })});
+            $headers->{$header} = CiderWebmail::Header::transform({ type => $header, data => $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header })});
         }
     }
 
@@ -675,97 +669,6 @@ sub delete_mailbox {
     croak unless $o->{mailbox};
 
     return $c->stash->{imapclient}->delete($o->{mailbox});
-}
-
-=head2 transform_header($c, { header => $header_name, data => $header_data })
-
-'transform' a header from the 'raw' state (the way it was returned from the server) to an appropriate object.
-if no appropriate object exists the header will be decoded (using decode_mimewords()) and UTF-8 encoded
-
-the following 'transformations' take place:
-
-=over 4
-
-=item * from -> Mail::Address object
-
-=item * to -> Mail::Address object
-
-=item * cc -> Mail::Address object
-
-=item * date -> CiderWebmail::Date object
-
-=back
-
-=cut
-
-sub transform_header {
-    my ($self, $c, $o) = @_;
-
-    croak unless defined $o->{header};
-    return unless defined $o->{data};
-
-    $o->{header} = lc($o->{header});
-
-    my $headers = {
-        from       => \&_transform_address,
-        to         => \&_transform_address,
-        cc         => \&_transform_address,
-        'reply-to' => \&_transform_address,
-        date       => \&_transform_date,
-    };
-
-    return $headers->{$o->{header}}->($self, $c, $o) if exists $headers->{$o->{header}};
-
-    #if we have no appropriate transfrom function decode the header and return it
-    return $self->_decode_header($c, { data => ($o->{data} or '')})
-}
-
-sub _transform_address {
-    my ($self, $c, $o) = @_;
-
-    return unless defined $o->{data};
-
-    my @address = Mail::Address->parse($self->_decode_header($c, $o));
-   
-    return \@address;
-}
-
-sub _transform_date {
-    my ($self, $c, $o) = @_;
-
-    croak("data not set") unless defined $o->{data};
-
-    my $date = Time::Piece->new(Date::Parse::str2time $o->{data});
-
-    return $date;
-}
-
-sub _decode_header {
-    my ($self, $c, $o) = @_;
-
-    return '' unless defined $o->{data};
-
-    my $header;
-
-    foreach ( decode_mimewords( $o->{data} ) ) {
-        if ( @$_ > 1 ) {
-            unless (eval {
-                    my $converter = Text::Iconv->new($_->[1], "utf-8");
-                    my $part = $converter->convert( $_->[0] );
-                    utf8::decode($part);
-                    $header .= $part if defined $part;
-                }) {
-                carp("unsupported encoding: $_->[1]");
-                utf8::decode($_->[0]);
-                $header .= $_->[0];
-            }
-        } else {
-            utf8::decode($_->[0]);
-            $header .= $_->[0];
-        }
-    }
-
-    return $header;
 }
 
 =head1 AUTHOR
