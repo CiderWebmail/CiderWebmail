@@ -11,6 +11,9 @@ use Text::Flowed;
 use Carp qw/ croak /;
 
 extends 'CiderWebmail::Part';
+has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
+has render_by_default   => (is => 'rw', isa => 'Bool', default => 1 );
+has message             => (is => 'rw', isa => 'Bool', default => 0 );
 
 =head2 render()
 
@@ -54,24 +57,14 @@ sub render {
     return $self->c->view->render_template({ c => $self->c, template => 'TextCalendar.xml', stash => { events => \@events } });
 }
 
-=head2 content_type()
+=head2 supported_type()
 
 returns the cntent type this plugin can handle
 
 =cut
 
-sub content_type {
+sub supported_type {
     return 'text/calendar';
-}
-
-=head2 renderable()
-
-returns true if this part is renderable
-
-=cut
-
-sub renderable {
-    return 1;
 }
 
 1;

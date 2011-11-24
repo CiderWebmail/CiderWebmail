@@ -43,7 +43,7 @@ my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
 
 for my $link (@links) {
     $mech->get_ok($link->url);
-    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/sender/?\z} }, "replying");
+    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/sender/(\d+|root)\z} }, "replying");
 
     # check if address fields are filled like:
     # <input value="johann.aglas@atikon.com" name="to">
@@ -52,35 +52,46 @@ for my $link (@links) {
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
-    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/forward/?\z} }, "forwarding");
+    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/forward/(\d+|root)\z} }, "forwarding");
 
     check_email($mech, 'from', 1);
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
-    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/all/?\z} }, "reply to all");
+    $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/all/(\d+|root)\z} }, "reply to all");
 
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
     $mech->follow_link_ok({ url_regex => qr{/view_source} }, 'view source');
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
     my @attachments = $mech->find_all_links(url_regex => qr{http://localhost/.*/attachment/\d+});
     foreach(@attachments) {
         $mech->get_ok($_->url, 'open attachment');
     }
 
+    $mech->get_ok($link->url);
+
     my @sendto_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/compose/?\?to=[a-z]});
     foreach(@sendto_links) {
         $mech->get_ok($_->url, 'sendto');
         check_email($mech, 'from');
         check_email($mech, 'to', 1);
+    }
+
+    $mech->get_ok($link->url);
+
+    my @header_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/header/.*});
+    foreach(@header_links) {
+        $mech->get_ok($_->url, 'header');
+        #every message should have a content-type header
+        $mech->content_like(qr/Content\-Type:\s/i, 'contains content-type header');
     }
 }
 

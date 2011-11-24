@@ -5,6 +5,8 @@ use warnings;
 use parent 'Catalyst::Controller';
 
 use CiderWebmail::Message;
+use CiderWebmail::Util;
+
 use MIME::Lite;
 use MIME::Words qw(encode_mimeword);
 use DateTime;
@@ -53,7 +55,6 @@ sub view : Chained('setup') PathPart('') Args(0) {
     my $message    = $c->stash->{message};
     my $uid = $message->uid;
     
-    $message->load_body();
     $message->mark_read();
 
     CiderWebmail::Util::send_foldertree_update($c); # update folder display
@@ -62,37 +63,44 @@ sub view : Chained('setup') PathPart('') Args(0) {
         template        => 'message.xml',
         target_folders  => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
         uri_view_source     => "$uri_folder/$uid/view_source",
-        uri_reply           => "$uri_folder/$uid/reply/sender",
-        uri_reply_all       => "$uri_folder/$uid/reply/all",
-        uri_forward         => "$uri_folder/$uid/forward",
+        uri_reply           => "$uri_folder/$uid/part/reply/sender",
+        uri_reply_all       => "$uri_folder/$uid/part/reply/all",
+        uri_forward         => "$uri_folder/$uid/part/forward",
+        uri_get_header      => "$uri_folder/$uid/part/header",
         uri_move            => "$uri_folder/$uid/move",
-        uri_view_attachment => "$uri_folder/$uid/attachment",
         uri_add_address     => $c->uri_for("/addressbook/modify/add"),
     });
 
     return;
 }
 
-=head2 attachment
+=head2 download attachment 
 
 =cut
 
-sub attachment : Chained('setup') Args {
-    my ( $self, $c, $path_string ) = @_;
+sub download_attachment : Chained('setup') PathPart('part/download') Args {
+    my ( $self, $c, $part_id ) = @_;
 
-    my @path = split(/[^\d]/xm, ($path_string or ''));
-    return $c->res->body('invalid attachment path') unless all { /\A \d+ \z/xm } @path;
+    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
 
-    my $attachment = pop @path;
-    my $body = $c->stash->{message}->get_embedded_message($c, @path);
-    return $c->res->body('attachment not found') unless $body;
-
-    $attachment = $body->all_parts->[$attachment]->handler;
-
-    $c->res->content_type($attachment->type);
-    $c->res->header('content-disposition' => ($c->res->headers->content_is_html ? 'inline' : 'attachment') . "; filename=".$attachment->name);
-    return $c->res->body($attachment->as_string);
+    $c->res->content_type($part->content_type);
+    $c->res->header('content-disposition' => 'attachment' . "; filename=".$part->name);
+    return $c->res->body($part->body({ raw => 1 }));
 }
+
+=head2 download header
+
+=cut
+
+sub download_header : Chained('setup') PathPart('part/header') Args {
+    my ( $self, $c, $part_id ) = @_;
+
+    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
+
+    $c->res->content_type('text/plain');
+    return $c->res->body($part->header);
+}
+
 
 =head2 view_source
 
@@ -208,16 +216,14 @@ Reply to a message suggesting receiver, subject and message text
 
 =cut
 
-sub reply : Chained('setup') Args() {
-    my ( $self, $c, $who, $path_string ) = @_;
+sub reply : Chained('setup') PathPart('part/reply') Args() {
+    my ( $self, $c, $who, $part_id ) = @_;
     my $message = $c->stash->{message};
 
-    my @path = split(/[^\d]/xm, ($path_string or ''));
-    $message = $message->get_embedded_message($c, @path);
-    return $c->res->body('message not found') unless $message;
+    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
 
     #FIXME: we need a way to find the 'main part' of a message and use this here
-    my $body = $message->main_body_part($c);
+    my $body = $part->main_body_part->body;
     if ($body) {
         $body =~ s/[\s\r\n]+ \z//sxm;
         $body =~ s/^/> /gxm;
@@ -225,7 +231,7 @@ sub reply : Chained('setup') Args() {
     }
 
     my $new_message = {
-        from    => $message->guess_recipient, # If no user-specified from address is available, the to address of the replied-to mail is a good guess
+        from    => $part->guess_recipient, # If no user-specified from address is available, the to address of the replied-to mail is a good guess
         subject => 'Re: ' . $message->subject,
         body    => $body,
     };
@@ -233,10 +239,10 @@ sub reply : Chained('setup') Args() {
     my @recipients;
 
     if ($who eq 'sender') {
-        my $recipient = ($message->reply_to or $message->from);
+        my $recipient = ($part->reply_to or $part->from);
         @recipients = $recipient->[0]->address if @$recipient and $recipient->[0];
     } elsif ($who eq 'all') {
-        foreach( ( ( $message->reply_to or $message->from ), $message->cc, $message->to ) ) {
+        foreach( ( ( $part->reply_to or $part->from ), $part->cc, $part->to ) ) {
             push(@recipients, $_->address) foreach( @$_ );
         }
     } else {
@@ -246,7 +252,7 @@ sub reply : Chained('setup') Args() {
     $new_message->{to} = join('; ', CiderWebmail::Util::filter_unusable_addresses(@recipients));
 
     $c->stash({
-        in_reply_to => $message,
+        in_reply_to => $part,
         message  => $new_message,
     });
 
@@ -261,18 +267,17 @@ Forward a mail as attachment
 
 =cut
 
-sub forward : Chained('setup') Args() {
-    my ( $self, $c, @path ) = @_;
+sub forward : Chained('setup') PathPart('part/forward') Args() {
+    my ( $self, $c, $part_id ) = @_;
     my $message = $c->stash->{message};
 
-    $message = $message->get_embedded_message($c, @path);
-    return $c->res->body('message not found') unless $message;
+    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
 
     $c->stash({
-        forward => $message,
+        forward => $part,
         message => {
-            from    => $message->guess_recipient,
-            subject => 'Fwd: ' . $message->subject,
+            from    => $part->guess_recipient,
+            subject => 'Fwd: ' . $part->subject,
         },
     });
 
@@ -330,42 +335,39 @@ sub send : Chained('/mailbox/setup') Args(0) {
         }
     }
 
-    if (my $forward = $c->req->param('forward')) {
-        my $mailbox = $c->stash->{folder};
-        my ($uid, @path) = split m!/!xm, $forward;
-        my $message = CiderWebmail::Message->new(c => $c, mailbox => $mailbox, uid => $uid);
-        $message = $message->get_embedded_message($c, @path);
+    if (defined $c->req->param('forward')) {
+        my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('forward'));
+        my $part_to_forward = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
 
         $mail->attach(
             Type     => 'message/rfc822',
-            Filename => $message->subject . '.eml',
-            Data     => $message->as_string,
+            Filename => $part_to_forward->subject . '.eml',
+            Data     => $part_to_forward->body,
         );
     }
 
-    if (my $in_reply_to = $c->req->param('in_reply_to')) {
-        my ($uid, @path) = split m!/!xm, $in_reply_to;
-        my $message = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid);
-        $message = $message->get_embedded_message($c, @path);
+    if (defined $c->req->param('in_reply_to')) {
+        my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('in_reply_to'));
+        my $in_reply_to_part = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
 
-        if ($message) {
-            if (my $message_id = $message->get_header('Message-ID')) {
+        if ($in_reply_to_part) {
+            if (my $message_id = $in_reply_to_part->message_id) {
                 $mail->add('In-Reply-To', $message_id);
-                my $references = $message->get_header('References');
+                my $references = $in_reply_to_part->references;
                 $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
             }
 
-            $message->mark_answered;
-        }
+            $in_reply_to_part->mark_answered;
+        } 
     }
 
     eval {
         if (($c->config->{send}->{method} or '') eq 'smtp') {
             croak('smtp host not set') unless defined $c->config->{send}->{host};
-            $mail->send('smtp', $c->config->{send}->{host}) or croak('unable to send message');
+            $mail->send('smtp', $c->config->{send}->{host}) or croak('unable to send message via smtp');
         }
         else {
-            $mail->send or croak('unable to send message');
+            $mail->send or croak("unable to send message: $!");
         }
     };
 

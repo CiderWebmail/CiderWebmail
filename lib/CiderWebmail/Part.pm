@@ -2,35 +2,118 @@ package CiderWebmail::Part;
 
 use Moose;
 use Petal;
+use MIME::Base64;
+use MIME::QuotedPrint;
 use Module::Pluggable require => 1, search_path => [__PACKAGE__];
 
-use Carp qw/ carp /;
+use Carp qw/ carp cluck /;
 
-has c           => (is => 'ro', isa => 'Object');
-has mailbox     => (is => 'ro', isa => 'Str');
-has uid         => (is => 'ro', isa => 'Int');
+has c              => (is => 'ro', isa => 'Object');
 
-has entity      => (is => 'ro', isa => 'Object');
+has root_message   => (is => 'ro', required => 1, isa => 'Object'); #ref to the CiderWebmail::Message object this part is part of
+has parent_message => (is => 'ro', required => 1, isa => 'Object'); #ref to the CiderWebmail::Part::(Root|RFC822) object this part is part of
 
-has path        => (is => 'ro', isa => 'Str');
-has id          => (is => 'ro', isa => 'Int');
+has bodystruct     => (is => 'ro', isa => 'Object'); #Mail::IMAPClient::BodyStructure Object of this part
 
-has parent_message     => (is => 'ro', isa => 'Object'); #ref to the CiderWebmail::Message object this part is part of
+has children       => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
 
-my %renderers = map{ $_->content_type => $_ } __PACKAGE__->plugins();
+has renderable          => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+has message             => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+has attachment          => (is => 'rw', isa => 'Bool', default => sub {
+    my ($self) = @_;
+
+    return 0 unless defined $self->bodystruct->{bodydisp};
+    return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
+    return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
+    return 0;
+});
+
+my %renderers = map{ $_->supported_type => $_ } __PACKAGE__->plugins();
+
+sub BUILD {
+    my $self = shift;
+
+    $self->load_children();
+}
+
+sub load_children {
+    my ($self) = @_;
+
+    return unless defined $self->bodystruct->{bodystructure};
+
+    foreach(@{ $self->bodystruct->{bodystructure} }) {
+        my $part = $self->handler({ bodystruct => $_ });
+
+        push(@{ $self->{children} }, $part) if $part;
+        $self->root_message->parts->{$part->id} = $part;
+    }
+}
+
+=head2 main_body_part()
+
+Returns the main body part for using when forwarding/replying the message.
+
+=cut
+
+sub main_body_part {
+    my ($self) = @_;
+
+    foreach (@{ $self->children }) {
+        my $part = $_;
+        if ( ($part->content_type or '') eq 'text/plain') {
+            return $part;
+        }
+    }
+
+    return CiderWebmail::Part::Dummy->new({ root_message => $self->root_message, parent_message => $self->get_parent_message });
+}
 
 =head2 body()
 
 returns the body of the part
+unless body({ raw => 1}) is specified converting the body to utf-8 will be attempted
 
 =cut
 
 sub body {
     my ($self, $o) = @_;
 
-    my $charset = $self->entity->head->mime_attr("content-type.charset");
+    my $body = $self->c->model('IMAPClient')->bodypart_as_string($self->c, { mailbox => $self->mailbox, uid => $self->uid, part => $self->id });
 
-    return $self->_decode_body({ charset => $charset, body => $self->entity->bodyhandle->as_string });
+    if (defined($self->bodystruct->{bodyenc}) and (lc($self->bodystruct->{bodyenc}) eq 'base64')) {
+        $body = decode_base64($body);
+    }
+
+    if (defined($self->bodystruct->{bodyenc}) and (lc($self->bodystruct->{bodyenc}) eq 'quoted-printable')) {
+        $body = decode_qp($body);
+    }
+
+
+    return (defined($o->{raw}) ? $body : $self->_decode_body({ charset => $self->charset, body => $body }));
+}
+
+sub header {
+    my ($self) = @_;
+
+    croak("attempted to call header() on a not-message CiderWebmail::Part object. this is a ".$self->content_type." part") unless $self->message;
+
+    my $body = $self->body({ raw => 1 });
+    my $email = Email::Simple->new($body);
+    return $email->header_obj->as_string;
+}
+
+
+sub mailbox {
+    my ($self) = @_;
+
+    return $self->root_message->mailbox;
+}
+
+sub uid {
+    my ($self) = @_;
+
+    return $self->root_message->uid;
 }
 
 =head2 _decode_body()
@@ -58,34 +141,65 @@ sub _decode_body {
     return $part_string;
 }
 
-=head2 type()
+=head2 id()
 
-returns the MIME Type of the part
+returns the ID of the part
 
 =cut
 
-sub type {
+sub id {
     my ($self) = @_;
 
-    return $self->entity->effective_type;
+    return $self->bodystruct->id;
 }
+
+sub charset {
+    my ($self) = @_;
+    return $self->bodystruct->bodyparms->{charset};
+}
+
+=head2 guess_recipient()
+
+Tries to guess the recipient address used to deliver this message to this mailbox.
+Used for suggesting a From address on reply/forward.
+
+=cut
+
+sub guess_recipient {
+    my ($self) = @_;
+
+    return [] unless defined $self->to;
+    return [ CiderWebmail::Util::filter_unusable_addresses(@{ $self->to }) ]
+}
+
 
 =head2 handler()
 
-returns the 'handler' for the part: a CiderWebmail::Part::FooBar object that can be used to ->render the part.
+returns a CiderWebmail::Part::FooBar object for the specified part
 
 =cut
 
 sub handler {
-    my ($self) = @_;
-    
-    if (defined($renderers{$self->type})) {
-        return $renderers{$self->type}->new({ entity => $self->entity, uid => $self->uid, mailbox => $self->mailbox, c => $self->c, parent_message => $self->parent_message, id => $self->id, path => $self->path });
+    my ($self, $o) = @_;
+
+    die unless $o->{bodystruct};
+
+    my $type = lc($o->{bodystruct}->bodytype.'/'.$o->{bodystruct}->bodysubtype);
+
+    if (defined($renderers{$type})) {
+        return $renderers{$type}->new({ c => $self->c, root_message => $self->root_message, bodystruct => $o->{bodystruct}, parent_message => $self->get_parent_message });
     } else {
-        return $self;
+        return $renderers{'x-ciderwebmail/attachment'}->new({ c => $self->c, root_message => $self->root_message, bodystruct => $o->{bodystruct}, parent_message => $self->get_parent_message });
     }
 }
 
+sub get_parent_message {
+    my ($self) = @_;
+
+    #if this part is a message (true for Part::RFC822 and Part::Root) use $self for parent_message
+    #otherwise pass the last message part (RFC822 or Root) along
+    return ( $self->message ? $self : $self->parent_message );
+}
 
 =head2 icon() {
 
@@ -108,34 +222,16 @@ my $content_subtypes = {
 sub icon {
     my ($self) = @_;
 
-    my ($type, $subtype) = split('/', $self->type);
+    my ($type, $subtype) = split('/', $self->content_type);
 
-    if (defined($content_subtypes->{$self->type})) {
-        return $content_subtypes->{$self->type};
+    if (defined($content_subtypes->{$self->content_type})) {
+        return $content_subtypes->{$self->content_type};
     }
     elsif (defined($content_types->{$type})) {
         return $content_types->{$type};
     }
     else {
         return 'generic.png';
-    }
-}
-
-
-=head2 subparts()
-
-returns the subparts (MIME::Entity objects) of the current part (in case of multipart/* parts)
-
-=cut
-
-sub subparts {
-    my ($self) = @_;
-
-    my @parts = $self->entity->parts;
-    if (wantarray) {
-        return @parts;
-    } else {
-        return scalar(@parts);
     }
 }
 
@@ -153,19 +249,6 @@ sub render {
     return;
 }
 
-=head2 as_string()
-
-returns the body of the part as a string
-
-=cut
-
-sub as_string {
-    my ($self) = @_;
-
-    confess("Part->as_string called with no bodyhandle aviable") unless defined $self->entity->bodyhandle;
-    return $self->entity->bodyhandle->as_string;
-}
-
 =head2 cid()
 
 returns the Content-ID of the part
@@ -175,6 +258,8 @@ returns the Content-ID of the part
 sub cid {
     my ($self) = @_;
 
+    die("cid() not implemented");
+
     my $cid = ($self->entity->head->get('Content-ID') or '');
     chomp($cid);
     $cid =~ s/[<>]//gxm;
@@ -183,51 +268,16 @@ sub cid {
 }
 
 
-=head2 attachment()
-
-returns true if the part is a attachment (if content-disposition eq 'attachment')
-
-=cut
-
-sub attachment {
-    my ($self) = @_;
-
-    if (($self->entity->head->get('content-disposition') or '') =~ /\Aattachment\b/xm) {
-        return 1;
-    } 
-
-    return;
-}
-
-=head2 renderable()
-
-returns true if the part is renderable (just a stub, override in CiderWebmail::Part::FooBar)
-
-=cut
-
-sub renderable {
-    return;
-}
-
-=head2 message()
-
-returns true if the part is a message (message/rfc822) (just a stub, override in CiderWebmail::Part::FooBar)
-
-=cut
-
-sub message {
-    return;
-}
-
 =head2 content_type()
 
-returns the content type the CiderWebmail::Part Plugin can handle (just a stub, override in CiderWebmail::Part::FooBar)
+returns the content type of the CiderWebmail::Part
 
 =cut
 
-#TODO: stupid name
 sub content_type {
-    return;
+    my ($self) = @_;
+
+    return lc($self->bodystruct->bodytype.'/'.$self->bodystruct->bodysubtype);
 }
 
 
@@ -240,35 +290,20 @@ returns the name of the part or "attachment content/type"
 sub name {
     my ($self) = @_;
 
-    return ($self->entity->head->recommended_filename or "attachment (".$self->type.")");
+    #TODO filter filenmae
+    return ($self->bodystruct->bodyparms->{name} or "attachment (".$self->content_type.")");
 }
 
-=head2 has_body()
-
-returns true if the (body of the) part contains data
-
-=cut
-
-sub has_body {
-    my ($self) = @_;
-
-    if (($self->body or '') =~ /\S/xms) {
-        return 1;
-    }
-
-    return;
-}
-
-=head2 uri
+=head2 uri_download
 
 returns an http url to access the part
 
 =cut
 
-sub uri {
+sub uri_download {
     my ($self) = @_;
 
-    return $self->c->stash->{uri_folder} . '/' . $self->uid . '/attachment/' . $self->path;
+    return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/download/' . $self->id;
 }
 
 1;
