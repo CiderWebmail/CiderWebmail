@@ -52,29 +52,31 @@ for my $link (@links) {
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
     $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/forward/(\d+|root)\z} }, "forwarding");
 
     check_email($mech, 'from', 1);
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
     $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/all/(\d+|root)\z} }, "reply to all");
 
     check_email($mech, 'to');
     check_email($mech, 'from', 1);
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
     $mech->follow_link_ok({ url_regex => qr{/view_source} }, 'view source');
 
-    $mech->back;
+    $mech->get_ok($link->url);
 
     my @attachments = $mech->find_all_links(url_regex => qr{http://localhost/.*/attachment/\d+});
     foreach(@attachments) {
         $mech->get_ok($_->url, 'open attachment');
     }
+
+    $mech->get_ok($link->url);
 
     my @sendto_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/compose/?\?to=[a-z]});
     foreach(@sendto_links) {
