@@ -42,6 +42,11 @@
     background-color: #efefef;
 }
 
+a.load_subpart {
+    text-decoration: none;
+    color: white;
+}
+
 .message_header {
     overflow: auto;
     margin: 0px;
@@ -67,6 +72,10 @@
 
 .body_part, pre.all_headers {
     clear: both;
+}
+
+.image img {
+    width: 100% !important;
 }
 
 .message_body {

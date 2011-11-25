@@ -77,7 +77,8 @@
 
     <div class="message_body">
         <div tal:omit-tag="" tal:repeat="part message/children">
-            <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: true:part/renderable false:part/attachment"><div tal:replace="structure part/render"/></div>
+            <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: true:part/renderable true:part/render_by_default"><div tal:replace="structure part/render"/></div>
+            <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: true:part/renderable false:part/render_by_default"><div tal:replace="structure part/render_stub"/></div>
         </div>
     </div>
 </div>

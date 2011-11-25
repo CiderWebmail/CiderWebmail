@@ -155,6 +155,8 @@ sub id {
 
 sub charset {
     my ($self) = @_;
+
+    return undef unless ((defined $self->bodystruct->bodyparms) and ($self->bodystruct->bodyparms ne 'NIL'));
     return $self->bodystruct->bodyparms->{charset};
 }
 
@@ -290,8 +292,11 @@ returns the name of the part or "attachment content/type"
 sub name {
     my ($self) = @_;
 
+    return "attachment (".$self->content_type.")" unless ((defined $self->bodystruct->bodydisp) and ($self->bodystruct->bodydisp ne 'NIL'));
+
     #TODO filter filenmae
-    return ($self->bodystruct->bodyparms->{name} or "attachment (".$self->content_type.")");
+    return $self->bodystruct->bodydisp->{attachment}->{filename} if defined $self->bodystruct->bodydisp->{attachment}->{filename};
+    return $self->bodystruct->bodydisp->{inline}->{filename} if defined $self->bodystruct->bodydisp->{inline}->{filename};
 }
 
 =head2 uri_download
@@ -305,5 +310,18 @@ sub uri_download {
 
     return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/download/' . $self->id;
 }
+
+=head2 uri_render
+
+returns an http url to render the part
+
+=cut
+
+sub uri_render {
+    my ($self) = @_;
+
+    return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/render/' . $self->id;
+}
+
 
 1;

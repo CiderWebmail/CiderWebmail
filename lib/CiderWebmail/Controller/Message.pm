@@ -88,6 +88,19 @@ sub download_attachment : Chained('setup') PathPart('part/download') Args {
     return $c->res->body($part->body({ raw => 1 }));
 }
 
+=head2 render part
+
+=cut
+
+sub render_part : Chained('setup') PathPart('part/render') Args {
+    my ( $self, $c, $part_id ) = @_;
+
+    my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
+
+    return $c->res->body($part->render);
+}
+
+
 =head2 download header
 
 =cut
