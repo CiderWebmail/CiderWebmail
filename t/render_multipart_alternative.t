@@ -55,6 +55,6 @@ $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
-$mech->content_lacks('multipart-alternative-lTestMail-'.$unix_time, 'verify that messages got deleted');
+$mech->content_lacks('multipart-alternative-TestMail-'.$unix_time, 'verify that messages got deleted');
 
 done_testing();
