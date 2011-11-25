@@ -1,0 +1,29 @@
+Message-Id: <4ECE8EAC0200004900007712@ciderwebmail.local>
+Date: Thu, 24 Nov 2011 18:36:28 +0100
+From: "TestUser" <testuser@ciderwebmail.local>
+To: "TestUser" <testuser@ciderwebmail.local>
+Subject: multipart-related-TestMail-TIME
+Mime-Version: 1.0
+Content-Type: multipart/related; boundary="=__PartE4CX698C.0__="
+Content-Length: 779
+Lines: 24
+
+This is a MIME message. If you are reading this text, you may want to 
+consider changing to a mail reader or gateway that understands how to 
+properly handle MIME multipart messages.
+
+--=__PartE4CX698C.0__=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+TestMail-PLAIN-TIME
+
+
+--=__PartE4CX698C.0__=
+Content-Type: text/html; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Content-Description: HTML Part
+
+<HTML><BODY><B>TestMail-HTML-TIME</B></BODY></HTML>
+
+--=__PartE4CX698C.0__=--
