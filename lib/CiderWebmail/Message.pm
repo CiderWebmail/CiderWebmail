@@ -32,13 +32,13 @@ sub create_message_stubs {
     $self->root_part($part);
 }
 
-=head2 get_part
+=head2 get_part_by_id
 
 returns the CiderWebmail::Part object of a bodypart of this message
 
 =cut
 
-sub get_part {
+sub get_part_by_id {
     my ($self, $o) = @_;
 
     unless (defined $self->parts->{$o->{part_id}}) {

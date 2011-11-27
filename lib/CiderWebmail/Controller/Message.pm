@@ -81,12 +81,25 @@ sub view : Chained('setup') PathPart('') Args(0) {
 sub download_attachment : Chained('setup') PathPart('part/download') Args {
     my ( $self, $c, $part_id ) = @_;
 
-    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
+    my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
 
     $c->res->content_type($part->content_type);
     $c->res->header('content-disposition' => 'attachment' . "; filename=".$part->name);
     return $c->res->body($part->body({ raw => 1 }));
 }
+
+=head2 render part
+
+=cut
+
+sub render_part : Chained('setup') PathPart('part/render') Args {
+    my ( $self, $c, $part_id ) = @_;
+
+    my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
+
+    return $c->res->body($part->render);
+}
+
 
 =head2 download header
 
@@ -95,7 +108,7 @@ sub download_attachment : Chained('setup') PathPart('part/download') Args {
 sub download_header : Chained('setup') PathPart('part/header') Args {
     my ( $self, $c, $part_id ) = @_;
 
-    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
+    my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
 
     $c->res->content_type('text/plain');
     return $c->res->body($part->header);
@@ -220,7 +233,7 @@ sub reply : Chained('setup') PathPart('part/reply') Args() {
     my ( $self, $c, $who, $part_id ) = @_;
     my $message = $c->stash->{message};
 
-    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
+    my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
 
     #FIXME: we need a way to find the 'main part' of a message and use this here
     my $body = $part->main_body_part->body;
@@ -271,7 +284,7 @@ sub forward : Chained('setup') PathPart('part/forward') Args() {
     my ( $self, $c, $part_id ) = @_;
     my $message = $c->stash->{message};
 
-    my $part = $c->stash->{message}->get_part({ part_id => $part_id });
+    my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
 
     $c->stash({
         forward => $part,
@@ -337,7 +350,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (defined $c->req->param('forward')) {
         my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('forward'));
-        my $part_to_forward = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
+        my $part_to_forward = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part_by_id({ part_id => $part_id });
 
         $mail->attach(
             Type     => 'message/rfc822',
@@ -348,7 +361,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if (defined $c->req->param('in_reply_to')) {
         my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('in_reply_to'));
-        my $in_reply_to_part = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part({ part_id => $part_id });
+        my $in_reply_to_part = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part_by_id({ part_id => $part_id });
 
         if ($in_reply_to_part) {
             if (my $message_id = $in_reply_to_part->message_id) {

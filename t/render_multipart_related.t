@@ -19,7 +19,7 @@ my ($response, $c) = ctx_request POST '/', [
 
 my $unix_time = time();
 
-open my $testmail, '<', "$Bin/testmessages/MULTIPART_ALTERNATIVE.mbox";
+open my $testmail, '<', "$Bin/testmessages/MULTIPART_RELATED.mbox";
 my $message_text = join '', <$testmail>;
 $message_text =~ s/TIME/$unix_time/gm;
 
@@ -39,22 +39,22 @@ $mech->get_ok( 'http://localhost/' );
 $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} } });
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->follow_link_ok({ text => 'multipart-alternative-TestMail-'.$unix_time });
+$mech->follow_link_ok({ text => 'multipart-related-TestMail-'.$unix_time });
 
 my $tx = Test::XPath->new(xml => $mech->content, is_html => 1);
 $tx->ok( "//div[\@class='html_message renderable']", sub {
-    $_->is( './p[1]/span', 'TestMail-HTML-'.$unix_time, 'p/span ok' );
+    $_->is( './p[1]/span', 'TestMail-HTML-'.$unix_time, 'p/span ok html part' );
 }, 'check html' );
 
-$mech->content_lacks('TestMail-PLAIN-'.$unix_time, 'content lacks text/plain part');
+$tx->is( "//div[\@class='renderable monospace']", 'TestMail-PLAIN-'.$unix_time, 'p/span ok plain part' );
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Amultipart-alternative-TestMail-$unix_time\z});
+my @messages = $mech->find_all_links( text_regex => qr{\Amultipart-related-TestMail-$unix_time\z});
 ok((@messages == 1), 'messages found');
 $mech->get_ok($messages[0]->url.'/delete', "Delete message");
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
-$mech->content_lacks('multipart-alternative-TestMail-'.$unix_time, 'verify that messages got deleted');
+$mech->content_lacks('multipart-related-TestMail-'.$unix_time, 'verify that messages got deleted');
 
 done_testing();
