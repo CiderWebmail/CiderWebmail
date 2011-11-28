@@ -2,6 +2,17 @@ function toggleHeader(node, on) {
     node.parentNode.parentNode.parentNode.getElementsByTagName('pre')[0].style.display = on ? '' : 'none';
 }
 
+function load_subpart(target) {
+    var subpart_uri = target.href;
+    var target_div = $(target.parentNode.parentNode); //the body_part div
+
+    var myHTMLRequest = new Request.HTML({
+        onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
+            target_div.innerHTML = responseHTML;
+        }
+    }).get(target.href + "?layout=ajax");
+}
+
 add_event_listener('keyup', function (event) {
         switch (event.keyCode) {
             case 77: // 'm'

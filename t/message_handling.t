@@ -93,6 +93,14 @@ for my $link (@links) {
         #every message should have a content-type header
         $mech->content_like(qr/Content\-Type:\s/i, 'contains content-type header');
     }
+
+    $mech->get_ok($link->url);
+    
+    my @render_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/render/.*});
+    foreach(@render_links) {
+        $mech->get_ok($_->url, "Fetch ".$_->url);
+        $mech->content_like(qr!part/download!, 'found download link');
+    }
 }
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
