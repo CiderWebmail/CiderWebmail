@@ -46,7 +46,9 @@ requires 'Text::Iconv';
 requires 'Text::Flowed';
 
 requires 'IO::Socket::SSL';
-requires 'Mail::IMAPClient' => '3.25';
+
+requires 'Parse::RecDescent' => '1.967009'; #https://rt.cpan.org/Public/Bug/Display.html?id=76118
+requires 'Mail::IMAPClient' => '3.31';
 
 requires 'Clone';
 requires 'HTML::Scrubber';

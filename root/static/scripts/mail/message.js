@@ -9,8 +9,9 @@ function load_subpart(target) {
     var myHTMLRequest = new Request.HTML({
         onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
             target_div.innerHTML = responseHTML;
-        }
-    }).get(target.href + "?layout=ajax");
+        },
+        url: target.href
+    }).get({ 'layout': 'ajax' });
 }
 
 add_event_listener('keyup', function (event) {
