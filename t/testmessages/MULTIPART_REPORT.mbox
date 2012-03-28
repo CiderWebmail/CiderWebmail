@@ -1,0 +1,76 @@
+Return-Path: <>
+X-Original-To: cw@zook.loop0.org
+Delivered-To: cw@zook.loop0.org
+Received: by zook.loop0.org (Postfix)
+	id 563EC1296356; Tue,  7 Feb 2012 19:05:18 +0100 (CET)
+Date: Tue,  7 Feb 2012 19:05:18 +0100 (CET)
+From: MAILER-DAEMON@zook.loop0.org (Mail Delivery System)
+Subject: dsnmessage-TIME
+To: cw@zook.loop0.org
+Auto-Submitted: auto-replied
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="3FABD1296353.1328637918/zook.loop0.org"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20120207180518.563EC1296356@zook.loop0.org>
+
+This is a MIME-encapsulated message.
+
+--3FABD1296353.1328637918/zook.loop0.org
+Content-Description: Notification
+Content-Type: text/plain; charset=us-ascii
+
+This is the mail system at host zook.loop0.org.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<Foo@zook.loop0.org> (expanded from <Foo>): unknown user: "foo"
+
+--3FABD1296353.1328637918/zook.loop0.org
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; zook.loop0.org
+X-Postfix-Queue-ID: 3FABD1296353
+X-Postfix-Sender: rfc822; cw@zook.loop0.org
+Arrival-Date: Tue,  7 Feb 2012 19:05:18 +0100 (CET)
+
+Final-Recipient: rfc822; Foo@zook.loop0.org
+Original-Recipient: rfc822; Foo
+Action: failed
+Status: 5.1.1
+Diagnostic-Code: X-Postfix; unknown user: "foo"
+X-CiderWebmail-Check: dsnmessage-check-header-TIME
+
+--3FABD1296353.1328637918/zook.loop0.org
+Content-Description: Undelivered Message
+Content-Type: message/rfc822
+Content-Transfer-Encoding: 8bit
+
+Return-Path: <cw@zook.loop0.org>
+Received: by zook.loop0.org (Postfix, from userid 1002)
+	id 3FABD1296353; Tue,  7 Feb 2012 19:05:18 +0100 (CET)
+MIME-Version: 1.0
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 7 Feb 2012 19:05:18 +0100
+From: cw@localhost.loop0.org
+To: Foo@zook.loop0.org
+Subject: =?ISO-8859-1?Q??=
+X-Mailer: CiderWebmail 1.10
+Received: from 127.0.0.1 by localhost with HTTP;
+ 	Tue, 07 Feb 2012 18:05:18 -0000
+Message-Id: <20120207180518.3FABD1296353@zook.loop0.org>
+
+
+--3FABD1296353.1328637918/zook.loop0.org--
+

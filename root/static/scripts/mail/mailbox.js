@@ -42,8 +42,9 @@ function show_message(target) {
             var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
             $('message_view').innerHTML = parsed[2];
             update_foldertree(parsed[1], responseTree);
-        }
-    }).get(target.href + "?layout=ajax");
+        },
+        url: target.href
+    }).get({ 'layout': 'ajax' });
 }
 
 function show_previous_message() {
