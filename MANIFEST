@@ -310,8 +310,7 @@ root/static/images/trashcan.gif
 root/static/scripts/base.js
 root/static/scripts/mail/mailbox.js
 root/static/scripts/mail/message.js
-root/static/scripts/mootools-1.2-core.js
-root/static/scripts/mootools-1.2-more.js
+root/static/scripts/mootools-core.js
 root/templates/base/addressbook/edit.xml
 root/templates/base/addressbook/list.xml
 root/templates/base/ajax/layout.xml
@@ -376,13 +375,11 @@ t/06-send-message.t
 t/99style.t
 t/addressbook.t
 t/ajax.t
-t/ciderwebmail_part.t
 t/controller_Addressbook.t
 t/controller_Mailbox.t
 t/controller_Message.t
 t/deletemessage.t
 t/forwardmessage.t
-t/message_forwarded.t
 t/message_handling.t
 t/model_DB.t
 t/model_IMAPClient.t
