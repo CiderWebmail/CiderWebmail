@@ -1,8 +1,10 @@
 CiderWebmail is covered under the same terms as Perl itself except for
 some images in the root/static/images directory:
 
-attachment.png and message*.png are taken from the KDE 4 Oxygen icon theme and
-are covered by LGPL version 2.1 or later
+address_book.png, attachment.png, compose.png, folder.png, inbox.png, logout.png,
+manage_folders.png, mail_forward.png, mail_reply.png, mail_reply_all.png,
+message*.png, sent.png and trash.png are taken from the KDE 4 Ogygen icon theme
+and are covered by LGPL version 2.1 or later
 http://www.gnu.org/licenses/lgpl-2.1.txt
 
 mimeicons/* are taken from Apache and are in the Public Domain (see mimicons/README).
