@@ -334,7 +334,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
     $mail->replace("x-mailer"             => "CiderWebmail ".$CiderWebmail::VERSION);
 
 
-    $mail->add("Received"             => "from $ENV{REMOTE_ADDR} by $ENV{SERVER_NAME} with HTTP;\n\t".DateTime::Format::Mail->new->format_datetime(DateTime->now));
+    $mail->add("Received"             => "from " . ( defined $ENV{REMOTE_ADDR} ? $ENV{REMOTE_ADDR} : 'unknown REMOTE_ADDR' ) . " by " . ( defined $ENV{SERVER_NAME} ? $ENV{SERVER_NAME} : 'unknown SERVER_NAME' ) . " with HTTP;\n\t".DateTime::Format::Mail->new->format_datetime(DateTime->now));
 
     if (my @attachments = $c->req->param('attachment')) {
         foreach ($c->req->upload('attachment')) {
