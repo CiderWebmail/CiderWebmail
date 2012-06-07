@@ -3,7 +3,6 @@ use warnings;
 use Test::More;
 use Regexp::Common qw(Email::Address);
 use Email::Address;
-use MIME::Lite;
 use English qw(-no_match_vars);
 
 return plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};

@@ -7,11 +7,19 @@ use parent 'Catalyst::Controller';
 use CiderWebmail::Message;
 use CiderWebmail::Util;
 
-use MIME::Lite;
 use MIME::Words qw(encode_mimeword);
+use MIME::Entity;
+
+use Try::Tiny;
+
 use DateTime;
 use DateTime::Format::Mail;
 use Email::Valid;
+
+use Email::Sender::Simple qw/sendmail/;
+use Email::Sender::Transport::Sendmail;
+use Email::Sender::Transport::SMTP;
+
 use Clone qw(clone);
 use List::Util qw(first);
 use List::MoreUtils qw(all);
@@ -309,8 +317,8 @@ sub send : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
     my $subject = encode_mimeword($c->req->param('subject'));
-    my $body = $c->req->param('body');
-    utf8::encode($body);
+    my $body_content = $c->req->param('body');
+    utf8::encode($body_content);
     my $from = $c->req->param('from');
     my $sent_folder = $c->req->param('sent_folder');
 
@@ -321,27 +329,36 @@ sub send : Chained('/mailbox/setup') Args(0) {
         sent_folder => $sent_folder
     });
 
-    my $mail = MIME::Lite->new(
-        From    => $from,
-        To      => $c->req->param('to'),
+    #this is the top-level message we are going to send
+    my $mail = MIME::Entity->build(
+        Type        => 'multipart/mixed',
+        From        => $from,
+        To          => $c->req->param('to'),
+        Date        => DateTime::Format::Mail->new->format_datetime(DateTime->now),
         ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
-        Subject => $subject,
-        Data    => $body,
+        Subject     => $subject,
+        'X-Mailer'  => "CiderWebmail ".$CiderWebmail::VERSION,
+        Received    => "from " . ( defined $ENV{REMOTE_ADDR} ? $ENV{REMOTE_ADDR} : 'unknown REMOTE_ADDR' ) . " by " . ( defined $ENV{SERVER_NAME} ? $ENV{SERVER_NAME} : 'unknown SERVER_NAME' ) . " with HTTP;\n\t".DateTime::Format::Mail->new->format_datetime(DateTime->now),
     );
 
-    $mail->attr("content-type"         => "text/plain");
-    $mail->attr("content-type.charset" => 'UTF-8');
-    $mail->replace("x-mailer"             => "CiderWebmail ".$CiderWebmail::VERSION);
+    #this is our main body - the text the user specified
+    if (my $body_content = $c->req->param('body')) { #TODO decent check if we have a valid body? what if only forwarding as attachment etc?
+        utf8::encode($body_content);
+        my $body_entity = MIME::Entity->build(
+            Type    => 'text/plain',
+            Charset => 'UTF-8',
+            Data    => $body_content,
+        );
 
-
-    $mail->add("Received"             => "from " . ( defined $ENV{REMOTE_ADDR} ? $ENV{REMOTE_ADDR} : 'unknown REMOTE_ADDR' ) . " by " . ( defined $ENV{SERVER_NAME} ? $ENV{SERVER_NAME} : 'unknown SERVER_NAME' ) . " with HTTP;\n\t".DateTime::Format::Mail->new->format_datetime(DateTime->now));
+        $mail->add_part($body_entity);
+    }
 
     if (my @attachments = $c->req->param('attachment')) {
         foreach ($c->req->upload('attachment')) {
             $mail->attach(
                 Type        => $_->type,
                 Filename    => $_->basename,
-                FH          => $_->fh,
+                Path        => $_->tempname,
                 Disposition => 'attachment',
                 ReadNow     => 1,
             );
@@ -374,20 +391,26 @@ sub send : Chained('/mailbox/setup') Args(0) {
         } 
     }
 
-    eval {
+    try {
+        my $transport;
+
+        #TODO add port and example to ciderwebmail.yml
         if (($c->config->{send}->{method} or '') eq 'smtp') {
             croak('smtp host not set') unless defined $c->config->{send}->{host};
-            $mail->send('smtp', $c->config->{send}->{host}) or croak('unable to send message via smtp');
-        }
-        else {
-            $mail->send or croak("unable to send message: $!");
-        }
-    };
 
-    if ($@) {
-        $c->stash->{error} = $@;
+            $transport = Email::Sender::Transport::SMTP->new({
+                host => $c->config->{send}->{host},
+                port => '25',
+            });
+        } else {
+            $transport = Email::Sender::Transport::Sendmail->new();
+        }
+
+        sendmail($mail, { transport => $transport });
+    } catch {
+        $c->stash->{error} = $_;
         $c->detach('/error');
-    }
+    };
 
     if ($sent_folder) {
         my $msg_text = $mail->as_string;
