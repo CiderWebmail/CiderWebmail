@@ -67,7 +67,7 @@
                     <div tal:condition="true: attachment/attachment" class="attachment">
                         <a tal:attributes="href string:${attachment/uri_download}; title attachment/type; id string:attachment_${attachment/path}">
                             <img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}; alt attachment/type" /><br />
-                            <span tal:content="attachment/name" />
+                            <span tal:content="attachment/display_name" />
                         </a>
                     </div>
                 </div>

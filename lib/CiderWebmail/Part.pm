@@ -291,16 +291,87 @@ returns the name of the part or "(attachment|part) content/type"
 
 =cut
 
-sub name {
+sub display_name {
     my ($self) = @_;
 
-    return "part (".$self->content_type.")" unless ((defined $self->bodystruct->bodydisp) and ($self->bodystruct->bodydisp ne 'NIL'));
+    #if we have a file name use this
+    return $self->file_name if defined $self->file_name;
 
-    #TODO filter filenmae
-    return $self->bodystruct->bodydisp->{attachment}->{filename} if ((defined $self->bodystruct->bodydisp->{attachment}->{filename}) and ($self->bodystruct->bodydisp->{attachment}->{filename} ne 'NIL'));
-    return "attachment (".$self->content_type.")" if defined $self->bodystruct->bodydisp->{attachment};
+    #we don't have a file name but it's an attachment - indicate this and show the content type
+    return "attachment (".$self->content_type.")" if $self->is_attachment;
+
+    #we don't have a file name and it's not some kind of attachment
     return "part (".$self->content_type.")";
 }
+
+=head2 file_name()
+
+returns a best-guess file_name if one was supplied or undef
+
+=cut
+
+sub file_name {
+    my ($self) = @_;
+
+    my $bodydisp = $self->bodydisp;
+    my $bodyparms = $self->bodyparms;
+
+    if ($self->is_attachment) {
+        return $bodydisp->{attachment}->{filename} if ((defined $bodydisp->{attachment}->{filename}) and ($bodydisp->{attachment}->{filename} ne 'NIL'));
+    }
+
+    if ((defined $bodyparms) and (defined $bodyparms->{name}) and ($bodyparms->{name} ne 'NIL')) {
+        return $bodyparms->{name} if ($bodyparms->{name} =~ m/.*\..*/xm);   #name does not have to be a filename. if we want
+                                                                            #to treat it as such it should at least resemble 
+                                                                            #something like name.extension
+    }
+
+    return;
+}
+
+=head2 is_attachment()
+
+returns true if the body disposition indicates it is an attachment
+
+=cut
+
+sub is_attachment {
+    my ($self) = @_;
+
+    return unless defined $self->bodydisp;
+    return 'yep' if ((defined $self->bodydisp->{attachment}) and ($self->bodydisp->{attachment} ne 'NIL'));
+    return;
+};
+
+
+=head2 bodydisp()
+
+returnes the body disposition hash (if it exists) or undef
+
+=cut
+
+sub bodydisp {
+    my ($self) = @_;
+
+    return unless ((defined $self->bodystruct) and ($self->bodystruct ne 'NIL'));
+    return unless ((defined $self->bodystruct->bodydisp) and ($self->bodystruct->bodydisp ne 'NIL'));
+    return $self->bodystruct->bodydisp;
+}
+
+=head2 bodyparms()
+
+returnes the bodyparms hash (if it exists) or undef
+
+=cut
+
+sub bodyparms {
+    my ($self) = @_;
+
+    return unless ((defined $self->bodystruct) and ($self->bodystruct ne 'NIL'));
+    return unless ((defined $self->bodystruct->bodyparms) and ($self->bodystruct->bodyparms ne 'NIL'));
+    return $self->bodystruct->bodyparms;
+}
+
 
 =head2 uri_download
 

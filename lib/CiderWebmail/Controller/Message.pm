@@ -92,7 +92,9 @@ sub download_attachment : Chained('setup') PathPart('part/download') Args {
     my $part = $c->stash->{message}->get_part_by_id({ part_id => $part_id });
 
     $c->res->content_type($part->content_type);
-    $c->res->header('content-disposition' => 'attachment' . "; filename=".$part->name);
+
+    $c->res->header('content-disposition' => 'attachment' . "; filename=".($part->file_name or 'unknown'));
+
     return $c->res->body($part->body({ raw => 1 }));
 }
 
