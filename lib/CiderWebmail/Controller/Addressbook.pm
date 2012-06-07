@@ -90,7 +90,7 @@ sub modify : Chained('/addressbook/setup') Path('modify') CaptureArgs(0) {
         my $addressbook = $c->model('DB::Addressbook');
 
         my $entry;
-        if (defined $c->req->param('id') and ($c->req->param('id') =~ m/^\d+$/)) {
+        if (defined $c->req->param('id') and ($c->req->param('id') =~ m/^\d+$/xm)) {
             $entry = $addressbook->find($c->req->param('id'));
         }
 

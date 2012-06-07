@@ -31,7 +31,7 @@ sub render {
 
     HTML::Entities::encode($content, '<>&"');
 
-    $content =~ s/^([\p{Bidi_Class:R}\s]+)/<div class='rtl'>$1<\/div>/g;
+    $content =~ s/^([\p{Bidi_Class:R}\s]+)/<div class='rtl'>$1<\/div>/gxm;
 
     my $uri_regex = $RE{URI}{HTTP}{-scheme => 'https?'}{-keep};
     $content =~ s/$uri_regex/<a href="$1">$1<\/a>/xmg;

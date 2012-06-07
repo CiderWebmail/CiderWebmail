@@ -20,6 +20,8 @@ sub load_children {
         push(@{ $self->parent_message->{children} }, $part) if $part;
         $self->root_message->parts->{$part->id} = $part;
     }
+
+    return;
 }
 
 1;

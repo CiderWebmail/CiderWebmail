@@ -21,6 +21,8 @@ sub load_children {
     push(@{ $self->{children} }, $part);
     $self->root_message->parts->{$part->id} = $part;
     $self->root_message->parts->{root} = $self;
+
+    return;
 }
 
 sub type {
@@ -102,6 +104,8 @@ sub mark_answered {
     my ($self) = @_;
 
     $self->root_message->mark_answered;
+
+    return;
 }
 
 =head2 supported_type()

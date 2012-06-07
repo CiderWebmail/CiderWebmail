@@ -28,6 +28,8 @@ sub BUILD {
     $parser->output_to_core(1);
 
     $self->entity($parser->parse_data($self->message_string));
+
+    return;
 }
 
 sub get_header {

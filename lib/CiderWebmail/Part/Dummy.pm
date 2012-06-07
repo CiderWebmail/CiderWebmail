@@ -14,7 +14,7 @@ has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 );
 has message             => (is => 'rw', isa => 'Bool', default => 0 );
 has attachment          => (is => 'rw', isa => 'Bool', default => 0 );
 
-sub load_children { 1; }
+sub load_children { return 1; }
 
 =head2 render()
 
