@@ -56,7 +56,7 @@
                         </span>
                     </td>
                 </tr>
-                <tr>
+                <tr tal:condition="true: message/date">
                     <th i18n:translate="">Date:</th>
                     <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
                 </tr>
