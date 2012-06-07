@@ -40,7 +40,9 @@ $mech->submit_form_ok({ with_fields => { username => $ENV{TEST_USER}, password =
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'textmessage-'.$unix_time });
 
-$mech->content_contains('<div class="renderable monospace">textmessage <a href="http://example.com">http://example.com</a>', 'check content');
+$mech->content_contains('<div class="renderable monospace">textmessage <a href="http://example.com">http://example.com</a>', 'check content for URI to HTML link conversion');
+$mech->content_contains("textmessage-$unix_time line that is so long that it should get wrapped<br />by the Text::Autoformat module", 'check content for text wrapping by Text::Autoformat');
+
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Atextmessage-$unix_time\z});

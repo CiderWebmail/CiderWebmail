@@ -9,3 +9,6 @@ Subject: textmessage-TIME
 X-Mailer: CiderWebmail 1.02
 
 textmessage http://example.com
+
+
+textmessage-TIME line that is so long that it should get wrapped by the Text::Autoformat module

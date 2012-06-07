@@ -43,7 +43,7 @@ requires 'Regexp::Common::Email::Address';
 requires 'Regexp::Common::URI';
 
 requires 'Text::Iconv';
-requires 'Text::Flowed';
+requires 'Text::Autoformat';
 
 requires 'IO::Socket::SSL';
 

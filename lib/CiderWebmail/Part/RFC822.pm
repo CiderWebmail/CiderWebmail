@@ -72,7 +72,7 @@ sub reply_to {
     return CiderWebmail::Header::transform({ type => 'replyto', data => join(', ', $self->bodystruct->envelopestruct->bcc_addresses) });
 }
 
-sub mark_answered { 1; }
+sub mark_answered { return 1; }
 
 before qw(message_id references) => sub {
     my ($self) = @_;

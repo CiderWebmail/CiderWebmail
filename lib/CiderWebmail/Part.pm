@@ -27,7 +27,7 @@ has attachment          => (is => 'rw', isa => 'Bool', default => sub {
     return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
     return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
     return 0;
-});
+},);
 
 my %renderers = map{ $_->supported_type => $_ } __PACKAGE__->plugins();
 
@@ -35,6 +35,8 @@ sub BUILD {
     my $self = shift;
 
     $self->load_children();
+
+    return;
 }
 
 sub load_children {
@@ -48,6 +50,8 @@ sub load_children {
         push(@{ $self->{children} }, $part) if $part;
         $self->root_message->parts->{$part->id} = $part;
     }
+
+    return;
 }
 
 =head2 main_body_part()
@@ -90,7 +94,7 @@ sub body {
     }
 
 
-    return (defined($o->{raw}) ? $body : $self->_decode_body({ charset => $self->charset, body => $body }));
+    return (defined($o->{raw}) ? $body : $self->_decode_body({ body => $body }));
 }
 
 sub header {
@@ -126,13 +130,13 @@ sub _decode_body {
     my ($self, $o) = @_;
 
     my $part_string;
-    unless ($o->{charset} and $o->{charset} !~ /utf-8/ixm
+    unless ($self->charset and $self->charset !~ /utf-8/ixm
         and eval {
-            my $converter = Text::Iconv->new($o->{charset}, "utf-8");
+            my $converter = Text::Iconv->new($self->charset, "utf-8");
             $part_string = $converter->convert($o->{body});
         }) {
 
-        carp "unsupported encoding: $o->{charset}" if $@;
+        carp "unsupported encoding: ".$self->charset if $@;
         $part_string = $o->{body};
     }
 
@@ -156,7 +160,7 @@ sub id {
 sub charset {
     my ($self) = @_;
 
-    return undef unless ((defined $self->bodystruct->bodyparms) and ($self->bodystruct->bodyparms ne 'NIL'));
+    return unless ((defined $self->bodystruct->bodyparms) and ($self->bodystruct->bodyparms ne 'NIL'));
     return $self->bodystruct->bodyparms->{charset};
 }
 
@@ -184,7 +188,7 @@ returns a CiderWebmail::Part::FooBar object for the specified part
 sub handler {
     my ($self, $o) = @_;
 
-    die unless $o->{bodystruct};
+    confess unless $o->{bodystruct};
 
     my $type = lc($o->{bodystruct}->bodytype.'/'.$o->{bodystruct}->bodysubtype);
 
@@ -247,8 +251,6 @@ sub render {
     my ($self) = @_;
 
     confess "[FATAL] CiderWebmail::Part->render() called but was not overridden by anything!";
-
-    return;
 }
 
 =head2 cid()
@@ -260,7 +262,7 @@ returns the Content-ID of the part
 sub cid {
     my ($self) = @_;
 
-    die("cid() not implemented");
+    cluck("cid() not implemented");
 
     my $cid = ($self->entity->head->get('Content-ID') or '');
     chomp($cid);
