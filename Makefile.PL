@@ -33,17 +33,19 @@ requires 'DateTime::Format::Mail';
 requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
-requires 'MIME::Lite';
 requires 'MIME::Words';
 
+requires 'Try::Tiny';
+
 requires 'Email::Simple';
+requires 'Email::Sender';
 requires 'Email::Valid';
 requires 'Email::Address';
 requires 'Regexp::Common::Email::Address';
 requires 'Regexp::Common::URI';
 
 requires 'Text::Iconv';
-requires 'Text::Flowed';
+requires 'Text::Autoformat';
 
 requires 'IO::Socket::SSL';
 

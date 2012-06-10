@@ -281,3 +281,6 @@ severity   = 5
 
 [Perl::Critic::Policy::Variables::RequireNegativeIndices]
 severity   = 4
+
+[Perl::Critic::Policy::Subroutines::RequireArgUnpacking]
+allow_delegation_to = next::method _delegate

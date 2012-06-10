@@ -2,7 +2,7 @@
     <div class="stub_part">
         <h1>
         <a class="load_subpart" onclick="load_subpart(this); return false;" tal:attributes="href string:${part/uri_render}">[+]</a> 
-        <span tal:content="string: ${part/name}" />
+        <span tal:content="string: ${part/display_name}" />
         </h1>
     </div>
 </div>

@@ -4,7 +4,6 @@ use Test::More;
 use CiderWebmail::Test {login => 1};
 use Regexp::Common qw(Email::Address);
 use Email::Address;
-use MIME::Lite;
 use English qw(-no_match_vars);
 
 my $unix_time = time();

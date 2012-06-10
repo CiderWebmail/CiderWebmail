@@ -8,7 +8,7 @@ use Text::Iconv;
 use Date::Parse;
 use MIME::Words qw/ decode_mimewords /;
 
-use Carp qw/ croak /;
+use Carp qw/ croak carp /;
 
 
 =head2 transform({ type => $header_name, data => $header_data })
@@ -89,7 +89,7 @@ sub _decode_header {
                     utf8::decode($part);
                     $header .= $part if defined $part;
                 }) {
-                carp("unsupported encoding: $_->[1]");
+                carp("unable to convert $_->[1] to utf-8 using Text::Iconv: $!");
                 utf8::decode($_->[0]);
                 $header .= $_->[0];
             }

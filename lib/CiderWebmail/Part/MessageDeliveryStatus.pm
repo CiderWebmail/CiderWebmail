@@ -6,7 +6,7 @@ use Petal;
 use Regexp::Common qw /URI/;
 use HTML::Entities;
 
-use Carp qw/ croak /;
+use Carp qw/ croak carp /;
 
 extends 'CiderWebmail::Part';
 has renderable          => (is => 'rw', isa => 'Bool', default => 1 );

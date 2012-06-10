@@ -140,6 +140,13 @@ sub _handle_attributes {
     }
 
     my $output = '';
+
+    #attributes without values (value is undef) get an empty string to silence warnings
+    #by doing this this way a filter can better handle broken html code (for example <td nowrap> instead of <td nowrap="nowrap">)
+    foreach my $key (keys(%{ $o->{attr} })) {
+        $o->{attr}->{$key} = '' unless defined $o->{attr}->{$key};
+    }
+
     while(my ($key, $value) = each(%{ $o->{attr} })) {
         $value = encode_entities(decode_entities($value));
 

@@ -19,6 +19,8 @@ sub BUILD {
     my ($self) = @_;
 
     $self->create_message_stubs;
+
+    return;
 }
 
 sub create_message_stubs {
@@ -30,6 +32,8 @@ sub create_message_stubs {
 
     my $part = CiderWebmail::Part::Root->new({ c => $self->c, root_message => $self, bodystruct => $struct });
     $self->root_part($part);
+
+    return;
 }
 
 =head2 get_part_by_id

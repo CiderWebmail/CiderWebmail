@@ -56,7 +56,7 @@
                         </span>
                     </td>
                 </tr>
-                <tr>
+                <tr tal:condition="true: message/date">
                     <th i18n:translate="">Date:</th>
                     <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
                 </tr>
@@ -67,7 +67,7 @@
                     <div class="attachment" tal:condition="true: attachment/attachment">
                         <a tal:attributes="href string:${attachment/uri_download}; title attachment/type; id string:attachment_${attachment/path}">
                             <img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}; alt attachment/type" /><br />
-                            <span tal:content="attachment/name" />
+                            <span tal:content="attachment/display_name" />
                         </a>
                     </div>
                 </div>

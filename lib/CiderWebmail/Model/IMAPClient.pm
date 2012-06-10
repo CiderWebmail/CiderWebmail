@@ -37,7 +37,7 @@ creates a new CiderWebmail::Model::IMAPClient
 sub new {
     my $self = shift->next::method(@_);
 
-    if ($Mail::IMAPClient::VERSION =~ m/^3\.2(6|7)/) {
+    if ($Mail::IMAPClient::VERSION =~ m/^3\.2(6|7)/xm) {
         warn "Mail::IMAPClient V3.2(6|7) Unescape workaround enabled. Please upgrade to Mail::IMAPClient >= 3.28\n";
         $self->{_imapclient_unescape_workaround} = 1;
     }
