@@ -29,7 +29,12 @@ after BUILD => sub {
     if ($version < 1) {
         print STDERR "upgrading database schema to version 1\n";
         $dbh->do('create table addressbook (id INTEGER PRIMARY KEY, user varchar not null, firstname varchar not null, surname varchar not null, email varchar not null)');
-        $dbh->do('update db_version set version = 1');
+    }
+
+    if ($version < 2) {
+        print STDERR "upgrading database schema to version 2\n";
+        $dbh->do('create table settings (user varchar not null primary key, from_address varchar, sent_folder varchar, sort_order varchar)');
+        $dbh->do('update db_version set version = 2');
     }
 
     return $self;
