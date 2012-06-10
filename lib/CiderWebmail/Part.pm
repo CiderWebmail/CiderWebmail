@@ -136,7 +136,7 @@ sub _decode_body {
             $part_string = $converter->convert($o->{body});
         }) {
 
-        carp "unsupported encoding: ".$self->charset if $@;
+        carp "unable to convert ".$self->charset." to utf-8 using Text::Iconv: $!" if $@;
         $part_string = $o->{body};
     }
 
