@@ -6,7 +6,7 @@ use Data::ICal;
 use DateTime::Format::ISO8601;
 use HTML::Entities;
 
-use Text::Flowed;
+use Text::Autoformat;
 
 use Carp qw/ croak /;
 
@@ -39,7 +39,8 @@ sub render {
         my $description;
         if ($entry->property('description')) {
             $description = $entry->property('description');
-            $description = Text::Flowed::reformat( ($description->[0]->value or '') );
+            $description = (autoformat($description->[0]->value, { tabspace => 4, all => 1 }) or '');
+            $description = HTML::Entities::encode($description);
             $description =~ s/\n/<br \/>/gxm;
         }
        
@@ -50,8 +51,8 @@ sub render {
             start => HTML::Entities::encode(join("", $dt_start->ymd("-"), ", ", $dt_start->time(":")), '<>&'),
             end => HTML::Entities::encode(join("", $dt_end->ymd("-"), ", ", $dt_end->time(":")), '<>&'),
             summary => HTML::Entities::encode($summary->[0]->value, '<>&'),
-            description => HTML::Entities::encode($description, '<>&'), }
-        );
+            description => $description,
+        });
     }
 
     return $self->c->view->render_template({ c => $self->c, template => 'TextCalendar.xml', stash => { events => \@events } });
