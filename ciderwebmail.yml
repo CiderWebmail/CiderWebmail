@@ -1,11 +1,26 @@
 ---
+#IMAP server to use. if you specify port 993
+#CiderWebmail will automatically use SSL
 server:
     host: localhost
     port: 143
+
+#default language for the frontend to use
 language: en
-username_default_address: true
+
+#use the username as default e-mail From address (unless the user
+#specifies a different mail address). enable this if your users login with
+#user@domain.tld as username
+username_default_address: false
 
 #if you enable this CiderWebmail will search message bodies using the
-#IMAP SEARCH command only enable this if you are aware of the ressource
+#IMAP SEARCH command. only enable this if you are aware of the resource
 #requirements on your IMAP Server
 enable_body_search: false
+
+#per default CiderWebmail will fork a sendmail process to deliver mail.
+#if you wish to use a SMTP server change method to smtp and change
+#the host key
+send:
+    method: sendmail
+#   host:   changeme
