@@ -4,3 +4,8 @@ server:
     port: 143
 language: en
 username_default_address: true
+
+#if you enable this CiderWebmail will search message bodies using the
+#IMAP SEARCH command only enable this if you are aware of the ressource
+#requirements on your IMAP Server
+enable_body_search: false

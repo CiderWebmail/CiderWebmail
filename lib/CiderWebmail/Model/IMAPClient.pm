@@ -359,28 +359,30 @@ sub get_headers_hash {
     return \@messages;
 }
 
-=head2 simple_search()
+=head2 search()
 
-searches a mailbox From/Subject headers
+searches a mailbox
 returns a arrayref containing a list of UIDs
 
 =cut
 
 #search in FROM/SUBJECT
 #FIXME report empty result
-#TODO body search?
-sub simple_search {
+sub search {
     my ($self, $c, $o) = @_;
 
     croak unless $o->{mailbox};
     croak unless $o->{searchfor};
     $self->select($c, { mailbox => $o->{mailbox} });
 
-    my @search = (
-        'OR',
-        'SUBJECT', $c->stash->{imapclient}->Quote($o->{searchfor}),
-        'FROM', $c->stash->{imapclient}->Quote($o->{searchfor}),
-    );
+    my @search = ();
+
+    my $quoted_search_terms = $c->stash->{imapclient}->Quote($o->{searchfor});
+
+    push(@search, 'OR', 'BODY', $quoted_search_terms) if ($c->config->{enable_body_search});
+    push(@search, 'OR');
+    push(@search, 'SUBJECT', $quoted_search_terms);
+    push(@search, 'FROM', $quoted_search_terms);
 
     my @uids;
     if ($o->{sort}) {
