@@ -544,7 +544,6 @@ sub bodypart_as_string {
 
     my $bodypart_string = $c->stash->{imapclient}->bodypart_string( $o->{uid}, $o->{part} );
     $self->_die_on_error($c);
-    utf8::decode($bodypart_string);
 
     return $bodypart_string;
 }
@@ -587,7 +586,6 @@ sub message_as_string {
 
     my $message_string = $c->stash->{imapclient}->message_string( $o->{uid} );
     $self->_die_on_error($c);
-    utf8::decode($message_string);
 
     return $message_string;
 }
