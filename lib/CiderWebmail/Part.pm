@@ -90,7 +90,7 @@ sub body {
     }
 
 
-    return (defined($o->{raw}) ? $body : $self->_decode_body({ charset => $self->charset, body => $body }));
+    return (defined($o->{raw}) ? $body : $self->_decode_body({ body => $body }));
 }
 
 sub header {
@@ -126,13 +126,13 @@ sub _decode_body {
     my ($self, $o) = @_;
 
     my $part_string;
-    unless ($o->{charset} and $o->{charset} !~ /utf-8/ixm
+    unless ($self->charset and $self->charset !~ /utf-8/ixm
         and eval {
-            my $converter = Text::Iconv->new($o->{charset}, "utf-8");
+            my $converter = Text::Iconv->new($self->charset, "utf-8");
             $part_string = $converter->convert($o->{body});
         }) {
 
-        carp "unsupported encoding: $o->{charset}" if $@;
+        carp "unsupported encoding: ".$self->charset if $@;
         $part_string = $o->{body};
     }
 
