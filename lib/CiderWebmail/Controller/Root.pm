@@ -49,9 +49,9 @@ sub auto : Private {
 
     $c->stash->{translation_service} = $translation_service;
 
-    if (( $c->request->headers->header('Accept-Language') or '') =~ m/^de/i) {
+    if (( $c->request->headers->header('Accept-Language') or '') =~ m/^de/ixm) {
         $c->stash->{language} = 'de';
-    } elsif (( $c->request->headers->header('Accept-Language') or '') =~ m/^en/i) {
+    } elsif (( $c->request->headers->header('Accept-Language') or '') =~ m/^en/ixm) {
         $c->stash->{language} = 'en';
     } else {
         $c->stash->{language} = $c->config->{language} || 'en';

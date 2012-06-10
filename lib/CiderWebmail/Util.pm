@@ -253,7 +253,7 @@ sub parse_message_id {
     croak('parse_message_id($message_id) called without $message_id') unless defined $message_id;
 
     #message id's are in the format <message uid on IMAP server>/<CiderWebmail::Part id in @CiderWebmail::Message::parts>
-    if ($message_id =~ m|^(\d+)/([a-z0-9\.]+)$|i) {
+    if ($message_id =~ m|^(\d+)/([a-z0-9\.]+)$|ixm) {
         return ($1, $2);
     } else {
         croak("Unable to parse in_reply_to: $message_id");
