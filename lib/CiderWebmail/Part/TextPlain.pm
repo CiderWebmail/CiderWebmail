@@ -25,7 +25,7 @@ sub render {
 
     carp('no part set') unless defined $self->body;
 
-    my $content = (autoformat($self->body, { tabspace => 4, all => 1 }) or '');
+    my $content = (autoformat($self->body, { tabspace => 4, mail => 1 }) or '');
 
     $content =~ s/[^\x01-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]//gxmo;
     $content =~ s/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F]//gxmo;

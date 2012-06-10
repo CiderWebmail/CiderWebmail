@@ -12,3 +12,6 @@ textmessage http://example.com
 
 
 textmessage-TIME line that is so long that it should get wrapped by the Text::Autoformat module
+
+-- 
+testsignature-TIME signature line that is so long but still should not get wrapped by the Text::Autoformat module
