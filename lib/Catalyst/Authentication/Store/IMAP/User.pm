@@ -119,6 +119,8 @@ sub check_password {
     $imap->User($id);
     $imap->Password($password);
 
+    $imap->Debug(1) if $ENV{IMAP_DEBUG};
+
     unless($imap->login) {
         carp("Could not login to ".$c->config->{authentication}{realms}{imap}{store}{host}." with user $id: $@");
         return;
