@@ -7,7 +7,7 @@ use parent 'Catalyst::Controller';
 use CiderWebmail::Message;
 use CiderWebmail::Util;
 
-use MIME::Words qw(encode_mimeword);
+use Encode;
 use MIME::Entity;
 
 use Try::Tiny;
@@ -319,7 +319,7 @@ Send a mail
 sub send : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $subject = encode_mimeword($c->req->param('subject'));
+    my $subject = Encode::encode('MIME-Header', $c->req->param('subject'));
     my $body_content = $c->req->param('body');
     utf8::encode($body_content);
     my $from = $c->req->param('from');

@@ -32,6 +32,8 @@ requires 'DateTime::Format::Mail';
 
 requires 'DBD::SQLite';
 
+requires 'Encode';
+
 requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
