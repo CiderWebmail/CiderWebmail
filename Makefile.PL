@@ -30,6 +30,8 @@ requires 'Petal::Utils';
 requires 'DateTime';
 requires 'DateTime::Format::Mail';
 
+requires 'DBD::SQLite';
+
 requires 'MIME::WordDecoder';
 requires 'MIME::Tools';
 requires 'MIME::Parser';
