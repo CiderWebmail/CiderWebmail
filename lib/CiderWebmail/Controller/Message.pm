@@ -252,7 +252,8 @@ sub reply : Chained('setup') PathPart('part/reply') Args() {
     my @recipients;
 
     if ($who eq 'sender') {
-        my $recipient = ($part->reply_to or $part->from);
+        my $reply_to = $part->reply_to;
+        my $recipient = (($reply_to and @$reply_to) ? $reply_to : $part->from);
         @recipients = $recipient->[0]->address if @$recipient and $recipient->[0];
     } elsif ($who eq 'all') {
         foreach( ( ( $part->reply_to or $part->from ), $part->cc, $part->to ) ) {
