@@ -1,26 +1,16 @@
 use strict;
 use warnings;
 use Test::More;
+use CiderWebmail::Test {login => 1};
 use Regexp::Common qw(Email::Address);
 use Email::Address;
 use WWW::Mechanize;
 
 use English qw(-no_match_vars);
 
-eval "use Test::WWW::Mechanize::Catalyst 'CiderWebmail'";
-if ($@) {
-    plan skip_all => 'Test::WWW::Mechanize::Catalyst required';
-    exit;
-}
-
-return plan skip_all => 'Set TEST_USER and TEST_PASSWORD to access a mailbox for these tests' unless $ENV{TEST_USER} and $ENV{TEST_PASSWORD};
 return plan skip_all => 'Set VALIDATOR_URI to a server runnint the w3c validator for xhml validation tests' unless $ENV{VALIDATOR_URI};
 
 my $uname = getpwuid $UID;
-my $mech = Test::WWW::Mechanize::Catalyst->new;
-
-$mech->get( 'http://localhost/' );
-$mech->submit_form(with_fields => { username => $ENV{TEST_USER}, password => $ENV{TEST_PASSWORD} }); #FIXME should be a test, too, but we don't know the test plan yet...
 
 $mech->get('http://localhost/mailbox/INBOX/compose');
 
