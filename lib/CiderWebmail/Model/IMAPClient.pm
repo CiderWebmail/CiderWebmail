@@ -377,7 +377,11 @@ sub search {
 
     my @search = ();
 
-    my $quoted_search_terms = $c->stash->{imapclient}->Quote($o->{searchfor});
+    #see imap rfc about searching with utf8 and string literals about how to generate this
+    utf8::encode($o->{searchfor}); #utf-8 encoded search string
+    my $search_string_length = length($o->{searchfor}); #length of the search string in bytes
+
+    my $quoted_search_terms = "{$search_string_length}\r\n$o->{searchfor}";
 
     push(@search, 'OR', 'BODY', $quoted_search_terms) if ($c->config->{enable_body_search});
     push(@search, 'OR');

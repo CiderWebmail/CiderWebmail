@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 use CiderWebmail::Test {login => 1};
 use English qw(-no_match_vars);
+use charnames ':full';
 
 my $uname = getpwuid $UID;
 
@@ -15,29 +16,29 @@ $mech->submit_form_ok({
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
         sent_folder => 'Sent',
-        subject     => 'searchmessage-'.$unix_time,
-        body        => 'searchmessage',
+        subject     => "searchmessage-utf8-\N{CHECK MARK}-$unix_time",
+        body        => "searchmessage-utf8-\N{CHECK MARK}-body-$unix_time",
     },
 });
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
+my @messages = $mech->find_all_links( text_regex => qr{\Asearchmessage-utf8-\N{CHECK MARK}-$unix_time\z});
 $messages[0]->attrs->{id} =~ m/link_(\d+)/m;
 my $message_id = $1;
 ok( (length($message_id) > 0), 'got message id');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999&filter=searchmessage-'.$unix_time, 'search request successful' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999&filter=searchmessage-utf8-'."\N{CHECK MARK}-$unix_time", 'search request successful' );
 
 xpath_test {
     my ($tx) = @_;
-    $tx->is("//a[\@id='link_$message_id']", 'searchmessage-'.$unix_time, "correct message found" );
+    $tx->is("//a[\@id='link_$message_id']", "searchmessage-utf8-\N{CHECK MARK}-$unix_time", "correct message found" );
 };
 
-my @messages_delete = $mech->find_all_links( text_regex => qr{\Asearchmessage-$unix_time\z});
+my @messages_delete = $mech->find_all_links( text_regex => qr{\Asearchmessage-utf8-\N{CHECK MARK}-$unix_time\z});
 $mech->get_ok($messages_delete[0]->url.'/delete', "Delete message");
 
-$mech->get_ok( 'http://localhost' );
+$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 
-$mech->content_lacks('searchmessage-'.$unix_time);
+$mech->content_lacks("searchmessage-utf8-\N{CHECK MARK}-$unix_time", "message is gone");
 
 done_testing();
