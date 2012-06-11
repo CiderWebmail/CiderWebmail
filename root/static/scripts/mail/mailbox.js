@@ -165,16 +165,14 @@ window.addEvent('load', function() {
     add_event_listener('mousedown', start, false);
     add_event_listener('click', handle_click, false);
     add_event_listener('keyup', function (event) {
+            if (event.target && event.target.nodeType == 1 && (event.target.nodeName == 'input' || event.target.nodeName == 'textarea'))
+                return;
             switch (event.keyCode) {
                 case 37: // left
-                    show_previous_message();
-                    break;
                 case 75: // k
                     show_previous_message();
                     break;
                 case 39: // right
-                    show_next_message();
-                    break;
                 case 74: // j
                     show_next_message();
                     break;

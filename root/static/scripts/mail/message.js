@@ -15,6 +15,8 @@ function load_subpart(target) {
 }
 
 add_event_listener('keyup', function (event) {
+        if (event.target && event.target.nodeType == 1 && (event.target.nodeName.toLowerCase() == 'input' || event.target.nodeName == 'textarea'))
+            return;
         switch (event.keyCode) {
             case 77: // 'm'
                 var form = $('content').getElements('form.move_message')[0]
