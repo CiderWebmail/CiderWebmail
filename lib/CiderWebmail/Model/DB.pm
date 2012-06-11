@@ -33,7 +33,7 @@ after BUILD => sub {
 
     if ($version < 2) {
         print STDERR "upgrading database schema to version 2\n";
-        $dbh->do('create table settings (user varchar not null primary key, from_address varchar, sent_folder varchar, sort_order varchar)');
+        $dbh->do('create table if not exists settings (user varchar not null primary key, from_address varchar, sent_folder varchar, sort_order varchar)');
         $dbh->do('update db_version set version = 2');
     }
 
