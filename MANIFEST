@@ -1,3 +1,4 @@
+Changes
 ciderwebmail.yml
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
@@ -34,6 +35,7 @@ lib/CiderWebmail/Part/Dummy.pm
 lib/CiderWebmail/Part/ImageJpeg.pm
 lib/CiderWebmail/Part/MessageDeliveryStatus.pm
 lib/CiderWebmail/Part/MultipartAlternative.pm
+lib/CiderWebmail/Part/MultipartGeneric.pm
 lib/CiderWebmail/Part/MultipartMixed.pm
 lib/CiderWebmail/Part/MultipartRelated.pm
 lib/CiderWebmail/Part/MultipartReport.pm
@@ -43,6 +45,7 @@ lib/CiderWebmail/Part/Root.pm
 lib/CiderWebmail/Part/TextCalendar.pm
 lib/CiderWebmail/Part/TextHtml.pm
 lib/CiderWebmail/Part/TextPlain.pm
+lib/CiderWebmail/Test.pm
 lib/CiderWebmail/Util.pm
 lib/CiderWebmail/View/Petal.pm
 lib/HTML/Cleaner.pm
@@ -379,7 +382,7 @@ root/templates/en/parts/TextCalendar.xml
 root/templates/en/parts/TextHtml.xml
 root/templates/en/parts/TextPlain.xml
 root/templates/template.pl
-root/var/user_settings.sql
+root/var/README
 script/ciderwebmail_cgi.pl
 script/ciderwebmail_create.pl
 script/ciderwebmail_fastcgi.pl
@@ -426,5 +429,7 @@ t/testmessages/MULTIPART_ALTERNATIVE.mbox
 t/testmessages/MULTIPART_RELATED.mbox
 t/testmessages/MULTIPART_REPORT.mbox
 t/testmessages/TEXT.mbox
+t/utf8.t
 t/view_Petal.t
 t/xhtml_validation.t
+TODO
