@@ -1,15 +1,18 @@
-1.04 2012-04-02 16:00:00
+1.04 2012-06-11 22:00:00
     - Completely reworked MIME handling for improved compatability and performance
     - Support for right-to-left text
     - Keybindings for j/k (show next/previous message)
     - Scroll message on space bar/arrow up/arrow down
     - Display 'To' instead of 'From' when viewing Sent folder
+    - Support full text body search
     - Improved login screen
     - Various design improvements for a more polished interface
     - Huge speedup due to preprocessing localized templates
     - Added a custom CSS file for local modifications without breaking on updates
     - Always display INBOX first in folder tree
     - Mark the original message as "answered" when sending a reply
+    - Improved upgrade process
+    - Use modern replacements for some Perl modules CiderWebmail depends on
 
 1.03 2010-08-08 21:00:00
     - Fixed missing folder tree on compose message
