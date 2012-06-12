@@ -1,5 +1,7 @@
 package CiderWebmail;
 
+use Moose;
+
 use strict;
 use warnings;
 
@@ -57,6 +59,14 @@ __PACKAGE__->config(
         },
     },
 );
+
+#don't display password in debugging output
+around 'log_request_parameters' => sub {
+    my $super = shift;
+    my($c, %params) = @_;
+    $params{body}{password} = 'XXX-password-removed-XXX';
+    $c->$super(%params)
+};
 
 # Start the application
 __PACKAGE__->setup;
