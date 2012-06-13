@@ -52,6 +52,7 @@ sub load_children {
 
         push(@{ $self->{children} }, $part) if $part;
         $self->root_message->part_id_to_part->{$part->part_id} = $part;
+        if (defined $part->body_id) { $self->root_message->body_id_to_part->{$part->body_id} = $part; }
     }
 
     return;
@@ -159,6 +160,26 @@ sub part_id {
 
     return $self->bodystruct->id;
 }
+
+=head2 body_id()
+
+returns the body_id of the part or undef
+
+=cut
+
+sub body_id {
+    my ($self) = @_;
+
+    return unless defined $self->bodystruct->{bodyid};
+    return unless ($self->bodystruct->{bodyid} ne 'NIL');
+
+    my $body_id = $self->bodystruct->{bodyid};
+    $body_id =~ s/^\<//xm;
+    $body_id =~ s/\>$//xm;
+
+    return $body_id;
+}
+
 
 sub charset {
     my ($self) = @_;

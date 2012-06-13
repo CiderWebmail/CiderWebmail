@@ -21,6 +21,7 @@ sub load_children {
     push(@{ $self->{children} }, $part);
     $self->root_message->part_id_to_part->{$part->part_id} = $part;
     $self->root_message->part_id_to_part->{root} = $self;
+    if (defined $part->body_id) { $self->root_message->body_id_to_part->{$part->body_id} = $part; }
 
     return;
 }

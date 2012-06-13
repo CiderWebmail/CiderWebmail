@@ -13,7 +13,9 @@ has uid             => (is => 'ro', isa => 'Int');
 has root_part       => (is => 'rw', isa => 'Object');
 has loaded          => (is => 'rw', isa => 'Int', default => 0);
 
-has part_id_to_part => (is => 'rw', isa => 'HashRef', default => sub { {} });
+#we use both part_id's and body_id's because not every part has a body_id but we need a unique identifier for every part
+has part_id_to_part => (is => 'rw', isa => 'HashRef', default => sub { {} }); #1.2.3 style part_ids according to the bodystructure
+has body_id_to_part => (is => 'rw', isa => 'HashRef', default => sub { {} }); #cid:<bodyid> style URIs in text/html parts
 
 sub BUILD {
     my ($self) = @_;
@@ -51,6 +53,24 @@ sub get_part_by_part_id {
     }
 
     return $self->part_id_to_part->{$o->{part_id}};
+}
+
+
+=head2 get_part_by_body_id({ body_id => $body_id })
+
+takes the body_id (cid) of a message part and returns the
+CiderWebmail::Part object of a bodypart of this message
+
+=cut
+
+sub get_part_by_body_id {
+    my ($self, $o) = @_;
+
+    unless (defined $self->body_id_to_part->{$o->{body_id}}) {
+        croak("get_part_by_body_id() failed for body part $o->{body_id}");
+    }
+
+    return $self->body_id_to_part->{$o->{body_id}};
 }
 
 sub render {

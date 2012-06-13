@@ -19,6 +19,7 @@ sub load_children {
 
         push(@{ $self->parent_message->{children} }, $part) if $part;
         $self->root_message->part_id_to_part->{$part->part_id} = $part;
+        if (defined $part->body_id) { $self->root_message->body_id_to_part->{$part->body_id} = $part; }
     }
 
     return;
