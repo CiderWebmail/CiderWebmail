@@ -32,7 +32,7 @@ sub render_stub {
 
     carp('no part set') unless defined $self->body;
 
-    return $self->c->view->render_template({ c => $self->c, template => 'Stub.xml', stash => { part => $self } });
+    return $self->c->view->render_template({ c => $self->c, template => 'ImageStub.xml', stash => { part => $self } });
 }
 
 =head2 supported_type()
