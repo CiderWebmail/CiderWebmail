@@ -19,8 +19,8 @@ sub load_children {
 
     my $part = $self->handler({ bodystruct => $self->bodystruct });
     push(@{ $self->{children} }, $part);
-    $self->root_message->parts->{$part->id} = $part;
-    $self->root_message->parts->{root} = $self;
+    $self->root_message->part_id_to_part->{$part->part_id} = $part;
+    $self->root_message->part_id_to_part->{root} = $self;
 
     return;
 }
@@ -29,7 +29,7 @@ sub type {
     return 'x-ciderwebmail/rootmessage';
 }
 
-sub id {
+sub part_id {
     return 'root';
 }
 

@@ -18,7 +18,7 @@ sub load_children {
         my $part = $self->handler({ bodystruct => $_ });
 
         push(@{ $self->parent_message->{children} }, $part) if $part;
-        $self->root_message->parts->{$part->id} = $part;
+        $self->root_message->part_id_to_part->{$part->part_id} = $part;
     }
 
     return;

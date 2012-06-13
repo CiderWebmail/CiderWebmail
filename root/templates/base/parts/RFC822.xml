@@ -4,13 +4,13 @@
 
         <p class="message_actions">
             <span class="message_main_actions">
-                <a class="reply" tal:attributes="href string:${uri_reply}/${message/id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
-                <a class="reply_all" tal:attributes="href string:${uri_reply_all}/${message/id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_all.png" alt=""/> <span i18n:translate="">Reply All</span></a>
-                <a class="forward" tal:attributes="href string:${uri_forward}/${message/id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
+                <a class="reply" tal:attributes="href string:${uri_reply}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
+                <a class="reply_all" tal:attributes="href string:${uri_reply_all}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_all.png" alt=""/> <span i18n:translate="">Reply All</span></a>
+                <a class="forward" tal:attributes="href string:${uri_forward}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
             </span>
             <span class="message_detail_actions">
                 <a tal:attributes="href uri_view_source" onclick="return open_in_new_window(this)" i18n:translate="">View source</a>
-                <a tal:attributes="href string:${uri_get_header}/${message/id}" onclick="return open_in_new_window(this)" i18n:translate="">View header</a>
+                <a tal:attributes="href string:${uri_get_header}/${message/part_id}" onclick="return open_in_new_window(this)" i18n:translate="">View header</a>
             </span>
         </p>
 

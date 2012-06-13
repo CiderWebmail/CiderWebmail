@@ -6,14 +6,14 @@ use CiderWebmail::Part;
 
 use Carp qw/ croak /;
 
-has c           => (is => 'ro', isa => 'Object');
-has mailbox     => (is => 'ro', isa => 'Str');
-has uid         => (is => 'ro', isa => 'Int');
+has c               => (is => 'ro', isa => 'Object');
+has mailbox         => (is => 'ro', isa => 'Str');
+has uid             => (is => 'ro', isa => 'Int');
 
-has root_part   => (is => 'rw', isa => 'Object');
-has loaded      => (is => 'rw', isa => 'Int', default => 0);
+has root_part       => (is => 'rw', isa => 'Object');
+has loaded          => (is => 'rw', isa => 'Int', default => 0);
 
-has parts       => (is => 'rw', isa => 'HashRef', default => sub { {} });
+has part_id_to_part => (is => 'rw', isa => 'HashRef', default => sub { {} });
 
 sub BUILD {
     my ($self) = @_;
@@ -36,20 +36,21 @@ sub create_message_stubs {
     return;
 }
 
-=head2 get_part_by_id
+=head2 get_part_by_part_id({ part_id => '1.2.3' })
 
-returns the CiderWebmail::Part object of a bodypart of this message
+takes the part_id of a message part and returns the CiderWebmail::Part
+object of a bodypart of this message
 
 =cut
 
-sub get_part_by_id {
+sub get_part_by_part_id {
     my ($self, $o) = @_;
 
-    unless (defined $self->parts->{$o->{part_id}}) {
+    unless (defined $self->part_id_to_part->{$o->{part_id}}) {
         croak("get_part() failed for part $o->{part_id}");
     }
 
-    return $self->parts->{$o->{part_id}};
+    return $self->part_id_to_part->{$o->{part_id}};
 }
 
 sub render {
