@@ -10,7 +10,7 @@ use Carp qw/ croak /;
 
 extends 'CiderWebmail::Part';
 has renderable          => (is => 'rw', isa => 'Bool', default => 0 );
-has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 );
+has render_as_stub      => (is => 'rw', isa => 'Bool', default => 1 );
 has message             => (is => 'rw', isa => 'Bool', default => 0 );
 has attachment          => (is => 'rw', isa => 'Bool', default => 1 );
 

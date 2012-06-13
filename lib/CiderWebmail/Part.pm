@@ -18,7 +18,10 @@ has bodystruct     => (is => 'ro', isa => 'Object'); #Mail::IMAPClient::BodyStru
 has children       => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
 
 has renderable          => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
-has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+
+#stubs are used to render things that get fetched later (like images that get fetched by clicking on a [+] symbol or iframes for html rendering
+has render_as_stub      => (is => 'rw', isa => 'Bool', default => 1 ); #override me! 
+
 has message             => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
 has attachment          => (is => 'rw', isa => 'Bool', default => sub {
     my ($self) = @_;
