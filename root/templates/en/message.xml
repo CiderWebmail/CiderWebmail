@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:tal="http://purl.org/petal/1.0/" xmlns:metal="http://xml.zope.org/namespaces/metal">
+<html xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
     <head>
         <title tal:content="message/subject" metal:fill-slot="title">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css" />

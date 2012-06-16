@@ -4,6 +4,7 @@
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="CiderWebmail"
+    metal:use-macro="layout.xml#layout"
     >
     <head>
         <title metal:fill-slot="title" tal:content="message/subject">Message</title>
