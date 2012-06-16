@@ -1,11 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:tal="http://purl.org/petal/1.0/" xmlns:metal="http://xml.zope.org/namespaces/metal">
+<!DOCTYPE html>
+<html xmlns:tal="http://purl.org/petal/1.0/" xmlns:metal="http://xml.zope.org/namespaces/metal">
     <head>
         <title tal:content="message/subject" metal:fill-slot="title">Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css" />
         <script tal:attributes="src string:${uri_static}/scripts/mail/message.js" type="text/javascript" metal:fill-slot="scripts" />
     </head>
-    <body tal:omit-tag="" metal:fill-slot="content">
-        <div tal:omit-tag=""><div tal:replace="structure message/render" /></div>
+    <body>
+        <div tal:omit-tag="" metal:fill-slot="content"><div tal:replace="structure message/render" /></div>
     </body>
 </html>

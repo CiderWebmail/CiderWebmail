@@ -20,7 +20,7 @@ Catalyst View.
 
 =cut
 
-__PACKAGE__->config(input => 'XHTML', output => 'XHTML');
+__PACKAGE__->config(input => 'HTML', output => 'HTML');
 
 sub process {
     my ($self, $c) = @_;
@@ -43,8 +43,6 @@ sub process {
         condcomment_lt_ie7_start => '<!--[if lt IE 7]>',
         condcommentend           => '<![endif]-->',
     });
-
-    $c->res->content_type('text/xml') if ($c->req->param('layout') or '') eq 'ajax';
 
     return $self->SUPER::process($c);
 }

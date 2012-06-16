@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html
-    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -11,7 +10,7 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" metal:fill-slot="css"/>
         <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/message.js" metal:fill-slot="scripts" />
     </head>
-    <body metal:fill-slot="content" tal:omit-tag="">
-        <div tal:omit-tag=""><div tal:replace="structure message/render"/></div>
+    <body>
+        <div metal:fill-slot="content" tal:omit-tag=""><div tal:replace="structure message/render"/></div>
     </body>
 </html>

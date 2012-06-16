@@ -136,8 +136,6 @@ sub send_foldertree_update {
     $c->stash->{folder_data}{selected} = 'selected';
     $c->stash->{template} = 'folder_tree.xml';
 
-    $c->res->content_type('text/xml');
-
     return;
 }
 

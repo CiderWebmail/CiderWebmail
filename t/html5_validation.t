@@ -8,7 +8,7 @@ use WWW::Mechanize;
 
 use English qw(-no_match_vars);
 
-return plan skip_all => 'Set VALIDATOR_URI to a server runnint the w3c validator for xhml validation tests' unless $ENV{VALIDATOR_URI};
+return plan skip_all => 'Set VALIDATOR_URI to a server running the w3c validator for HTML5 validation tests' unless $ENV{VALIDATOR_URI};
 
 my $uname = getpwuid $UID;
 
@@ -44,7 +44,7 @@ for my $link (@links) {
         }
     );
 
-    $v->content_contains('This document was successfully checked as', "XHTML validation failed for ".$link->url);
+    $v->content_contains('This document was successfully checked as', "HTML5 validation OK for ".$link->url);
 }
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
