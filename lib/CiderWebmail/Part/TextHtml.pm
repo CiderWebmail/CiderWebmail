@@ -2,13 +2,14 @@ package CiderWebmail::Part::TextHtml;
 
 use Moose;
 
-use HTML::Cleaner;
+use HTML::Defang qw/ DEFANG_NONE DEFANG_ALWAYS DEFANG_DEFAULT /;
+use HTML::Tidy;
 
-use Carp qw/ croak /;
+use Carp qw/ croak carp /;
 
 extends 'CiderWebmail::Part';
 has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
-has render_as_stub      => (is => 'rw', isa => 'Bool', default => 0 );
+has render_as_stub      => (is => 'rw', isa => 'Bool', default => 1 );
 has message             => (is => 'rw', isa => 'Bool', default => 0 );
 
 =head2 render()
@@ -22,17 +23,23 @@ sub render {
 
     carp('no part set') unless defined $self->body;
 
-    my $cleaner = HTML::Cleaner->new();
+    my $tidy = HTML::Tidy->new( { tidy_mark => 0 } );
 
-    my $cid_uris = {};
-    #TODO cids
-    #while (my ($cid, $part_path) = each(%{ $self->parent_message->cid_to_part })) {
-    #    $cid_uris->{$cid} = $self->c->uri_for("/mailbox/".$self->mailbox."/".$self->uid."/attachment/".$part_path);
-    #}
+    my $defang = HTML::Defang->new(
+        context => $self, #CiderWebmail::Part::TextHtml object
+        fix_mismatched_tags => 1,
+        url_callback        => \&_defang_url_callback,
+    );
 
-    #TODO ugly hack... HTML Cleaner should never have to know about mime content ids etc
-    my $output = $cleaner->process({ input => $self->body, mime_cids => $cid_uris });
-    return $self->c->view->render_template({ c => $self->c, template => 'TextHtml.xml', stash => { part_content => $output } });
+    return $defang->defang($tidy->clean($self->body));
+}
+
+sub render_stub {
+    my ($self) = @_;
+
+    carp('no part set') unless defined $self->body;
+
+    return $self->c->view->render_template({ c => $self->c, template => 'TextHtmlStub.xml', stash => { part => $self } });
 }
 
 =head2 supported_type()
@@ -43,6 +50,26 @@ returns the cntent type this plugin can handle
 
 sub supported_type {
     return 'text/html';
+}
+
+#internals for HTML::Defang follow
+sub _defang_url_callback {
+    #part is the CiderWebmail::Part::TextHtml object
+    my ($part, $Defang, $lcTag, $lcAttrKey, $AttrValR, $AttributeHash, $HtmlR) = @_;
+
+    if ($lcTag eq 'img') {
+        #TODO maybe allow the user select if they want to include external images - right now we only allow images contained in the e-mail
+        if ($$AttrValR =~ m/^cid:(.*)$/xmi) {
+            if ($part->root_message->get_part_by_body_id({ body_id => $1 })) {
+                $$AttrValR = $part->root_message->get_part_by_body_id({ body_id => $1 })->uri_download;
+
+                #we found the bodypart and rewrote it to our download_uri, whitelist this src attribute otherwise Defang would remove it anyway
+                return DEFANG_NONE;
+            }
+        }
+    }
+
+    return DEFANG_ALWAYS;
 }
 
 1;

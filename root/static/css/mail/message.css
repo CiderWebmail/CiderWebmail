@@ -90,6 +90,14 @@ a.load_subpart {
     padding: 3px;
 }
 
+.html_message iframe {
+    width: 100%;
+    height: 600px; /* this will get replace by resize_iframe() javascript if JS is enabled */
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
 .forwarded {
     margin: 0px;
     padding: 1px;

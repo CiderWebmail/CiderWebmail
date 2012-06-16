@@ -28,14 +28,22 @@ my $uname = getpwuid $UID;
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'multipart-alternative-TestMail-'.$unix_time });
 
+#verify that we only display the text/html part since it is the preferred_alternative
+$mech->content_lacks('TestMail-PLAIN-'.$unix_time, 'content lacks text/plain part');
+
 xpath_test {
     my ($tx) = @_;
-    $tx->ok( "//div[\@class='html_message renderable']", sub {
-        $_->is( './p[1]/span', 'TestMail-HTML-'.$unix_time, 'p/span ok' );
-    }, 'check html' );
+    $tx->ok("//div[\@class='html_message renderable']/iframe", sub { #check for iframe itself
+        $_->ok( './@src', qr{\d+/part/render/\d+}, sub { #check for render url
+            my $iframe_src = $_->node->textContent;
+            $mech->get($iframe_src);
+
+            $mech->content_contains("<b>TestMail-HTML-$unix_time</b>", 'verify HTML in iframe');
+        }, 'found iframe render url');
+    }, 'found iframe for html content' );
 };
 
-$mech->content_lacks('TestMail-PLAIN-'.$unix_time, 'content lacks text/plain part');
+
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Amultipart-alternative-TestMail-$unix_time\z});

@@ -1,0 +1,3 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" class="html_message renderable">
+    <iframe onload="resize_iframe(this);" tal:attributes="src string:${part/uri_render}" />
+</div>
