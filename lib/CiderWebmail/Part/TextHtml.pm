@@ -31,6 +31,9 @@ sub render {
         url_callback        => \&_defang_url_callback,
     );
 
+    #https://developer.mozilla.org/en/Security/CSP/Using_Content_Security_Policy
+    $self->c->response->headers->header('X-Content-Security-Policy' => "default-src 'self'");
+
     return $defang->defang($tidy->clean($self->body));
 }
 
