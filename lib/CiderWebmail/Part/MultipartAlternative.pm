@@ -13,7 +13,9 @@ sub supported_type { return 'multipart/alternative'; }
 sub render {
     my ($self) = @_;
 
-    return $self->preferred_alternative->render;
+    return (    $self->preferred_alternative->render_as_stub ? 
+                $self->preferred_alternative->render_stub : 
+                $self->preferred_alternative->render );
 }
 
 sub preferred_alternative {
