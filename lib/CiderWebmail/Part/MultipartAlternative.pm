@@ -13,10 +13,10 @@ sub supported_type { return 'multipart/alternative'; }
 sub render {
     my ($self) = @_;
 
-    return $self->select_preferred_alternative->render;
+    return $self->preferred_alternative->render;
 }
 
-sub select_preferred_alternative {
+sub preferred_alternative {
     my ($self) = @_;
 
     return (
