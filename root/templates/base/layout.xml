@@ -30,6 +30,7 @@
                     <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/compose.png" alt="Compose new mail" /> Compose new mail</a></li>
                     <li tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/manage_folders.png" alt="Manage folders" /> Manage folders</a></li>
                     <li tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Addressbook" /> Addressbook</a></li>
+                    <li tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Manage rules" /> Manage rules</a></li>
                     <li tal:condition="true: uri_logout"><a tal:attributes="href uri_logout" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/logout.png" alt="Logout" /> Logout</a></li>
                 </ul>
                 <ul metal:use-macro="folder_tree.xml#folder_tree"/>

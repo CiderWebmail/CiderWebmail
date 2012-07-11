@@ -53,6 +53,8 @@ requires 'Text::Autoformat';
 
 requires 'IO::Socket::SSL';
 
+requires 'Net::ManageSieve';
+
 requires 'Parse::RecDescent' => '1.967009'; #https://rt.cpan.org/Public/Bug/Display.html?id=76118
 requires 'Mail::IMAPClient' => '3.31';
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="layout.xml#layout"
+    i18n:domain="CiderWebmail"
+    >
+    <head>
+        <title metal:fill-slot="title">Edit sieve script</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/managesieve.css" metal:fill-slot="css"/>
+    </head>
+    <body metal:fill-slot="content" tal:omit-tag="">
+        <h1 i18n:translate="">Edit sieve script</h1>
+        <div id="container">
+            <div tal:condition="error" tal:content="error" />
+            <form enctype="multipart/form-data" method="post" tal:attributes="action string:${uri_save}">
+                <input type="hidden" name="sieve_script_original_name" tal:attributes="value sieve_script_original_name" tal:condition="true:sieve_script_original_name" />
+                <div>
+                    <label>
+                        <span i18n:translate="">Script name:</span>
+                        <input name="sieve_script_name" tal:attributes="value sieve_script_name" />
+                    </label>
+                    <label class="text">
+                        <textarea name="sieve_script_content" tal:content="sieve_script_content"/>
+                    </label>
+                    <label>
+                        <span i18n:translate="">Active:</span>
+                        <input name="sieve_script_active" type="checkbox" value="1" checked="1" tal:condition="true:sieve_script_active" />
+                        <input name="sieve_script_active" type="checkbox" value="1" tal:condition="false:sieve_script_active" />
+                    </label> 
+                    <!-- <label>
+                        <span i18n:translate="">Delete:</span>
+                        <input name="script_delete" type="checkbox" value="1" />
+                    </label> -->
+                    <button type="submit" name="sieve_script_save" value="1" i18n:translate="">Save</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

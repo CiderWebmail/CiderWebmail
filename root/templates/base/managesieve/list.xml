@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="layout.xml#layout"
+    i18n:domain="CiderWebmail"
+    >
+    <head>
+        <title metal:fill-slot="title" i18n:translate="">Managesieve</title>
+    </head>
+    <body metal:fill-slot="content" tal:omit-tag="">
+        <h1 i18n:translate="">Managesieve</h1>
+        <div id="container">
+            <table id="managesieve_list" class="managesieve_list">
+                <tr>
+                    <th i18n:translate="">Script name</th>
+                    <th i18n:translate="">Status</th>
+                    <th />
+                    <th />
+                </tr>
+                <tr tal:repeat="script each: sieve_scripts" tal:attributes="script-name script/key">
+                    <td tal:content="script/key" />
+                    <td tal:condition="true: script/val/active">active</td>
+                    <td tal:condition="false: script/val/active">inactive</td>
+                    <td><a tal:attributes="href script/val/uri_edit">edit</a></td>
+                    <td><a tal:attributes="href script/val/uri_delete">delete</a></td>
+                </tr>
+            </table>
+
+            <a tal:attributes="href uri_add">Add script</a>
+        </div>
+    </body>
+</html>

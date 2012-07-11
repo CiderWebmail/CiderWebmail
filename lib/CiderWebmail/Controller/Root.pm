@@ -72,6 +72,7 @@ sub auto : Private {
                 uri_mailboxes   => $c->uri_for('/mailboxes'),
                 uri_addressbook => $c->uri_for('/addressbook'),
                 uri_logout      => $c->uri_for('/logout'),
+                uri_managesieve => $c->uri_for('/managesieve'),
             });
 
             return 1;
