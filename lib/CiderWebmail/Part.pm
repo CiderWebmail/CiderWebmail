@@ -18,7 +18,10 @@ has bodystruct     => (is => 'ro', isa => 'Object'); #Mail::IMAPClient::BodyStru
 has children       => (is => 'rw', isa => 'ArrayRef', default => sub { [] });
 
 has renderable          => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
-has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
+
+#stubs are used to render things that get fetched later (like images that get fetched by clicking on a [+] symbol or iframes for html rendering
+has render_as_stub      => (is => 'rw', isa => 'Bool', default => 1 ); #override me! 
+
 has message             => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
 has attachment          => (is => 'rw', isa => 'Bool', default => sub {
     my ($self) = @_;
@@ -48,7 +51,8 @@ sub load_children {
         my $part = $self->handler({ bodystruct => $_ });
 
         push(@{ $self->{children} }, $part) if $part;
-        $self->root_message->parts->{$part->id} = $part;
+        $self->root_message->part_id_to_part->{$part->part_id} = $part;
+        if (defined $part->body_id) { $self->root_message->body_id_to_part->{$part->body_id} = $part; }
     }
 
     return;
@@ -83,7 +87,7 @@ unless body({ raw => 1}) is specified converting the body to utf-8 will be attem
 sub body {
     my ($self, $o) = @_;
 
-    my $body = $self->c->model('IMAPClient')->bodypart_as_string($self->c, { mailbox => $self->mailbox, uid => $self->uid, part => $self->id });
+    my $body = $self->c->model('IMAPClient')->bodypart_as_string($self->c, { mailbox => $self->mailbox, uid => $self->uid, part => $self->part_id });
 
     if (defined($self->bodystruct->{bodyenc}) and (lc($self->bodystruct->{bodyenc}) eq 'base64')) {
         $body = decode_base64($body);
@@ -145,17 +149,37 @@ sub _decode_body {
     return $part_string;
 }
 
-=head2 id()
+=head2 part_id()
 
-returns the ID of the part
+returns the part_id of the part
 
 =cut
 
-sub id {
+sub part_id {
     my ($self) = @_;
 
     return $self->bodystruct->id;
 }
+
+=head2 body_id()
+
+returns the body_id of the part or undef
+
+=cut
+
+sub body_id {
+    my ($self) = @_;
+
+    return unless defined $self->bodystruct->{bodyid};
+    return unless ($self->bodystruct->{bodyid} ne 'NIL');
+
+    my $body_id = $self->bodystruct->{bodyid};
+    $body_id =~ s/^\<//xm;
+    $body_id =~ s/\>$//xm;
+
+    return $body_id;
+}
+
 
 sub charset {
     my ($self) = @_;
@@ -382,7 +406,7 @@ returns an http url to access the part
 sub uri_download {
     my ($self) = @_;
 
-    return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/download/' . $self->id;
+    return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/download/' . $self->part_id;
 }
 
 =head2 uri_render
@@ -394,7 +418,7 @@ returns an http url to render the part
 sub uri_render {
     my ($self) = @_;
 
-    return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/render/' . $self->id;
+    return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/render/' . $self->part_id;
 }
 
 

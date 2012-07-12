@@ -30,10 +30,20 @@ $mech->follow_link_ok({ text => 'htmltest-'.$unix_time });
 
 xpath_test {
     my ($tx) = @_;
-    $tx->ok( "//div[\@class='html_message renderable']", sub {
-        $_->is( './p[1]/span', 'This is an HTML testmail.', 'p/span ok' );
-    }, 'check html' );
+    $tx->ok("//div[\@class='html_message renderable']/iframe", sub { #check for iframe itself
+        $_->ok( './@src', qr{\d+/part/render/\d+}, sub { #check for render url
+            my $iframe_src = $_->node->textContent;
+            $mech->get($iframe_src);
+
+            #at this point $mech->content returnes the content of the iframe
+            
+        }, 'found iframe render url');
+    }, 'found iframe for html content' );
 };
+
+
+#TODO more complicated HTML mail
+$mech->content_contains('<p style="margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;"><b>This is an HTML testmail.</b></p>', 'HTML content in iframe');
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Ahtmltest-$unix_time\z});

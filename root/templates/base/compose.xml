@@ -17,8 +17,8 @@
                 <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
                     <fieldset>
                         <legend>Message</legend>
-                        <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value string:${forward/root_message/uid}/${forward/id}"/>
-                        <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/root_message/uid}/${in_reply_to/id}"/>
+                        <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value string:${forward/root_message/uid}/${forward/part_id}"/>
+                        <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/root_message/uid}/${in_reply_to/part_id}"/>
                         <label class="from">
                             <span i18n:translate="">From:</span>
                             <input name="from" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>

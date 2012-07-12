@@ -87,7 +87,9 @@ for my $link (@links) {
     my @render_links = $mech->find_all_links(url_regex => qr{http://localhost/.*/render/.*});
     foreach(@render_links) {
         $mech->get_ok($_->url, "Fetch ".$_->url);
-        $mech->content_like(qr!part/download!, 'found download link');
+        
+        #TODO we now generate /render/ urls for iframe content - no download links in there
+        #$mech->content_like(qr!part/download!, 'found download link');
     }
 }
 

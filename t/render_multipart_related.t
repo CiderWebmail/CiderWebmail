@@ -30,12 +30,22 @@ $mech->follow_link_ok({ text => 'multipart-related-TestMail-'.$unix_time });
 
 xpath_test {
     my ($tx) = @_;
-    $tx->ok( "//div[\@class='html_message renderable']", sub {
-        $_->is( './p[1]/span', 'TestMail-HTML-'.$unix_time, 'p/span ok html part' );
-    }, 'check html' );
 
     $tx->is( "//div[\@class='renderable monospace']", 'TestMail-PLAIN-'.$unix_time, 'p/span ok plain part' );
 };
+
+xpath_test {
+    my ($tx) = @_;
+    $tx->ok("//div[\@class='html_message renderable']/iframe", sub { #check for iframe itself
+        $_->ok( './@src', qr{\d+/part/render/\d+}, sub { #check for render url
+            my $iframe_src = $_->node->textContent;
+            $mech->get($iframe_src);
+
+            $mech->content_contains("TestMail-HTML-$unix_time", 'verify HTML in iframe');
+        }, 'found iframe render url');
+    }, 'found iframe for html content' );
+};
+
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @messages = $mech->find_all_links( text_regex => qr{\Amultipart-related-TestMail-$unix_time\z});

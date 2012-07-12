@@ -14,6 +14,10 @@ function load_subpart(target) {
     }).get({ 'layout': 'ajax' });
 }
 
+function resize_iframe(target) {
+    target.style.height = (target.contentWindow.document.body.scrollHeight + 25) + 'px';
+}
+
 add_event_listener('keyup', function (event) {
         if (event.target && event.target.nodeType == 1 && (event.target.nodeName.toLowerCase() == 'input' || event.target.nodeName == 'textarea'))
             return;

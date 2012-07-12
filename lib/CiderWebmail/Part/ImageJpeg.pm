@@ -10,7 +10,7 @@ use Carp qw/ croak /;
 
 extends 'CiderWebmail::Part';
 has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
-has render_by_default   => (is => 'rw', isa => 'Bool', default => 0 );
+has render_as_stub      => (is => 'rw', isa => 'Bool', default => 1 );
 has message             => (is => 'rw', isa => 'Bool', default => 0 );
 
 =head2 render()
@@ -32,7 +32,7 @@ sub render_stub {
 
     carp('no part set') unless defined $self->body;
 
-    return $self->c->view->render_template({ c => $self->c, template => 'Stub.xml', stash => { part => $self } });
+    return $self->c->view->render_template({ c => $self->c, template => 'ImageStub.xml', stash => { part => $self } });
 }
 
 =head2 supported_type()

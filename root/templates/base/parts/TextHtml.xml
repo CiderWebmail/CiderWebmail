@@ -1,1 +1,3 @@
-<div xmlns:tal="http://purl.org/petal/1.0/" class="html_message renderable" tal:content="structure part_content">HTML Content</div>
+<div xmlns:tal="http://purl.org/petal/1.0/" class="html_message renderable">
+    <iframe tal:attributes="src string:${part/uri_download}" />
+</div>

@@ -5,7 +5,7 @@ use List::Util qw(first);
 
 extends 'CiderWebmail::Part';
 has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
-has render_by_default   => (is => 'rw', isa => 'Bool', default => 1 );
+has render_as_stub      => (is => 'rw', isa => 'Bool', default => 0 );
 has message             => (is => 'rw', isa => 'Bool', default => 0 );
 
 sub supported_type { return 'multipart/alternative'; }
@@ -13,10 +13,12 @@ sub supported_type { return 'multipart/alternative'; }
 sub render {
     my ($self) = @_;
 
-    return $self->select_preferred_alternative->render;
+    return (    $self->preferred_alternative->render_as_stub ? 
+                $self->preferred_alternative->render_stub : 
+                $self->preferred_alternative->render );
 }
 
-sub select_preferred_alternative {
+sub preferred_alternative {
     my ($self) = @_;
 
     return (
