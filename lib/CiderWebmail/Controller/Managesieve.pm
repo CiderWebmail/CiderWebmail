@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 use feature 'switch';
 
-use Carp qw/ confess /;
+use Carp qw/ confess croak /;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -17,11 +17,18 @@ load sieve script list from server
 sub setup : Chained('/') PathPart('managesieve') CaptureArgs(0) {
     my ($self, $c) = @_;
 
+    croak("managesieve support disable in configuration") unless ($c->config->{managesieve}->{mode} eq 'on');
+
     CiderWebmail::Util::add_foldertree_to_stash($c);
 
     $c->stash->{uri_add} = $c->uri_for('edit');
 
     my $sieve = $c->model('Managesieve')->new();
+
+    CiderWebmail::Model::Managesieve->config({
+        host => $c->config->{managesieve}->{host},
+        port => $c->config->{managesieve}->{port},
+    });
 
     $sieve->login({
         username => $c->session->{'username'},

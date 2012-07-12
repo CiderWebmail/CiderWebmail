@@ -5,6 +5,17 @@ server:
     host: localhost
     port: 143
 
+
+#Managesieve configuration, this requires an mailserver with managesieve support
+#for example dovecot with sieve and mangesieve support compiled in
+#
+#to enable managesieve set mode to 'on'
+managesieve:
+    mode: off
+    host: localhost
+    port: 4190
+
+
 #default language for the frontend to use
 language: en
 

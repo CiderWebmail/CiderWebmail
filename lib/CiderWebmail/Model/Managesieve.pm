@@ -12,23 +12,14 @@ extends 'Catalyst::Model';
 has '_managesieve' => (is => 'rw', isa => 'Object');
 has 'username' => (is => 'rw', isa => 'Str');
 
-__PACKAGE__->config(
-    host => 'localhost',
-    port => '4190',
-);
-
-sub BUILD {
-    my ($self) = @_;
-
-    #TODO error handling after errorhandling branch merge
-    $self->_managesieve(Net::ManageSieve->new($self->config->{host}, Port => $self->config->{port}, on_fail => 'die' ));
-};
-
 sub login {
     my ($self, $o) = @_;
 
     croak 'Need username to attempt managesieve login' unless $o->{username};
     croak 'Need password to attempt managesieve login' unless $o->{password};
+
+    #TODO error handling after errorhandling branch merge
+    $self->_managesieve(Net::ManageSieve->new($self->config->{host}, Port => $self->config->{port}, on_fail => 'die' ));
 
     $self->_managesieve->login($o->{username}, $o->{password});
 }
