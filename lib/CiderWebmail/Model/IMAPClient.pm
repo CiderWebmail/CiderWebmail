@@ -1,8 +1,10 @@
 package CiderWebmail::Model::IMAPClient;
 
-use strict;
-use warnings;
 use parent 'Catalyst::Model';
+
+use Moose;
+
+has _imapclient => (is => 'rw');
 
 use MIME::Parser;
 use Mail::IMAPClient::MessageSet;
@@ -46,6 +48,14 @@ sub new {
     return $self;
 }
 
+sub ACCEPT_CONTEXT {
+    my ($self, $c) = @_;
+
+    $self->_imapclient($c->stash->{imapclient});
+
+    return $self;
+}
+
 
 =head2 _die_on_error($c)
 
@@ -57,9 +67,8 @@ this sould be called after every command sent to the imap server.
 sub _die_on_error {
     my ($self, $c) = @_;
   
-    if ( $c->stash->{imapclient}->LastError ) {
-        
-        my $error = $c->stash->{imapclient}->LastError;
+    if ( $self->_imapclient->LastError ) {
+        my $error = $self->_imapclient->LastError;
         confess $error if $error;
     }
 
@@ -75,8 +84,8 @@ disconnect from IMAP Server, if connected
 sub disconnect {
     my ($self, $c) = @_;
 
-    if (defined($c->stash->{imapclient}) && $c->stash->{imapclient}->IsConnected ) {
-        $c->stash->{imapclient}->disconnect();
+    if (defined($self->_imapclient) && $self->_imapclient->IsConnected ) {
+        $self->_imapclient->disconnect();
     }
 
     return;
@@ -93,7 +102,7 @@ sub separator {
     my ($self, $c) = @_;
 
     unless(defined $c->stash->{separator}) {
-        $c->stash->{separator} = $c->stash->{imapclient}->separator;
+        $c->stash->{separator} = $self->_imapclient->separator;
         $self->_die_on_error($c);
     }
 
@@ -110,7 +119,7 @@ sub folder_tree {
     my ($self, $c) = @_;
     
     # sorting folders makes sure branches are created before leafs
-    my @folders = sort folder_sort $c->stash->{imapclient}->folders;
+    my @folders = sort folder_sort $self->_imapclient->folders;
     $self->_die_on_error($c);
 
 
@@ -159,8 +168,8 @@ sub select {
 
     croak 'No mailbox to select' unless $o->{mailbox};
 
-    unless ( $c->stash->{imapclient}->Folder and $c->stash->{imapclient}->Folder eq $o->{mailbox} ) {
-        $c->stash->{imapclient}->select( $o->{mailbox} );
+    unless ( $self->_imapclient->Folder and $self->_imapclient->Folder eq $o->{mailbox} ) {
+        $self->_imapclient->select( $o->{mailbox} );
         $self->_die_on_error($c);
     }
 
@@ -178,7 +187,7 @@ sub message_count {
 
     croak unless $o->{mailbox};
 
-    return $c->stash->{imapclient}->message_count($o->{mailbox});
+    return $self->_imapclient->message_count($o->{mailbox});
 }
 
 =head2 unseen_count($c, { mailbox => $mailbox })
@@ -192,7 +201,7 @@ sub unseen_count {
 
     croak unless $o->{mailbox};
 
-    return $c->stash->{imapclient}->unseen_count($o->{mailbox});
+    return $self->_imapclient->unseen_count($o->{mailbox});
 }
 
 =head2 check_sort($sort)
@@ -239,7 +248,7 @@ sub get_folder_uids {
     #TODO empty result
     my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8' );
 
-    return $c->stash->{imapclient}->sort(@sort, @search);
+    return $self->_imapclient->sort(@sort, @search);
 }
 
 =head2 get_headers_hash($c, { uids => [qw/ 1 .. 10 /], sort => [qw/ date /], headers => [qw/ date subject /], mailbox => 'INBOX' })
@@ -288,7 +297,7 @@ sub get_headers_hash {
         #TODO allow custom search?
         #TODO empty folder
         #TODO shortcut for fetch ALL
-        $uids = $c->stash->{imapclient}->search("ALL");
+        $uids = $self->_imapclient->search("ALL");
     }
 
     if ($o->{sort}) {
@@ -300,7 +309,7 @@ sub get_headers_hash {
         }
 
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8', 'ALL' );
-        $uids = $c->stash->{imapclient}->sort(@sort);
+        $uids = $self->_imapclient->sort(@sort);
         return [] unless @$uids;
     }
 
@@ -308,7 +317,7 @@ sub get_headers_hash {
     #push(@items, "BODYSTRUCTURE");
     push(@items, "FLAGS");
     push(@items, "BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)]");
-    my $hash = $c->stash->{imapclient}->fetch_hash($uids, @items);
+    my $hash = $self->_imapclient->fetch_hash($uids, @items);
 
     $self->_die_on_error($c);
 
@@ -320,7 +329,7 @@ sub get_headers_hash {
         my $headers;
 
         if (defined($self->{_imapclient_unescape_workaround})) {
-            $headers = $c->stash->{imapclient}->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
+            $headers = $self->_imapclient->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
         } else {
             $headers = $entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"};
         }
@@ -394,10 +403,10 @@ sub search {
             check_sort($_);
         }
         my @sort = ( '('.join(" ", @{ $o->{sort} }).')', 'UTF-8' );
-        @uids = $c->stash->{imapclient}->sort(@sort, @search);
+        @uids = $self->_imapclient->sort(@sort, @search);
     }
     else {
-        @uids = $c->stash->{imapclient}->search(@search);
+        @uids = $self->_imapclient->search(@search);
     }
     $self->_die_on_error($c);
 
@@ -444,7 +453,7 @@ sub all_headers {
     if (defined $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_parsed_header}) {
         $fetched_headers = $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_parsed_header};
     } else {
-        $fetched_headers = $c->stash->{imapclient}->parse_headers($o->{uid}, "ALL");
+        $fetched_headers = $self->_imapclient->parse_headers($o->{uid}, "ALL");
         $c->stash->{requestcache}->{$o->{mailbox}}->{$o->{uid}}->{_parsed_header} = $fetched_headers;
     }
 
@@ -509,7 +518,7 @@ sub mark_read {
     croak unless $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} });
-    $c->stash->{imapclient}->set_flag("Seen", $o->{uid});
+    $self->_imapclient->set_flag("Seen", $o->{uid});
 
     return;
 }
@@ -527,7 +536,7 @@ sub mark_answered {
     croak unless $o->{uid};
 
     $self->select($c, { mailbox => $o->{mailbox} });
-    $c->stash->{imapclient}->set_flag("Answered", $o->{uid});
+    $self->_imapclient->set_flag("Answered", $o->{uid});
 
     return;
 }
@@ -546,7 +555,7 @@ sub bodypart_as_string {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    my $bodypart_string = $c->stash->{imapclient}->bodypart_string( $o->{uid}, $o->{part} );
+    my $bodypart_string = $self->_imapclient->bodypart_string( $o->{uid}, $o->{part} );
     $self->_die_on_error($c);
 
     return $bodypart_string;
@@ -568,7 +577,7 @@ sub get_bodystructure {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    my $bodystructure = $c->stash->{imapclient}->get_bodystructure( $o->{uid} );
+    my $bodystructure = $self->_imapclient->get_bodystructure( $o->{uid} );
     $self->_die_on_error($c);
 
     return $bodystructure;
@@ -588,7 +597,7 @@ sub message_as_string {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    my $message_string = $c->stash->{imapclient}->message_string( $o->{uid} );
+    my $message_string = $self->_imapclient->message_string( $o->{uid} );
     $self->_die_on_error($c);
 
     return $message_string;
@@ -608,10 +617,10 @@ sub delete_messages {
 
     $self->select($c, { mailbox => $o->{mailbox} } );
 
-    $c->stash->{imapclient}->delete_message($o->{uids});
+    $self->_imapclient->delete_message($o->{uids});
     $self->_die_on_error($c);
 
-    $c->stash->{imapclient}->expunge($o->{mailbox});
+    $self->_imapclient->expunge($o->{mailbox});
     $self->_die_on_error($c);
 
     return;
@@ -625,7 +634,7 @@ low level method to append an RFC822-formatted message to a mailbox
 
 sub append_message {
     my ($self, $c, $o) = @_;
-    return $c->stash->{imapclient}->append($o->{mailbox}, $o->{message_text});
+    return $self->_imapclient->append($o->{mailbox}, $o->{message_text});
 }
 
 =head2 move_message($c, { mailbox => $mailbox, target_mailbox => $target_mailbox, uid => $uid })
@@ -638,10 +647,10 @@ sub move_message {
     my ($self, $c, $o) = @_;
 
     $self->select($c, { mailbox => $o->{mailbox} });
-    $c->stash->{imapclient}->move($o->{target_mailbox}, $o->{uid}) or croak("could not move message $o->{uid} to folder $o->{mailbox}");
+    $self->_imapclient->move($o->{target_mailbox}, $o->{uid}) or croak("could not move message $o->{uid} to folder $o->{mailbox}");
     $self->_die_on_error($c);
     
-    $c->stash->{imapclient}->expunge($o->{mailbox});
+    $self->_imapclient->expunge($o->{mailbox});
     $self->_die_on_error($c);
 
     return;
@@ -658,7 +667,7 @@ sub create_mailbox {
 
     croak unless $o->{name};
 
-    return $c->stash->{imapclient}->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
+    return $self->_imapclient->create($o->{mailbox} ? join $self->separator($c), $o->{mailbox}, $o->{name} : $o->{name});
 }
 
 =head2 delete_mailbox($c, { mailbox => $mailbox })
@@ -672,7 +681,7 @@ sub delete_mailbox {
 
     croak unless $o->{mailbox};
 
-    return $c->stash->{imapclient}->delete($o->{mailbox});
+    return $self->_imapclient->delete($o->{mailbox});
 }
 
 =head1 AUTHOR
