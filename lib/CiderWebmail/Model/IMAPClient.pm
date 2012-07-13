@@ -5,6 +5,7 @@ use parent 'Catalyst::Model';
 use Moose;
 
 has _imapclient => (is => 'rw');
+has _cache => (is => 'rw', isa => 'Object', default => sub { return CiderWebmail::Cache->new(); } );
 
 use MIME::Parser;
 use Mail::IMAPClient::MessageSet;
@@ -15,6 +16,7 @@ use CiderWebmail::Message;
 use CiderWebmail::Mailbox;
 use CiderWebmail::Util;
 use CiderWebmail::Header;
+use CiderWebmail::Cache;
 
 =head1 NAME
 
@@ -465,7 +467,7 @@ sub all_headers {
         $headervalue = join("\n", @$headervalue);
         $headername = lc($headername);
         $headers->{$headername} = $headervalue;
-        $c->stash->{headercache}->set({ uid => $o->{uid}, header => $headername, data => $headervalue, mailbox => $o->{mailbox} });
+        $self->_cache->set({ uid => $o->{uid}, key => $headername, data => $headervalue, mailbox => $o->{mailbox} });
         $headers->{$headername} = $headervalue;
         $header .= join("", $headername, ": ", $headervalue, "\n");
     }
@@ -494,11 +496,11 @@ sub get_headers {
     foreach(@{ $o->{headers} }) {
         my $header = lc($_);
         #if we are missing *any* of the headers fetch all headers from the imap server and store it in the request cache
-        unless ( $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header }) ) {
+        unless ( $self->_cache->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, key => $header }) ) {
             my $fetched_headers = $self->all_headers($c, { mailbox => $o->{mailbox}, uid => $o->{uid} });
             $headers->{$header} = CiderWebmail::Header::transform({ type => $header, data => $fetched_headers->{$header}});
         } else {
-            $headers->{$header} = CiderWebmail::Header::transform({ type => $header, data => $c->stash->{headercache}->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, header => $header })});
+            $headers->{$header} = CiderWebmail::Header::transform({ type => $header, data => $self->_cache->get({ uid => $o->{uid}, mailbox => $o->{mailbox}, key => $header })});
         }
     }
 

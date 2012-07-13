@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use base 'Catalyst::Controller';
 
-use CiderWebmail::Headercache;
 use List::Util qw(reduce);
 
 use Time::HiRes;
@@ -63,7 +62,6 @@ sub auto : Private {
     if ($c->sessionid and $c->session->{'username'} and $c->req->cookie('password')) {
         $c->stash->{server} = $c->session->{server};
         if ($c->authenticate({id => $c->session->{'username'}, password => CiderWebmail::Util::decrypt($c, { string => $c->req->cookie('password')->value }) })) {
-            $c->stash( headercache => CiderWebmail::Headercache->new(c => $c) );
 
             #IMAPClient setup
             $c->stash->{imapclient}->Ranges(1);
