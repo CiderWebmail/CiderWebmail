@@ -29,7 +29,7 @@ sub create_message_stubs {
     my ($self) = @_;
 
     return if defined $self->root_part;
-    my $struct = $self->c->model('IMAPClient')->get_bodystructure($self->c, { mailbox => $self->mailbox, uid => $self->uid });
+    my $struct = $self->c->model('IMAPClient')->get_bodystructure({ mailbox => $self->mailbox, uid => $self->uid });
     $struct->bodystructure;
 
     my $part = CiderWebmail::Part::Root->new({ c => $self->c, root_message => $self, bodystruct => $struct });
@@ -87,7 +87,7 @@ Returns the first value found for the named header
 sub get_header {
     my ($self, $header) = @_;
 
-    return scalar $self->c->model('IMAPClient')->get_headers($self->c, { uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
+    return scalar $self->c->model('IMAPClient')->get_headers({ uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
 =head2 subject()
@@ -184,7 +184,7 @@ Mark the message as read
 sub mark_read {
     my ($self) = @_;
 
-    return $self->c->model('IMAPClient')->mark_read($self->c, { uid => $self->uid, mailbox => $self->mailbox });
+    return $self->c->model('IMAPClient')->mark_read({ uid => $self->uid, mailbox => $self->mailbox });
 }
 
 =head2 mark_answered()
@@ -196,7 +196,7 @@ Mark the message as answered
 sub mark_answered {
     my ($self) = @_;
 
-    return $self->c->model('IMAPClient')->mark_answered($self->c, { uid => $self->uid, mailbox => $self->mailbox });
+    return $self->c->model('IMAPClient')->mark_answered({ uid => $self->uid, mailbox => $self->mailbox });
 }
 
 
@@ -221,7 +221,7 @@ Deletes the message from the server.
 sub delete {
     my ($self) = @_;
 
-    return $self->c->model('IMAPClient')->delete_messages($self->c, { uids => [ $self->uid ], mailbox => $self->mailbox } );
+    return $self->c->model('IMAPClient')->delete_messages({ uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
 =head2 move({target_folder => 'Folder 1'})
@@ -235,7 +235,7 @@ sub move {
 
     croak('target_folder not set') unless defined $o->{target_folder};
 
-    return $self->c->model('IMAPClient')->move_message($self->c, {uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
+    return $self->c->model('IMAPClient')->move_message({uid => $self->uid, mailbox => $self->mailbox, target_mailbox => $o->{target_folder}});
 }
 
 =head2 as_string
@@ -247,7 +247,7 @@ Returns the full message source text.
 sub as_string {
     my ($self) = @_;
 
-    return $self->c->model('IMAPClient')->message_as_string($self->c, { uid => $self->uid, mailbox => $self->mailbox } );
+    return $self->c->model('IMAPClient')->message_as_string({ uid => $self->uid, mailbox => $self->mailbox } );
 }
 
 1;

@@ -21,7 +21,7 @@ open my $testmail, '<', "$Bin/testmessages/ICAL.mbox";
 my $message_text = join '', <$testmail>;
 $message_text =~ s/icaltest-TIME/icaltest-$unix_time/gm;
 
-$c->model('IMAPClient')->append_message($c, { mailbox => 'INBOX', message_text => $message_text });
+$c->model('IMAPClient')->append_message({ mailbox => 'INBOX', message_text => $message_text });
 
 my $uname = getpwuid $UID;
 

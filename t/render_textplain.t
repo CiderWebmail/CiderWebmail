@@ -22,7 +22,7 @@ my $message_text = join '', <$testmail>;
 $message_text =~ s/textmessage-TIME/textmessage-$unix_time/gm;
 $message_text =~ s/testsignature-TIME/testsignature-$unix_time/gm;
 
-$c->model('IMAPClient')->append_message($c, { mailbox => 'INBOX', message_text => $message_text });
+$c->model('IMAPClient')->append_message({ mailbox => 'INBOX', message_text => $message_text });
 
 my $uname = getpwuid $UID;
 

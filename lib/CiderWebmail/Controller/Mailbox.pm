@@ -145,7 +145,7 @@ sub create_subfolder : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
 
     if (my $name = $c->req->param('name')) {
-        $c->model('IMAPClient')->create_mailbox($c, {mailbox => $c->stash->{folder}, name => $name});
+        $c->model('IMAPClient')->create_mailbox({mailbox => $c->stash->{folder}, name => $name});
         $c->res->redirect($c->uri_for('/mailboxes'));
     }
 
@@ -167,7 +167,7 @@ Delete a folder
 sub delete : Chained('setup') PathPart {
     my ( $self, $c ) = @_;
     
-    $c->model('IMAPClient')->delete_mailbox($c, {mailbox => $c->stash->{folder}});
+    $c->model('IMAPClient')->delete_mailbox({mailbox => $c->stash->{folder}});
 
     return $c->res->redirect($c->uri_for('/mailboxes'));
 }

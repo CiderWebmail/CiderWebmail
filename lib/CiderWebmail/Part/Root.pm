@@ -84,7 +84,7 @@ sub bcc {
 
 sub body {
     my ($self) = @_;
-    my $body = $self->c->model('IMAPClient')->message_as_string($self->c, { mailbox => $self->mailbox, uid => $self->uid });
+    my $body = $self->c->model('IMAPClient')->message_as_string({ mailbox => $self->mailbox, uid => $self->uid });
 
     return $self->_decode_body({ charset => $self->charset, body => $body });
 }

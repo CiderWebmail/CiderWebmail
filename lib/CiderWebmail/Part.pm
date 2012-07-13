@@ -87,7 +87,7 @@ unless body({ raw => 1}) is specified converting the body to utf-8 will be attem
 sub body {
     my ($self, $o) = @_;
 
-    my $body = $self->c->model('IMAPClient')->bodypart_as_string($self->c, { mailbox => $self->mailbox, uid => $self->uid, part => $self->part_id });
+    my $body = $self->c->model('IMAPClient')->bodypart_as_string({ mailbox => $self->mailbox, uid => $self->uid, part => $self->part_id });
 
     if (defined($self->bodystruct->{bodyenc}) and (lc($self->bodystruct->{bodyenc}) eq 'base64')) {
         $body = decode_base64($body);

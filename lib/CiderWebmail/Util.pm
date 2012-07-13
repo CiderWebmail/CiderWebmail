@@ -29,7 +29,7 @@ sub add_foldertree_uris {
    
     croak unless defined $o->{folders};
 
-    my $separator = $c->model('IMAPClient')->separator($c);
+    my $separator = $c->model('IMAPClient')->separator();
 
     foreach my $folder ( @{$o->{folders}} ) {
         my $path = (defined($o->{path}) ? join($separator, $o->{path}, $folder->{name}) : $folder->{name});
@@ -107,7 +107,7 @@ sub add_foldertree_to_stash {
     my ($c) = @_;
 
     return if defined($c->stash->{folder_tree});
-    my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree($c);
+    my ($tree, $folders_hash) = $c->model('IMAPClient')->folder_tree();
     CiderWebmail::Util::add_foldertree_uris($c, { path => undef, folders => $tree->{folders}, uris => [{action => 'view', uri => ''}] });
     CiderWebmail::Util::add_foldertree_icons($c, { folders => $tree->{folders} });
 

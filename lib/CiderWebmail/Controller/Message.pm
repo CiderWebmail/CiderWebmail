@@ -136,7 +136,7 @@ sub view_source : Chained('setup') Args(0) {
     my $uid = $message->uid;
 
     $c->res->content_type('text/plain');
-    return $c->res->body($c->model('IMAPClient')->message_as_string($c, { mailbox => $mailbox, uid => $uid }));
+    return $c->res->body($c->model('IMAPClient')->message_as_string({ mailbox => $mailbox, uid => $uid }));
 }
 
 =head2 delete
@@ -417,7 +417,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
 
     if ($sent_folder) {
         my $msg_text = $mail->as_string;
-        $c->model('IMAPClient')->append_message($c, {mailbox => $sent_folder, message_text => $msg_text});
+        $c->model('IMAPClient')->append_message({mailbox => $sent_folder, message_text => $msg_text});
     }
 
     return $c->res->redirect($c->stash->{uri_folder});

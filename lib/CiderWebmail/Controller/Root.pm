@@ -212,7 +212,7 @@ sub create_folder : Local {
     my ( $self, $c ) = @_;
 
     if (my $name = $c->req->param('name')) {
-        $c->model('IMAPClient')->create_mailbox($c, {name => $name});
+        $c->model('IMAPClient')->create_mailbox({name => $name});
 
         return $c->res->redirect($c->uri_for('mailboxes'));
     }
@@ -263,7 +263,7 @@ sub end : Private {
 
     $c->forward('render');
 
-    $c->model('IMAPClient')->disconnect($c) unless $ENV{CIDERWEBMAIL_NODISCONNECT}; # disconnect but not for some tests that still need the connection
+    $c->model('IMAPClient')->disconnect() unless $ENV{CIDERWEBMAIL_NODISCONNECT}; # disconnect but not for some tests that still need the connection
 
     DB::disable_profile() if $ENV{NYTPROF};
 
