@@ -42,7 +42,7 @@ sub script_exists {
 
     croak 'Need script name to check if it exists.' unless $o->{name};
 
-    return defined $self->_managesieve->list_scripts->{$o->{name}};
+    return defined $self->list_scripts->{$o->{name}};
 }
 
 sub active_script {
