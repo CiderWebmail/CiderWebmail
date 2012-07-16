@@ -9,7 +9,9 @@ server:
 #Managesieve configuration, this requires an mailserver with managesieve support
 #for example dovecot with sieve and mangesieve support compiled in
 #
-#to enable managesieve set mode to 'on'
+#to enable managesieve set mode to 
+#   'on' for user-can-edit-everything (raw sieve editor) or
+#   'vacation' for user can only enable vacation rules
 managesieve:
     mode: off
     host: localhost

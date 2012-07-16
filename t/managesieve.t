@@ -97,4 +97,58 @@ $mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
 $mech->content_lacks("testscript-active-$unix_time", 'verify that the test script was deleted');
 
 
+##Vacation Rule handling
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+
+#if a CiderWebmail-Vacation-Rule exists delete it
+if ($mech->content =~ m/CiderWebmail\-Vacation\-Rule/) {
+    $mech->follow_link_ok({ url_regex => qr{delete\?sieve_script_name=CiderWebmail\-Vacation\-Rule} }, "delete pre-existing CiderWebmail-Vacation-Rule" );
+}
+
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+$mech->content_lacks("CiderWebmail-Vacation-Rule", "make sure no pre-existing vacation rule exists");
+
+$mech->get_ok('http://localhost/managesieve/vacation', 'open vacation rule editor');
+
+$mech->form_with_fields(qw/ vacation_rule_subject vacation_rule_body vacation_rule_active /);
+$mech->set_fields( 
+        vacation_rule_subject       => "vacation-rule-subject-$unix_time",
+        vacation_rule_body          => "vacation-rule-body-$unix_time",
+        vacation_rule_active        => 1,
+);
+$mech->click_ok('vacation_rule_save', 'save new vacation rule');
+
+
+#check that vacation rule is active
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+xpath_test { my ($tx) = @_; $tx->is("//tr[\@script-name='CiderWebmail-Vacation-Rule']/td[2]", 'active', 'check that vacatoin rule is active'); };
+
+
+#verify vacation rule contents
+$mech->follow_link_ok({ url_regex => qr{edit\?sieve_script_name=CiderWebmail\-Vacation\-Rule} }, 'open vacation rule in raw sieve editor');
+ok(($mech->field('sieve_script_content') =~ m|vacation :days 7 :subject "vacation-rule-subject-$unix_time" "vacation-rule-body-$unix_time"|), 'verify vacation rule subject and body');
+
+
+#set vacation rule inactive
+$mech->get_ok('http://localhost/managesieve/vacation', 'open managesieve list');
+$mech->form_with_fields(qw/ vacation_rule_subject vacation_rule_body vacation_rule_active /);
+$mech->set_fields( 
+        vacation_rule_subject       => "vacation-rule-subject-$unix_time",
+        vacation_rule_body          => "vacation-rule-body-$unix_time",
+        vacation_rule_active        => undef,
+);
+$mech->click_ok('vacation_rule_save', 'save new vacation rule');
+
+
+#check that vacation rule is active
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+xpath_test { my ($tx) = @_; $tx->is("//tr[\@script-name='CiderWebmail-Vacation-Rule']/td[2]", 'inactive', 'check that vacatoin rule is inactive'); };
+
+
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+$mech->follow_link_ok({ url_regex => qr{delete\?sieve_script_name=CiderWebmail\-Vacation\-Rule} }, 'delete vacation rule');
+
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+$mech->content_lacks("CiderWebmail-Vacation-Rule", "verify vacation rule is gone");
+
 done_testing();

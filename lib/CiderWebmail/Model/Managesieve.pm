@@ -125,6 +125,27 @@ sub _encode_string {
     return $string;
 }
 
+sub build_vacation_script {
+    my ($self, $o) = @_;
+
+    croak 'Need subject to build vacation script.' unless $o->{subject};
+    croak 'Need reply text to build vacation script.' unless $o->{text};
+
+    #TODO proper quoting?
+    $o->{subject} =~ s/[\n\"]//g;
+    $o->{text} =~ s/[\n\"]//g;
+
+    my $vacation_script = qq|#CiderWebmail Vacation Rule v1\n|;
+    $vacation_script   .= qq|#DO NOT MANUALLY EDIT THIS\n|;
+    $vacation_script   .= qq|require ["vacation"];\n|;
+    $vacation_script   .= qq|if not header :contains "Precedence" ["bulk","list"] {\n|;
+    $vacation_script   .= qq|    vacation :days 7 :subject "$o->{subject}" "$o->{text}";\n|;
+    $vacation_script   .= qq|}\n|;
+
+    return $vacation_script;
+}
+
+
 =head1 LICENSE
 
 This library is free software. You can redistribute it and/or modify

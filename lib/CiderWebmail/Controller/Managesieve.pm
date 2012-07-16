@@ -77,8 +77,41 @@ sub delete : Chained('/managesieve/setup') PathPart('delete') Args() {
     $c->detach;
 }
 
+sub vacation : Chained('/managesieve/setup') PathPart('vacation') Args() {
+    my ($self, $c) = @_;
+
+    my $managesieve = $c->stash->{_managesieve};
+
+    $c->stash->{template} = 'managesieve/vacation.xml';
+    $c->stash->{uri_save} = $c->uri_for('vacation');
+
+    #TODO check if other script is active
+
+    #TODO better paramenter checking befor detach to save
+    if (defined $c->req->param('vacation_rule_save')) {
+        $c->stash->{sieve_script_content}   = $managesieve->build_vacation_script({ subject => $c->req->param('vacation_rule_subject'), text => $c->req->param('vacation_rule_body') });
+        $c->stash->{sieve_script_status}    = ((defined $c->req->param('vacation_rule_active')) ? 'active' : 'inactive');
+        $c->stash->{sieve_script_name}      = 'CiderWebmail-Vacation-Rule';
+
+        $c->detach('save');
+    } elsif ($managesieve->script_exists({ name => 'CiderWebmail-Vacation-Rule' })) {
+        my $vacation_script = $managesieve->get_script({ name => 'CiderWebmail-Vacation-Rule' });
+
+        if ($vacation_script =~ m/vacation :days 7 :subject "([^"]+?)" "([^"]+?)"/) {
+            $c->stash->{vacation_rule_subject}  = $1;
+            $c->stash->{vacation_rule_body}     = $2;
+        }
+
+        $c->stash->{vacation_rule_active}   = ($managesieve->active_script eq 'CiderWebmail-Vacation-Rule');
+    }
+}
+
+
+
 sub edit : Chained('/managesieve/setup') PathPart('edit') Args() {
     my ($self, $c) = @_;
+
+    #TODO redirect to vacation if CiderWebmail is in vacation-only mode
 
     my $managesieve = $c->stash->{_managesieve};
 
