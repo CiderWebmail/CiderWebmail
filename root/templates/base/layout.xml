@@ -33,6 +33,7 @@
                     <li tal:condition="true: uri_logout"><a tal:attributes="href uri_logout" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/logout.png" alt="Logout" /> Logout</a></li>
                 </ul>
                 <ul metal:use-macro="folder_tree.xml#folder_tree"/>
+                <ul metal:use-macro="mailbox_quota.xml#quota_listing"/>
             </div>
             <div class="activeborder"/>
         </div>

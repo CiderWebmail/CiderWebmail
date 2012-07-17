@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title metal:define-slot="title">Mailbox quota</title>
+    </head>
+    <body>
+        <div metal:define-macro="quota_listing" id="quotas">
+            <div tal:repeat="quota mbox/quotas">
+                <div tal:attributes="style string:width: ${quota/percent}%; title string: ${quota/name}: ${quota/cur}/${quota/max} ${quota/unit} used" tal:content="string: ${quota/percent}%" />
+            </div>
+        </div>
+    </body>
+</html>

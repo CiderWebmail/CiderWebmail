@@ -62,6 +62,14 @@ sub uids {
         : $self->c->model('IMAPClient')->get_folder_uids({ mailbox => $self->mailbox, sort => $o->{sort}, range => $o->{range} });
 }
 
+sub quotas {
+    my ($self) = @_;
+    
+    return unless $self->c->stash->{imapclient}->has_capability('QUOTA');
+
+    return $self->c->model('IMAPClient')->get_quotas({ mailbox => $self->mailbox });
+}
+
 =head1 AUTHORS
 
 Mathias Reitinger <mathias.reitinger@loop0.org>

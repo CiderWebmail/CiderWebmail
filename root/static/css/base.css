@@ -81,6 +81,29 @@ td, th
         background-color: lightgray;
     }
 
+    #controlpanel #quotas div {
+        background-color: white;
+        border-style: solid;
+        border-color: #80c0ff;
+        border-width: 1px 1px 1px 0;
+        border-bottom-right-radius: 8px;
+        -khtml-border-bottom-right-radius: 8px;
+        -moz-border-radius-bottomright: 8px;
+        -webkit-border-bottom-right-radius: 8px;
+        border-top-right-radius: 8px;
+        -khtml-border-top-right-radius: 8px;
+        -moz-border-radius-topright: 8px;
+        -webkit-border-top-right-radius: 8px;
+        padding: 0em 0.5em;
+        margin-left: -0.5em;
+    }
+    
+    #controlpanel #quotas div div {
+        background-color: #80c0ff;
+        margin-left: -0.5em;
+    }
+
+
 #headline
     {position:absolute; top:0px; height:2em; left:13em; right:0px; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc;}
     #headline h1

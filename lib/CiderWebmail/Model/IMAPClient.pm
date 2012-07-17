@@ -664,6 +664,32 @@ sub delete_mailbox {
     return $self->_imapclient->delete($o->{mailbox});
 }
 
+=head2 get_quotas({ mailbox => $mailbox })
+
+Get a list of quotaroots that apply to the specified mailbox
+
+=cut
+
+sub get_quotas {
+    my ($self, $o) = @_;
+
+    croak unless $o->{mailbox};
+
+    my @quota_response = $self->_imapclient->tag_and_run("GETQUOTAROOT $o->{mailbox}");
+    $self->_die_on_error();
+
+    my @quotas;
+    foreach(@quota_response) {
+        if ($_ =~ m/QUOTA\s+\"([^"]+?)\"\s+\(STORAGE\s+(\d+)\s+(\d+)\)/) {
+            my ($name, $cur, $max) = ($1, $2, $3);
+            push(@quotas, { cur => int($cur/1024), max => int($max/1024), unit => 'MByte', percent => int($cur / ($max/100)), type => 'storage', name => $name });
+        }
+    }
+
+    return \@quotas;
+}
+
+
 =head1 AUTHOR
 
 Stefan Seifert and
