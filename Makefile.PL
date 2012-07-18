@@ -57,7 +57,7 @@ requires 'Parse::RecDescent' => '1.967009'; #https://rt.cpan.org/Public/Bug/Disp
 requires 'Mail::IMAPClient' => '3.31';
 
 requires 'Clone';
-requires 'HTML::Defang';
+requires 'HTML::Defang' => '1.04';
 requires 'HTML::Tidy';
 requires 'URI::QueryParam';
 
