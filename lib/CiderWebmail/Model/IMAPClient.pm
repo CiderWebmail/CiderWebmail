@@ -11,6 +11,7 @@ has _enable_body_search => (is => 'rw', isa => 'Bool', default => 0 );
 
 use MIME::Parser;
 use Mail::IMAPClient::MessageSet;
+use Mail::IMAPClient::BodyStructure;
 use Email::Simple;
 use Carp qw(carp croak confess);
 
@@ -316,7 +317,7 @@ sub get_headers_hash {
     }
 
     my @items;
-    #push(@items, "BODYSTRUCTURE");
+    push(@items, "BODYSTRUCTURE");
     push(@items, "FLAGS");
     push(@items, "BODY.PEEK[HEADER.FIELDS ($headers_to_fetch)]");
     my $hash = $self->_imapclient->fetch_hash($uids, @items);
@@ -357,10 +358,13 @@ sub get_headers_hash {
         }
 
         if($entry->{BODYSTRUCTURE}) {
-            my $data = '* '.$uid.' FETCH (UID '.$uid.' BODYSTRUCTURE ('.$entry->{BODYSTRUCTURE}.'))';
-            my $bodystruct = Mail::IMAPClient::BodyStructure->new($data);
-            if ( ($bodystruct->{bodytype} =~ m/MULTIPART/mi) && ($bodystruct->{bodysubtype} =~ m/mixed/mi) ) {
-                $message->{attachments} = 1;
+            my $dummy = " * 123 FETCH (UID 123 BODYSTRUCTURE ($entry->{BODYSTRUCTURE}))";
+            my $struct = Mail::IMAPClient::BodyStructure->new($dummy);
+            foreach(@{ $struct->{bodystructure} }) {
+                if (defined $_->{bodydisp}->{attachment}) {
+                    $message->{attachments} = 1;
+                    last;
+                }
             }
         }
 
