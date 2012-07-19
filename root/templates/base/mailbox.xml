@@ -42,7 +42,11 @@
                             <td tal:condition="and: true:sort_subject false:group/name" colspan="5" i18n:translate="">No Subject</td>
                         </tr>
                         <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class if: repeat/even then: string:${message/flags} even else: string:${message/flags} odd">
-                            <td class="icons"><img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats"/><img tal:condition="true: message/attachments" tal:attributes="src string:${uri_static}/images/attachment.png" alt="attachment"/></td>
+                            <td class="icons">
+                                <img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats"/>
+                                <img tal:condition="true: message/attachments" tal:attributes="src string:${uri_static}/images/attachment.png" alt="attachment"/>
+                                <img class="flag_icon" tal:condition="true: message/flag/flagged" tal:attributes="src string:${uri_static}/images/flag-red.png" alt="flagged"/>
+                                </td>
                             <td tal:condition="true: show_from" class="sender" tal:attributes="id string:from_${message/uid}">
                                 <span tal:condition="false: sort_from" tal:repeat="address message/head/from" tal:attributes="title address/address" tal:content="if: address/name then: address/name else: address/address">from</span>
                             </td>

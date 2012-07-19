@@ -3,7 +3,7 @@ some images in the root/static/images directory:
 
 address_book.png, attachment.png, compose.png, folder.png, inbox.png, logout.png,
 manage_folders.png, mail_forward.png, mail_reply.png, mail_reply_all.png,
-message*.png, sent.png and trash.png are taken from the KDE 4 Ogygen icon theme
+message*.png, sent.png, flag-red.png and trash.png are taken from the KDE 4 Ogygen icon theme
 and are covered by LGPL version 2.1 or later
 http://www.gnu.org/licenses/lgpl-2.1.txt
 
