@@ -361,6 +361,9 @@ sub get_headers_hash {
             my $dummy = " * 123 FETCH (UID 123 BODYSTRUCTURE ($entry->{BODYSTRUCTURE}))";
             my $struct = Mail::IMAPClient::BodyStructure->new($dummy);
             foreach(@{ $struct->{bodystructure} }) {
+
+                next unless defined $_->{bodydisp};
+                next unless (ref($_->{bodydisp}) eq 'HASH');
                 if (defined $_->{bodydisp}->{attachment}) {
                     $message->{attachments} = 1;
                     last;
