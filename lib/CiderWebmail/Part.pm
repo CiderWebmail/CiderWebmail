@@ -421,5 +421,17 @@ sub uri_render {
     return $self->c->stash->{uri_folder} . '/' . $self->root_message->uid . '/part/render/' . $self->part_id;
 }
 
+=head2 is_root_part
+
+returns true if this part is the root part (RFC822 message)
+
+=cut
+
+sub is_root_part {
+    my ($self) = @_;
+
+    return ($self->root_message->root_part eq $self);
+}
+
 
 1;
