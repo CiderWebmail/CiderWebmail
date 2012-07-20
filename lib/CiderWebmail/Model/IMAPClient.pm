@@ -528,6 +528,25 @@ sub mark_answered {
     return;
 }
 
+=head2 toggle_important({ mailbox => $mailbox, uid => $uid })
+
+toggle the important/flagged IMAP flag. returnes 'flagged' if the flag is now set, otherwise returnes undef.
+
+=cut
+
+sub toggle_important {
+    my ($self, $o) = @_;
+
+    my $flags = $self->get_flags($o);
+    if (defined $flags->{flagged}) {
+        $self->_imapclient->unset_flag("Flagged", $o->{uid});
+        return;
+    } else {
+        $self->_imapclient->set_flag("Flagged", $o->{uid});
+        return 'flagged';
+    }
+}
+
 =head2 get_flags({ mailbox => $mailbox, uid => $uid })
 
 fetches the flags of a message, returnes a hashref with the lowercased flag names as keys

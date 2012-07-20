@@ -11,6 +11,10 @@
             <span class="message_detail_actions">
                 <a tal:attributes="href uri_view_source" onclick="return open_in_new_window(this)" i18n:translate="">View source</a>
                 <a tal:attributes="href string:${uri_get_header}/${message/part_id}" onclick="return open_in_new_window(this)" i18n:translate="">View header</a>
+                <a tal:attributes="href string:${uri_toggle_important}" onclick="toggle_important(this); return false;" i18n:translate="" tal:condition="true: message/is_root_part">
+                    <img id="important_flag" tal:condition="true: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag-red.png"/>
+                    <img id="important_flag" tal:condition="false: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag.png"/>
+                </a>
             </span>
         </p>
 

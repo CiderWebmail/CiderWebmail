@@ -68,15 +68,15 @@ sub view : Chained('setup') PathPart('') Args(0) {
     CiderWebmail::Util::send_foldertree_update($c); # update folder display
 
     $c->stash({
-        template        => 'message.xml',
-        target_folders  => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
-        uri_view_source     => "$uri_folder/$uid/view_source",
-        uri_reply           => "$uri_folder/$uid/part/reply/sender",
-        uri_reply_all       => "$uri_folder/$uid/part/reply/all",
-        uri_forward         => "$uri_folder/$uid/part/forward",
-        uri_get_header      => "$uri_folder/$uid/part/header",
-        uri_move            => "$uri_folder/$uid/move",
-        uri_add_address     => $c->uri_for("/addressbook/modify/add"),
+        template                => 'message.xml',
+        target_folders          => [ sort {($a->{name} or '') cmp ($b->{name} or '')} values %{ clone($c->stash->{folders_hash}) } ],
+        uri_view_source         => "$uri_folder/$uid/view_source",
+        uri_reply               => "$uri_folder/$uid/part/reply/sender",
+        uri_reply_all           => "$uri_folder/$uid/part/reply/all",
+        uri_forward             => "$uri_folder/$uid/part/forward",
+        uri_get_header          => "$uri_folder/$uid/part/header",
+        uri_move                => "$uri_folder/$uid/move",
+        uri_toggle_important    => "$uri_folder/$uid/toggle_important",
     });
 
     return;
@@ -138,6 +138,30 @@ sub view_source : Chained('setup') Args(0) {
     $c->res->content_type('text/plain');
     return $c->res->body($c->model('IMAPClient')->message_as_string({ mailbox => $mailbox, uid => $uid }));
 }
+
+=head2 toggle_important
+
+toggle the important/flagged IMAP flag, send the new flag icon to the client.
+
+=cut
+
+sub toggle_important : Chained('setup') Args(0) {
+    my ( $self, $c ) = @_;
+    my $message = $c->stash->{message};
+
+    my $new_status = $message->toggle_important;
+
+    if (($c->req->header('X-Request') or '') eq 'AJAX') {
+        $c->res->content_type('text/plain');
+        return $c->res->body($new_status 
+            ? $c->uri_for('/static/images/flag-red.png')
+            : $c->uri_for('/static/images/flag.png')
+        );
+    } else {
+        $c->forward('view');
+    }
+}
+
 
 =head2 delete
 

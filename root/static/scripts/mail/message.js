@@ -14,6 +14,17 @@ function load_subpart(target) {
     }).get({ 'layout': 'ajax' });
 }
 
+function toggle_important(target) {
+    new Request({
+        url: target.href,
+        onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
+            document.getElementById('important_flag').src = responseTree;
+        },
+        headers: {'X-Request': 'AJAX'}
+    }).send();
+}
+
+
 function resize_iframe(target) {
     target.style.height = (target.contentWindow.document.body.scrollHeight + 25) + 'px';
 }

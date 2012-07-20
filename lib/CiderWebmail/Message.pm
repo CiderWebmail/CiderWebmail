@@ -237,6 +237,19 @@ sub delete {
     return $self->c->model('IMAPClient')->delete_messages({ uids => [ $self->uid ], mailbox => $self->mailbox } );
 }
 
+=head2 toggle_important()
+
+Toggles the important/flagged IMAP flag of the message.
+
+=cut
+
+sub toggle_important {
+    my ($self) = @_;
+
+    return $self->c->model('IMAPClient')->toggle_important({ uid => $self->uid, mailbox => $self->mailbox });
+}
+
+
 =head2 move({target_folder => 'Folder 1'})
 
 Moves the message on the server to the named folder.
