@@ -39,7 +39,7 @@
                         <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class if: repeat/even then: string:${message/flags} even else: string:${message/flags} odd">
                             <td class="icons">
                                 <img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats" />
-                                <img tal:condition="true: message/attachments" alt="attachment" tal:attributes="src string:${uri_static}/images/attachment.png" />
+                                <img tal:condition="true: message/attachments" alt="attachment" tal:attributes="src string:${uri_static}/images/attachment.png" class="attachment_icon" />
                                 <img tal:condition="true: message/flag/flagged" alt="flagged" tal:attributes="src string:${uri_static}/images/flag-red.png" class="flag_icon" />
                                 </td>
                             <td tal:condition="true: show_from" tal:attributes="id string:from_${message/uid}" class="sender">

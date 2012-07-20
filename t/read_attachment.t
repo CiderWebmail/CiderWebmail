@@ -30,6 +30,17 @@ my (@messages) = $mech->find_all_links( text_regex => qr{\Aattachment-$unix_time
 
 ok((@messages == 1), 'messages found');
 
+$messages[0]->attrs->{id} =~ m/link_(\d+)/m;
+my $message_id = $1;
+ok( (length($message_id) > 0), 'got message id');
+
+xpath_test {
+    my ($tx) = @_;
+    $tx->ok("//tr[\@id='message_$message_id']/td[\@class='icons']/img[\@class='attachment_icon']", "attachment icon is set" );
+};
+
+
+
 #attachment download
 $mech->get_ok($messages[0]->url, 'open message');
 $mech->follow_link_ok({ text_regex => qr{testattachment.txt} }, 'Open Attachment');
@@ -52,6 +63,17 @@ $mech->submit_form_ok({
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 my @forw_messages = $mech->find_all_links( text_regex => qr{\Aattachmentforward-$unix_time\z});
 ok((@forw_messages == 1), 'messages found');
+
+$forw_messages[0]->attrs->{id} =~ m/link_(\d+)/m;
+my $forw_message_id = $1;
+ok( (length($forw_message_id) > 0), 'got forwarded message id');
+
+xpath_test {
+    my ($tx_fwd) = @_;
+    $tx_fwd->not_ok("//tr[\@id='message_$forw_message_id']/td[\@class='icons']/img[\@class='attachment_icon']", "check that attachment icon is not set for forwarded message" );
+};
+
+
 
 #attachment download
 $mech->get_ok($forw_messages[0]->url, 'open message');
