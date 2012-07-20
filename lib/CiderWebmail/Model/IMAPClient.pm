@@ -357,7 +357,7 @@ sub get_headers_hash {
             $message->{flag}{$_} = $_ foreach split /\s+/xm, $flags;
         }
 
-        if($entry->{BODYSTRUCTURE}) {
+        if ((defined $entry->{BODYSTRUCTURE}) and ($entry->{BODYSTRUCTURE} =~ m/"attachment"/)) {
             my $dummy = " * 123 FETCH (UID 123 BODYSTRUCTURE ($entry->{BODYSTRUCTURE}))";
             my $struct = Mail::IMAPClient::BodyStructure->new($dummy);
             foreach(@{ $struct->{bodystructure} }) {
