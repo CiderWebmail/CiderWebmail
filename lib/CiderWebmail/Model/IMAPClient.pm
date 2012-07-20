@@ -528,6 +528,27 @@ sub mark_answered {
     return;
 }
 
+=head2 get_flags({ mailbox => $mailbox, uid => $uid })
+
+fetches the flags of a message, returnes a hashref with the lowercased flag names as keys
+
+=cut
+
+
+sub get_flags {
+    my ($self, $o) = @_;
+
+    croak unless $o->{mailbox};
+    croak unless $o->{uid};
+
+    $self->select({ mailbox => $o->{mailbox} });
+
+    my %flags = map { $_ =~ s/\\//g; lc($_) => 1 } $self->_imapclient->flags($o->{uid});
+
+    return \%flags;
+}
+
+
 =head2 bodypart_as_string({ mailbox => $mailbox, uid => $uid, parts => [ $part ] })
 
 fetches body part(s) of a message - part IDs according to the bodystructure of the message

@@ -90,6 +90,19 @@ sub get_header {
     return scalar $self->c->model('IMAPClient')->get_headers({ uid => $self->uid, mailbox => $self->mailbox, headers => [$header]});
 }
 
+=head2 flags()
+
+returns hashref of IMAP flags for this message
+
+=cut
+
+sub flags {
+    my ($self) = @_;
+
+    return $self->c->model('IMAPClient')->get_flags({ uid => $self->uid, mailbox => $self->mailbox });
+}
+
+
 =head2 subject()
 
 Shortcut getting the subject or 'No Subject' if none is available.
