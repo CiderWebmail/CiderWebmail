@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use base 'Catalyst::Controller';
 
+use version;
+
 use List::Util qw(reduce);
 
 use Time::HiRes;
@@ -103,6 +105,13 @@ sub login : Private {
     );
 
     if ($user_data{username} and $user_data{password}) {
+
+        #Only Mail::IMAPClient > 3.32 supports literals in the LOGIN command
+        if (version->parse($Mail::IMAPClient::VERSION) >= version->parse('3.32')) {
+            utf8::encode($user_data{username});
+            utf8::encode($user_data{password});
+        }
+
         if ($c->authenticate(\%user_data)) {
             $c->session->{$_} = $user_data{$_} foreach qw(username server); # save for repeated IMAP authentication
             $c->res->cookies->{$_} = { expires => '+1d', value => CiderWebmail::Util::encrypt($c, { string => $user_data{$_} }) } foreach qw(password); # save for repeated IMAP authentication
