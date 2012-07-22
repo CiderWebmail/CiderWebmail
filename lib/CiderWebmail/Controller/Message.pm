@@ -365,7 +365,11 @@ sub send : Chained('/mailbox/setup') Args(0) {
         ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
         Subject     => $subject,
         'X-Mailer'  => "CiderWebmail ".$CiderWebmail::VERSION,
-        Received    => "from " . ( defined $ENV{REMOTE_ADDR} ? $ENV{REMOTE_ADDR} : 'unknown REMOTE_ADDR' ) . " by " . ( defined $ENV{SERVER_NAME} ? $ENV{SERVER_NAME} : 'unknown SERVER_NAME' ) . " with HTTP;\n\t".DateTime::Format::Mail->new->format_datetime(DateTime->now),
+        Received    => "from " .  ( defined $c->req->address ? $c->req->address : 'unknown REMOTE_ADDR' ) . 
+                       ( $c->req->address ne $c->req->hostname ? ' [' . $c->req->hostname . ']' : '' ) . #insert hostname of the client if provided by the webserver
+                       " by " .   ( defined $c->req->uri->host ? $c->req->uri->host : 'unknown SERVER_NAME' ) . 
+                       " with " . ( $c->req->secure ? 'HTTPS' : 'HTTP' ) . "; " .
+                       DateTime::Format::Mail->new->format_datetime(DateTime->now),
     );
 
     #this is our main body - the text the user specified
