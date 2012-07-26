@@ -7,7 +7,6 @@ use parent 'Catalyst::Controller';
 use CiderWebmail::Message;
 use CiderWebmail::Util;
 
-use Encode;
 use MIME::Entity;
 
 use Try::Tiny;
@@ -15,10 +14,6 @@ use Try::Tiny;
 use DateTime;
 use DateTime::Format::Mail;
 use Email::Valid;
-
-use Email::Sender::Simple qw/sendmail/;
-use Email::Sender::Transport::Sendmail;
-use Email::Sender::Transport::SMTP;
 
 use Clone qw(clone);
 use List::Util qw(first);
@@ -347,114 +342,35 @@ Send a mail
 sub send : Chained('/mailbox/setup') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $subject = Encode::encode('MIME-Header', $c->req->param('subject'));
-    my $body_content = $c->req->param('body');
-    utf8::encode($body_content);
-    my $from = $c->req->param('from');
     my $sent_folder = $c->req->param('sent_folder');
 
     my $settings = $c->model('DB::Settings');
     $settings->update_or_create({
         user => $c->user->id,
-        from_address => $from,
-        sent_folder => $sent_folder,
+        from_address => $c->req->param('from'),
         signature => $c->req->param('signature'),
+        sent_folder => $sent_folder
     });
 
-    #this is the top-level message we are going to send
-    my $mail = MIME::Entity->build(
-        Type        => 'multipart/mixed',
-        From        => $from,
-        To          => $c->req->param('to'),
-        Date        => DateTime::Format::Mail->new->format_datetime(DateTime->now),
-        ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
-        Subject     => $subject,
-        'X-Mailer'  => "CiderWebmail ".$CiderWebmail::VERSION,
-        Received    => "from " .  ( defined $c->req->address ? $c->req->address : 'unknown REMOTE_ADDR' ) . 
-                       ( $c->req->address ne $c->req->hostname ? ' [' . $c->req->hostname . ']' : '' ) . #insert hostname of the client if provided by the webserver
-                       " by " .   ( defined $c->req->uri->host ? $c->req->uri->host : 'unknown SERVER_NAME' ) . 
-                       " with " . ( $c->req->secure ? 'HTTPS' : 'HTTP' ) . "; " .
-                       DateTime::Format::Mail->new->format_datetime(DateTime->now),
+    $c->stash(
+        email => {
+            from            => $c->req->param('from'),
+            to              => $c->req->param('to'),
+            ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
+            subject         => $c->req->param('subject'),
+            signature       => $c->req->param('signature'),
+            save_to_folder  => $sent_folder,
+            body            => $c->req->param('body'),
+        },
     );
 
-    #this is our main body - the text the user specified
-    if (my $body_content = $c->req->param('body')) { #TODO decent check if we have a valid body? what if only forwarding as attachment etc?
-        utf8::encode($body_content);
-        my $body_entity = MIME::Entity->build(
-            Type    => 'text/plain',
-            Charset => 'UTF-8',
-            Data    => $body_content,
-        );
-
-        $mail->add_part($body_entity);
-    }
-
-    if (my @attachments = $c->req->param('attachment')) {
-        foreach ($c->req->upload('attachment')) {
-            $mail->attach(
-                Type        => $_->type,
-                Filename    => $_->basename,
-                Path        => $_->tempname,
-                Disposition => 'attachment',
-                ReadNow     => 1,
-            );
-        }
-    }
-
-    if (defined $c->req->param('forward')) {
-        my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('forward'));
-        my $part_to_forward = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part_by_part_id({ part_id => $part_id });
-
-        $mail->attach(
-            Type     => 'message/rfc822',
-            Filename => $part_to_forward->subject . '.eml',
-            Data     => $part_to_forward->body,
-        );
-    }
-
-    if (defined $c->req->param('in_reply_to')) {
-        my ($uid, $part_id) = CiderWebmail::Util::parse_message_id($c->req->param('in_reply_to'));
-        my $in_reply_to_part = CiderWebmail::Message->new(c => $c, mailbox => $c->stash->{folder}, uid => $uid)->get_part_by_part_id({ part_id => $part_id });
-
-        if ($in_reply_to_part) {
-            if (my $message_id = $in_reply_to_part->message_id) {
-                $mail->add('In-Reply-To', $message_id);
-                my $references = $in_reply_to_part->references;
-                $mail->add('References', join ' ', $references ? split /\s+/sxm, $references : (), $message_id);
-            }
-
-            $in_reply_to_part->mark_answered;
-        } 
-    }
-
-    
-    $mail->sign(Signature => $c->req->param('signature')) if (defined($c->req->param('signature')) and (length($c->req->param('signature')) > 0));
 
     try {
-        my $transport;
-
-        #TODO add port and example to ciderwebmail.yml
-        if (($c->config->{send}->{method} or '') eq 'smtp') {
-            croak('smtp host not set') unless defined $c->config->{send}->{host};
-
-            $transport = Email::Sender::Transport::SMTP->new({
-                host => $c->config->{send}->{host},
-                port => '25',
-            });
-        } else {
-            $transport = Email::Sender::Transport::Sendmail->new();
-        }
-
-        sendmail($mail, { transport => $transport });
+        $c->forward( $c->view('RFC822') );
     } catch {
         $c->stash->{error} = $_;
         $c->detach('/error');
     };
-
-    if ($sent_folder) {
-        my $msg_text = $mail->as_string;
-        $c->model('IMAPClient')->append_message({mailbox => $sent_folder, message_text => $msg_text});
-    }
 
     return $c->res->redirect($c->stash->{uri_folder});
 }
