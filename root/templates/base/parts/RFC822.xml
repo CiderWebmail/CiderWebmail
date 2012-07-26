@@ -81,8 +81,10 @@
 
     <div class="message_body">
         <div tal:omit-tag="" tal:repeat="part message/children">
-            <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: true:part/renderable false:part/render_as_stub"><div tal:replace="structure part/render"/></div>
-            <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: true:part/renderable true:part/render_as_stub"><div tal:replace="structure part/render_stub"/></div>
+            <div tal:condition="true:part/renderable" tal:omit-tag="">
+                <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: false:part/render_as_stub false:part/attachment"><div tal:replace="structure part/render"/></div>
+                <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="true:part/render_as_stub"><div tal:replace="structure part/render_stub"/></div>
+            </div>
         </div>
     </div>
 </div>

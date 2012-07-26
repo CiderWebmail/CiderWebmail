@@ -77,6 +77,10 @@ xpath_test {
 
 #attachment download
 $mech->get_ok($forw_messages[0]->url, 'open message');
+
+#verify that we do not render the attachment content - we could render it because it is text/plain but do not because it's disposition is 'attachment'
+$mech->content_lacks('testattachment-content', 'verify that we do not render the attachment content');
+
 $mech->follow_link_ok({ text_regex => qr{testattachment.txt} }, 'Open Forwarded Attachment');
 
 ok(($mech->content =~ m/testattachment-content/), 'verify attachment content');
