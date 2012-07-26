@@ -42,6 +42,7 @@ our $VERSION = '1.04';
 
 __PACKAGE__->config(
     name => 'CiderWebmail',
+    default_view => 'Petal',
     authentication => {
         default_realm => 'imap',
         realms => {
