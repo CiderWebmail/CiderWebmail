@@ -81,8 +81,17 @@ $mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
 xpath_test { my ($tx) = @_; $tx->is("//tr[\@script-name='testscript-inactive-$unix_time']/td[2]", 'inactive', 'check that script now inactive and was correctly renamed'); };
 
 
+#delete script
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+$mech->follow_link_ok({ url_regex => qr{delete\?sieve_script_name=testscript-inactive-$unix_time} }, "delete script testscript-active-$unix_time" );
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+$mech->content_lacks("testscript-active-$unix_time", 'verify that the test script was deleted');
 
-##TODO UTF-8 in Managesieve is currently not working
+
+
+##UTF8 testing
+
+##TODO UTF-8 in Managesieve is currently not working for script names
 ##$mech->follow_link_ok({ url_regex => qr{edit/testscript-active-$unix_time} }, "open script edit dialog for testscript-active-$unix_time" );
 ##$mech->form_with_fields(qw/ script_name script_content /);
 ##$mech->set_fields(
@@ -90,11 +99,32 @@ xpath_test { my ($tx) = @_; $tx->is("//tr[\@script-name='testscript-inactive-$un
 ##);
 ##$mech->click_ok('save_script', 'add utf8 testcharacter to script name');
 
-#delete script
+$mech->get_ok('http://localhost/managesieve/edit', 'open managesieve editor');
+#create a new script
+$mech->form_with_fields(qw/ sieve_script_name sieve_script_content /);
+$mech->set_fields( 
+        sieve_script_name       => "testscript-utf8-$unix_time",
+        sieve_script_content    => 'require ["fileinto", "reject"];'.
+                                   "\nfileinto \"testfolder-\N{CHECK MARK}\";",
+);
+$mech->click_ok('sieve_script_save', 'create test script');
+
+
+#open script list and verify that script exists and is inactive
 $mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
-$mech->follow_link_ok({ url_regex => qr{delete\?sieve_script_name=testscript-inactive-$unix_time} }, "delete script testscript-active-$unix_time" );
+$mech->content_contains("testscript-utf8-$unix_time", 'verify that the new script exists');
+
+$mech->follow_link_ok({ url_regex => qr{edit\?sieve_script_name=testscript-utf8-$unix_time} }, "open script edit dialog for testscript-utf8-$unix_time" );
+
+$mech->content_like(qr/testfolder-\N{CHECK MARK}/, 'verify that the new script has correct UTF8 characters');
+
 $mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
-$mech->content_lacks("testscript-active-$unix_time", 'verify that the test script was deleted');
+$mech->follow_link_ok({ url_regex => qr{delete\?sieve_script_name=testscript-utf8-$unix_time} }, 'delete vacation rule');
+
+$mech->get_ok('http://localhost/managesieve/list', 'open managesieve list');
+$mech->content_lacks("testscript-utf8-$unix_time", "verify vacation rule is gone");
+
+
 
 
 ##Vacation Rule handling
