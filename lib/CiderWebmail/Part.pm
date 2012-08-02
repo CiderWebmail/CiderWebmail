@@ -4,6 +4,7 @@ use Moose;
 use Petal;
 use MIME::Base64;
 use MIME::QuotedPrint;
+use CiderWebmail::Util qw/ decode_mime_words /;
 use Module::Pluggable require => 1, search_path => [__PACKAGE__];
 
 use Carp qw/ carp cluck /;
@@ -341,13 +342,13 @@ sub file_name {
     my $bodyparms = $self->bodyparms;
 
     if ($self->is_attachment) {
-        return $bodydisp->{attachment}->{filename} if ((defined $bodydisp->{attachment}->{filename}) and ($bodydisp->{attachment}->{filename} ne 'NIL'));
+        return decode_mime_words({ data => $bodydisp->{attachment}->{filename} }) if ((defined $bodydisp->{attachment}->{filename}) and ($bodydisp->{attachment}->{filename} ne 'NIL'));
     }
 
     if ((defined $bodyparms) and (defined $bodyparms->{name}) and ($bodyparms->{name} ne 'NIL')) {
-        return $bodyparms->{name} if ($bodyparms->{name} =~ m/.*\..*/xm);   #name does not have to be a filename. if we want
-                                                                            #to treat it as such it should at least resemble 
-                                                                            #something like name.extension
+        return decode_mime_words({ data => $bodyparms->{name} }) if ($bodyparms->{name} =~ m/.*\..*/xm);   #name does not have to be a filename. if we want
+                                                                                                                   #to treat it as such it should at least resemble 
+                                                                                                                   #something like name.extension
     }
 
     return;
