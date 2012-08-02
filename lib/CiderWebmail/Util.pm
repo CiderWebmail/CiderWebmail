@@ -3,6 +3,14 @@ package CiderWebmail::Util;
 use warnings;
 use strict;
 
+use Exporter;
+use base qw(Exporter);
+
+our @EXPORT = qw(decode_mime_words);
+
+use Text::Iconv;
+use MIME::Words qw/ decode_mimewords /;
+
 use DateTime;
 use DateTime::Format::Mail;
 
@@ -257,5 +265,34 @@ sub parse_message_id {
         croak("Unable to parse in_reply_to: $message_id");
     }
 }
+
+sub decode_mime_words {
+    my ($o) = @_;
+
+    return '' unless defined $o->{data};
+
+    my $string;
+
+    foreach ( decode_mimewords( $o->{data} ) ) {
+        if ( @$_ > 1 ) {
+            unless (eval {
+                    my $converter = Text::Iconv->new($_->[1], "utf-8");
+                    my $part = $converter->convert( $_->[0] );
+                    utf8::decode($part);
+                    $string .= $part if defined $part;
+                }) {
+                carp("unable to convert $_->[1] to utf-8 using Text::Iconv: $!");
+                utf8::decode($_->[0]);
+                $string .= $_->[0];
+            }
+        } else {
+            utf8::decode($_->[0]);
+            $string .= $_->[0];
+        }
+    }
+
+    return $string;
+}
+
 
 1;
