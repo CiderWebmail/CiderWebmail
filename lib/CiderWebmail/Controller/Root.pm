@@ -75,6 +75,7 @@ sub auto : Private {
             });
 
             $c->stash({ uri_managesieve => $c->uri_for('/managesieve') }) if ($c->config->{managesieve}->{mode} eq 'on');
+            $c->stash({ uri_vacation => $c->uri_for('/managesieve') }) if ($c->config->{managesieve}->{mode} eq 'vacation');
 
             return 1;
         }

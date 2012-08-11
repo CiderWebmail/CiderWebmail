@@ -17,7 +17,7 @@ load sieve script list from server
 sub setup : Chained('/') PathPart('managesieve') CaptureArgs(0) {
     my ($self, $c) = @_;
 
-    croak("managesieve support disable in configuration") unless ($c->config->{managesieve}->{mode} eq 'on');
+    croak("managesieve support disabled in configuration") unless ($c->config->{managesieve}->{mode} =~ m/(on|vacation)/xmi);
 
     CiderWebmail::Util::add_foldertree_to_stash($c);
 
@@ -43,12 +43,15 @@ sub setup : Chained('/') PathPart('managesieve') CaptureArgs(0) {
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->res->redirect($c->uri_for('vacation')) if ($c->config->{managesieve}->{mode} =~ m/vacation/xmi);
     $c->res->redirect($c->uri_for('list'));
 }
 
 
 sub list : Chained('/managesieve/setup') PathPart('list') Args(0) {
     my ($self, $c) = @_;
+
+    $c->res->redirect($c->uri_for('vacation')) if ($c->config->{managesieve}->{mode} =~ m/vacation/xmi);
 
     $c->stash->{template} = 'managesieve/list.xml';
 
