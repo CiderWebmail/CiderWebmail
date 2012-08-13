@@ -72,6 +72,14 @@ sub _defang_url_callback {
         }
     }
 
+    if ($lcTag eq 'a') {
+        #add target _blank attribute to a tags so they open in a new window/tab
+        $AttributeHash->{"target"} = \"_blank";
+
+        #allow URIs in a tags
+        return DEFANG_NONE;
+    }
+
     return DEFANG_ALWAYS;
 }
 
