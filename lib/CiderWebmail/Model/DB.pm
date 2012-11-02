@@ -37,6 +37,13 @@ after BUILD => sub {
         $dbh->do('update db_version set version = 2');
     }
 
+    if ($version < 3) {
+        print STDERR "upgrading database schema to version 3\n";
+        $dbh->do("alter table settings add signature text");
+        $dbh->do('update db_version set version = 3');
+    }
+
+
     return $self;
 };
 

@@ -1,18 +1,21 @@
+use utf8;
 package CiderWebmail::DB::Result::Settings;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CiderWebmail::DB::Result::Settings
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->load_components("InflateColumn::DateTime");
-
-=head1 NAME
-
-CiderWebmail::DB::Result::Settings
+=head1 TABLE: C<settings>
 
 =cut
 
@@ -22,69 +25,59 @@ __PACKAGE__->table("settings");
 
 =head2 user
 
-  data_type: varchar
-  default_value: undef
+  data_type: 'varchar'
   is_nullable: 0
-  size: undef
 
 =head2 from_address
 
-  data_type: varchar
-  default_value: undef
+  data_type: 'varchar'
   is_nullable: 1
-  size: undef
 
 =head2 sent_folder
 
-  data_type: varchar
-  default_value: undef
+  data_type: 'varchar'
   is_nullable: 1
-  size: undef
 
 =head2 sort_order
 
-  data_type: varchar
-  default_value: undef
+  data_type: 'varchar'
   is_nullable: 1
-  size: undef
+
+=head2 signature
+
+  data_type: 'text'
+  is_nullable: 1
 
 =cut
 
 __PACKAGE__->add_columns(
   "user",
-  {
-    data_type => "varchar",
-    default_value => undef,
-    is_nullable => 0,
-    size => undef,
-  },
+  { data_type => "varchar", is_nullable => 0 },
   "from_address",
-  {
-    data_type => "varchar",
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
-  },
+  { data_type => "varchar", is_nullable => 1 },
   "sent_folder",
-  {
-    data_type => "varchar",
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
-  },
+  { data_type => "varchar", is_nullable => 1 },
   "sort_order",
-  {
-    data_type => "varchar",
-    default_value => undef,
-    is_nullable => 1,
-    size => undef,
-  },
+  { data_type => "varchar", is_nullable => 1 },
+  "signature",
+  { data_type => "text", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</user>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("user");
 
 
-# Created by DBIx::Class::Schema::Loader v0.05003 @ 2010-05-15 15:15:25
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U90R/881k4x0S6hHELkH5Q
+# Created by DBIx::Class::Schema::Loader v0.07025 @ 2012-11-02 15:57:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QP4m8CWyVxIsbxnUSS7WVg
 
 =head1 CiderWebmail::DB::Result::Settings
 
