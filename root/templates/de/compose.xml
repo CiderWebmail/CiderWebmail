@@ -47,7 +47,7 @@
                         <legend>Anhänge</legend>
                         <label class="attachment">
                             <span>Anhang:</span>
-                            <input name="attachment" type="file" />
+                            <input name="attachment" multiple="multiple" type="file" />
                             <a onclick="add_attachment(this)">[+]</a>
                         </label>
                     </fieldset>
