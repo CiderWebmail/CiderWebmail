@@ -32,7 +32,10 @@
                             <input name="subject" tal:attributes="value message/subject" />
                         </label>
                         <label class="text">
-                            <textarea tal:content="message/body" name="body" />
+                            <textarea tal:content="message/body" name="body" rows="20" />
+                        </label>
+                        <label class="signature">
+                            <textarea tal:content="signature" name="signature" id="signature" rows="2" />
                         </label>
                     </fieldset>
                     <fieldset>

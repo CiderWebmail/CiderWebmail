@@ -230,6 +230,10 @@ sub compose : Chained('/mailbox/setup') Args(0) {
 
     my $settings = $c->model('DB::Settings')->find($c->user->id);
 
+    if ($settings and $settings->signature) {
+        $c->stash->{signature} = $settings->signature;
+    }
+
     if ($settings and $settings->from_address) {
         $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
     }
@@ -353,7 +357,8 @@ sub send : Chained('/mailbox/setup') Args(0) {
     $settings->update_or_create({
         user => $c->user->id,
         from_address => $from,
-        sent_folder => $sent_folder
+        sent_folder => $sent_folder,
+        signature => $c->req->param('signature'),
     });
 
     #this is the top-level message we are going to send
@@ -421,6 +426,9 @@ sub send : Chained('/mailbox/setup') Args(0) {
             $in_reply_to_part->mark_answered;
         } 
     }
+
+    
+    $mail->sign(Signature => $c->req->param('signature')) if (defined($c->req->param('signature')) and (length($c->req->param('signature')) > 0));
 
     try {
         my $transport;
