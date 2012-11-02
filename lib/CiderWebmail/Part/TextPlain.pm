@@ -37,7 +37,7 @@ sub render {
     my $uri_regex = $RE{URI}{HTTP}{-scheme => 'https?'}{-keep};
     $content =~ s/$uri_regex/<a href="$1">$1<\/a>/xmg;
 
-    $content =~ s/\n/<br \/>/xmg;
+    $content =~ s/\r?\n\r?/<br \/>/xmg;
     
     return $self->c->view->render_template({ c => $self->c, template => 'TextPlain.xml', stash => { part_content => $content } });
 }
