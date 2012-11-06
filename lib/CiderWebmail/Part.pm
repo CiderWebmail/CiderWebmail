@@ -68,10 +68,16 @@ Returns the main body part for using when forwarding/replying the message.
 sub main_body_part {
     my ($self) = @_;
 
-    foreach (@{ $self->children }) {
+    my @to_check = @{ $self->children };
+
+    foreach (@to_check) {
         my $part = $_;
         if ( ($part->content_type or '') eq 'text/plain') {
             return $part;
+        }
+
+        if ($part->children) {
+            push(@to_check, @{ $part->children });
         }
     }
 
