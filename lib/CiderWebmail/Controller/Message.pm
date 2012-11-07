@@ -88,7 +88,10 @@ sub download_attachment : Chained('setup') PathPart('part/download') Args {
 
     $c->res->content_type($part->content_type);
 
-    $c->res->header('content-disposition' => 'attachment' . "; filename=".($part->file_name or 'unknown'));
+    my $file_name = ($part->file_name or 'unknown');
+    $file_name =~ s/[^\w\s\.]//gi;
+
+    $c->res->header('content-disposition' => 'attachment; filename="' . $file_name . '"');
 
     return $c->res->body($part->body({ raw => 1 }));
 }
