@@ -65,7 +65,7 @@ sub uids {
 sub quotas {
     my ($self) = @_;
     
-    return unless $self->c->stash->{imapclient}->has_capability('QUOTA');
+    return [] unless $self->c->stash->{imapclient}->has_capability('QUOTA');
 
     return $self->c->model('IMAPClient')->get_quotas({ mailbox => $self->mailbox });
 }
