@@ -56,7 +56,7 @@
                             <td class="subject"><a onclick="return false" tal:attributes="href message/uri_view; id string:link_${message/uid}" tal:content="message/head/subject"/></td>
                             <td tal:condition="true: sort_date" tal:content="message/head/date/strftime '%T'">date</td>
                             <td tal:condition="false: sort_date" tal:content="message/head/date/strftime '%F %T'">date</td>
-                            <td class="actions"><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trashcan.gif; id string:delete_${message/uid}" alt="delete"/></a></td>
+                            <td class="actions"><a tal:attributes="href message/uri_delete"><img tal:attributes="src string:${uri_static}/images/trash.png; id string:delete_${message/uid}" alt="delete"/></a></td>
                         </tr>
                     </tbody>
                 </table>
