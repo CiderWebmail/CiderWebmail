@@ -6,9 +6,9 @@ use CiderWebmail::Part;
 
 use Carp qw/ croak /;
 
-has c               => (is => 'ro', isa => 'Object');
-has mailbox         => (is => 'ro', isa => 'Str');
-has uid             => (is => 'ro', isa => 'Int');
+has c               => (is => 'ro', isa => 'Object', required => 1);
+has mailbox         => (is => 'ro', isa => 'Str', required => 1);
+has uid             => (is => 'ro', isa => 'Int', required => 1);
 
 has root_part       => (is => 'rw', isa => 'Object');
 has loaded          => (is => 'rw', isa => 'Int', default => 0);
