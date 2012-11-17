@@ -39,10 +39,6 @@ $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->get_ok( $messages[0]->url );
 $mech->content_contains('<h1>rfc822test-'.$unix_time.'</h1>');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-@messages = $mech->find_all_links( text_regex => qr{\Arfc822(test|forwarded)-$unix_time\z});
-ok((@messages == 2), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-$mech->get_ok($messages[1]->url.'/delete', "Delete message");
+cleanup_messages(["rfc822test-$unix_time", "rfc822forwarded-$unix_time"]);
 
 done_testing();

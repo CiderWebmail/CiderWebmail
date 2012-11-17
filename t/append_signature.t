@@ -37,20 +37,12 @@ $mech->get_ok($sent_messages[0]->url, 'open message');
 $mech->content_like(qr/append_signature_body-$unix_time/, 'verify inbox message body content');
 $mech->content_like(qr/\-\-\s<br \/>append_signature_signature-$unix_time/, 'verify sent message signature');
 
-$mech->get_ok($inbox_messages[0]->url.'/delete', "Delete message from INBOX");
-$mech->get_ok($sent_messages[0]->url.'/delete', "Delete message from Sent folder");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_unlike(qr/append_signature_subject-$unix_time/, 'message deleted from INBOX');
-
-$mech->get_ok( 'http://localhost/mailbox/Sent?length=99999' );
-$mech->content_unlike(qr/append_signature_subject-$unix_time/, 'message deleted from Sent Folder');
-
 $mech->get_ok('http://localhost/mailbox/INBOX/compose');
 xpath_test {
     my ($tx) = @_;
     $tx->is("//textarea[\@id='signature']", 'append_signature_signature-'.$unix_time, "signature saved in database" );
 };
 
+cleanup_messages(["append_signature_subject-$unix_time"]);
 
 done_testing();

@@ -44,10 +44,6 @@ xpath_test {
     $tx_read->like("//tr[\@id='message_$message_id']/\@class", qr/seen/, "message is read" );
 };
 
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks('searchmessage-'.$unix_time);
+cleanup_messages(["readmessage-$unix_time"]);
 
 done_testing();

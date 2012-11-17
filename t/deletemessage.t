@@ -57,31 +57,32 @@ $mech->content_contains('/mailbox/Trash/delete', 'verify that Trash folder exist
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ url_regex => qr{/compose} }, 'Compose a new message');
 
-$unix_time = time();
 $mech->submit_form_ok({
     with_fields => {
         from        => "$uname\@localhost",
         to          => "$uname\@localhost",
         sent_folder => 'Sent',
-        subject     => 'deletemessage-'.$unix_time,
-        body        => 'deletemessage',
+        subject     => 'trash_deletemessage-'.$unix_time,
+        body        => 'trash_deletemessage',
     },
 });
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my (@trash_messages) = $mech->find_all_links( text_regex => qr{\Adeletemessage-$unix_time\z});
+my (@trash_messages) = $mech->find_all_links( text_regex => qr{\Atrash_deletemessage-$unix_time\z});
 
 ok((@trash_messages == 1), 'messages found');
 
 $mech->get_ok($trash_messages[0]->url.'/delete', "Delete message");
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-@trash_messages = $mech->find_all_links( text_regex => qr{\Adeletemessage-$unix_time\z});
+@trash_messages = $mech->find_all_links( text_regex => qr{\Atrash_deletemessage-$unix_time\z});
 
 ok((@trash_messages == 0), 'messages deleted');
 
 $mech->get_ok( 'http://localhost/mailbox/Trash?length=99999' );
 
-$mech->content_contains('deletemessage-'.$unix_time, 'verify that message is in trash');
+$mech->content_contains('trash_deletemessage-'.$unix_time, 'verify that message is in trash');
+
+cleanup_messages(["deletemessage-$unix_time", "trash_deletemessage-$unix_time"]);
 
 done_testing();

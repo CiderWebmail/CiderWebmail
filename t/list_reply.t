@@ -55,16 +55,6 @@ xpath_test {
     $tx->is("//label[\@class='to']/input/\@value", "list-post-$unix_time-test\@example.com", "to address is correctly set to list address");
 };
 
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Atextmessage-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @fwd_messages = $mech->find_all_links( text_regex => qr{\AFwd: textmessage-$unix_time\z});
-ok((@fwd_messages == 1), 'forwarded messages found');
-$mech->get_ok($fwd_messages[0]->url.'/delete', "Delete forwarded message");
-
+cleanup_messages(["Fwd: textmessage-$unix_time", "textmessage-$unix_time"]);
 
 done_testing();

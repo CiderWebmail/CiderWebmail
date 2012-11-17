@@ -33,9 +33,6 @@ $mech->content_contains('<td class="begin">1997-07-14, 17:00:00</td>', 'begin');
 $mech->content_contains('<td class="end">1997-07-15, 03:59:59</td>', 'end');
 $mech->content_contains('<td colspan="2">Description-first-line<br /></td>', 'description');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Aicaltest-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+cleanup_messages(["icaltest-$unix_time"]);
 
 done_testing();

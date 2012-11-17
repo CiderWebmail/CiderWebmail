@@ -54,4 +54,6 @@ $mech->get_ok('http://localhost/mailboxes');
 
 $mech->content_lacks('testfolder-'.$unix_time);
 
+cleanup_messages(["movemessage-$unix_time"]);
+
 done_testing();

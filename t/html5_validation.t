@@ -47,13 +47,6 @@ for my $link (@links) {
     $v->content_contains('This document was successfully checked as', "HTML5 validation OK for ".$link->url);
 }
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Autf8handling-$unix_time\z});
-
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-@messages = $mech->find_all_links( text_regex => qr{\Autf8handling-$unix_time\z});
-ok((@messages == 0), 'messages deleted');
+delete_messages(["utf8handling-$unix_time"]);
 
 done_testing();

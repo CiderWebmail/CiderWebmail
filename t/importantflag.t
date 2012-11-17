@@ -50,11 +50,6 @@ xpath_test {
     $tx_unread->like("//tr[\@id='message_$message_id']/\@class", qr/flagged/, "message is now flagged in mailbox list" );
 };
 
-
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks('importantmessage-'.$unix_time);
+cleanup_messages(["importantmessage-$unix_time"]);
 
 done_testing();

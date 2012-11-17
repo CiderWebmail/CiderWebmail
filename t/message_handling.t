@@ -100,14 +100,7 @@ for my $link (@links) {
     }
 }
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Amessagehandling-$unix_time\z});
-
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-@messages = $mech->find_all_links( text_regex => qr{\Amessagehandling-$unix_time\z});
-ok((@messages == 0), 'messages deleted');
+cleanup_messages(["messagehandling-$unix_time"]);
 
 sub check_email {
     my ($mech, $field, $empty) = @_;

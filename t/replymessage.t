@@ -51,15 +51,6 @@ xpath_test {
     $tx_answered->like("//tr[\@id='message_$message_id']/\@class", qr/answered/, "message is flagged answered" );
 };
 
-
-my @fwd_messages = $mech->find_all_links( text_regex => qr{\ARe: replymessage-$unix_time\z});
-
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-$mech->get_ok($fwd_messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks('replymessage-'.$unix_time);
-$mech->content_lacks('Re: replymessage-'.$unix_time);
+cleanup_messages(["Re: replymessage-$unix_time", "replymessage-$unix_time"]);
 
 done_testing();

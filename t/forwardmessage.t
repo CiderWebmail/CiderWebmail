@@ -48,12 +48,6 @@ $mech->content_like(qr/Fwd: forwardmessage-$unix_time/, 'forwarded message is th
 
 my @fwd_messages = $mech->find_all_links( text_regex => qr{\AFwd: forwardmessage-$unix_time\z});
 
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-$mech->get_ok($fwd_messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks('forwardmessage-'.$unix_time);
-$mech->content_lacks('Fwd: forwardmessage-'.$unix_time);
+cleanup_messages(["Fwd: forwardmessage-$unix_time", "forwardmessage-$unix_time"]);
 
 done_testing();

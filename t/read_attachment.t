@@ -85,12 +85,6 @@ $mech->follow_link_ok({ text_regex => qr{testattachment.txt} }, 'Open Forwarded 
 
 ok(($mech->content =~ m/testattachment-content/), 'verify attachment content');
 
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_lacks('attachment-'.$unix_time);
-
-$mech->get_ok($forw_messages[0]->url.'/delete', "Delete message");
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_lacks('attachmentforward-'.$unix_time);
+cleanup_messages(["attachment-$unix_time", "attachmentforward-$unix_time"]);
 
 done_testing();

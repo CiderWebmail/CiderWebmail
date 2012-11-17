@@ -45,17 +45,6 @@ $mech->content_like(qr/CHECK_\N{CHECK MARK}/, 'check mark');
 
 $mech->content_like(qr{<div class='rtl'><br />\N{HEBREW LETTER ALEF}\N{HEBREW LETTER PE}\N{HEBREW LETTER NUN}<br /><br /></div>}, 'check right-to-left display');
 
-$mech->get( 'http://localhost/mailbox/Sent?length=99999' );
-my (@sent_messages) = $mech->find_all_links( text_regex => qr{\Ahebrew-test-$unix_time});
-ok((@sent_messages == 1), 'messages found');
-
-$mech->get_ok($inbox_messages[0]->url.'/delete', "Delete message from INBOX");
-$mech->get_ok($sent_messages[0]->url.'/delete', "Delete message from Sent folder");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_unlike(qr/hebrew-test-$unix_time/, 'message deleted from INBOX');
-
-$mech->get_ok( 'http://localhost/mailbox/Sent?length=99999' );
-$mech->content_unlike(qr/hebrew-test-$unix_time/, 'message deleted from Sent folder');
+cleanup_messages(["hebrew-test-$unix_time"]);
 
 done_testing();

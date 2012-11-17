@@ -45,9 +45,6 @@ xpath_test {
 #TODO more complicated HTML mail
 $mech->content_contains('<p style="margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;"><b>This is an HTML testmail.</b></p>', 'HTML content in iframe');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Ahtmltest-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+cleanup_messages(["htmltest-$unix_time"]);
 
 done_testing();

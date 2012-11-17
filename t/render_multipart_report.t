@@ -31,9 +31,6 @@ $mech->follow_link_ok({ text => 'dsnmessage-'.$unix_time });
 
 $mech->content_contains("dsnmessage-check-header-$unix_time", 'check content');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Adsnmessage-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+cleanup_messages(["dsnmessage-$unix_time"]);
 
 done_testing();

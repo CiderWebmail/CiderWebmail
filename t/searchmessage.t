@@ -34,11 +34,6 @@ xpath_test {
     $tx->is("//a[\@id='link_$message_id']", "searchmessage-utf8-\N{CHECK MARK}-$unix_time", "correct message found" );
 };
 
-my @messages_delete = $mech->find_all_links( text_regex => qr{\Asearchmessage-utf8-\N{CHECK MARK}-$unix_time\z});
-$mech->get_ok($messages_delete[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks("searchmessage-utf8-\N{CHECK MARK}-$unix_time", "message is gone");
+cleanup_messages(["searchmessage-utf8-\N{CHECK MARK}-$unix_time"]);
 
 done_testing();

@@ -45,17 +45,6 @@ $mech->content_like(qr/UMLAUT_U_\N{LATIN SMALL LETTER U WITH DIAERESIS}/, 'body 
 $mech->content_like(qr/UMLAUT_O_\N{LATIN SMALL LETTER O WITH DIAERESIS}/, 'body umlaut handling: O');
 $mech->content_like(qr/CHECK_\N{CHECK MARK}/, 'check mark');
 
-$mech->get( 'http://localhost/mailbox/Sent?length=99999' );
-my (@sent_messages) = $mech->find_all_links( text_regex => qr{\Autf8-test-$unix_time\s\-\-});
-ok((@sent_messages == 1), 'messages found');
-
-$mech->get_ok($inbox_messages[0]->url.'/delete', "Delete message from INBOX");
-$mech->get_ok($sent_messages[0]->url.'/delete', "Delete message from Sent folder");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-$mech->content_unlike(qr/utf8-test-$unix_time/, 'message deleted from INBOX');
-
-$mech->get_ok( 'http://localhost/mailbox/Sent?length=99999' );
-$mech->content_unlike(qr/utf8-test-$unix_time/, 'message deleted from Sent folder');
+cleanup_messages(["utf8-test-$unix_time -- $body"]);
 
 done_testing();

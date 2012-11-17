@@ -32,9 +32,6 @@ $mech->content_contains('<div class="renderable monospace">textmessage <a href="
 $mech->content_contains("textmessage-$unix_time line that is so long that it should get wrapped<br />by the Text::Autoformat module", 'check content for text wrapping by Text::Autoformat');
 $mech->content_contains("testsignature-$unix_time signature line that is so long but still should not get wrapped by the Text::Autoformat module", 'check content for signature handling by Text::Autoformat');
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Atextmessage-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
+cleanup_messages(["textmessage-$unix_time"]);
 
 done_testing();

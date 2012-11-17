@@ -36,13 +36,6 @@ foreach(@render_links) {
     $mech->content_like(qr!part/download/2!, 'found image link');
 }
 
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Atestmessage-image-attachment-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks('testmessage-image-attachment-'.$unix_time, 'verify that messages got deleted');
+cleanup_messages(["testmessage-image-attachment-$unix_time"]);
 
 done_testing();

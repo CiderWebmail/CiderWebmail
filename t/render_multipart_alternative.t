@@ -44,14 +44,6 @@ xpath_test {
 };
 
 
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-my @messages = $mech->find_all_links( text_regex => qr{\Amultipart-alternative-TestMail-$unix_time\z});
-ok((@messages == 1), 'messages found');
-$mech->get_ok($messages[0]->url.'/delete', "Delete message");
-
-$mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
-
-$mech->content_lacks('multipart-alternative-TestMail-'.$unix_time, 'verify that messages got deleted');
+cleanup_messages(["multipart-alternative-TestMail-$unix_time"]);
 
 done_testing();
