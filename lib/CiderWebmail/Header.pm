@@ -6,7 +6,7 @@ use Mail::Address;
 use Time::Piece;
 use Date::Parse;
 
-use Carp qw/ croak carp /;
+use Carp qw/ croak carp cluck /;
 
 use CiderWebmail::Util qw/ decode_mime_words /;
 
@@ -41,11 +41,12 @@ sub transform {
     $o->{type} = lc($o->{type});
 
     my $headers = {
-        from       => \&_transform_address,
-        to         => \&_transform_address,
-        cc         => \&_transform_address,
-        'reply-to' => \&_transform_address,
-        date       => \&_transform_date,
+        from        => \&_transform_address,
+        to          => \&_transform_address,
+        cc          => \&_transform_address,
+        'reply-to'  => \&_transform_address,
+        'list-post' => \&_transform_address,
+        date        => \&_transform_date,
     };
 
     return $headers->{$o->{type}}->($o) if exists $headers->{$o->{type}};
@@ -57,9 +58,16 @@ sub transform {
 sub _transform_address {
     my ($o) = @_;
 
-    return unless defined $o->{data};
+    #here data might be defined but empty (no address given for example no Cc address)
+    #we still need a empty Mail::Address object so we don't break templates that rely on it
+    return Mail::Address->parse('') unless length($o->{data} // '');
 
-    my @address = Mail::Address->parse(decode_mime_words($o));
+    $o->{data} = decode_mime_words($o);
+
+    $o->{data} =~ s/^<(.*)>$/$1/;
+    $o->{data} =~ s/mailto://gi;
+
+    my @address = Mail::Address->parse($o->{data});
 
     return \@address;
 }
