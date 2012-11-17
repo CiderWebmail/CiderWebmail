@@ -10,7 +10,7 @@
         <title metal:define-slot="title">Mailbox quota</title>
     </head>
     <body>
-        <div metal:define-macro="quota_listing" id="quotas">
+        <div metal:define-macro="quota_listing" id="quotas" tal:condition="mbox">
             <div tal:repeat="quota mbox/quotas">
                 <div tal:attributes="style string:width: ${quota/percent}%; title string: ${quota/name}: ${quota/cur}/${quota/max} ${quota/unit} used" tal:content="string: ${quota/percent}%" />
             </div>
