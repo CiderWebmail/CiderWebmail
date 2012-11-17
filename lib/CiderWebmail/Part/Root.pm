@@ -67,6 +67,12 @@ sub reply_to {
     return $self->root_message->reply_to;
 }
 
+sub list_post {
+    my ($self) = @_;
+
+    return $self->root_message->list_post;
+}
+
 sub to {
     my ($self) = @_;
     return $self->root_message->to;

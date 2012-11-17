@@ -74,7 +74,7 @@ sub reply_to {
 
 sub mark_answered { return 1; }
 
-before qw(message_id references) => sub {
+before qw(message_id references list_post) => sub {
     my ($self) = @_;
 
     $self->message_forwarded(CiderWebmail::Message::Forwarded->new({ message_string => $self->body }));
@@ -91,6 +91,13 @@ sub references {
 
     return $self->message_forwarded->get_header('References');
 }
+
+sub list_post {
+    my ($self) = @_;
+
+    return $self->message_forwarded->get_header('List-Post');
+}
+
 
 
 

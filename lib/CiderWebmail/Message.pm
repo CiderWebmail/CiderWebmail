@@ -151,6 +151,18 @@ sub reply_to {
     return $self->get_header('reply-to');
 }
 
+=head2 list_post()
+
+Shortcut for getting the 'list-post' header
+
+=cut
+
+sub list_post {
+    my ($self) = @_;
+
+    return $self->get_header('list-post');
+}
+
 
 =head2 cc()
 

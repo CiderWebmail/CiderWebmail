@@ -68,6 +68,7 @@ sub view : Chained('setup') PathPart('') Args(0) {
         uri_view_source         => "$uri_folder/$uid/view_source",
         uri_reply               => "$uri_folder/$uid/part/reply/sender",
         uri_reply_all           => "$uri_folder/$uid/part/reply/all",
+        uri_reply_list          => "$uri_folder/$uid/part/reply/list",
         uri_forward             => "$uri_folder/$uid/part/forward",
         uri_get_header          => "$uri_folder/$uid/part/header",
         uri_move                => "$uri_folder/$uid/move",
@@ -290,6 +291,9 @@ sub reply : Chained('setup') PathPart('part/reply') Args() {
     if ($who eq 'sender') {
         my $reply_to = $part->reply_to;
         my $recipient = (($reply_to and @$reply_to) ? $reply_to : $part->from);
+        @recipients = $recipient->[0]->address if @$recipient and $recipient->[0];
+    } elsif ($who eq 'list') {
+        my $recipient = $part->list_post;
         @recipients = $recipient->[0]->address if @$recipient and $recipient->[0];
     } elsif ($who eq 'all') {
         foreach( ( ( $part->reply_to or $part->from ), $part->cc, $part->to ) ) {

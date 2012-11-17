@@ -59,6 +59,13 @@ for my $link (@links) {
 
     $mech->get_ok($link->url);
 
+    if (my ($list_reply_url) = $mech->find_all_links(url_regex => qr{http://localhost/.*/reply/list/(\d+|root)\z})) {
+        $mech->get_ok($list_reply_url, 'open list reply url');
+
+        check_email($mech, 'to');
+        check_email($mech, 'from', 1);
+    }
+
     my @attachments = $mech->find_all_links(url_regex => qr{http://localhost/.*/attachment/\d+});
     foreach(@attachments) {
         $mech->get_ok($_->url, 'open attachment');

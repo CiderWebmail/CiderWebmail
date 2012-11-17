@@ -6,6 +6,7 @@
             <span class="message_main_actions">
                 <a class="reply" tal:attributes="href string:${uri_reply}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
                 <a class="reply_all" tal:attributes="href string:${uri_reply_all}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_all.png" alt=""/> <span i18n:translate="">Reply All</span></a>
+                <a class="reply_list" tal:attributes="href string:${uri_reply_list}/${message/part_id}" tal:condition="message/list_post" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_list.png" alt=""/> <span i18n:translate="">Reply List</span></a>
                 <a class="forward" tal:attributes="href string:${uri_forward}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
             </span>
             <span class="message_detail_actions">
