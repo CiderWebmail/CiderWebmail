@@ -5,6 +5,7 @@ use Petal;
 use MIME::Base64;
 use MIME::QuotedPrint;
 use CiderWebmail::Util qw/ decode_mime_words /;
+use CiderWebmail::MIMEIcons;
 use Module::Pluggable require => 1, search_path => [__PACKAGE__];
 
 use Carp qw/ carp cluck /;
@@ -244,32 +245,10 @@ returns the name of a icon representing the content type fo the part
 
 =cut
 
-#mime type to icon mapping
-my $content_types = {
-    audio => 'audio.png',
-    text  => 'text.png',
-    video => 'movie.png',
-    image => 'image2.png',
-};
-
-my $content_subtypes = {
-    'application/pdf' => 'pdf.png',
-};
-
 sub icon {
     my ($self) = @_;
 
-    my ($type, $subtype) = split('/', $self->content_type);
-
-    if (defined($content_subtypes->{$self->content_type})) {
-        return $content_subtypes->{$self->content_type};
-    }
-    elsif (defined($content_types->{$type})) {
-        return $content_types->{$type};
-    }
-    else {
-        return 'generic.png';
-    }
+    return CiderWebmail::MIMEIcons::get_mime_icon($self->content_type);
 }
 
 =head2 render()
