@@ -22,12 +22,12 @@
             </div>
             <div tal:condition="true: folder_tree" id="mailnavigation">
                 <ul class="actions">
-                    <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose"><img alt="Compose new mail" tal:attributes="src string:${uri_static}/images/compose.png" /> Compose new mail</a></li>
-                    <li tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes"><img alt="Manage folders" tal:attributes="src string:${uri_static}/images/manage_folders.png" /> Manage folders</a></li>
-                    <li tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook"><img alt="Addressbook" tal:attributes="src string:${uri_static}/images/address_book.png" /> Addressbook</a></li>
-                    <li tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve"><img alt="Manage rules" tal:attributes="src string:${uri_static}/images/address_book.png" /> Manage rules</a></li>
-                    <li tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation"><img alt="Vacation rule" tal:attributes="src string:${uri_static}/images/address_book.png" /> Vacation rule</a></li>
-                    <li tal:condition="true: uri_logout"><a tal:attributes="href uri_logout"><img alt="Logout" tal:attributes="src string:${uri_static}/images/logout.png" /> Logout</a></li>
+                    <li tal:condition="true: uri_compose"><a tal:attributes="href uri_compose"><img alt="Compose new mail" tal:attributes="src string:${uri_static}/images/compose.png" /> Neue E-Mail schreiben</a></li>
+                    <li tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes"><img alt="Manage folders" tal:attributes="src string:${uri_static}/images/manage_folders.png" /> Ordner bearbeiten</a></li>
+                    <li tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook"><img alt="Addressbook" tal:attributes="src string:${uri_static}/images/address_book.png" /> Addressbuch</a></li>
+                    <li tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve"><img alt="Manage rules" tal:attributes="src string:${uri_static}/images/address_book.png" /> Regeln bearbeiten</a></li>
+                    <li tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation"><img alt="Vacation rule" tal:attributes="src string:${uri_static}/images/address_book.png" /> Abwesenheitsnachricht</a></li>
+                    <li tal:condition="true: uri_logout"><a tal:attributes="href uri_logout"><img alt="Logout" tal:attributes="src string:${uri_static}/images/logout.png" /> Ausloggen</a></li>
                 </ul>
                 <ul metal:use-macro="folder_tree.xml#folder_tree" />
                 <ul metal:use-macro="mailbox_quota.xml#quota_listing" />

@@ -6,7 +6,7 @@
     </head>
     <body>
         <div id="error" metal:fill-slot="content">
-            <h1>Error</h1>
+            <h1>Fehler</h1>
             <p tal:content="error" class="error_message" />
         </div>
     </body>

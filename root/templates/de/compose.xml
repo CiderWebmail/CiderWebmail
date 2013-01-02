@@ -52,7 +52,7 @@
                         </label>
                     </fieldset>
                     <fieldset>
-                        <legend>Save copy</legend>
+                        <legend>Kopie speichern</legend>
                         <label class="sent_folder">
                             <span>E-Mail speichern in:</span>
                             <select name="sent_folder">
@@ -62,7 +62,7 @@
                     </fieldset>
                     <fieldset>
                         <legend>Send</legend>
-                        <button name="send" type="submit">Transmit message</button>
+                        <button name="send" type="submit">E-Mail senden</button>
                     </fieldset>
                 </form>
             </div>

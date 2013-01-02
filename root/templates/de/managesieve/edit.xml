@@ -5,21 +5,21 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/managesieve.css" metal:fill-slot="css" />
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
-        <h1>Edit sieve script</h1>
+        <h1>Regel bearbeiten</h1>
         <div id="container">
             <div tal:condition="error" tal:content="error" />
             <form enctype="multipart/form-data" tal:attributes="action string:${uri_save}" method="post">
                 <input tal:condition="true:sieve_script_original_name" name="sieve_script_original_name" tal:attributes="value sieve_script_original_name" type="hidden" />
                 <div>
                     <label>
-                        <span>Script name:</span>
+                        <span>Skript Name:</span>
                         <input name="sieve_script_name" tal:attributes="value sieve_script_name" />
                     </label>
                     <label class="text">
                         <textarea tal:content="sieve_script_content" name="sieve_script_content" />
                     </label>
                     <label>
-                        <span>Active:</span>
+                        <span>Aktiv:</span>
                         <input tal:condition="true:sieve_script_active" checked="1" value="1" name="sieve_script_active" type="checkbox" />
                         <input tal:condition="false:sieve_script_active" value="1" name="sieve_script_active" type="checkbox" />
                     </label> 

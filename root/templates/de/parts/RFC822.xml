@@ -6,12 +6,12 @@
             <span class="message_main_actions">
                 <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_reply}/${message/part_id}" class="reply"><img alt="" tal:attributes="src string:${uri_static}/images/mail_reply.png" /> <span>Antworten</span></a>
                 <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_reply_all}/${message/part_id}" class="reply_all"><img alt="" tal:attributes="src string:${uri_static}/images/mail_reply_all.png" /> <span>Allen Antworten</span></a>
-                <a tal:condition="message/list_post" onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_reply_list}/${message/part_id}" class="reply_list"><img alt="" tal:attributes="src string:${uri_static}/images/mail_reply_list.png" /> <span>Reply List</span></a>
+                <a tal:condition="message/list_post" onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_reply_list}/${message/part_id}" class="reply_list"><img alt="" tal:attributes="src string:${uri_static}/images/mail_reply_list.png" /> <span>Mailingliste antworten</span></a>
                 <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_forward}/${message/part_id}" class="forward"><img alt="" tal:attributes="src string:${uri_static}/images/mail_forward.png" /> <span>Weiterleiten</span></a>
             </span>
             <span class="message_detail_actions">
                 <a onclick="return open_in_new_window(this)" tal:attributes="href uri_view_source">Quelltext anzeigen</a>
-                <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_get_header}/${message/part_id}">View header</a>
+                <a onclick="return open_in_new_window(this)" tal:attributes="href string:${uri_get_header}/${message/part_id}">Header anzeigen</a>
                 <a tal:condition="true: message/is_root_part" onclick="toggle_important(this); return false;" tal:attributes="href string:${uri_toggle_important}"><img tal:condition="true: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag-red.png" id="important_flag" /> <img tal:condition="false: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag.png" id="important_flag" /></a>
             </span>
         </p>

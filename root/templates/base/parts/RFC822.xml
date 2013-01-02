@@ -1,4 +1,7 @@
-<div xmlns:tal="http://purl.org/petal/1.0/">
+<div
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail">
     <div tal:attributes="class string:message_view_head">
         <h1 tal:content="message/subject">Subject</h1>
 

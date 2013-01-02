@@ -3,10 +3,35 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "${1} ${2}"
+msgstr "${1} ${2}"
+
+msgid "${1} Addressbook"
+msgstr "${1} Addressbuch"
+
+msgid "${1} Compose new mail"
+msgstr "${1} Neue E-Mail schreiben"
+
+msgid "${1} Logout"
+msgstr "${1} Ausloggen"
+
+msgid "${1} Manage folders"
+msgstr "${1} Ordner bearbeiten"
+
+msgid "${1} Manage rules"
+msgstr "${1} Regeln bearbeiten"
+
+msgid "${1} Vacation rule"
+msgstr "${1} Abwesenheitsnachricht"
+
+msgid "Active:"
+msgstr "Aktiv:"
 
 msgid "Addressbook"
 msgstr "Addressbuch"
@@ -21,9 +46,6 @@ msgid "Cc:"
 msgstr "Cc:"
 
 msgid "Compose Message"
-msgstr "Neue E-Mail schreiben"
-
-msgid "Compose new mail"
 msgstr "Neue E-Mail schreiben"
 
 msgid "Compose new mail message"
@@ -53,12 +75,11 @@ msgid ""
 "forwarding the current message."
 msgstr ""
 "Ziehen Sie das Icon einer E-Mail auf einen Ordner um die E-Mail in diesen "
-"Ordner zu verschieben.${1} "
-"Pfeil links/rechts um die vorherige/nächste E-Mail anzuzeigen.${2} Pfeil "
-"oben/unten um in einer E-Mail zu scrollen.${3} 'd' oder die Löschen-Taste um "
-"die aktuelle E-Mail zu löschen.${4} 'm' um die aktuelle E-Mail zu in einen"
-"anderen Ordner zu verschieben.${5} 'r' um auf die aktuelle E-Mail zu "
-"antworten.${6} 'f' um die aktuelle E-Mail weiterzuleiten."
+"Ordner zu verschieben.${1} Pfeil links/rechts um die vorherige/nächste E-"
+"Mail anzuzeigen.${2} Pfeil oben/unten um in einer E-Mail zu scrollen.${3} "
+"'d' oder die Löschen-Taste um die aktuelle E-Mail zu löschen.${4} 'm' um die "
+"aktuelle E-Mail zu in einenanderen Ordner zu verschieben.${5} 'r' um auf die "
+"aktuelle E-Mail zu antworten.${6} 'f' um die aktuelle E-Mail weiterzuleiten."
 
 msgid "E-Mail"
 msgstr "E-Mail"
@@ -69,8 +90,14 @@ msgstr "E-Mail:"
 msgid "Edit contact"
 msgstr "Kontakt bearbeiten"
 
+msgid "Edit sieve script"
+msgstr "Regel bearbeiten"
+
+msgid "Edit vacation rule"
+msgstr "Abwesenheitsnachricht bearbeiten"
+
 msgid "Error"
-msgstr "Error"
+msgstr "Fehler"
 
 msgid "Fetching more messages"
 msgstr "Lade weitere E-Mails"
@@ -102,11 +129,8 @@ msgstr "Lade E-Mail"
 msgid "Login"
 msgstr "Login"
 
-msgid "Logout"
-msgstr "Ausloggen"
-
-msgid "Manage folders"
-msgstr "Ordner bearbeiten"
+msgid "Managesieve"
+msgstr "Managesieve"
 
 msgid "Move message"
 msgstr "E-Mail verschieben"
@@ -123,29 +147,35 @@ msgstr "Kein Betreff"
 msgid "Password"
 msgstr "Passwort"
 
-msgid "Please login using your mailbox credentials:"
-msgstr "Bitte loggen Sie sich mit den Zugangsdaten Ihrer Mailbox ein:"
-
 msgid "Reply"
 msgstr "Antworten"
 
 msgid "Reply All"
 msgstr "Allen Antworten"
 
+msgid "Reply List"
+msgstr "Mailingliste antworten"
+
+msgid "Reply message:"
+msgstr "Antwort:"
+
 msgid "Save"
 msgstr "Speichern"
+
+msgid "Save copy"
+msgstr "Kopie speichern"
 
 msgid "Save message to:"
 msgstr "E-Mail speichern in:"
 
+msgid "Script name"
+msgstr "Skript Name"
+
+msgid "Script name:"
+msgstr "Skript Name:"
+
 msgid "Search"
 msgstr "Suchen"
-
-msgid "Send"
-msgstr "Senden"
-
-msgid "Send and save"
-msgstr "Senden und speichern"
 
 msgid "Server"
 msgstr "Server"
@@ -153,8 +183,8 @@ msgstr "Server"
 msgid "Session ended"
 msgstr "Sitzung beendet"
 
-msgid "Show all headers"
-msgstr "Alle Header anzeigen"
+msgid "Status"
+msgstr "Status"
 
 msgid "Subject"
 msgstr "Betreff"
@@ -165,23 +195,23 @@ msgstr "Betreff:"
 msgid "Target folder:"
 msgstr "Zielordner:"
 
-msgid "Text:"
-msgstr "Text:"
-
 msgid "To"
 msgstr "To"
 
 msgid "To:"
 msgstr "An:"
 
+msgid "Transmit message"
+msgstr "E-Mail senden"
+
 msgid "Username"
 msgstr "Benutzername"
 
+msgid "View header"
+msgstr "Header anzeigen"
+
 msgid "View source"
 msgstr "Quelltext anzeigen"
-
-msgid "Welcome to CiderWebmail"
-msgstr "Willkommen bei CiderWebmail"
 
 msgid "add contact"
 msgstr "Kontakt hinzufügen"
@@ -192,8 +222,35 @@ msgstr "löschen"
 msgid "edit"
 msgstr "bearbeiten"
 
-msgid "messages"
-msgstr "Mails"
+#~ msgid "Compose new mail"
+#~ msgstr "Neue E-Mail schreiben"
+
+#~ msgid "Logout"
+#~ msgstr "Ausloggen"
+
+#~ msgid "Manage folders"
+#~ msgstr "Ordner bearbeiten"
+
+#~ msgid "Please login using your mailbox credentials:"
+#~ msgstr "Bitte loggen Sie sich mit den Zugangsdaten Ihrer Mailbox ein:"
+
+#~ msgid "Send"
+#~ msgstr "Senden"
+
+#~ msgid "Send and save"
+#~ msgstr "Senden und speichern"
+
+#~ msgid "Show all headers"
+#~ msgstr "Alle Header anzeigen"
+
+#~ msgid "Text:"
+#~ msgstr "Text:"
+
+#~ msgid "Welcome to CiderWebmail"
+#~ msgstr "Willkommen bei CiderWebmail"
+
+#~ msgid "messages"
+#~ msgstr "Mails"
 
 #~ msgid ""
 #~ "Drag a mail's icon to a folder name to move that mail to that folder."

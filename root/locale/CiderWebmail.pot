@@ -1,3 +1,27 @@
+msgid "${1} ${2}"
+msgstr "${1} ${2}"
+
+msgid "${1} Addressbook"
+msgstr "${1} Addressbook"
+
+msgid "${1} Compose new mail"
+msgstr "${1} Compose new mail"
+
+msgid "${1} Logout"
+msgstr "${1} Logout"
+
+msgid "${1} Manage folders"
+msgstr "${1} Manage folders"
+
+msgid "${1} Manage rules"
+msgstr "${1} Manage rules"
+
+msgid "${1} Vacation rule"
+msgstr "${1} Vacation rule"
+
+msgid "Active:"
+msgstr "Active:"
+
 msgid "Addressbook"
 msgstr "Addressbook"
 
@@ -12,9 +36,6 @@ msgstr "Cc:"
 
 msgid "Compose Message"
 msgstr "Compose Message"
-
-msgid "Compose new mail"
-msgstr "Compose new mail"
 
 msgid "Compose new mail message"
 msgstr "Compose new mail message"
@@ -45,6 +66,12 @@ msgstr "E-Mail:"
 
 msgid "Edit contact"
 msgstr "Edit contact"
+
+msgid "Edit sieve script"
+msgstr "Edit sieve script"
+
+msgid "Edit vacation rule"
+msgstr "Edit vacation rule"
 
 msgid "Error"
 msgstr "Error"
@@ -79,11 +106,8 @@ msgstr "Loading message"
 msgid "Login"
 msgstr "Login"
 
-msgid "Logout"
-msgstr "Logout"
-
-msgid "Manage folders"
-msgstr "Manage folders"
+msgid "Managesieve"
+msgstr "Managesieve"
 
 msgid "Move message"
 msgstr "Move message"
@@ -100,29 +124,35 @@ msgstr "No Subject"
 msgid "Password"
 msgstr "Password"
 
-msgid "Please login using your mailbox credentials:"
-msgstr "Please login using your mailbox credentials:"
-
 msgid "Reply"
 msgstr "Reply"
 
 msgid "Reply All"
 msgstr "Reply All"
 
+msgid "Reply List"
+msgstr "Reply List"
+
+msgid "Reply message:"
+msgstr "Reply message:"
+
 msgid "Save"
 msgstr "Save"
+
+msgid "Save copy"
+msgstr "Save copy"
 
 msgid "Save message to:"
 msgstr "Save message to:"
 
+msgid "Script name"
+msgstr "Script name"
+
+msgid "Script name:"
+msgstr "Script name:"
+
 msgid "Search"
 msgstr "Search"
-
-msgid "Send"
-msgstr "Send"
-
-msgid "Send and save"
-msgstr "Send and save"
 
 msgid "Server"
 msgstr "Server"
@@ -130,8 +160,8 @@ msgstr "Server"
 msgid "Session ended"
 msgstr "Session ended"
 
-msgid "Show all headers"
-msgstr "Show all headers"
+msgid "Status"
+msgstr "Status"
 
 msgid "Subject"
 msgstr "Subject"
@@ -142,23 +172,23 @@ msgstr "Subject:"
 msgid "Target folder:"
 msgstr "Target folder:"
 
-msgid "Text:"
-msgstr "Text:"
-
 msgid "To"
 msgstr "To"
 
 msgid "To:"
 msgstr "To:"
 
+msgid "Transmit message"
+msgstr "Transmit message"
+
 msgid "Username"
 msgstr "Username"
 
+msgid "View header"
+msgstr "View header"
+
 msgid "View source"
 msgstr "View source"
-
-msgid "Welcome to CiderWebmail"
-msgstr "Welcome to CiderWebmail"
 
 msgid "add contact"
 msgstr "add contact"
@@ -168,7 +198,4 @@ msgstr "delete"
 
 msgid "edit"
 msgstr "edit"
-
-msgid "messages"
-msgstr "messages"
 
