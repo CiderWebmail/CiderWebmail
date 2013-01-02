@@ -66,6 +66,9 @@ msgstr "Date:"
 msgid "Delete"
 msgstr "Delete"
 
+msgid "Delete message"
+msgstr "Delete message"
+
 msgid ""
 "Drag a mail's icon to a folder name to move that mail to that folder.${1} "
 "Use cursor left/right for displaying the previous/next message.${2} Cursor "
@@ -200,6 +203,9 @@ msgstr "To"
 
 msgid "To:"
 msgstr "To:"
+
+msgid "Toggle important flag"
+msgstr "Toggle important flag"
 
 msgid "Transmit message"
 msgstr "Transmit message"

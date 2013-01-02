@@ -55,6 +55,9 @@ msgstr "Date:"
 msgid "Delete"
 msgstr "Delete"
 
+msgid "Delete message"
+msgstr "Delete message"
+
 msgid "Drag a mail's icon to a folder name to move that mail to that folder.${1} Use cursor left/right for displaying the previous/next message.${2} Cursor up/down for scrolling within a message.${3} 'd' or the delete key for deleting the current message.${4} 'm' for moving the current message to a different folder.${5} 'r' for replying to the current message.${6} 'f' for forwarding the current message."
 msgstr "Drag a mail's icon to a folder name to move that mail to that folder.${1} Use cursor left/right for displaying the previous/next message.${2} Cursor up/down for scrolling within a message.${3} 'd' or the delete key for deleting the current message.${4} 'm' for moving the current message to a different folder.${5} 'r' for replying to the current message.${6} 'f' for forwarding the current message."
 
@@ -177,6 +180,9 @@ msgstr "To"
 
 msgid "To:"
 msgstr "To:"
+
+msgid "Toggle important flag"
+msgstr "Toggle important flag"
 
 msgid "Transmit message"
 msgstr "Transmit message"
