@@ -255,6 +255,8 @@ function update_foldertree(responseText, responseXML) {
 }
 
 function add_drag_and_drop(message, event, droppables, selected) {
+    if (touch_enabled) { return; }
+
     var overed_prev;
     var droppables_positions = {};
     droppables.each(function (droppable) {

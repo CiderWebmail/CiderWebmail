@@ -57,8 +57,21 @@ function start_message_view_resize(event) {
     stop_propagation(event);
 }
 
+var touch_enabled = false;
+
+function check_touch_event_support(){
+    try {
+        document.createEvent("TouchEvent");
+        return true;
+    } catch(e) {
+        return false;
+    }
+}
+
 window.addEvent('load', function() {
-    $$('#controlpanel .activeborder').addEvent('mousedown', start_controlpanel_resize);
+    touch_enabled = check_touch_event_support();
+
+    if (!touch_enabled) { $$('#controlpanel .activeborder').addEvent('mousedown', start_controlpanel_resize); }
 
     var control_panel_width = Cookie.read('control_panel_width')
     if (control_panel_width) {
@@ -68,7 +81,8 @@ window.addEvent('load', function() {
 
     var message_divider = $('message_divider');
     if (message_divider) {
-        message_divider.addEvent('mousedown', start_message_view_resize);
+        if (!touch_enabled) { message_divider.addEvent('mousedown', start_message_view_resize); }
+
 
         var message_divider_top = Cookie.read('message_divider_top');
         if ($('messages_pane') && message_divider_top) {
@@ -77,4 +91,7 @@ window.addEvent('load', function() {
             message_divider.style.top  = message_divider_top + 'px';
         }
     }
+
 });
+
+
