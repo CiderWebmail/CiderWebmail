@@ -9,7 +9,6 @@ function get_target_node(event) {
 }
 
 function show_message(target) {
-    var uid = target.id.replace('link_', '');
     var messages_pane = $('messages_pane');
 
     $('message_view').innerHTML = loading_message;

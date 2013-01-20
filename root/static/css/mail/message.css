@@ -148,3 +148,32 @@ div.calendar .heading {
     direction: RTL;
     unicode-bidi: embed;
 }
+
+div.external_content_warning {
+    position: relative;
+    left: 2px;
+    right: 2px;
+    margin: 4px;
+    padding: 2px 4px 2px 4px;
+    border: 1px solid red;
+    background-color: yellow;
+}
+
+div.external_content_warning span {
+    font-weight: bold;
+}
+
+div.external_content_warning a {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    padding: 2px 4px 2px 4px;
+    background-color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+div.external_content_warning a:hover {
+    text-decoration: underline;
+}
