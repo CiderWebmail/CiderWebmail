@@ -18,7 +18,7 @@ use Crypt::Util;
 use Crypt::Random::Source qw/get_weak/;
 use MIME::Base64;
 
-use Carp qw/ croak /;
+use Carp qw/ carp croak /;
 
 use feature qw/ switch /;
 
