@@ -7,7 +7,7 @@ use Regexp::Common qw /URI/;
 use HTML::Entities;
 use Text::Autoformat;
 
-use Carp qw/ croak /;
+use Carp qw/ carp croak /;
 
 extends 'CiderWebmail::Part';
 has renderable          => (is => 'rw', isa => 'Bool', default => 1 );
