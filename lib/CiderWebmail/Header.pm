@@ -64,8 +64,9 @@ sub _transform_address {
 
     $o->{data} = decode_mime_words($o);
 
-    $o->{data} =~ s/^<(.*)>$/$1/;
-    $o->{data} =~ s/mailto://gi;
+    #TODO this breaks when we have more than one address
+    #$o->{data} =~ s/^<(.*)>$/$1/;
+    #$o->{data} =~ s/mailto://gi;
 
     my @address = Mail::Address->parse($o->{data});
 
