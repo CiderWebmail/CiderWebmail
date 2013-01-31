@@ -43,7 +43,7 @@
                         </tr>
                         <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class if: repeat/even then: string:${message/flags} even else: string:${message/flags} odd">
                             <td class="icons">
-                                <img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/recent}${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats"/>
+                                <img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats"/>
                                 <img class="attachment_icon" tal:condition="true: message/attachments" tal:attributes="src string:${uri_static}/images/attachment.png" alt="attachment"/>
                                 <img class="flag_icon" tal:condition="true: message/flag/flagged" tal:attributes="src string:${uri_static}/images/flag-red.png" alt="flagged"/>
                                 </td>
