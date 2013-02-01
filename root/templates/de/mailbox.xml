@@ -46,7 +46,7 @@
                                 <span tal:condition="false: sort_from" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/from" tal:attributes="title address/address">from</span>
                             </td>
                             <td tal:condition="true: show_to" tal:attributes="id string:to_${message/uid}" class="recipient">
-                                <span tal:condition="and: false:sort_to true:message/head/to" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/to" tal:attributes="title address/address">from</span>
+                                <span tal:condition="false: sort_to" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/to" tal:attributes="title address/address">from</span>
                             </td>
                             <td class="subject"><a tal:content="message/head/subject" tal:attributes="href message/uri_view; id string:link_${message/uid}" onclick="return false" /></td>
                             <td tal:condition="true: sort_date" tal:content="message/head/date/strftime '%T'">date</td>
