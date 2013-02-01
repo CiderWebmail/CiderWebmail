@@ -60,7 +60,7 @@ sub _transform_address {
 
     #here data might be defined but empty (no address given for example no Cc address)
     #we still need a empty Mail::Address object so we don't break templates that rely on it
-    return Mail::Address->parse('') unless length($o->{data} // '');
+    return [Mail::Address->parse('')] unless length($o->{data} // '');
 
     $o->{data} = decode_mime_words($o);
 
