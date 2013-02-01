@@ -27,9 +27,18 @@ $mech->get( 'http://localhost/mailbox/INBOX?length=99999' );
 # Find all message links:
 # <a href="http://localhost/mailbox/INBOX/27668" onclick="return false" id="link_27668">
 
-my @links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
+my @inbox_links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
 
-for my $link (@links) {
+$mech->get( 'http://localhost/mailbox/Sent?length=99999' );
+
+my @sent_links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
+
+#check if we found *any* links - we should detect at least one otherwise something major is broken
+#most other checks depend on this so bail out in case this failes
+if (@inbox_links == 0) { BAIL_OUT("no links detected in INBOX folder"); }
+if (@sent_links == 0) { BAIL_OUT("no links detected in Sent folder"); }
+
+for my $link (@sent_links, @inbox_links) {
     $mech->get_ok($link->url);
     $mech->follow_link_ok({ url_regex => qr{http://localhost/.*/reply/sender/(\d+|root)\z} }, "replying");
 
