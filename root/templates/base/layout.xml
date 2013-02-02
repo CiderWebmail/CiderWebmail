@@ -17,6 +17,7 @@
         <span tal:replace="structure condcommentend"/>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/custom.css" />
         <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mootools-core.js" />
+        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mootools-more.js" />
         <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/base.js" />
         <script metal:define-slot="scripts" />
     </head>
