@@ -11,8 +11,8 @@
             <link rel="stylesheet" media="screen" tal:attributes="href string:${uri_static}/css/IE6.css" />
         <span tal:replace="structure condcommentend" />
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/custom.css" />
-        <script tal:attributes="src string:${uri_static}/scripts/mootools-core.js" type="text/javascript" />
-        <script tal:attributes="src string:${uri_static}/scripts/mootools-more.js" type="text/javascript" />
+        <script tal:attributes="src string:${uri_static}/3rdparty/mootools/base/mootools-core.js" type="text/javascript" />
+        <script tal:attributes="src string:${uri_static}/3rdparty/mootools/base/mootools-more.js" type="text/javascript" />
         <script tal:attributes="src string:${uri_static}/scripts/base.js" type="text/javascript" />
         <script metal:define-slot="scripts" />
     </head>
