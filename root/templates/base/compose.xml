@@ -9,20 +9,21 @@
     <head>
         <title metal:fill-slot="title" i18n:translate="">Compose Message</title>
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css"/>
+        <script type="text/javascript" tal:attributes="src string:${uri_static}/scripts/mail/compose.js" metal:fill-slot="scripts" />
     </head>
     <body>
         <div id="compose" metal:fill-slot="content">
             <h1 i18n:translate="">Compose new mail message</h1>
             <div id="container">
-                <form tal:attributes="action uri_send" enctype="multipart/form-data" method="post">
+                <form tal:attributes="action uri_send" id="compose_form" enctype="multipart/form-data" method="post">
                     <fieldset>
                         <legend>Message</legend>
                         <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value string:${forward/root_message/uid}/${forward/part_id}"/>
                         <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/root_message/uid}/${in_reply_to/part_id}"/>
                         <label class="from">
                             <span i18n:translate="">From:</span>
-                            <input name="from" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>
-                            <input name="from" tal:condition="false: message/from"/>
+                            <input name="from" data-validators="required validate-email" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>
+                            <input name="from" data-validators="required validate-email" tal:condition="false: message/from"/>
                         </label>
                         <label class="to">
                             <span i18n:translate="">To:</span>
@@ -35,7 +36,7 @@
                         </label>
                         <label class="subject">
                             <span i18n:translate="">Subject:</span>
-                            <input name="subject" tal:attributes="value message/subject"/>
+                            <input name="subject" data-validators="validate-required" tal:attributes="value message/subject"/>
                         </label>
                         <label class="text">
                             <textarea name="body" rows="20" tal:content="message/body"/>
