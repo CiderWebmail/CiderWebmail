@@ -40,11 +40,17 @@ html, body {
     width: 15px;
 }
 
+.messages_list th {
+    vertical-align: middle;
+    line-height: 1.4em;
+}
+
 .message_list tbody tr td {
     border-style: solid;
     border-color: lightgrey;
     border-width: 0px 0px 1px 0px;
     font-size: 0.8em;
+    line-height: 1.4em;
     vertical-align: middle;
     overflow: hidden;
 }
