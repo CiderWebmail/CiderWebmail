@@ -86,9 +86,14 @@ td, th
         overflow: auto;
     }
 
-    #controlpanel #folder_tree a:hover {
-        background: #80c0ff;
-    }
+    #controlpanel #folder_tree .inbox
+        {margin-bottom: 0.5em;}
+
+    #controlpanel #folder_tree .trash,.sent
+        {margin-top: 0.5em;}
+
+    #controlpanel #folder_tree a:hover
+        {background: #80c0ff;}
 
     #controlpanel .activeborder {
         position: absolute;

@@ -73,10 +73,10 @@ sub add_foldertree_icons {
 
     foreach my $folder ( @{$o->{folders}} ) {
         given(lc($folder->{name})) {
-            when('inbox')       { $folder->{icon} = 'inbox.png'; }
-            when('sent')        { $folder->{icon} = 'sent.png'; }
-            when('trash')       { $folder->{icon} = 'trash.png'; }
-            default             { $folder->{icon} = 'folder.png'; }
+            when('inbox')       { $folder->{icon} = 'inbox.png'; $folder->{class} = 'inbox'; }
+            when('sent')        { $folder->{icon} = 'sent.png'; $folder->{class} = 'sent'; }
+            when('trash')       { $folder->{icon} = 'trash.png'; $folder->{class} = 'trash'; }
+            default             { $folder->{icon} = 'folder.png'; $folder->{class} = 'folder'; }
         }
 
         if (defined($folder->{folders})) { #if we have any subfolders
@@ -121,12 +121,32 @@ sub add_foldertree_to_stash {
 
     $folders_hash->{$c->stash->{folder}}{selected} = 'selected' if $c->stash->{folder};
 
+    $tree->{folders} = sort_foldertree($tree->{folders});
+
     $c->stash({
         folder_tree   => $tree,
         folders_hash  => $folders_hash,
     });
 
     return;
+}
+
+sub sort_foldertree {
+    my ($subtree) = @_;
+
+    @{$subtree} = sort {
+        return -1 if ($a->{name} =~ m/^(inbox)$/i);
+        return 1 if ($a->{name} =~ m/^(trash)$/i);
+        return ($a->{name} cmp $b->{name});
+    } @{$subtree};
+
+    foreach(@{$subtree}) {
+        if (defined $_->{folders}) {
+            $_->{folders} = sort_foldertree($_->{folders});
+        }
+    }
+
+    return $subtree;
 }
 
 =head2 send_foldertree_update($c)
