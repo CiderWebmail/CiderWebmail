@@ -15,16 +15,35 @@ td, th
     {vertical-align:top; text-align:left; padding:0.1em 0.4em;}
 
 #controlpanel
-    {position:absolute; top: 0px; height: 100%; left:0px; width:13em; overflow: auto;}
-    #logo
-        {padding:0.3em 0.5em; font-size:110%;}
-        #logo a
-            {font-weight:bold; text-decoration:none;}
-        #logo a:hover
-            {text-decoration:underline;}
+    {position:absolute; top: 2em; left:0px; width:13em; bottom: 0; overflow: auto;}
+
+    div#actions
+        {padding:0; margin:0;}
+
+    div#actions div {
+        float: left;
+        margin: 3px 2px 3px 2px;
+        width: 28px;
+        line-height: 26px;
+        height: 28px;
+        background-color: white;
+        border-style: solid;
+        border-color: #80c0ff;
+        border-width: 1px 1px 1px 1px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    div#actions div:hover {
+        background-color: #efefef;
+    }
+
+    div#actions div img {
+        vertical-align: middle;
+    }
 
     #controlpanel ul
-        {padding: 0; margin-left: 0; list-style: none;}
+        {padding: 0; margin-left: 0; margin-top: 0; list-style: none;}
         #controlpanel ul ul
             { margin-left: 0.7em; }
         #controlpanel ul li
@@ -105,12 +124,16 @@ td, th
 
 
 #headline
-    {position:absolute; top:0px; height:2em; left:13em; right:0px; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc;}
+    {position:absolute; top:0px; height:2em; left:0; right:0px; line-height: 2em; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc;}
     #headline h1
-        {margin:0; padding:0.3em 0.5em; font-size:110%;}
+        {margin: 0 0 0 0.5em; vertical-align: middle; font-size:110%;}
+    #headline a 
+        {float: right; margin: 0 0.5em 0 0; vertical-align: middle; text-decoration: none;}
+    #headline a:hover
+        {text-decoration: underline;}
 
 #content
-    {position:absolute; top:0; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; }
+    {position:absolute; top:2em; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; }
     #content h1
         {margin: 0 0 0.5em 0; padding: 0 0.5em; background-color: #418bd4; color: white; font-size: 140%;}
 
