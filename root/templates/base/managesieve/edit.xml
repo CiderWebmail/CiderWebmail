@@ -11,7 +11,9 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/managesieve.css" metal:fill-slot="css"/>
     </head>
     <body metal:fill-slot="content" tal:omit-tag="">
-        <h1 i18n:translate="">Edit sieve script</h1>
+        <div id="subheadline">
+            <h1 i18n:translate="">Edit sieve script</h1>
+        </div>
         <div id="container">
             <div tal:condition="error" tal:content="error" />
             <form enctype="multipart/form-data" method="post" tal:attributes="action string:${uri_save}">

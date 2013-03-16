@@ -129,9 +129,9 @@ td, th
 
 
 #headline
-    {position:absolute; top:0px; height:2em; left:0; right:0px; line-height: 2em; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc;}
-    #headline h1
-        {margin: 0 0 0 0.5em; vertical-align: middle; font-size:110%;}
+    {position:absolute; top:0px; height:2em; left:0; right:0px; line-height: 2em; background-color:#ffffff; border-left:1px solid #cccccc; border-bottom:1px solid #cccccc; z-index: 99;}
+    #headline h1#logo
+        {margin: 0 0 0 0.5em; float: left; vertical-align: middle; font-size:110%;}
     #headline a 
         {float: right; margin: 0 0.5em 0 0; vertical-align: middle; text-decoration: none;}
     #headline a:hover
@@ -139,10 +139,23 @@ td, th
 
 #content
     {position:absolute; top:2em; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; }
-    #content h1
-        {margin: 0 0 0.5em 0; padding: 0 0.5em; background-color: #418bd4; color: white; font-size: 140%;}
+
+    #content #subheadline 
+        {height: 1.8em; line-height: 1.8em; background-color: #418bd4; color: white;}
+
+    #content #subheadline *
+        {vertical-align: middle;}
+
+    #content #subheadline h1
+        {margin: 0 0 0 0.5em; font-size: 120%; float: left;}
 
     #content #container {
+        position: absolute;
+        top: 1.9em;
+        left: 0;
+        right: 0;
+        margin: 1em;
+
         border-style: solid;
         border-color: #80c0ff;
         border-width: 1px 1px 1px 1px;
@@ -167,9 +180,6 @@ td, th
         -moz-border-radius-bottomleft: 8px;
         -webkit-border-bottom-left-radius: 8px;
 
-        padding: 0.2em 0.5em;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
         overflow: auto;
     }
 

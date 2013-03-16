@@ -5,7 +5,9 @@
         <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/addressbook.css" metal:fill-slot="css" />
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
-        <h1>Kontakt bearbeiten</h1>
+        <div id="subheadline">
+            <h1>Kontakt bearbeiten</h1>
+        </div>
         <div id="container">
             <div tal:condition="error" tal:content="error" />
             <form enctype="multipart/form-data" tal:attributes="action string:${uri_modify}" method="post">

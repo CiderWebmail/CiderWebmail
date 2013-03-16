@@ -61,9 +61,9 @@ html, body {
 
 .message_list tr th {
     border-style: solid;
-    border-color: #efefef #bebebe lightgrey #efefef;
+    border-color: lightgrey #bebebe lightgrey #efefef;
     background-color: #efefef;
-    border-width: 0px 1px 2px 0px;
+    border-width: 1px 1px 2px 0px;
 }
 
 
@@ -121,7 +121,7 @@ ul#folder_tree a.hover {
 
 #messages_pane {
     position: absolute;
-    top: 1.6em;
+    top: 1.9em;
     bottom: 30%;
     left: 0;
     width: 100%;
@@ -179,18 +179,12 @@ ul#folder_tree a.hover {
     padding: 0;
 }
 
-#folder_headline {
-    line-height: 1.6em;
-}
-
-#folder_headline h1 {
-    font-size: 120%;
-    vertical-align: middle;
-}
-
 #quicksearch {
     float: right;
-    vertical-align: middle;
+}
+
+#quicksearch button {
+    margin-right: 0.5em;
 }
 
 @media print {

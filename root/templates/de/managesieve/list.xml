@@ -4,7 +4,9 @@
         <title metal:fill-slot="title">Managesieve</title>
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
-        <h1>Managesieve</h1>
+        <div id="subheadline">
+            <h1>Managesieve</h1>
+        </div>
         <div id="container">
             <table class="managesieve_list" id="managesieve_list">
                 <tr>

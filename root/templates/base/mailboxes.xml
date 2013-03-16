@@ -12,7 +12,9 @@
     </head>
     <body>
         <div metal:fill-slot="content">
-            <h1>Folders</h1>
+            <div id="subheadline">
+                <h1>Folders</h1>
+            </div>
             <div id="container">
                 <ul id="manage_folder_tree">
                     <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">

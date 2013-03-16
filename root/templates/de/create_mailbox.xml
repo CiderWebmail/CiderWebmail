@@ -6,7 +6,9 @@
     </head>
     <body>
         <div metal:fill-slot="content">
-            <h1>Ordner</h1>
+            <div id="subheadline">
+                <h1>Ordner</h1>
+            </div>
             <div id="container">
                 <form>
                     <label>

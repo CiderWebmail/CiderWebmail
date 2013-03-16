@@ -12,7 +12,9 @@
     </head>
     <body>
         <div metal:fill-slot="content">
-            <h1 i18n:translate="">Folders</h1>
+            <div id="subheadline">
+                <h1 i18n:translate="">Folders</h1>
+            </div>
             <div id="container">
                 <form>
                     <label>

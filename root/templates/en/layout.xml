@@ -19,7 +19,7 @@
     <body>
         <div id="headline">
             <a tal:attributes="href uri_logout">Logout</a>
-            <h1>CiderWebmail</h1>
+            <h1 id="logo">CiderWebmail</h1>
         </div>
         <div id="controlpanel">
             <div id="actions">

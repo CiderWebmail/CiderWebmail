@@ -10,7 +10,9 @@
         <title metal:fill-slot="title" i18n:translate="">Addressbook</title>
     </head>
     <body metal:fill-slot="content" tal:omit-tag="">
-        <h1 i18n:translate="">Addressbook</h1>
+        <div id="subheadline">
+            <h1 i18n:translate="">Addressbook</h1>
+        </div>
         <div id="container">
             <table id="addressbook_list" class="addressbook_list">
                 <tr>

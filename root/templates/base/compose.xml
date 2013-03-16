@@ -13,7 +13,9 @@
     </head>
     <body>
         <div id="compose" metal:fill-slot="content">
-            <h1 i18n:translate="">Compose new mail message</h1>
+            <div id="subheadline">
+                <h1 i18n:translate="">Compose new mail message</h1>
+            </div>
             <div id="container">
                 <form tal:attributes="action uri_send" id="compose_form" enctype="multipart/form-data" method="post">
                     <fieldset>

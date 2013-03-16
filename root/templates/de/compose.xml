@@ -7,7 +7,9 @@
     </head>
     <body>
         <div id="compose" metal:fill-slot="content">
-            <h1>Neue E-Mail schreiben</h1>
+            <div id="subheadline">
+                <h1>Neue E-Mail schreiben</h1>
+            </div>
             <div id="container">
                 <form enctype="multipart/form-data" method="post" id="compose_form" tal:attributes="action uri_send">
                     <fieldset>

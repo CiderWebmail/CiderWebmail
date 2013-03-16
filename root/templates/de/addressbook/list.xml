@@ -4,7 +4,9 @@
         <title metal:fill-slot="title">Addressbuch</title>
     </head>
     <body tal:omit-tag="" metal:fill-slot="content">
-        <h1>Addressbuch</h1>
+        <div id="subheadline">
+            <h1>Addressbuch</h1>
+        </div>
         <div id="container">
             <table class="addressbook_list" id="addressbook_list">
                 <tr>
