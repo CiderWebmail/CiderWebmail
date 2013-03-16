@@ -115,7 +115,7 @@ ul#folder_tree a.hover {
 
 #messages_pane {
     position: absolute;
-    top: 2.5em;
+    top: 1.6em;
     bottom: 30%;
     left: 0;
     width: 100%;
@@ -173,19 +173,18 @@ ul#folder_tree a.hover {
     padding: 0;
 }
 
-h1 {
-    font-size: 140%;
+#folder_headline {
+    line-height: 1.6em;
+}
+
+#folder_headline h1 {
+    font-size: 120%;
+    vertical-align: middle;
 }
 
 #quicksearch {
-    position: absolute;
-    top: 0px;
-    right: 5px;
-}
-
-#quicksearch button {
-    margin: 0;
-    vertical-align: bottom;
+    float: right;
+    vertical-align: middle;
 }
 
 @media print {

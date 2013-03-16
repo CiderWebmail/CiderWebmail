@@ -14,12 +14,12 @@
     <body>
         <div tal:omit-tag="" metal:fill-slot="content">
             <div id="folder_headline">
-                <h1 tal:content="folder">Mailbox</h1>
                 <form method="GET" tal:attributes="action uri_quicksearch" id="quicksearch">
                     <input name="sort" tal:attributes="value sort" type="hidden" />
                     <input name="filter" tal:attributes="value filter" />
                     <button type="submit">Search</button>
                 </form>
+                <h1 tal:content="folder">Mailbox</h1>
             </div>
             <div id="messages_pane">
                 <table tal:attributes="class string:message_list ${sort}" id="message_list">
