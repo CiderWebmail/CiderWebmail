@@ -302,11 +302,27 @@ my %icons = qw{
     application/x-planperfect x-office-spreadsheet.png
     application/rtf x-office-document.png
     application/vnd.emusic-emusic_package package-x-generic.png
+
+    application/generic text-x-generic.png
+    text/generic text-x-generic.png
+    video/generic video-x-generic.png
+    image/generic image-x-generic.png
+
+    unknown unknown.png
 };
 
 sub get_mime_icon {
     my ($mime_type) = @_;
-
+    
     return $icons{$mime_type} if defined $icons{$mime_type};
+
+    warn "$mime_type";
+
+    if ($mime_type =~ m|^([a-z\-\.]+)/|i) {
+        my $type = $1;
+
+        return $icons{"$type/generic"} if defined $icons{"$type/generic"};
+    }
+
     return $icons{'unknown'};
 }
