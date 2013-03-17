@@ -136,8 +136,12 @@ sub sort_foldertree {
 
     @{$subtree} = sort {
         return -1 if ($a->{name} =~ m/^(inbox)$/i);
-        return 1 if ($a->{name} =~ m/^(trash)$/i);
-        return ($a->{name} cmp $b->{name});
+        return  1 if ($b->{name} =~ m/^(inbox)$/i);
+
+        return  1 if ($a->{name} =~ m/^(trash)$/i);
+        return -1 if ($b->{name} =~ m/^(trash)$/i);
+
+        return (lc($a->{name}) cmp lc($b->{name}));
     } @{$subtree};
 
     foreach(@{$subtree}) {
