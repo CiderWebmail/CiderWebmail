@@ -316,8 +316,6 @@ sub get_mime_icon {
     
     return $icons{$mime_type} if defined $icons{$mime_type};
 
-    warn "$mime_type";
-
     if ($mime_type =~ m|^([a-z\-\.]+)/|i) {
         my $type = $1;
 
