@@ -22,7 +22,7 @@ sub preferred_alternative {
     my ($self) = @_;
 
     return (
-        first { $_->render if $_->renderable } reverse @{ $self->children }
+        first { $_ if $_->renderable } reverse @{ $self->children }
         or CiderWebmail::Part::Dummy->new({ root_message => $self->root_message, parent_message => $self->get_parent_message })
     );
 }
