@@ -26,7 +26,10 @@ function toggle_important(target) {
 
 
 function resize_iframe(target) {
-    target.style.height = (target.contentWindow.document.body.scrollHeight + 25) + 'px';
+    target.style.height = '1px'; // otherwise some browsers (chrome...) report scrollHeight as 600px (as set in message.css)
+                                 // this way the report the actual scroll height
+                                 
+    target.style.height = target.contentWindow.document.body.scrollHeight + 'px';
 }
 
 add_event_listener('keyup', function (event) {
