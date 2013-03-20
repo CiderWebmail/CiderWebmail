@@ -35,6 +35,8 @@
                 <div tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Vacation rule" title="Vacation rule"/></a></div>
             </div>
 
+            <div class='clear' />
+
             <div id="mailnavigation" tal:condition="true: folder_tree">
                 <ul metal:use-macro="folder_tree.xml#folder_tree"/>
                 <ul metal:use-macro="mailbox_quota.xml#quota_listing"/>

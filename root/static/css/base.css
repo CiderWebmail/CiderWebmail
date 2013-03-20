@@ -14,6 +14,9 @@ table
 td, th
     {vertical-align:top; text-align:left; padding:0.1em 0.4em;}
 
+.clear 
+    {clear: both;}
+
 #controlpanel
     {position:absolute; top: 2em; left:0px; width:13em; bottom: 0; overflow: auto;}
 
