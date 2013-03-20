@@ -64,6 +64,9 @@ function show_previous_message() {
         return 1;
     }
 
+    //reset view to the very top to show group header if no previous message is found
+    messages_pane.scrollTop = 0;
+    
     return 0;
 }
 
