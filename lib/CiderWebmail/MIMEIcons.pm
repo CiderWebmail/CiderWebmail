@@ -3,36 +3,36 @@ use warnings;
 use strict;
 
 my %icons = qw{
-    application/rss+xml text-html.png
+    application/rss+xml application-rss+xml.png
     application/x-amipro x-office-document.png
     application/x-cdrdao-toc text-x-generic.png
     application/mac-binhex40 package-x-generic.png
-    application/x-ruby text-x-script.png
+    application/x-ruby application-x-ruby.png
     application/x-dvi x-office-document.png
     application/andrew-inset x-office-document.png
     application/x-ole-storage x-office-document.png
     text/x-reject text-x-generic.png
-    application/x-egon image-x-generic.png
+    application/x-egon application-x-egon.png
     application/x-nintendo-ds-rom application-x-executable.png
     application/x-t602 x-office-document.png
-    application/x-blender image-x-generic.png
+    application/x-blender application-x-blender.png
     application/x-markaby text-x-script.png
     application/smil video-x-generic.png
-    application/vnd.sun.xml.impress.template application-vnd.oasis.opendocument.presentation.png
-    application/vnd.oasis.opendocument.text x-office-document.png
+    application/vnd.sun.xml.impress.template application-vnd.sun.xml.impress.template.png
+    application/vnd.oasis.opendocument.text application-vnd.oasis.opendocument.text.png
     application/x-msx-rom application-x-executable.png
-    application/vnd.sun.xml.calc x-office-spreadsheet.png
+    application/vnd.sun.xml.calc application-vnd.sun.xml.calc.png
     x-epoc/x-sisx-app package-x-generic.png
-    message/partial text-x-generic.png
+    message/partial message-partial.png
     application/sdp video-x-generic.png
-    application/javascript text-x-script.png
+    application/javascript application-javascript.png
     application/x-oleo x-office-spreadsheet.png
     application/x-xzpdf x-office-document.png
-    application/x-java-archive package-x-generic.png
+    application/x-java-archive application-x-java-archive.png
     application/x-gnucash x-office-spreadsheet.png
     application/x-yaml text-x-generic.png
-    application/vnd.ms-access x-office-document.png
-    application/vnd.wordperfect x-office-document.png
+    application/vnd.ms-access application-vnd.ms-access.png
+    application/vnd.wordperfect application-vnd.wordperfect.png
     application/x-stuffit package-x-generic.png
     application/x-xbel text-html.png
     application/x-quicktime-media-link video-x-generic.png
@@ -43,16 +43,16 @@ my %icons = qw{
     application/prs.plucker x-office-document.png
     application/btoa text-x-hex.png
     message/delivery-status text-x-generic.png
-    application/vnd.openxmlformats-officedocument.wordprocessingml.document x-office-document.png
-    application/x-archive package-x-generic.png
-    application/x-shellscript text-x-script.png
-    application/xhtml+xml text-html.png
+    application/vnd.openxmlformats-officedocument.wordprocessingml.document application-vnd.openxmlformats-officedocument.wordprocessingml.document.png
+    application/x-archive application-x-archive.png
+    application/x-shellscript application-x-shellscript.png
+    application/xhtml+xml application-xhtml+xml.png
     application/x-lrzip package-x-generic.png
     application/vnd.oasis.opendocument.text-flat-xml x-office-document.png
-    application/x-lha package-x-generic.png
+    application/x-lha application-x-lha.png
     application/x-mobipocket-ebook x-office-document.png
     message/disposition-notification text-x-generic.png
-    application/vnd.stardivision.math x-office-document.png
+    application/vnd.stardivision.math application-vnd.stardivision.math.png
     application/vnd.openxmlformats-officedocument.presentationml.presentation application-vnd.oasis.opendocument.presentation.png
     video/x-javafx video-x-generic.png
     application/vnd.hp-pcl image-x-generic.png
@@ -62,11 +62,11 @@ my %icons = qw{
     application/x-nautilus-link text-x-generic.png
     application/x-sms-rom application-x-executable.png
     application/vnd.openofficeorg.extension x-office-document.png
-    application/x-kontour image-x-generic.png
+    application/x-kontour application-x-kontour.png
     application/x-go-sgf text-x-generic.png
     application/x-bzpdf x-office-document.png
     application/x-lhz package-x-generic.png
-    application/x-ms-dos-executable application-x-executable.png
+    application/x-ms-dos-executable application-x-ms-dos-executable.png
     application/x-kword-crypt x-office-document.png
     application/vnd.stardivision.chart x-office-spreadsheet.png
     application/vnd.ms-works x-office-document.png
@@ -74,136 +74,136 @@ my %icons = qw{
     application/x-gnuplot x-office-document.png
     application/x-snes-rom application-x-executable.png
     application/x-wpg image-x-generic.png
-    application/x-gzdvi x-office-document.png
+    application/x-gzdvi application-x-gzdvi.png
     application/x-shared-library-la text-x-script.png
     application/base64 text-x-hex.png
-    application/vnd.oasis.opendocument.image image-x-generic.png
+    application/vnd.oasis.opendocument.image application-vnd.oasis.opendocument.image.png
     application/x-kivio x-office-document.png
-    application/x-m4 text-x-script.png
-    application/x-gzpostscript x-office-document.png
+    application/x-m4 application-x-m4.png
+    application/x-gzpostscript application-x-gzpostscript.png
     application/x-java-pack200 package-x-generic.png
-    application/x-gnumeric x-office-spreadsheet.png
-    application/x-arc package-x-generic.png
+    application/x-gnumeric application-x-gnumeric.png
+    application/x-arc application-x-arc.png
     application/xspf+xml audio-x-generic.png
     application/x-macbinary package-x-generic.png
-    application/x-pak package-x-generic.png
+    application/x-pak application-x-pak.png
     application/x-dc-rom application-x-executable.png
     application/mbox text-x-generic.png
-    application/x-kword x-office-document.png
-    application/x-arj package-x-generic.png
+    application/x-kword application-x-kword.png
+    application/x-arj application-x-arj.png
     application/x-windows-themepack package-x-generic.png
-    application/x-troff-man text-x-generic.png
-    message/news text-x-generic.png
-    application/x-desktop text-x-generic.png
-    application/x-lyx x-office-document.png
-    application/x-ace package-x-generic.png
+    application/x-troff-man application-x-troff-man.png
+    message/news message-news.png
+    application/x-desktop application-x-desktop.png
+    application/x-lyx application-x-lyx.png
+    application/x-ace application-x-ace.png
     application/vnd.oasis.opendocument.presentation application-vnd.oasis.opendocument.presentation.png
     application/x-netcdf x-office-document.png
-    application/xml text-html.png
+    application/xml application-xml.png
     application/x-hdf x-office-document.png
-    application/msword x-office-document.png
-    application/vnd.sun.xml.draw image-x-generic.png
+    application/msword application-msword.png
+    application/vnd.sun.xml.draw application-vnd.sun.xml.draw.png
     application/x-chess-pgn text-x-generic.png
-    message/rfc822 text-x-generic.png
+    message/rfc822 message-rfc822.png
     application/x-smaf audio-x-generic.png
     application/x-asp text-x-script.png
-    application/vnd.oasis.opendocument.database x-office-document.png
+    application/vnd.oasis.opendocument.database application-vnd.oasis.opendocument.database.png
     application/x-magicpoint application-vnd.oasis.opendocument.presentation.png
     application/vnd.ms-excel.sheet.binary.macroEnabled.12 x-office-spreadsheet.png
     application/x-kspread x-office-spreadsheet.png
-    application/zip package-x-generic.png
+    application/zip application-zip.png
     application/vnd.ms-excel.addin.macroEnabled.12 x-office-spreadsheet.png
     application/x-fluid x-office-document.png
     application/x-toutdoux x-office-document.png
-    application/x-compress package-x-generic.png
-    application/vnd.sun.xml.calc.template x-office-spreadsheet.png
+    application/x-compress application-x-compress.png
+    application/vnd.sun.xml.calc.template application-vnd.sun.xml.calc.template.png
     text/x-base32 text-x-hex.png
     application/x-lrzip-compressed-tar package-x-generic.png
     text/x-ascii85 text-x-hex.png
     application/x-pef-executable application-x-executable.png
     application/x-ica text-x-generic.png
     application/x-slp package-x-generic.png
-    application/x-tarz package-x-generic.png
+    application/x-tarz application-x-tarz.png
     application/x-ufraw image-x-generic.png
     application/annodex video-x-generic.png
     application/x-cb7 x-office-document.png
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet x-office-spreadsheet.png
-    application/vnd.oasis.opendocument.graphics image-x-generic.png
+    application/vnd.oasis.opendocument.graphics application-vnd.oasis.opendocument.graphics.png
     application/x-matroska video-x-generic.png
     application/xml-external-parsed-entity text-html.png
-    application/vnd.oasis.opendocument.formula x-office-document.png
+    application/vnd.oasis.opendocument.formula application-vnd.oasis.opendocument.formula.png
     application/vnd.ms-htmlhelp x-office-document.png
     application/vnd.hp-hpgl image-x-generic.png
     application/x-gmc-link text-x-generic.png
-    application/pkcs7-signature text-x-generic.png
-    application/x-bzip package-x-generic.png
+    application/pkcs7-signature application-pkcs7-signature.png
+    application/x-bzip application-x-bzip.png
     application/x-sami text-x-generic.png
     application/x-kchart x-office-spreadsheet.png
-    application/x-gzip package-x-generic.png
-    application/x-tzo package-x-generic.png
+    application/x-gzip application-x-gzip.png
+    application/x-tzo application-x-tzo.png
     application/x-frame x-office-document.png
-    application/x-bzip-compressed-tar package-x-generic.png
-    application/x-subrip text-x-generic.png
+    application/x-bzip-compressed-tar application-x-bzip-compressed-tar.png
+    application/x-subrip application-x-subrip.png
     application/oda x-office-document.png
     application/x-lzip package-x-generic.png
     application/vnd.ms-excel.sheet.macroEnabled.12 x-office-spreadsheet.png
     application/dicom image-x-generic.png
-    application/x-shockwave-flash video-x-generic.png
+    application/x-shockwave-flash application-x-shockwave-flash.png
     application/x-xz-compressed-tar package-x-generic.png
     application/mxf video-x-generic.png
     application/x-executable application-x-executable.png
     application/vnd.ms-powerpoint.presentation.macroEnabled.12 application-vnd.ms-powerpoint.png
-    application/vnd.sun.xml.impress application-vnd.oasis.opendocument.presentation.png
+    application/vnd.sun.xml.impress application-vnd.sun.xml.impress.png
     application/vnd.stardivision.writer x-office-document.png
     application/vnd.visio x-office-document.png
     application/x-kspread-crypt x-office-spreadsheet.png
     application/x-netshow-channel video-x-generic.png
     application/x-ustar package-x-generic.png
-    application/x-rpm package-x-generic.png
+    application/x-rpm application-x-rpm.png
     application/vnd.stardivision.impress application-vnd.oasis.opendocument.presentation.png
-    application/x-perl text-x-script.png
-    application/vnd.sun.xml.writer.template x-office-document.png
-    application/vnd.oasis.opendocument.text-master x-office-document.png
+    application/x-perl application-x-perl.png
+    application/vnd.sun.xml.writer.template application-vnd.sun.xml.writer.template.png
+    application/vnd.oasis.opendocument.text-master application-vnd.oasis.opendocument.text-master.png
     application/x-cbr x-office-document.png
     application/x-cbt x-office-document.png
     application/x-n64-rom application-x-executable.png
-    application/x-krita x-office-document.png
-    application/x-it87 text-x-generic.png
-    application/vnd.oasis.opendocument.chart x-office-spreadsheet.png
+    application/x-krita application-x-krita.png
+    application/x-it87 application-x-it87.png
+    application/vnd.oasis.opendocument.chart application-vnd.oasis.opendocument.chart.png
     application/x-cbz x-office-document.png
     application/x-killustrator image-x-generic.png
     application/vnd.lotus-1-2-3 x-office-spreadsheet.png
-    application/x-rar package-x-generic.png
-    application/x-applix-spreadsheet x-office-spreadsheet.png
+    application/x-rar application-x-rar.png
+    application/x-applix-spreadsheet application-x-applix-spreadsheet.png
     application/x-sv4cpio package-x-generic.png
     application/x-pw x-office-document.png
-    application/x-zoo package-x-generic.png
+    application/x-zoo application-x-zoo.png
     application/x-hwp x-office-document.png
     model/vrml x-office-document.png
-    application/vnd.stardivision.calc x-office-spreadsheet.png
+    application/vnd.stardivision.calc application-vnd.stardivision.calc.png
     application/x-hwt x-office-document.png
-    application/x-quattropro x-office-spreadsheet.png
+    application/x-quattropro application-x-quattropro.png
     application/oxps x-office-document.png
-    application/x-awk text-x-script.png
-    application/vnd.sun.xml.math x-office-document.png
+    application/x-awk application-x-awk.png
+    application/vnd.sun.xml.math application-vnd.sun.xml.math.png
     application/x-dar package-x-generic.png
-    application/x-designer x-office-document.png
+    application/x-designer application-x-designer.png
     application/x-karbon image-x-generic.png
     application/x-csh text-x-script.png
-    application/pgp-encrypted text-x-generic.png
-    application/pdf x-office-document.png
-    application/xslt+xml text-x-generic.png
-    application/x-tgif x-office-document.png
+    application/pgp-encrypted application-pgp-encrypted.png
+    application/pdf application-pdf.png
+    application/xslt+xml application-xslt+xml.png
+    application/x-tgif application-x-tgif.png
     application/x-gedcom x-office-document.png
     application/x-kpresenter application-vnd.oasis.opendocument.presentation.png
     text/x-xxencode text-x-hex.png
-    application/x-lzma-compressed-tar package-x-generic.png
-    application/x-object x-office-document.png
+    application/x-lzma-compressed-tar application-x-lzma-compressed-tar.png
+    application/x-object application-x-object.png
     application/x-dia-shape image-x-generic.png
     application/vnd.mozilla.xul+xml x-office-document.png
-    application/epub+zip x-office-document.png
+    application/epub+zip application-epub+zip.png
     application/x-qw x-office-spreadsheet.png
-    application/x-cpio package-x-generic.png
+    application/x-cpio application-x-cpio.png
     message/external-body text-x-generic.png
     application/x-dbf x-office-document.png
     application/x-bcpio package-x-generic.png
@@ -213,12 +213,12 @@ my %icons = qw{
     application/x-gba-rom application-x-executable.png
     application/x-mozilla-bookmarks text-html.png
     application/ogg video-x-generic.png
-    application/vnd.sun.xml.draw.template image-x-generic.png
-    application/x-bzdvi x-office-document.png
+    application/vnd.sun.xml.draw.template application-vnd.sun.xml.draw.template.png
+    application/x-bzdvi application-x-bzdvi.png
     application/x-gameboy-rom application-x-executable.png
     application/vnd.oasis.opendocument.graphics-flat-xml image-x-generic.png
-    application/vnd.sun.xml.writer.global x-office-document.png
-    application/x-abiword x-office-document.png
+    application/vnd.sun.xml.writer.global application-vnd.sun.xml.writer.global.png
+    application/x-abiword application-x-abiword.png
     application/atom+xml text-html.png
     application/x-lzma package-x-generic.png
     application/x-shorten audio-x-generic.png
@@ -226,15 +226,15 @@ my %icons = qw{
     application/x-troff-man-compressed text-x-generic.png
     text/x-opml+xml text-html.png
     application/x-wais-source text-x-generic.png
-    application/x-applix-word x-office-document.png
+    application/x-applix-word application-x-applix-word.png
     application/vnd.symbian.install package-x-generic.png
     application/vnd.openxmlformats-officedocument.wordprocessingml.template x-office-document.png
     application/vnd.oasis.opendocument.graphics-template image-x-generic.png
     application/x-x509-ca-cert text-x-generic.png
     text/x-ihex text-x-hex.png
-    application/x-php text-x-script.png
+    application/x-php application-x-php.png
     application/x-sc x-office-spreadsheet.png
-    application/x-cue text-x-generic.png
+    application/x-cue application-x-cue.png
     application/x-graphite x-office-document.png
     application/x-jbuilder-project x-office-document.png
     application/x-cisco-vpn-settings text-x-generic.png
@@ -243,64 +243,64 @@ my %icons = qw{
     application/vnd.ms-excel.template.macroEnabled.12 x-office-spreadsheet.png
     application/pkcs10 text-x-generic.png
     application/relax-ng-compact-syntax text-x-generic.png
-    application/x-7z-compressed package-x-generic.png
+    application/x-7z-compressed application-x-7z-compressed.png
     text/x-uuencode text-x-hex.png
     application/vnd.ms-word.document.macroEnabled.12 x-office-document.png
     application/x-ksysv-package package-x-generic.png
     application/x-xliff text-x-generic.png
     application/x-aportisdoc x-office-document.png
     application/docbook+xml x-office-document.png
-    application/x-siag x-office-spreadsheet.png
+    application/x-siag application-x-siag.png
     video/x-flv video-x-generic.png
-    application/vnd.sun.xml.writer x-office-document.png
+    application/vnd.sun.xml.writer application-vnd.sun.xml.writer.png
     application/x-gtktalog x-office-document.png
     application/x-profile text-x-generic.png
     application/vnd.oasis.opendocument.spreadsheet-flat-xml x-office-spreadsheet.png
     application/vnd.oasis.opendocument.presentation-flat-xml application-vnd.oasis.opendocument.presentation.png
-    application/x-mswrite x-office-document.png
-    application/vnd.oasis.opendocument.spreadsheet x-office-spreadsheet.png
+    application/x-mswrite application-x-mswrite.png
+    application/vnd.oasis.opendocument.spreadsheet application-vnd.oasis.opendocument.spreadsheet.png
     application/vnd.corel-draw image-x-generic.png
     application/vnd.ms-wpl video-x-generic.png
-    application/msword-template x-office-document.png
+    application/msword-template application-msword-template.png
     application/vnd.openxmlformats-officedocument.presentationml.template application-vnd.oasis.opendocument.presentation.png
     application/xml-dtd text-x-generic.png
-    application/pgp-keys text-x-generic.png
-    application/x-deb package-x-generic.png
-    application/vnd.oasis.opendocument.spreadsheet-template x-office-spreadsheet.png
-    application/vnd.oasis.opendocument.presentation-template application-vnd.oasis.opendocument.presentation.png
+    application/pgp-keys application-pgp-keys.png
+    application/x-deb application-x-deb.png
+    application/vnd.oasis.opendocument.spreadsheet-template application-vnd.oasis.opendocument.spreadsheet-template.png
+    application/vnd.oasis.opendocument.presentation-template application-vnd.oasis.opendocument.presentation-template.png
     application/mathematica x-office-document.png
     application/vnd.openxmlformats-officedocument.spreadsheetml.template x-office-spreadsheet.png
-    application/x-tar package-x-generic.png
+    application/x-tar application-x-tar.png
     application/x-java-jnlp-file text-x-script.png
     application/x-genesis-rom application-x-executable.png
     application/x-par2 package-x-generic.png
-    application/x-lzop package-x-generic.png
-    application/illustrator image-x-generic.png
-    application/vnd.rn-realmedia video-x-generic.png
-    application/pkcs7-mime text-x-generic.png
-    application/vnd.oasis.opendocument.text-template x-office-document.png
+    application/x-lzop application-x-lzop.png
+    application/illustrator application-illustrator.png
+    application/vnd.rn-realmedia application-vnd.rn-realmedia.png
+    application/pkcs7-mime application-pkcs7-mime.png
+    application/vnd.oasis.opendocument.text-template application-vnd.oasis.opendocument.text-template.png
     application/vnd.oasis.opendocument.chart-template x-office-spreadsheet.png
     application/x-kugar x-office-document.png
-    application/vnd.oasis.opendocument.formula-template x-office-document.png
+    application/vnd.oasis.opendocument.formula-template application-vnd.oasis.opendocument.formula-template.png
     application/vnd.ms-cab-compressed package-x-generic.png
     application/x-cpio-compressed package-x-generic.png
-    application/x-compressed-tar package-x-generic.png
-    application/pgp-signature text-x-generic.png
+    application/x-compressed-tar application-x-compressed-tar.png
+    application/pgp-signature application-pgp-signature.png
     application/vnd.openxmlformats-officedocument.presentationml.slide application-vnd.oasis.opendocument.presentation.png
-    application/vnd.ms-excel x-office-spreadsheet.png
+    application/vnd.ms-excel application-vnd.ms-excel.png
     text/vtt text-x-generic.png
-    application/vnd.stardivision.draw image-x-generic.png
-    message/x-gnu-rmail text-x-generic.png
+    application/vnd.stardivision.draw application-vnd.stardivision.draw.png
+    message/x-gnu-rmail message-x-gnu-rmail.png
     application/x-kpovmodeler image-x-generic.png
     application/vnd.openxmlformats-officedocument.presentationml.slideshow application-vnd.oasis.opendocument.presentation.png
     application/x-dia-diagram image-x-generic.png
     text/vnd.graphviz x-office-document.png
     application/x-bzpostscript x-office-document.png
     application/x-alz package-x-generic.png
-    application/postscript x-office-document.png
-    application/x-kformula x-office-document.png
+    application/postscript application-postscript.png
+    application/x-kformula application-x-kformula.png
     application/x-planperfect x-office-spreadsheet.png
-    application/rtf x-office-document.png
+    application/rtf application-rtf.png
     application/vnd.emusic-emusic_package package-x-generic.png
 
     application/generic text-x-generic.png
