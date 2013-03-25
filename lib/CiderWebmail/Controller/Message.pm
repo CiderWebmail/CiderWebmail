@@ -363,7 +363,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
         email => {
             from            => $c->req->param('from'),
             to              => $c->req->param('to'),
-            ($c->req->param('cc') ? (Cc => $c->req->param('cc')) : ()),
+            ($c->req->param('cc') ? (cc => $c->req->param('cc')) : ()),
             subject         => $c->req->param('subject'),
             signature       => $c->req->param('signature'),
             save_to_folder  => $sent_folder,
