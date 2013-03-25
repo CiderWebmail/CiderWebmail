@@ -28,11 +28,11 @@
         </div>
         <div id="controlpanel">
             <div id="actions">
-                <div tal:condition="true: uri_compose"><a tal:attributes="href uri_compose" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/compose.png" alt="Compose new mail" title="Compose new mail"/></a></div>
-                <div tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/manage_folders.png" alt="Manage folders" title="Manage folders"/></a></div>
-                <div tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Addressbook" title="Addressbook" /></a></div>
-                <div tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Manage rules" title="Manage rules"/></a></div>
-                <div tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Vacation rule" title="Vacation rule"/></a></div>
+                <div tal:condition="true: uri_compose"><a tal:attributes="href uri_compose" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/compose.png" alt="Compose new mail" title="Compose new mail" i18n:attributes="title"/></a></div>
+                <div tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/manage_folders.png" alt="Manage folders" title="Manage folders" i18n:attributes="title"/></a></div>
+                <div tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Addressbook" title="Addressbook" i18n:attributes="title" /></a></div>
+                <div tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Manage rules" title="Manage rules" i18n:attributes="title"/></a></div>
+                <div tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation" i18n:translate=""><img tal:attributes="src string:${uri_static}/images/address_book.png" alt="Vacation rule" title="Vacation rule" i18n:attributes="title"/></a></div>
             </div>
 
             <div class='clear' />

@@ -9,26 +9,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "${1}"
+msgstr "${1}"
+
 msgid "${1} ${2}"
 msgstr "${1} ${2}"
-
-msgid "${1} Addressbook"
-msgstr "${1} Addressbuch"
-
-msgid "${1} Compose new mail"
-msgstr "${1} Neue E-Mail schreiben"
-
-msgid "${1} Logout"
-msgstr "${1} Ausloggen"
-
-msgid "${1} Manage folders"
-msgstr "${1} Ordner bearbeiten"
-
-msgid "${1} Manage rules"
-msgstr "${1} Regeln bearbeiten"
-
-msgid "${1} Vacation rule"
-msgstr "${1} Abwesenheitsnachricht"
 
 msgid "Active:"
 msgstr "Aktiv:"
@@ -46,6 +31,9 @@ msgid "Cc:"
 msgstr "Cc:"
 
 msgid "Compose Message"
+msgstr "Neue E-Mail schreiben"
+
+msgid "Compose new mail"
 msgstr "Neue E-Mail schreiben"
 
 msgid "Compose new mail message"
@@ -132,6 +120,15 @@ msgstr "Lade E-Mail"
 msgid "Login"
 msgstr "Login"
 
+msgid "Logout"
+msgstr "Ausloggen"
+
+msgid "Manage folders"
+msgstr "Ordner bearbeiten"
+
+msgid "Manage rules"
+msgstr "Regeln bearbeiten"
+
 msgid "Managesieve"
 msgstr "Managesieve"
 
@@ -213,6 +210,9 @@ msgstr "E-Mail senden"
 msgid "Username"
 msgstr "Benutzername"
 
+msgid "Vacation rule"
+msgstr "Urlaubsregel"
+
 msgid "View header"
 msgstr "Header anzeigen"
 
@@ -228,14 +228,23 @@ msgstr "löschen"
 msgid "edit"
 msgstr "bearbeiten"
 
-#~ msgid "Compose new mail"
-#~ msgstr "Neue E-Mail schreiben"
+#~ msgid "${1} Addressbook"
+#~ msgstr "${1} Addressbuch"
 
-#~ msgid "Logout"
-#~ msgstr "Ausloggen"
+#~ msgid "${1} Compose new mail"
+#~ msgstr "${1} Neue E-Mail schreiben"
 
-#~ msgid "Manage folders"
-#~ msgstr "Ordner bearbeiten"
+#~ msgid "${1} Logout"
+#~ msgstr "${1} Ausloggen"
+
+#~ msgid "${1} Manage folders"
+#~ msgstr "${1} Ordner bearbeiten"
+
+#~ msgid "${1} Manage rules"
+#~ msgstr "${1} Regeln bearbeiten"
+
+#~ msgid "${1} Vacation rule"
+#~ msgstr "${1} Abwesenheitsnachricht"
 
 #~ msgid "Please login using your mailbox credentials:"
 #~ msgstr "Bitte loggen Sie sich mit den Zugangsdaten Ihrer Mailbox ein:"

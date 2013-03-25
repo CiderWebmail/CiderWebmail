@@ -18,16 +18,16 @@
     </head>
     <body>
         <div id="headline">
-            <a tal:attributes="href uri_logout">Logout</a>
+            <a tal:attributes="href uri_logout">Ausloggen</a>
             <h1 id="logo">CiderWebmail</h1>
         </div>
         <div id="controlpanel">
             <div id="actions">
-                <div tal:condition="true: uri_compose"><a tal:attributes="href uri_compose"><img alt="Compose new mail" title="Compose new mail" tal:attributes="src string:${uri_static}/images/compose.png" /></a></div>
-                <div tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes"><img alt="Manage folders" title="Manage folders" tal:attributes="src string:${uri_static}/images/manage_folders.png" /></a></div>
-                <div tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook"><img alt="Addressbook" title="Addressbook" tal:attributes="src string:${uri_static}/images/address_book.png" /></a></div>
-                <div tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve"><img alt="Manage rules" title="Manage rules" tal:attributes="src string:${uri_static}/images/address_book.png" /></a></div>
-                <div tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation"><img alt="Vacation rule" title="Vacation rule" tal:attributes="src string:${uri_static}/images/address_book.png" /></a></div>
+                <div tal:condition="true: uri_compose"><a tal:attributes="href uri_compose"><img alt="Compose new mail" title="Neue E-Mail schreiben" tal:attributes="src string:${uri_static}/images/compose.png" /></a></div>
+                <div tal:condition="true: uri_mailboxes"><a tal:attributes="href uri_mailboxes"><img alt="Manage folders" title="Ordner bearbeiten" tal:attributes="src string:${uri_static}/images/manage_folders.png" /></a></div>
+                <div tal:condition="true: uri_addressbook"><a tal:attributes="href uri_addressbook"><img alt="Addressbook" title="Addressbuch" tal:attributes="src string:${uri_static}/images/address_book.png" /></a></div>
+                <div tal:condition="true: uri_managesieve"><a tal:attributes="href uri_managesieve"><img alt="Manage rules" title="Regeln bearbeiten" tal:attributes="src string:${uri_static}/images/address_book.png" /></a></div>
+                <div tal:condition="true: uri_vacation"><a tal:attributes="href uri_vacation"><img alt="Vacation rule" title="Urlaubsregel" tal:attributes="src string:${uri_static}/images/address_book.png" /></a></div>
             </div>
 
             <div class="clear" />

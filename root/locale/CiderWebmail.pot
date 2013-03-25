@@ -1,23 +1,8 @@
+msgid "${1}"
+msgstr "${1}"
+
 msgid "${1} ${2}"
 msgstr "${1} ${2}"
-
-msgid "${1} Addressbook"
-msgstr "${1} Addressbook"
-
-msgid "${1} Compose new mail"
-msgstr "${1} Compose new mail"
-
-msgid "${1} Logout"
-msgstr "${1} Logout"
-
-msgid "${1} Manage folders"
-msgstr "${1} Manage folders"
-
-msgid "${1} Manage rules"
-msgstr "${1} Manage rules"
-
-msgid "${1} Vacation rule"
-msgstr "${1} Vacation rule"
 
 msgid "Active:"
 msgstr "Active:"
@@ -36,6 +21,9 @@ msgstr "Cc:"
 
 msgid "Compose Message"
 msgstr "Compose Message"
+
+msgid "Compose new mail"
+msgstr "Compose new mail"
 
 msgid "Compose new mail message"
 msgstr "Compose new mail message"
@@ -108,6 +96,15 @@ msgstr "Loading message"
 
 msgid "Login"
 msgstr "Login"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Manage folders"
+msgstr "Manage folders"
+
+msgid "Manage rules"
+msgstr "Manage rules"
 
 msgid "Managesieve"
 msgstr "Managesieve"
@@ -189,6 +186,9 @@ msgstr "Transmit message"
 
 msgid "Username"
 msgstr "Username"
+
+msgid "Vacation rule"
+msgstr "Vacation rule"
 
 msgid "View header"
 msgstr "View header"
