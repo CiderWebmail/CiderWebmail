@@ -65,7 +65,10 @@ function show_previous_message() {
     }
 
     //reset view to the very top to show group header if no previous message is found
+    //and reset the message to the default
     messages_pane.scrollTop = 0;
+    reset_message_view();
+
     
     return 0;
 }

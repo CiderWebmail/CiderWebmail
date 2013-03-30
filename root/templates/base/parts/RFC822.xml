@@ -2,92 +2,94 @@
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="CiderWebmail">
-    <div tal:attributes="class string:message_view_head">
-        <h1 tal:content="message/subject">Subject</h1>
+    <div class="message_rfc822">
+        <div tal:attributes="class string:message_view_head">
+            <h1 tal:content="message/subject">Subject</h1>
 
-        <p class="message_actions">
-            <span class="message_main_actions">
-                <a class="reply" tal:attributes="href string:${uri_reply}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
-                <a class="reply_all" tal:attributes="href string:${uri_reply_all}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_all.png" alt=""/> <span i18n:translate="">Reply All</span></a>
-                <a class="reply_list" tal:attributes="href string:${uri_reply_list}/${message/part_id}" tal:condition="message/list_post" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_list.png" alt=""/> <span i18n:translate="">Reply List</span></a>
-                <a class="forward" tal:attributes="href string:${uri_forward}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
-            </span>
-            <span class="message_detail_actions">
-                <a tal:attributes="href uri_view_source" onclick="return open_in_new_window(this)" i18n:translate="">View source</a>
-                <a tal:attributes="href string:${uri_get_header}/${message/part_id}" onclick="return open_in_new_window(this)" i18n:translate="">View header</a>
-                <a tal:attributes="href string:${uri_toggle_important}" onclick="toggle_important(this); return false;" i18n:translate="" i18n:attributes="title" title="Toggle important flag" tal:condition="true: message/is_root_part">
-                    <img id="important_flag" tal:condition="true: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag-red.png"/>
-                    <img id="important_flag" tal:condition="false: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag.png"/>
-                </a>
-            </span>
-        </p>
+            <p class="message_actions">
+                <span class="message_main_actions">
+                    <a class="reply" tal:attributes="href string:${uri_reply}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply.png" alt=""/> <span i18n:translate="">Reply</span></a>
+                    <a class="reply_all" tal:attributes="href string:${uri_reply_all}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_all.png" alt=""/> <span i18n:translate="">Reply All</span></a>
+                    <a class="reply_list" tal:attributes="href string:${uri_reply_list}/${message/part_id}" tal:condition="message/list_post" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_reply_list.png" alt=""/> <span i18n:translate="">Reply List</span></a>
+                    <a class="forward" tal:attributes="href string:${uri_forward}/${message/part_id}" onclick="return open_in_new_window(this)"><img tal:attributes="src string:${uri_static}/images/mail_forward.png" alt=""/> <span i18n:translate="">Forward</span></a>
+                </span>
+                <span class="message_detail_actions">
+                    <a tal:attributes="href uri_view_source" onclick="return open_in_new_window(this)" i18n:translate="">View source</a>
+                    <a tal:attributes="href string:${uri_get_header}/${message/part_id}" onclick="return open_in_new_window(this)" i18n:translate="">View header</a>
+                    <a tal:attributes="href string:${uri_toggle_important}" onclick="toggle_important(this); return false;" i18n:translate="" i18n:attributes="title" title="Toggle important flag" tal:condition="true: message/is_root_part">
+                        <img id="important_flag" tal:condition="true: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag-red.png"/>
+                        <img id="important_flag" tal:condition="false: message/root_message/flags/flagged" tal:attributes="src string:${uri_static}/images/flag.png"/>
+                    </a>
+                </span>
+            </p>
 
-        <form class="move_message" tal:attributes="action uri_move" method="post">
-            <fieldset>
-                <label>
-                    <span i18n:translate="">Target folder:</span>
-                    <select name="target_folder">
-                        <option tal:repeat="folder target_folders" tal:content="folder/id"/>
-                    </select>
-                </label>
-                <button type="submit" i18n:translate="">Move message</button>
-            </fieldset>
-        </form>
+            <form class="move_message" tal:attributes="action uri_move" method="post">
+                <fieldset>
+                    <label>
+                        <span i18n:translate="">Target folder:</span>
+                        <select name="target_folder">
+                            <option tal:repeat="folder target_folders" tal:content="folder/id"/>
+                        </select>
+                    </label>
+                    <button type="submit" i18n:translate="">Move message</button>
+                </fieldset>
+            </form>
 
-        <div class="message_header">
-            <table>
-                <tr tal:condition="true: message/from">
-                    <th i18n:translate="">From:</th>
-                    <td>
-                        <span tal:repeat="address message/from">
-                            <a class="from_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
-                            <a tal:attributes="href string:${uri_add_address}?email=${address/address}&name=${address/name}" title="Add to addressbook">+</a>
-                            <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr tal:condition="true: message/to">
-                    <th i18n:translate="">To:</th>
-                    <td>
-                        <span tal:repeat="address message/to">
-                            <a class="to_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
-                            <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr tal:condition="true:message/cc">
-                    <th i18n:translate="">Cc:</th>
-                    <td>
-                        <span tal:repeat="address message/cc">
-                            <a class="cc_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
-                            <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr tal:condition="true: message/date">
-                    <th i18n:translate="">Date:</th>
-                    <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
-                </tr>
-            </table>
+            <div class="message_header">
+                <table>
+                    <tr tal:condition="true: message/from">
+                        <th i18n:translate="">From:</th>
+                        <td>
+                            <span tal:repeat="address message/from">
+                                <a class="from_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
+                                <a tal:attributes="href string:${uri_add_address}?email=${address/address}&name=${address/name}" title="Add to addressbook">+</a>
+                                <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr tal:condition="true: message/to">
+                        <th i18n:translate="">To:</th>
+                        <td>
+                            <span tal:repeat="address message/to">
+                                <a class="to_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
+                                <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr tal:condition="true:message/cc">
+                        <th i18n:translate="">Cc:</th>
+                        <td>
+                            <span tal:repeat="address message/cc">
+                                <a class="cc_address" tal:attributes="title address/address; href string:${uri_compose}?to=${address/address}" tal:content="if: address/name then: address/name else: address/address">from</a>
+                                <span tal:omit-tag="" tal:condition="false: repeat/end">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr tal:condition="true: message/date">
+                        <th i18n:translate="">Date:</th>
+                        <td><span tal:replace="string: ${message/date/hms} ${message/date/ymd}">date</span></td>
+                    </tr>
+                </table>
 
-            <div class="attachments">
-                <div tal:repeat="attachment message/children">
-                    <div class="attachment" tal:condition="true: attachment/attachment">
-                        <a tal:attributes="href string:${attachment/uri_download}; title attachment/type; id string:attachment_${attachment/path}">
-                            <img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}; alt attachment/type" /><br />
-                            <span tal:content="attachment/display_name" />
-                        </a>
+                <div class="attachments">
+                    <div tal:repeat="attachment message/children">
+                        <div class="attachment" tal:condition="true: attachment/attachment">
+                            <a tal:attributes="href string:${attachment/uri_download}; title attachment/type; id string:attachment_${attachment/path}">
+                                <img tal:attributes="src string:${uri_static}/images/mimeicons/${attachment/icon}; alt attachment/type" /><br />
+                                <span tal:content="attachment/display_name" />
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="message_body">
-        <div tal:omit-tag="" tal:repeat="part message/children">
-            <div tal:condition="true:part/renderable" tal:omit-tag="">
-                <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: false:part/render_as_stub false:part/attachment"><div tal:replace="structure part/render"/></div>
-                <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="true:part/render_as_stub"><div tal:replace="structure part/render_stub"/></div>
+        <div class="message_body">
+            <div tal:omit-tag="" tal:repeat="part message/children">
+                <div tal:condition="true:part/renderable" tal:omit-tag="">
+                    <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="and: false:part/render_as_stub false:part/attachment"><div tal:replace="structure part/render"/></div>
+                    <div class="body_part" tal:attributes="content-type part/content_type" tal:condition="true:part/render_as_stub"><div tal:replace="structure part/render_stub"/></div>
+                </div>
             </div>
         </div>
     </div>

@@ -79,10 +79,14 @@ window.addEvent('load', function() {
         $('content').style.left = control_panel_width + 'px';
     }
 
+    reset_message_view();
+
+});
+
+function reset_message_view() {
     var message_divider = $('message_divider');
     if (message_divider) {
         if (!touch_enabled) { message_divider.addEvent('mousedown', start_message_view_resize); }
-
 
         var message_divider_top = Cookie.read('message_divider_top');
         if ($('messages_pane') && message_divider_top) {
@@ -91,7 +95,4 @@ window.addEvent('load', function() {
             message_divider.style.top  = message_divider_top + 'px';
         }
     }
-
-});
-
-
+}

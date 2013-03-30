@@ -37,7 +37,7 @@
 }
 
 .message_view_head {
-    margin: 0.5em 0.5em 0em 0.5em;
+    margin: 0em 0.5em 0em 0.5em;
     border: 1px solid black;
     background-color: #efefef;
 }
@@ -83,6 +83,10 @@ a.load_subpart {
     border-color: black;
     border-width: 0px 1px 1px 1px;
     border-style: solid;
+}
+
+.message_rfc822 {
+    padding-top: 0.5em;
 }
 
 .renderable {
