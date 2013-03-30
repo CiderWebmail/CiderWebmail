@@ -20,7 +20,7 @@ find(\&wanted, 'base');
 foreach(@folders) {
     my $folder = $_;
 
-    foreach(qw/ de en /) {
+    foreach(qw/ da de en /) {
         my $langfolder = $folder;
         $langfolder =~ s/^base/$_/;
         print "Creating folder $langfolder\n";
@@ -30,7 +30,7 @@ foreach(@folders) {
 
 foreach(@files) {
     my $file = $_;
-    foreach(qw/en de/) {
+    foreach(qw/en de da/) {
         my $lang = $_;
         my $outfile = $file;
         $outfile =~ s/^base/$lang/;

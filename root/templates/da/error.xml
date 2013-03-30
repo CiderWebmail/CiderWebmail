@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <title metal:fill-slot="title">Skriv besked</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css" />
+    </head>
+    <body>
+        <div id="error" metal:fill-slot="content">
+            <div id="subheadline">
+                <h1>Fejl</h1>
+            </div>
+            <p tal:content="error" class="error_message" />
+        </div>
+    </body>
+</html>

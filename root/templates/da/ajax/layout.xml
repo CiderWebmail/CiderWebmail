@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:tal="http://purl.org/petal/1.0/" xmlns:metal="http://xml.zope.org/namespaces/metal" metal:define-macro="layout">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title metal:define-slot="title">CiderWebmail</title>
+    </head>
+    <body>
+        <ul metal:use-macro="folder_tree.xml#folder_tree" />
+        <div metal:use-macro="folder_tree.xml#folder_data" />
+        <div metal:define-slot="content" />
+    </body>
+</html>

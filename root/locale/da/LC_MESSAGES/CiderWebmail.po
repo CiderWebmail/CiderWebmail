@@ -1,0 +1,253 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013 Jonas Smedegaard <dr@jones.dk>
+# This file is distributed under the same license as the CiderWebmail package.
+# Jonas Smedegaard <dr@jones.dk>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CiderWebmail 1.04+20130202\n"
+"PO-Revision-Date: 2013-03-17 14:25+0200\n"
+"Last-Translator: Jonas Smedegaard <dr@jones.dk>\n"
+"Language-Team: None\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+msgid "${1}"
+msgstr "${1}"
+
+msgid "${1} ${2}"
+msgstr "${1} ${2}"
+
+msgid "Active:"
+msgstr "Aktiv:"
+
+msgid "Addressbook"
+msgstr "Addressebog"
+
+msgid "Attachment:"
+msgstr "Vedhæftning:"
+
+msgid "Attachments"
+msgstr "Vedhæftninger"
+
+msgid "Cc:"
+msgstr "Cc:"
+
+msgid "Compose Message"
+msgstr "Skriv besked"
+
+msgid "Compose new mail"
+msgstr "Compose new mail"
+
+msgid "Compose new mail message"
+msgstr "Skriv ny email"
+
+msgid "Create"
+msgstr "Opret"
+
+msgid "Create folder"
+msgstr "Opret mappe"
+
+msgid "Date"
+msgstr "Dato"
+
+msgid "Date:"
+msgstr "Dato:"
+
+msgid "Delete"
+msgstr "Slet"
+
+msgid "Delete message"
+msgstr "Slet besked"
+
+msgid ""
+"Drag a mail's icon to a folder name to move that mail to that folder.${1} "
+"Use cursor left/right for displaying the previous/next message.${2} Cursor "
+"up/down for scrolling within a message.${3} 'd' or the delete key for "
+"deleting the current message.${4} 'm' for moving the current message to a "
+"different folder.${5} 'r' for replying to the current message.${6} 'f' for "
+"forwarding the current message."
+msgstr ""
+"Træk en beskeds ikon til et mappenavn for at flytte beskeden til den mappe."
+"${1} Brug venstre-/højrepil til at vise forrige/næste besked.${2} Pil op/ned "
+"ruller indeni en besked.${3} 'd' eller slettetasten sletter den aktuelle "
+"besked.${4} 'm' flytter den aktuelle besked til en anden mappe.${5} 'r' "
+"besvarer den aktuelle besked.${6} 'f' videresender den aktuelle besked."
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "E-Mail:"
+msgstr "E-Mail:"
+
+msgid "Edit contact"
+msgstr "Redigér kontakter"
+
+msgid "Edit sieve script"
+msgstr "Redigér filterregler"
+
+msgid "Edit vacation rule"
+msgstr "Redigér feriemelding"
+
+msgid "Error"
+msgstr "Fejl"
+
+msgid "Fetching more messages"
+msgstr "Henter flere beskeder"
+
+msgid "First name:"
+msgstr "Fornavn:"
+
+msgid "Folders"
+msgstr "Mapper"
+
+msgid "Forward"
+msgstr "Videresend"
+
+msgid "Forwarding"
+msgstr "Videresend"
+
+msgid "From"
+msgstr "Fra"
+
+msgid "From:"
+msgstr "Fra:"
+
+msgid "Last name:"
+msgstr "Efternavn:"
+
+msgid "Loading message"
+msgstr "Indlæser besked"
+
+msgid "Login"
+msgstr "Log ind"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Manage folders"
+msgstr "Manage folders"
+
+msgid "Manage rules"
+msgstr "Manage rules"
+
+msgid "Managesieve"
+msgstr "Managesieve"
+
+msgid "Move message"
+msgstr "Flyt besked"
+
+msgid "Name"
+msgstr "Navn"
+
+msgid "New subfolder"
+msgstr "Ny undermappe"
+
+msgid "No Subject"
+msgstr "Intet emne"
+
+msgid "Password"
+msgstr "Adgangskode"
+
+msgid "Reply"
+msgstr "Svar"
+
+msgid "Reply All"
+msgstr "Svar til alle"
+
+msgid "Reply List"
+msgstr "Svar til liste"
+
+msgid "Reply message:"
+msgstr "Svar-besked:"
+
+msgid "Save"
+msgstr "Gem"
+
+msgid "Save copy"
+msgstr "Gem kopi"
+
+msgid "Save message to:"
+msgstr "Gem besked i:"
+
+msgid "Script name"
+msgstr "Script-navn"
+
+msgid "Script name:"
+msgstr "Script-navn:"
+
+msgid "Search"
+msgstr "Søg"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "Session ended"
+msgstr "Sessionen er afsluttet"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Subject"
+msgstr "Emne"
+
+msgid "Subject:"
+msgstr "Emne:"
+
+msgid "Target folder:"
+msgstr "Målmappe:"
+
+msgid "To"
+msgstr "Til"
+
+msgid "To:"
+msgstr "Til:"
+
+msgid "Toggle important flag"
+msgstr "Markér vigtige flag"
+
+msgid "Transmit message"
+msgstr "Send besked"
+
+msgid "Username"
+msgstr "Brugernavn"
+
+msgid "Vacation rule"
+msgstr "Vacation rule"
+
+msgid "View header"
+msgstr "Vis brevhoveder"
+
+msgid "View source"
+msgstr "Vis kilde"
+
+msgid "add contact"
+msgstr "tilføj kontakt"
+
+msgid "delete"
+msgstr "slet"
+
+msgid "edit"
+msgstr "redigér"
+
+#~ msgid "${1} Addressbook"
+#~ msgstr "${1} Addressebog"
+
+#~ msgid "${1} Compose new mail"
+#~ msgstr "${1} Opret ny mail"
+
+#~ msgid "${1} Logout"
+#~ msgstr "${1} Log ud"
+
+#~ msgid "${1} Manage folders"
+#~ msgstr "${1} Administrér mapper"
+
+#~ msgid "${1} Manage rules"
+#~ msgstr "${1} Administrér regler"
+
+#~ msgid "${1} Vacation rule"
+#~ msgstr "${1} Feriemelding"

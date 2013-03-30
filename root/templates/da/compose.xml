@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <title metal:fill-slot="title">Skriv besked</title>
+        <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/new.css" metal:fill-slot="css" />
+        <script tal:attributes="src string:${uri_static}/scripts/mail/compose.js" type="text/javascript" metal:fill-slot="scripts" />
+    </head>
+    <body>
+        <div id="compose" metal:fill-slot="content">
+            <div id="subheadline">
+                <h1>Skriv ny email</h1>
+            </div>
+            <div id="container">
+                <form enctype="multipart/form-data" method="post" id="compose_form" tal:attributes="action uri_send">
+                    <fieldset>
+                        <legend>Message</legend>
+                        <input tal:condition="true: forward" name="forward" tal:attributes="value string:${forward/root_message/uid}/${forward/part_id}" type="hidden" />
+                        <input tal:condition="true: in_reply_to" name="in_reply_to" tal:attributes="value string:${in_reply_to/root_message/uid}/${in_reply_to/part_id}" type="hidden" />
+                        <label class="from">
+                            <span>Fra:</span>
+                            <input tal:condition="true: message/from" name="from" tal:attributes="value message/from/0/address" data-validators="required validate-email" />
+                            <input tal:condition="false: message/from" name="from" data-validators="required validate-email" />
+                        </label>
+                        <label class="to">
+                            <span>Til:</span>
+                            <input tal:condition="true: message/to" name="to" tal:attributes="value message/to" />
+                            <input tal:condition="false: message/to" name="to" />
+                        </label>
+                        <label class="cc">
+                            <span>Cc:</span>
+                            <input name="cc" tal:attributes="value message/cc" />
+                        </label>
+                        <label class="subject">
+                            <span>Emne:</span>
+                            <input name="subject" tal:attributes="value message/subject" data-validators="validate-required" />
+                        </label>
+                        <label class="text">
+                            <textarea tal:content="message/body" name="body" rows="20" />
+                        </label>
+                        <label class="signature">
+                            <textarea tal:content="signature" name="signature" id="signature" rows="2" />
+                        </label>
+                    </fieldset>
+                    <fieldset>
+                        <p tal:condition="true: forward" class="forwarding">
+                            <span class="label">Videresend</span>:
+                            <span tal:content="forward/subject" class="subject" />
+                            (<span tal:condition="true: forward/from/0/name" tal:content="forward/from/0/name" class="address" /><span tal:condition="false: forward/from/0/name" tal:content="forward/from/0/address" class="address" />, <span tal:condition="true: forward/date" tal:content="forward/date/strftime '%F %T'" class="date" />)
+                        </p>
+                        <legend>Vedhæftninger</legend>
+                        <label class="attachment">
+                            <span>Vedhæftning:</span>
+                            <input name="attachment" multiple="multiple" type="file" />
+                            <a onclick="add_attachment(this)">[+]</a>
+                        </label>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Gem kopi</legend>
+                        <label class="sent_folder">
+                            <span>Gem besked i:</span>
+                            <select name="sent_folder">
+                                <option tal:content="folder/id" tal:repeat="folder sent_folders" tal:attributes="selected folder/selected" />
+                            </select>
+                        </label>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Send</legend>
+                        <button name="send" type="submit">Send besked</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
