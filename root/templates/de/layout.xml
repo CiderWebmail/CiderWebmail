@@ -17,6 +17,7 @@
         <script metal:define-slot="scripts" />
     </head>
     <body>
+        <div metal:use-macro="dialog.xml#dialog" />
         <div id="headline">
             <a tal:attributes="href uri_logout">Ausloggen</a>
             <h1 id="logo">CiderWebmail</h1>

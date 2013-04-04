@@ -11,13 +11,6 @@
                 <h1>Compose new mail message</h1>
             </div>
             <div id="container">
-                <div id="send_mail_progress">
-                    <div class="wrapper">
-                        <div id="send_mail_progress_bar" class="bar">
-                            <div id="send_mail_progress_detail" class="detail" />
-                        </div>
-                    </div>
-                </div>
                 <form enctype="multipart/form-data" method="post" id="compose_form" tal:attributes="action uri_send">
                     <fieldset>
                         <legend>Message</legend>

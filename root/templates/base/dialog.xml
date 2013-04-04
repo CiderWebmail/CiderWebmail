@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html
+    xmlns:tal="http://purl.org/petal/1.0/"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="CiderWebmail">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title metal:define-slot="title">Dialog window</title>
+    </head>
+    <body>
+        <div metal:define-macro="dialog">
+            <div id="lock_overlay" />
+            <div id="dialog">
+                <div id="dialog_title"><span id="dialog_title_text"/></div>
+
+                <div id="dialog_text" />
+
+                <div id="dialog_progressbar">
+                    <div class="wrapper">
+                        <div class="bar" id="send_mail_progress_bar">
+                            <div class="detail" id="send_mail_progress_detail" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dialog_buttons">
+                    <a class="dialog_button green left" id="dialog_button_left"><span id="dialog_button_left_text" class="right" /></a>
+                    <a class="dialog_button red right" id="dialog_button_right"><span id="dialog_button_right_text" class="right" /></a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

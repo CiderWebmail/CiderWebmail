@@ -55,19 +55,3 @@ div#send_mail_progress .wrapper {
     margin: 0px;
     background-color: white;
 }
-
-div#send_mail_progress .bar {
-    margin: 0px;
-    padding: 0px;
-    height: 15px;
-    width: 0%;
-    background-color: black;
-}
-
-div#send_mail_progress .detail {
-   padding: 0 0.5em 0 0;
-   margin: 0;
-   float: right;
-   color: white;
-   font-size: 11px;
-}
