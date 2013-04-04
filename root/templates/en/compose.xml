@@ -11,6 +11,7 @@
                 <h1>Compose new mail message</h1>
             </div>
             <div id="container">
+                <span id="send_mail_progress" />
                 <form enctype="multipart/form-data" method="post" id="compose_form" tal:attributes="action uri_send">
                     <fieldset>
                         <legend>Message</legend>
@@ -65,7 +66,7 @@
                     </fieldset>
                     <fieldset>
                         <legend>Send</legend>
-                        <button name="send" type="submit">Transmit message</button>
+                        <input value="Transmit message" name="send" type="button" onClick="return send_mail(this.form); return false;" />
                     </fieldset>
                 </form>
             </div>
