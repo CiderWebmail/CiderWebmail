@@ -56,7 +56,7 @@
                         <legend i18n:translate="">Attachments</legend>
                         <label class="attachment">
                             <span i18n:translate="">Attachment:</span>
-                            <input type="file" name="attachment" multiple="multiple" />
+                            <input type="file" name="attachment" multiple="multiple" size="35" />
                             <a onclick="add_attachment(this)">[+]</a>
                         </label>
                     </fieldset>

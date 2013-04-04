@@ -38,3 +38,7 @@ label.attachment span, label.sent_folder span, label.attachment input, label.sen
     float: none;
     width: auto;
 }
+
+label.attachment input {
+    min-width: 70%;
+}
