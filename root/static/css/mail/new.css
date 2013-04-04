@@ -42,3 +42,32 @@ label.attachment span, label.sent_folder span, label.attachment input, label.sen
 label.attachment input {
     min-width: 70%;
 }
+
+div#send_mail_progress {
+    display: none;
+}
+
+div#send_mail_progress .wrapper {
+    width: 300px;
+    border: 1px solid black;
+    height: 15px;
+    padding: 0px;
+    margin: 0px;
+    background-color: white;
+}
+
+div#send_mail_progress .bar {
+    margin: 0px;
+    padding: 0px;
+    height: 15px;
+    width: 0%;
+    background-color: black;
+}
+
+div#send_mail_progress .detail {
+   padding: 0 0.5em 0 0;
+   margin: 0;
+   float: right;
+   color: white;
+   font-size: 11px;
+}

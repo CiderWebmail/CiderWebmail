@@ -17,7 +17,13 @@
                 <h1 i18n:translate="">Compose new mail message</h1>
             </div>
             <div id="container">
-                <span id="send_mail_progress" />
+                <div id="send_mail_progress">
+                    <div class="wrapper">
+                        <div class="bar" id="send_mail_progress_bar">
+                            <div class="detail" id="send_mail_progress_detail" />
+                        </div>
+                    </div>
+                </div>
                 <form tal:attributes="action uri_send" id="compose_form" enctype="multipart/form-data" method="post">
                     <fieldset>
                         <legend>Message</legend>

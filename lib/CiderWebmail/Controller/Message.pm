@@ -379,7 +379,14 @@ sub send : Chained('/mailbox/setup') Args(0) {
         $c->detach('/error');
     };
 
-    return $c->res->redirect($c->stash->{uri_folder});
+    if (($c->req->param('layout') or '') eq 'ajax') {
+        #since the xhr request follows a normal redirect we need to cheat
+        $c->res->status(202);
+        $c->res->headers->header('X-Location' => $c->stash->{uri_folder});
+        return $c->res->body("mail queued");
+    } else {
+        return $c->res->redirect($c->stash->{uri_folder});
+    }
 }
 
 =head1 AUTHOR
