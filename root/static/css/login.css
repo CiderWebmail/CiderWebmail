@@ -4,5 +4,5 @@ body { padding: 0; background: #747573; font-family: Verdana; }
 #login form { position: absolute; top: 50%; left: 50%; margin-left: -200px; width: 400px; height: 65px; margin-top: -32px; }
 #login label { display: block; clear: left; }
 #login label span { float: left; width: 8em; }
-#login input { border: 1px solid black; }
+#login input { border: 1px solid black; width: 19em; }
 #login button { border: 1px solid black; }
