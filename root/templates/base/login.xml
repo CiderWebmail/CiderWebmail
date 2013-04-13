@@ -15,6 +15,7 @@
         <div id="title">CiderWebmail</div>
         <div id="login">
             <form method="post">
+                <span class="message" tal:condition="true: message" tal:content="message" />
                 <label tal:condition="false: server">
                     <span i18n:translate="">Server</span>
                     <input name="server"/>
@@ -27,7 +28,7 @@
                     <span i18n:translate="">Password</span>
                     <input type="password" name="password"/>
                 </label>
-                <button type="submit" i18n:translate="">Login</buttonn>
+                    <button type="submit" i18n:translate="">Login</buttonn>
             </form>
         </div>
     </body>

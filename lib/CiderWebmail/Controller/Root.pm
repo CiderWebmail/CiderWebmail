@@ -9,6 +9,7 @@ use version;
 use List::Util qw(reduce);
 
 use Time::HiRes;
+use Try::Tiny::SmartCatch;
 
 use Petal::TranslationService::Gettext;
 
@@ -102,6 +103,7 @@ sub login : Private {
     $c->stash({ template => 'login.xml' });
 
     $c->stash->{server} = $c->req->param('server') if not ($server and %$server) and $c->req->param('server');
+    $c->stash({ server => "$server->{host}:$server->{port}" }) if $server and %$server;
 
     my %user_data = (
             username => $c->req->param('username'),
@@ -110,35 +112,42 @@ sub login : Private {
     );
 
     if ($user_data{username} and $user_data{password}) {
-
         #Only Mail::IMAPClient > 3.32 supports literals in the LOGIN command
         if (version->parse($Mail::IMAPClient::VERSION) >= version->parse('3.32')) {
             utf8::encode($user_data{username});
             utf8::encode($user_data{password});
         }
 
-        if ($c->authenticate(\%user_data)) {
-            $c->session->{$_} = $user_data{$_} foreach qw(username server); # save for repeated IMAP authentication
-            $c->res->cookies->{$_} = { expires => '+1d', value => CiderWebmail::Util::encrypt($c, { string => $user_data{$_} }) } foreach qw(password); # save for repeated IMAP authentication
+        try sub {
+            $c->authenticate(\%user_data);
+        },
+        catch_when qr/^\w+\s+NO/ => sub { #TODO the backend should return a status instead of parsing it here
+            $c->response->code(403);
+            $c->stash->{message} = 'Invalid username or password.';
+        },
+        catch_default sub {
+            $c->response->code(500);
+            $c->stash->{message} = 'Unable to login';
+        };
 
-            my @supported = $c->stash->{imapclient}->capability;
+        #abort unless we have a successfull login
+        return unless defined $c->user;
 
-            foreach(qw/ SORT /) {
-                my $capability = $_;
-                unless( grep { $_ eq $capability } @supported ) {
-                    $c->stash({ message => "Your IMAP Server does not advertise the $_ capability" }); #TODO I18N
-                    return;
-                }
+        $c->session->{$_} = $user_data{$_} foreach qw(username server); # save for repeated IMAP authentication
+        $c->res->cookies->{$_} = { expires => '+1d', value => CiderWebmail::Util::encrypt($c, { string => $user_data{$_} }) } foreach qw(password); # save for repeated IMAP authentication
+
+        my @supported = $c->stash->{imapclient}->capability;
+
+        foreach(qw/ SORT /) {
+            my $capability = $_;
+            unless( grep { $_ eq $capability } @supported ) {
+                $c->stash({ message => "Your IMAP Server does not advertise the $_ capability" }); #TODO I18N
+                return;
             }
+        }
 
-            return $c->res->redirect($c->req->uri);
-        }
-        else {
-            $c->stash({ message => 'Invalid username/password' }); #TODO I18N
-        }
+        return $c->res->redirect($c->req->uri);
     }
-
-    $c->stash({ server => "$server->{host}:$server->{port}" }) if $server and %$server;
 
     return;
 }

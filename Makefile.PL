@@ -40,6 +40,7 @@ requires 'MIME::Parser';
 requires 'MIME::Words';
 
 requires 'Try::Tiny';
+requires 'Try::Tiny::SmartCatch';
 
 requires 'Email::Simple';
 requires 'Email::Sender';
