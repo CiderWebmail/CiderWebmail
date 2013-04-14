@@ -27,6 +27,8 @@ use Catalyst qw/
     Session
     Session::Store::FastMmap
     Session::State::Cookie
+
+    CiderWebmail::ErrorHandler
 /;
 
 our $VERSION = '1.04';

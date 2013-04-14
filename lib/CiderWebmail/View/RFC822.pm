@@ -8,6 +8,10 @@ use Email::Sender::Simple qw/sendmail/;
 use Email::Sender::Transport::Sendmail;
 use Email::Sender::Transport::SMTP;
 
+use Try::Tiny::SmartCatch;
+
+use CiderWebmail::Error;
+
 extends 'Catalyst::View';
 
 =head1 NAME
@@ -110,12 +114,47 @@ sub process {
         $transport = Email::Sender::Transport::Sendmail->new();
     }
 
+    try sub {
+        sendmail($mail, { transport => $transport });
+    },
+    catch_when 'Email::Sender::Failure::Permanent' => sub {
+        my $error = $_;
+
+        if ($error->message eq 'no recipients') {
+            CiderWebmail::Error->throw({
+                code    => '400',
+                error   => 'send-mail-error-no-recipients',
+                message => 'You need to specify at least one recipient.',
+            });
+        }
+        
+        if ($error->message eq 'no sender') {
+            CiderWebmail::Error->throw({
+                code    => '400',
+                error   => 'send-mail-error-no-sender',
+                message => 'You need to specify a From address.',
+            });
+        }
+        
+        CiderWebmail::Error->throw({
+            code    => '500',
+            error   => 'send-mail-error-generic',
+            message => 'Unable to send mail.',
+            detail  => $error->message,
+       });
+    },
+    catch_default sub {
+        CiderWebmail::Error->throw({
+            code            => '500',
+            message         => 'Unable to send Mail.',
+            error_id        => 'send-mail-error',
+        });
+    };
+    
     if (defined $c->stash->{email}->{save_to_folder}) {
         my $msg_text = $mail->as_string;
         $c->model('IMAPClient')->append_message({mailbox => $c->stash->{email}->{save_to_folder}, message_text => $msg_text});
     }
-
-    sendmail($mail, { transport => $transport });
 }
 
 =head1 AUTHOR
