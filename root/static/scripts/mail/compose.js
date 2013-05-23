@@ -27,41 +27,46 @@ function send_mail(compose_form) {
                 $('dialog_button_right').style.width = '120px';
                 $('dialog_button_right_text').style.width = '100px';
                 $('dialog_button_right_text').innerHTML = 'Upload complete!';
+                $('dialog_button_left').removeEvents('click');
+
+                //everything after this is handled by the xhr.onreadystatechange functions
             }
 
         }, false);
 
         xhr.onreadystatechange = function(){
             if (xhr.readyState==4 && xhr.status==202) {
-                window.location.href = xhr.getResponseHeader('X-Location');
+                window.setTimeout(function() {
+                    window.location.href = xhr.getResponseHeader('X-Location');
+                }, 1500);
+            }
+
+            if (xhr.readyState==4 && xhr.status==400) {
+                var error = JSON.decode(xhr.responseText);
+
+                show_warning_message('', error.message);
+            }
+            
+            if (xhr.readyState==4 && xhr.status==500) {
+                //TODO improve error handling, redirect user
+                show_warning_message('', "Internal Server Error");
             }
         };
 
         xhr.addEventListener("error", function(e) {
-            //TODO display error
-            $('lock_overlay').style.display = 'none';
-            $('dialog').style.display = 'none';
+            //TODO improve error handling, redirect user
+            show_warning_message('', "Internal Server Error");
         }, false);
 
         xhr.addEventListener("abort", function(e) {
-            $('lock_overlay').style.display = 'none';
-            $('dialog').style.display = 'none';
+            reset_dialog_box();
         }, false);
 
-
-        //setup progress dialog
-        $('dialog_progressbar').style.display = 'block';
-        $('dialog_title_text').innerHTML = 'Sending mail...';
-        window.scrollTo(0,0);
-        $('dialog_button_left').style.display = 'none';
-        $('dialog_button_right_text').innerHTML = 'Cancel';
+        init_progress_dialog('Sending Mail...');
 
         $('dialog_button_right').addEvent('click', function() {
             xhr.abort();
         });
-
-        $('lock_overlay').style.display = 'block';
-        $('dialog').style.display = 'block';
 
         xhr.send(mail_form);
     } else { //othersize just fallback

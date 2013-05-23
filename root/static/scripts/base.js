@@ -96,3 +96,77 @@ function reset_message_view() {
         }
     }
 }
+
+// dialog and progress display
+
+//resets the dialog window, hides all elements clears all text
+function reset_dialog_box() {
+    //hide lock and dialog
+    $('lock_overlay').style.display = 'none';
+    $('dialog').style.display = 'none';
+
+    //title and text
+    $('dialog_title_text').innerHTML = '';
+    $('dialog_text').innerHTML = '';
+
+    //progressbar
+    $('dialog_progressbar').style.display = 'none';
+    $('send_mail_progress_bar').style.width = 0;
+    $('send_mail_progress_detail').innerHTML = '';
+
+    //buttons
+    $('dialog_button_left').removeEvents('click');
+    $('dialog_button_left').style.display = 'none';
+    $('dialog_button_left').removeClass('red');
+    $('dialog_button_left').removeClass('green');
+    $('dialog_button_left').removeClass('grey');
+    $('dialog_button_left').style.width = '50px';
+    $('dialog_button_left_text').style.width = '50px';
+    $('dialog_button_left_text').innerHTML = '';
+
+    $('dialog_button_right').removeEvents('click');
+    $('dialog_button_right').style.display = 'none';
+    $('dialog_button_right').removeClass('red');
+    $('dialog_button_right').removeClass('green');
+    $('dialog_button_right').removeClass('grey');
+    $('dialog_button_right').style.width = '50px';
+    $('dialog_button_right_text').style.width = '50px';
+    $('dialog_button_right_text').innerHTML = '';
+}
+
+function show_warning_message(title_text, message_text) {
+    reset_dialog_box();
+
+    $('dialog_title_text').innerHTML = title_text;
+    $('dialog_text').innerHTML = message_text;
+
+    $('dialog_button_right').addClass('grey');
+    $('dialog_button_right_text').innerHTML = 'Okay';
+    $('dialog_button_right').style.display = 'block';
+    $('dialog_button_right').style.width = '60px';
+    
+    $('dialog_button_right').addEvent('click', function() {
+        reset_dialog_box();
+    });
+
+    window.scrollTo(0,0);
+
+    $('lock_overlay').style.display = 'block';
+    $('dialog').style.display = 'block';
+}
+
+function init_progress_dialog(title_text) {
+    reset_dialog_box();
+
+    $('dialog_progressbar').style.display = 'block';
+    $('dialog_title_text').innerHTML = title_text;
+    
+    $('dialog_button_right').addClass('red');
+    $('dialog_button_right_text').innerHTML = 'Cancel';
+    $('dialog_button_right').style.display = 'block';
+ 
+    window.scrollTo(0,0);
+    
+    $('lock_overlay').style.display = 'block';
+    $('dialog').style.display = 'block';
+}

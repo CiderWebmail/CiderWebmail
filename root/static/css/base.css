@@ -256,7 +256,8 @@ button { border: 1px solid black; }
 #dialog_text {
     width: 360px;
     color: black;
-    margin: 0.5em 0 0 0.5em;
+    margin: 1em 1em 0 1em;
+    position: absolute;
 }
 
 #dialog_buttons {
@@ -322,6 +323,15 @@ button { border: 1px solid black; }
 #dialog .green:before
     {content: '\2713';}
 
+#dialog .grey, .dialog .green:visited
+    {background-color: #efefef; border:1px solid #8E8E8E; color: #424242; }
+
+#dialog .grey:hover
+    {background-color:#B8B8B8;}
+
+#dialog .grey:before
+    {content: '\2713';}
+
 #dialog .red, .dialog .red:visited
     {background-color:#E64444; border:1px solid #B63440;}
 
@@ -336,7 +346,7 @@ button { border: 1px solid black; }
     text-align: center;
     width: 360px;
     position: absolute;
-    margin-top: 1empx;
+    margin-top: 1em;
 }
 
 #dialog_progressbar .wrapper {
