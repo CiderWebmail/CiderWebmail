@@ -164,6 +164,7 @@ function init_progress_dialog(title_text) {
     $('dialog_button_right').addClass('red');
     $('dialog_button_right_text').innerHTML = 'Cancel';
     $('dialog_button_right').style.display = 'block';
+    $('dialog_button_right').style.width = '60px';
  
     window.scrollTo(0,0);
     
