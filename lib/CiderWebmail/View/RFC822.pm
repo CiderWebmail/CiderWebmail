@@ -95,7 +95,7 @@ sub process {
         } 
     }
 
-    if (defined($c->stash->{'email'}->{'signature'}) and (length($c->stash->{'email'}->{'signature'}) > 0)) {
+    if (length($c->stash->{'email'}->{'signature'} // '') and length($c->stash->{email}->{body} // '')) {
         $mail->sign(Signature => $c->stash->{'email'}->{'signature'});
     }
     
