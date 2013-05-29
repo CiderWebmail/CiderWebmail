@@ -173,7 +173,7 @@ sub send_foldertree_update {
 
 =head2 filter_unusable_addresses(@addresses)
 
-Filters a list of addresses (string or Mail::Address) to get rid of stuff like 'undisclosed-recipients:'
+Filters a list of addresses (string or Email::Address) to get rid of stuff like 'undisclosed-recipients:'
 
 =cut
 

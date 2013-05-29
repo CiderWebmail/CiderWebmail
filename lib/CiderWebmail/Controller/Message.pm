@@ -15,6 +15,8 @@ use DateTime;
 use DateTime::Format::Mail;
 use Email::Valid;
 
+use Email::Address;
+
 use Clone qw(clone);
 use List::Util qw(first);
 use List::MoreUtils qw(all);
@@ -234,10 +236,10 @@ sub compose : Chained('/mailbox/setup') Args(0) {
     }
 
     if ($settings and $settings->from_address) {
-        $c->stash->{message}{from} = [ Mail::Address->parse($settings->from_address) ];
+        $c->stash->{message}{from} = [ Email::Address->parse($settings->from_address) ];
     }
     elsif ($c->config->{username_default_address}) {
-        $c->stash->{message}{from} = [ Mail::Address->parse($c->session->{username}) ]
+        $c->stash->{message}{from} = [ Email::Address->parse($c->session->{username}) ]
     }
 
     my $folders = clone($c->stash->{folders_hash});

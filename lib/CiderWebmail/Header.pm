@@ -2,7 +2,7 @@ package CiderWebmail::Header;
 use warnings;
 use strict;
 
-use Mail::Address;
+use Email::Address;
 use Time::Piece;
 use Date::Parse;
 
@@ -20,11 +20,11 @@ the following 'transformations' take place:
 
 =over 4
 
-=item * from -> Mail::Address object
+=item * from -> Email::Address object
 
-=item * to -> Mail::Address object
+=item * to -> Email::Address object
 
-=item * cc -> Mail::Address object
+=item * cc -> Email::Address object
 
 =item * date -> CiderWebmail::Date object
 
@@ -59,14 +59,14 @@ sub _transform_address {
     my ($o) = @_;
 
     #here data might be defined but empty (no address given for example no Cc address)
-    #we still need a empty Mail::Address object so we don't break templates that rely on it
-    return [Mail::Address->parse('')] unless length($o->{data} // '');
+    #we still need a empty Email::Address object so we don't break templates that rely on it
+    return [Email::Address->parse('')] unless length($o->{data} // '');
 
     $o->{data} = decode_mime_words($o);
 
     $o->{data} =~ s/mailto://gi;
 
-    my @address = Mail::Address->parse($o->{data});
+    my @address = Email::Address->parse($o->{data});
 
     return \@address;
 }

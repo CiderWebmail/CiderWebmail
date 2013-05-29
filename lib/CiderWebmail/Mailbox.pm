@@ -18,7 +18,7 @@ Represents an IMAP folder
 use Moose;
 
 use CiderWebmail::Message;
-use Mail::Address;
+use Email::Address;
 
 =head1 ATTRIBUTES
 
