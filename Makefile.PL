@@ -60,6 +60,7 @@ requires 'Mail::IMAPClient' => '3.31';
 
 requires 'Clone';
 requires 'HTML::Defang' => '1.04';
+requires 'Alien::Tidyp';
 requires 'HTML::Tidy';
 requires 'URI::QueryParam';
 
@@ -80,6 +81,7 @@ requires 'MIME::Base64::URLSafe';
 requires 'FCGI';
 requires 'FCGI::ProcManager';
 
+requires 'Time::Piece';
 
 #catalyst;
 
