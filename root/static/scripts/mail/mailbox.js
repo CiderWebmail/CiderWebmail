@@ -167,9 +167,9 @@ window.addEvent('load', function() {
         }
     }
 
-    add_event_listener('mousedown', start, false);
-    add_event_listener('click', handle_click, false);
-    add_event_listener('keyup', function (event) {
+    document.addEventListener('mousedown', start, false);
+    document.addEventListener('click', handle_click, false);
+    document.addEventListener('keyup', function (event) {
             if (event.target && event.target.nodeType == 1 && (event.target.nodeName == 'input' || event.target.nodeName == 'textarea'))
                 return;
 

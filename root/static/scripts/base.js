@@ -10,11 +10,6 @@ function add_attachment(adder) {
     return false;
 }
 
-function add_event_listener(eventname, handler, bubble) {
-    if (document.addEventListener) document.addEventListener(eventname, handler, bubble);
-    else document.attachEvent('on' + eventname, handler);
-}
-
 function stop_propagation(event) {
     if (event.stopPropagation) event.stopPropagation();
     event.cancelBubble = true;
