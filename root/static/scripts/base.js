@@ -46,7 +46,7 @@ function start_message_view_resize(event) {
     function drop(event) {
         document.removeEvent('mousemove', drag);
         document.removeEvent('mouseup', drop);
-        Cookie.write($('content').hasClass('message_display') ? 'message_divider_message_display_top' : 'message_divider_top', event.client.y, {duration: 365});
+        Cookie.write(document.getElementById('content').classList.contains('message_display') ? 'message_divider_message_display_top' : 'message_divider_top', event.client.y, {duration: 365});
     }
     document.addEvents({mousemove: drag, mouseup: drop});
     stop_propagation(event);
@@ -66,12 +66,12 @@ function check_touch_event_support(){
 window.addEvent('load', function() {
     touch_enabled = check_touch_event_support();
 
-    if (!touch_enabled) { $$('#controlpanel .activeborder').addEvent('mousedown', start_controlpanel_resize); }
+    if (!touch_enabled) { document.querySelector('#controlpanel .activeborder').addEventListener('mousedown', start_controlpanel_resize, false); }
 
     var control_panel_width = Cookie.read('control_panel_width')
     if (control_panel_width) {
-        $('controlpanel').style.width = control_panel_width + 'px';
-        $('content').style.left = control_panel_width + 'px';
+        document.getElementById('controlpanel').style.width = control_panel_width + 'px';
+        document.getElementById('content').style.left = control_panel_width + 'px';
     }
 
     reset_message_view();
@@ -79,14 +79,16 @@ window.addEvent('load', function() {
 });
 
 function reset_message_view() {
-    var message_divider = $('message_divider');
+    var message_divider = document.getElementById('message_divider');
     if (message_divider) {
-        if (!touch_enabled) { message_divider.addEvent('mousedown', start_message_view_resize); }
+        if (!touch_enabled) {
+            message_divider.addEventListener('mousedown', start_message_view_resize, false);
+        }
 
         var message_divider_top = Cookie.read('message_divider_top');
-        if ($('messages_pane') && message_divider_top) {
-            $('messages_pane').style.bottom = $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px';
-            $('message_view').style.top     = message_divider_top + 'px';
+        if (document.getElementById('messages_pane') && message_divider_top) {
+            document.getElementById('messages_pane').style.bottom = document.getElementById('messages_pane').parentNode.offsetHeight - message_divider_top + 'px';
+            document.getElementById('message_view').style.top     = message_divider_top + 'px';
             message_divider.style.top  = message_divider_top + 'px';
         }
     }
@@ -97,72 +99,77 @@ function reset_message_view() {
 //resets the dialog window, hides all elements clears all text
 function reset_dialog_box() {
     //hide lock and dialog
-    $('lock_overlay').style.display = 'none';
-    $('dialog').style.display = 'none';
+    document.getElementById('lock_overlay').style.display = 'none';
+    document.getElementById('dialog').style.display = 'none';
 
     //title and text
-    $('dialog_title_text').innerHTML = '';
-    $('dialog_text').innerHTML = '';
+    document.getElementById('dialog_title_text').innerHTML = '';
+    document.getElementById('dialog_text').innerHTML = '';
 
     //progressbar
-    $('dialog_progressbar').style.display = 'none';
-    $('send_mail_progress_bar').style.width = 0;
-    $('send_mail_progress_detail').innerHTML = '';
+    document.getElementById('dialog_progressbar').style.display = 'none';
+    document.getElementById('send_mail_progress_bar').style.width = 0;
+    document.getElementById('send_mail_progress_detail').innerHTML = '';
 
     //buttons
-    $('dialog_button_left').removeEvents('click');
-    $('dialog_button_left').style.display = 'none';
-    $('dialog_button_left').removeClass('red');
-    $('dialog_button_left').removeClass('green');
-    $('dialog_button_left').removeClass('grey');
-    $('dialog_button_left').style.width = '50px';
-    $('dialog_button_left_text').style.width = '50px';
-    $('dialog_button_left_text').innerHTML = '';
+    var dialog_button_left = document.getElementById('dialog_button_left');
+    dialog_button_left.removeEvents('click');
+    dialog_button_left.style.display = 'none';
+    dialog_button_left.removeClass('red');
+    dialog_button_left.removeClass('green');
+    dialog_button_left.removeClass('grey');
+    dialog_button_left.style.width = '50px';
+    var dialog_button_left_text = document.getElementById('dialog_button_left_text');
+    dialog_button_left_text.style.width = '50px';
+    dialog_button_left_text.innerHTML = '';
 
-    $('dialog_button_right').removeEvents('click');
-    $('dialog_button_right').style.display = 'none';
-    $('dialog_button_right').removeClass('red');
-    $('dialog_button_right').removeClass('green');
-    $('dialog_button_right').removeClass('grey');
-    $('dialog_button_right').style.width = '50px';
-    $('dialog_button_right_text').style.width = '50px';
-    $('dialog_button_right_text').innerHTML = '';
+    var dialog_button_right = document.getElementById('dialog_button_right');
+    dialog_button_right.removeEvents('click');
+    dialog_button_right.style.display = 'none';
+    dialog_button_right.removeClass('red');
+    dialog_button_right.removeClass('green');
+    dialog_button_right.removeClass('grey');
+    dialog_button_right.style.width = '50px';
+    var dialog_button_right_text = document.getElementById('dialog_button_right_text');
+    dialog_button_right_text.style.width = '50px';
+    dialog_button_right_text.innerHTML = '';
 }
 
 function show_warning_message(title_text, message_text) {
     reset_dialog_box();
 
-    $('dialog_title_text').innerHTML = title_text;
-    $('dialog_text').innerHTML = message_text;
+    document.getElementById('dialog_title_text').innerHTML = title_text;
+    document.getElementById('dialog_text').innerHTML = message_text;
 
-    $('dialog_button_right').addClass('grey');
-    $('dialog_button_right_text').innerHTML = 'Okay';
-    $('dialog_button_right').style.display = 'block';
-    $('dialog_button_right').style.width = '60px';
+    var dialog_button_right = document.getElementById('dialog_button_right');
+    dialog_button_right.classList.add('grey');
+    document.getElementById('dialog_button_right_text').innerHTML = 'Okay';
+    dialog_button_right.style.display = 'block';
+    dialog_button_right.style.width = '60px';
     
-    $('dialog_button_right').addEvent('click', function() {
+    dialog_button_right.addEventListener('click', function() {
         reset_dialog_box();
-    });
+    }, false);
 
     window.scrollTo(0,0);
 
-    $('lock_overlay').style.display = 'block';
-    $('dialog').style.display = 'block';
+    document.getElementById('lock_overlay').style.display = 'block';
+    document.getElementById('dialog').style.display = 'block';
 }
 
 function init_progress_dialog(title_text) {
     reset_dialog_box();
 
-    $('dialog_progressbar').style.display = 'block';
-    $('dialog_title_text').innerHTML = title_text;
+    document.getElementById('dialog_progressbar').style.display = 'block';
+    document.getElementById('dialog_title_text').innerHTML = title_text;
     
-    $('dialog_button_right').addClass('red');
-    $('dialog_button_right_text').innerHTML = 'Cancel';
-    $('dialog_button_right').style.display = 'block';
-    $('dialog_button_right').style.width = '60px';
+    document.getElementById('dialog_button_right').addClass('red');
+    document.getElementById('dialog_button_right_text').innerHTML = 'Cancel';
+    document.getElementById('dialog_button_right').style.display = 'block';
+    document.getElementById('dialog_button_right').style.width = '60px';
  
     window.scrollTo(0,0);
     
-    $('lock_overlay').style.display = 'block';
-    $('dialog').style.display = 'block';
+    document.getElementById('lock_overlay').style.display = 'block';
+    document.getElementById('dialog').style.display = 'block';
 }

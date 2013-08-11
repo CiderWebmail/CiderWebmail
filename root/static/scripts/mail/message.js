@@ -4,7 +4,7 @@ function toggleHeader(node, on) {
 
 function load_subpart(target) {
     var subpart_uri = target.href;
-    var target_div = $(target.parentNode.parentNode); //the body_part div
+    var target_div = target.parentNode.parentNode; //the body_part div
 
     var myHTMLRequest = new Request.HTML({
         onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
@@ -32,12 +32,12 @@ function resize_iframe(target) {
     target.style.height = target.contentWindow.document.body.scrollHeight + 'px';
 }
 
-add_event_listener('keyup', function (event) {
+document.addEventListener('keyup', function (event) {
         if (event.target && event.target.nodeType == 1 && (event.target.nodeName.toLowerCase() == 'input' || event.target.nodeName == 'textarea'))
             return;
         switch (event.keyCode) {
             case 77: // 'm'
-                var form = $('content').getElements('form.move_message')[0]
+                var form = document.getElementById('content').querySelector('form.move_message')
                 if (form) {
                     form.style.display = 'block';
                     form.getElementsByTagName('select')[0].focus();
@@ -54,10 +54,10 @@ add_event_listener('keyup', function (event) {
                 }
                 break;
             case 82: // 'r'
-                window.open($$('.reply')[0].href);
+                window.open(document.querySelector('.reply').href);
                 break;
             case 70: // 'f'
-                window.open($$('.forward')[0].href);
+                window.open(document.querySelector('.forward').href);
                 break;
         }
     }, false);

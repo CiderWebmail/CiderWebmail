@@ -9,26 +9,26 @@ function get_target_node(event) {
 }
 
 function show_message(target) {
-    var messages_pane = $('messages_pane');
+    var messages_pane = document.getElementById('messages_pane');
 
-    $('message_view').innerHTML = loading_message;
-    $('loading_message').style.display = 'block';
-    $('help_message').style.display = 'none';
+    document.getElementById('message_view').innerHTML = loading_message;
+    document.getElementById('loading_message').style.display = 'block';
+    document.getElementById('help_message').style.display = 'none';
 
-    if (! $('content').hasClass('message_display')) {
+    if (! document.getElementById('content').classList.contains('message_display')) {
         var message_divider_top = Cookie.read('message_divider_message_display_top');
-        $('content').addClass('message_display');
-        messages_pane.style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
-        $('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
-        $('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
+        document.getElementById('content').classList.add('message_display');
+        messages_pane.style.bottom = message_divider_top ? document.getElementById('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
+        document.getElementById('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
+        document.getElementById('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
     }
 
     if (current_message)
         current_message.removeClass('active');
 
-    current_message = $(target.parentNode.parentNode);
-    current_message.addClass('seen');
-    current_message.addClass('active');
+    current_message = target.parentNode.parentNode;
+    current_message.classList.add('seen');
+    current_message.classList.add('active');
 
     if (current_message.offsetTop + current_message.offsetHeight > messages_pane.scrollTop + messages_pane.offsetHeight)
         messages_pane.scrollTop = current_message.offsetTop + current_message.offsetHeight - messages_pane.offsetHeight;
@@ -39,7 +39,7 @@ function show_message(target) {
     var myHTMLRequest = new Request.HTML({
         onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
             var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
-            $('message_view').innerHTML = parsed[2];
+            document.getElementById('message_view').innerHTML = parsed[2];
             update_foldertree(parsed[1], responseTree);
         },
         url: target.href
@@ -102,10 +102,10 @@ function delete_message(icon) {
         group.parentNode.removeChild(group);
 }
 
-window.addEvent('load', function() {
+window.addEventListener('load', function() {
     var selected = [];
-    droppables = $('folder_tree').getElements('.folder');
-    loading_message = $('message_view').innerHTML;
+    droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
+    loading_message = document.getElementById('message_view').innerHTML;
     var cancelled = false;
 
     function start(event) {
@@ -200,7 +200,7 @@ window.addEvent('load', function() {
         }, false);
 
     fetch_new_rows(100, 100);
-});
+}, false);
 
 function fetch_new_rows(start_index, length) {
     var start = 'start=' + start_index
@@ -233,7 +233,7 @@ function fetch_new_rows(start_index, length) {
             for (var i = 0; i < new_rows.childNodes.length ; i++)
                 message_list.appendChild(new_rows.childNodes[i].cloneNode(true));
 
-            var messages_pane = $('messages_pane');
+            var messages_pane = document.getElementById('messages_pane');
             var fetcher = function (event) {
                 if (messages_pane.scrollTop > messages_pane.scrollHeight - messages_pane.offsetHeight * 3) {
                     messages_pane.removeEvent('scroll', fetcher);
@@ -244,7 +244,7 @@ function fetch_new_rows(start_index, length) {
             messages_pane.addEvents({scroll: fetcher});
         }
         else {
-            $('fetching_message').style.display = 'none';
+            document.getElementById('fetching_message').style.display = 'none';
         }
     }}).send();
 }
@@ -261,7 +261,7 @@ function update_foldertree(responseText, responseXML) {
         document.getElementById('folder_tree').innerHTML = folder_tree;
     } 
 
-    droppables = $('folder_tree').getElements('.folder');
+    droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
 
 }
 
@@ -270,15 +270,17 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
     var overed_prev;
     var droppables_positions = {};
-    droppables.each(function (droppable) {
+    [].forEach.call(droppables, function (droppable) {
         droppables_positions[droppable.title] = droppable.getCoordinates();
     });
 
     function drag(event) {
-        var overed = droppables.filter(function (el) {
-                el = droppables_positions[el.title];
-                return (event.client.x > el.left && event.client.x < el.right && event.client.y < el.bottom && event.client.y > el.top);
-            }).getLast();
+        var overed;
+        [].forEach.call(droppables, function (el) {
+            el = droppables_positions[el.title];
+            if (event.client.x > el.left && event.client.x < el.right && event.client.y < el.bottom && event.client.y > el.top)
+                overed = el;
+        });
 
         if (overed_prev != overed) {
             if (overed_prev) {
@@ -300,7 +302,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
         dragger.parentNode.removeChild(dragger);
 
         if (overed_prev) {
-            selected.each(function (message) {
+            selected.forEach(function (message) {
                 var uid = message.id.replace('message_', '');
                 var href = location.href.replace(/\/?(\?.*)?$/, '');
                 new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
@@ -316,16 +318,16 @@ function add_drag_and_drop(message, event, droppables, selected) {
             });
         }
 
-        selected.each(function(message) {
+        selected.forEach(function(message) {
             message.removeClass('selected');
         });
         selected.splice(0, selected.length);
     }
 
     var dragger = document.createElement('ul');
-    selected.each(function (message) {
+    selected.forEach(function (message) {
         var li = document.createElement('li');
-        li.innerHTML = $(message).getElements('td.subject a')[0].innerHTML;
+        li.innerHTML = message.querySelector('td.subject a').innerHTML;
         dragger.appendChild(li);
     });
 
