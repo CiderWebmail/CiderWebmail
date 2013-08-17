@@ -6,12 +6,12 @@ function load_subpart(target) {
     var subpart_uri = target.href;
     var target_div = target.parentNode.parentNode; //the body_part div
 
-    var myHTMLRequest = new Request.HTML({
-        onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-            target_div.innerHTML = responseHTML;
+    var myHTMLRequest = new HTMLRequest({
+        onSuccess: function(responseXML) {
+            target_div.innerHTML = responseXML.getElementsByTagName('body')[0].innerHTML;
         },
         url: target.href
-    }).get({ 'layout': 'ajax' });
+    }).send({ 'layout': 'ajax' });
 }
 
 function toggle_important(target) {

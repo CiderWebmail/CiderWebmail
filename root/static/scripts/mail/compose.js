@@ -1,10 +1,10 @@
-window.addEvent('load', function() {
+window.addEventListener('load', function() {
     new Form.Validator.Inline($('compose_form'), {
         stopOnFailure : true,
         useTitles: true,
         errorPrefix: "",
     });
-});
+}, false);
 
 function send_mail(compose_form) {
     //if we support FormData/xhr2
@@ -13,7 +13,13 @@ function send_mail(compose_form) {
         mail_form.append('layout', 'ajax');
       
         var xhr = new XMLHttpRequest();
+        var abort_function = function() {
+            xhr.abort();
+        };
         xhr.open('POST', compose_form.action, true);
+
+        var dialog_button_right = document.getElementById('dialog_button_right');
+        var dialog_button_right_text = document.getElementById('dialog_button_right_text');
       
         xhr.upload.addEventListener("progress", function(e) {
             var percent_completed = parseInt(e.loaded / e.total * 100);
@@ -21,13 +27,12 @@ function send_mail(compose_form) {
             send_mail_progress_detail.innerHTML = percent_completed + '%';
 
             if (percent_completed == 100) {
-                $('dialog_button_right').removeEvents('click');
-                $('dialog_button_right').addClass('green');
-                $('dialog_button_right').removeClass('red');
-                $('dialog_button_right').style.width = '120px';
-                $('dialog_button_right_text').style.width = '100px';
-                $('dialog_button_right_text').innerHTML = 'Upload complete!';
-                $('dialog_button_left').removeEvents('click');
+                dialog_button_right.removeEventListener('click', abort_function, false);
+                dialog_button_right.classList.add('green');
+                dialog_button_right.classList.remove('red');
+                dialog_button_right.style.width = '120px';
+                dialog_button_right_text.style.width = '100px';
+                dialog_button_right_text.innerHTML = 'Upload complete!';
 
                 //everything after this is handled by the xhr.onreadystatechange functions
             }
@@ -64,9 +69,7 @@ function send_mail(compose_form) {
 
         init_progress_dialog('Sending Mail...');
 
-        $('dialog_button_right').addEvent('click', function() {
-            xhr.abort();
-        });
+        dialog_button_right.addEventListener('click', abort_function, false);
 
         xhr.send(mail_form);
     } else { //othersize just fallback

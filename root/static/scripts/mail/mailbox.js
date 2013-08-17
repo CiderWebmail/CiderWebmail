@@ -24,7 +24,7 @@ function show_message(target) {
     }
 
     if (current_message)
-        current_message.removeClass('active');
+        current_message.classList.remove('active');
 
     current_message = target.parentNode.parentNode;
     current_message.classList.add('seen');
@@ -36,14 +36,14 @@ function show_message(target) {
     if (current_message.offsetTop < messages_pane.scrollTop)
         messages_pane.scrollTop = current_message.offsetTop;
 
-    var myHTMLRequest = new Request.HTML({
-        onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-            var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
-            document.getElementById('message_view').innerHTML = parsed[2];
-            update_foldertree(parsed[1], responseTree);
+    var myHTMLRequest = new HTMLRequest({
+        onSuccess: function(responseXML) {
+            document.getElementById('message_view').innerHTML
+                = responseXML.getElementById('content').innerHTML;
+            update_foldertree(responseXML);
         },
         url: target.href
-    }).get({ 'layout': 'ajax' });
+    }).send({ 'layout': 'ajax' });
 }
 
 function show_previous_message() {
@@ -156,7 +156,7 @@ window.addEventListener('load', function() {
 
             if (tagname == 'tr' && target.id && target.id.indexOf('message_') == 0) {
                 if (target.hasClass('selected')) {
-                    target.removeClass('selected');
+                    target.classList.remove('selected');
                     selected.erase(target);
                 }
                 else {
@@ -241,7 +241,7 @@ function fetch_new_rows(start_index, length) {
                     fetch_new_rows(start_index + length, length);
                 }
             };
-            messages_pane.addEvents({scroll: fetcher});
+            messages_pane.addEventListener('scroll', fetcher, false);
         }
         else {
             document.getElementById('fetching_message').style.display = 'none';
@@ -249,16 +249,16 @@ function fetch_new_rows(start_index, length) {
     }}).send();
 }
 
-function update_foldertree(responseText, responseXML) {
-    var folder_tree = responseText.match(/<ul[^>]*id="folder_tree"[^>]*>([\s\S]*)<\/ul>/i)[1]; // responseXML.getElementById doesn't work in IE
+function update_foldertree(responseXML) {
+    var new_folder_tree = document.importNode(responseXML.getElementById('folder_tree'));
+    var new_foldertree_timestamp = new_folder_tree.getAttribute('data-timestamp');
+    document.title = responseXML.getElementById('unseen').firstChild.data;
 
-    document.title = document.title.replace(/- \(\d+\)$/, '- (' + responseText.match(/<div id="unseen">(\d+)<\/div>/)[1] + ')');
-
-    var new_foldertree_timestamp = responseText.match(/data-timestamp="(\d+\.\d+)" id="folder_tree"/)[1];
+    var folder_tree = document.getElementById('folder_tree');
 
     //only update the foldertree if the response comes in the correct order. sometimes a request takes longer than others.
     if (new_foldertree_timestamp > document.getElementById('folder_tree').getAttribute('data-timestamp')) { 
-        document.getElementById('folder_tree').innerHTML = folder_tree;
+        folder_tree.parentNode.replaceChild(new_folder_tree, folder_tree);
     } 
 
     droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
@@ -271,7 +271,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
     var overed_prev;
     var droppables_positions = {};
     [].forEach.call(droppables, function (droppable) {
-        droppables_positions[droppable.title] = droppable.getCoordinates();
+        droppables_positions[droppable.title] = get_coordinates(droppable);
     });
 
     function drag(event) {
@@ -284,7 +284,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
         if (overed_prev != overed) {
             if (overed_prev) {
-                overed_prev.removeClass('hover');
+                overed_prev.classList.remove('hover');
             }
             overed_prev = overed;
             if (overed){
@@ -319,7 +319,7 @@ function add_drag_and_drop(message, event, droppables, selected) {
         }
 
         selected.forEach(function(message) {
-            message.removeClass('selected');
+            message.classList.remove('selected');
         });
         selected.splice(0, selected.length);
     }
@@ -337,5 +337,6 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
     document.body.appendChild(dragger);
 
-    document.addEvents({mousemove: drag, mouseup: drop});
+    document.addEventListener('mousemove', drag, false);
+    document.addEventListener('mouseup', drop, false);
 }

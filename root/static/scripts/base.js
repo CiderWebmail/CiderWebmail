@@ -30,7 +30,8 @@ function start_controlpanel_resize(event) {
         document.removeEvent('mouseup', drop);
         Cookie.write('control_panel_width', event.client.x, {duration: 365});
     }
-    document.addEvents({mousemove: drag, mouseup: drop});
+    document.addEventListener('mousemove', drag, false);
+    document.addEventListener('mouesup', drop, false);
     stop_propagation(event);
 }
 
@@ -48,7 +49,8 @@ function start_message_view_resize(event) {
         document.removeEvent('mouseup', drop);
         Cookie.write(document.getElementById('content').classList.contains('message_display') ? 'message_divider_message_display_top' : 'message_divider_top', event.client.y, {duration: 365});
     }
-    document.addEvents({mousemove: drag, mouseup: drop});
+    document.addEventListener('mousemove', drag, false);
+    document.addEventListener('mouesup', drop, false);
     stop_propagation(event);
 }
 
@@ -63,7 +65,7 @@ function check_touch_event_support(){
     }
 }
 
-window.addEvent('load', function() {
+window.addEventListener('load', function() {
     touch_enabled = check_touch_event_support();
 
     if (!touch_enabled) { document.querySelector('#controlpanel .activeborder').addEventListener('mousedown', start_controlpanel_resize, false); }
@@ -76,7 +78,7 @@ window.addEvent('load', function() {
 
     reset_message_view();
 
-});
+}, false);
 
 function reset_message_view() {
     var message_divider = document.getElementById('message_divider');
@@ -172,4 +174,122 @@ function init_progress_dialog(title_text) {
     
     document.getElementById('lock_overlay').style.display = 'block';
     document.getElementById('dialog').style.display = 'block';
+}
+
+Request.prototype.constructor = Request;
+function Request(params) {
+    if (params) {
+        this.url = params.url;
+        this.onSuccess = params.onSuccess;
+        this.onError = params.onError;
+        this.headers = params.headers ? params.headers : {};
+        this.xhr = new XMLHttpRequest();
+        var request = this;
+        this.xhr.onreadystatechange = function() {
+            request.ready_state_changed();
+        }
+    }
+};
+
+Request.prototype.ready_state_changed = function() {
+    if (!this.xhr)
+        return;
+    if (this.xhr.readyState == 4)
+        if (this.xhr.status == 200) {
+            return this.finish_request();
+        }
+        else if (this.xhr.status != 0) { // aborting the XMLHttpRequest sets readyState to 4 and status to 0 (shouldn't displayed as error)
+            alert('Error: ' + this.xhr.status + " " + this.xhr.statusText + "\n" + this.xhr.responseText);
+            if (this.onError)
+                this.onError();
+        }
+}
+
+Request.prototype.finish_request = function() {
+    if (this.onSuccess)
+        return this.onSuccess(this.xhr.responseText, this.xhr.responseXML);
+    else
+        return;
+}
+
+Request.prototype.param_str = function(params) {
+    var paramstr = '';
+    for (var key in params)
+        paramstr += key + '=' + params[key] + ';';
+    return paramstr;
+}
+
+Request.prototype.set_headers = function() {
+    for (var key in this.headers)
+        this.xhr.setRequestHeader(key, this.headers[key]);
+}
+
+Request.prototype.send = function(params) {
+    this.xhr.open("POST", this.url, true);
+    this.set_headers();
+    this.xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    this.xhr.send(this.param_str(params));
+}
+
+Request.prototype.get = Request.prototype.send;
+
+HTMLRequest.prototype = new Request;
+HTMLRequest.prototype.constructor = HTMLRequest;
+HTMLRequest.prototype.parent = Request.prototype;
+function HTMLRequest(params) {
+    this.parent.constructor.call(this, params);
+    if (! this.headers.Accept)
+        this.headers.Accept = "application/xhtml+xml";
+}
+
+HTMLRequest.prototype.finish_request = function() {
+    if (this.onSuccess)
+        return this.onSuccess(this.xhr.responseXML);
+    else
+        return;
+}
+
+Cookie.prototype.constructor = Cookie;
+function Cookie(key) {
+    this.key = key;
+}
+
+Cookie.prototype.read = function(){
+    var value = this.options.document.cookie.match(
+        "(?:^|;)\\s*" + this.key.escapeRegExp() + "=([^;]*)"
+    );
+    return (value) ? decodeURIComponent(value[1]) : null;
+}
+
+Cookie.prototype.write = function(value) {
+    document.cookie = this.key + "=" + value;
+    return this;
+}
+
+Cookie.read = function(key) {
+    return new Cookie(key);
+}
+
+Cookie.write = function(key, value) {
+    return new Cookie(key).write(value);
+}
+
+function get_coordinates(element) {
+    var offset_top = 0;
+    var offset_left = 0;
+    var offset_height = element.offsetHeight;
+    var offset_width = element.offsetWidth;
+
+    while (element) {
+        offset_top  += element.offsetTop;
+        offset_left += element.offsetLeft;
+        element = element.offsetParent;
+    }
+
+    return {
+        top: offset_top,
+        left: offset_left,
+        bottom: offset_top + offset_height,
+        right: offset_left + offset_width,
+    };
 }
