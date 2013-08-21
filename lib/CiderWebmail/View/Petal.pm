@@ -26,12 +26,13 @@ sub process {
     my ($self, $c) = @_;
 
     my $root = $c->config->{root};
+    my $ajax = $c->req->header('accept') eq 'application/xhtml+xml';
 
     my $base_dir = [
         join('/', $root, 'templates', $c->stash->{language}),
     ];
 
-    unshift @$base_dir, join('/', $root, 'templates', $c->stash->{language}, 'ajax') if ($c->req->param('layout') or '') eq 'ajax';
+    unshift @$base_dir, join('/', $root, 'templates', $c->stash->{language}, 'ajax') if $ajax;
 
     $self->config(
         base_dir    => $base_dir,
@@ -44,6 +45,8 @@ sub process {
         condcomment_lt_ie7_start => '<!--[if lt IE 7]>',
         condcommentend           => '<![endif]-->',
     });
+
+    $c->res->content_type('application/xhtml+xml; charset=utf-8') if $ajax;
 
     return $self->SUPER::process($c);
 }

@@ -11,7 +11,7 @@ function load_subpart(target) {
             target_div.innerHTML = responseXML.getElementsByTagName('body')[0].innerHTML;
         },
         url: target.href
-    }).send({ 'layout': 'ajax' });
+    }).send();
 }
 
 function toggle_important(target) {

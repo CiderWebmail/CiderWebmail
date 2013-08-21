@@ -188,6 +188,8 @@ function Request(params) {
         this.onSuccess = params.onSuccess;
         this.onError = params.onError;
         this.headers = params.headers ? params.headers : {};
+        if (! this.headers.Accept)
+            this.headers.Accept = "application/xhtml+xml";
         this.xhr = new XMLHttpRequest();
         var request = this;
         this.xhr.onreadystatechange = function() {
@@ -243,8 +245,6 @@ HTMLRequest.prototype.constructor = HTMLRequest;
 HTMLRequest.prototype.parent = Request.prototype;
 function HTMLRequest(params) {
     this.parent.constructor.call(this, params);
-    if (! this.headers.Accept)
-        this.headers.Accept = "application/xhtml+xml";
 }
 
 HTMLRequest.prototype.finish_request = function() {

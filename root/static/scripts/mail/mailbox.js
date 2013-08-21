@@ -43,7 +43,7 @@ function show_message(target) {
             update_foldertree(responseXML);
         },
         url: target.href
-    }).send({ 'layout': 'ajax' });
+    }).send();
 }
 
 function show_previous_message() {
@@ -94,7 +94,7 @@ function show_next_message() {
 }
 
 function delete_message(icon) {
-    new Request({url: icon.parentNode.href, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
+    new HTMLRequest({url: icon.parentNode.href, onSuccess: update_foldertree}).send();
 
     var group = icon.parentNode.parentNode.parentNode.parentNode;
     group.removeChild(icon.parentNode.parentNode.parentNode);
@@ -206,7 +206,7 @@ function fetch_new_rows(start_index, length) {
     var start = 'start=' + start_index
     var href = location.search.match(/start=/) ? location.href.replace(/start=\d+/, start) : (location.href.match(/\?/) ? location.href + '&' + start : location.href + '?' + start);
 
-    new Request({url: href + ';layout=ajax', onSuccess: function(responseText, responseXML) {
+    new Request({url: href, onSuccess: function(responseText, responseXML) {
         // this hack is presented to you by Microsoft
         var dummy = document.createElement('span');
         dummy.innerHTML = '<table>' + responseText.match(/<table[^>]+id="message_list"[^>]*>([\S\s]*)<\/table>/)[1] + '</table>'; // responseXML.getElementById doesn't work in IE
@@ -305,7 +305,10 @@ function add_drag_and_drop(message, event, droppables, selected) {
             selected.forEach(function (message) {
                 var uid = message.id.replace('message_', '');
                 var href = location.href.replace(/\/?(\?.*)?$/, '');
-                new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
+                new HTMLRequest({
+                    url: href + "/" + uid + "/move?target_folder=" + overed_prev.title,
+                    onSuccess: update_foldertree,
+                }).send();
 
                 var tbody = message.parentNode
                 tbody.removeChild(message);
