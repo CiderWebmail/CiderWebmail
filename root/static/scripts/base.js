@@ -22,16 +22,16 @@ function start_controlpanel_resize(event) {
     var controlpanel = document.getElementById('controlpanel');
     var content = document.getElementById('content');
     function drag(event) {
-        controlpanel.style.width = event.client.x + 'px';
-        content.style.left = event.client.x + 'px';
+        controlpanel.style.width = event.clientX + 'px';
+        content.style.left = event.clientX + 'px';
     }
     function drop(event) {
-        document.removeEvent('mousemove', drag);
-        document.removeEvent('mouseup', drop);
-        Cookie.write('control_panel_width', event.client.x, {duration: 365});
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', drop);
+        Cookie.write('control_panel_width', event.clientX, {duration: 365});
     }
     document.addEventListener('mousemove', drag, false);
-    document.addEventListener('mouesup', drop, false);
+    document.addEventListener('mouseup', drop, false);
     stop_propagation(event);
 }
 
@@ -40,17 +40,19 @@ function start_message_view_resize(event) {
     var message_view    = document.getElementById('message_view');
     var message_divider = document.getElementById('message_divider');
     function drag(event) {
-        messages_pane.style.bottom = messages_pane.parentNode.offsetHeight - event.client.y + 'px';
-        message_view.style.top = event.client.y + 'px';
-        message_divider.style.top = event.client.y + 'px';
+        var content_top = messages_pane.parentNode.offsetTop;
+        messages_pane.style.bottom = messages_pane.parentNode.offsetHeight + content_top
+            - event.clientY + 'px';
+        message_view.style.top = event.clientY - content_top + 'px';
+        message_divider.style.top = event.clientY - content_top + 'px';
     }
     function drop(event) {
-        document.removeEvent('mousemove', drag);
-        document.removeEvent('mouseup', drop);
-        Cookie.write(document.getElementById('content').classList.contains('message_display') ? 'message_divider_message_display_top' : 'message_divider_top', event.client.y, {duration: 365});
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', drop);
+        Cookie.write(document.getElementById('content').classList.contains('message_display') ? 'message_divider_message_display_top' : 'message_divider_top', event.clientY, {duration: 365});
     }
     document.addEventListener('mousemove', drag, false);
-    document.addEventListener('mouesup', drop, false);
+    document.addEventListener('mouseup', drop, false);
     stop_propagation(event);
 }
 
@@ -68,7 +70,10 @@ function check_touch_event_support(){
 window.addEventListener('load', function() {
     touch_enabled = check_touch_event_support();
 
-    if (!touch_enabled) { document.querySelector('#controlpanel .activeborder').addEventListener('mousedown', start_controlpanel_resize, false); }
+    if (!touch_enabled) {
+        document.querySelector('#controlpanel .activeborder')
+            .addEventListener('mousedown', start_controlpanel_resize, false);
+    }
 
     var control_panel_width = Cookie.read('control_panel_width')
     if (control_panel_width) {

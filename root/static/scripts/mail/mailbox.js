@@ -160,7 +160,7 @@ window.addEventListener('load', function() {
                     selected.erase(target);
                 }
                 else {
-                    target.addClass('selected');
+                    target.classList.add('selected');
                     selected.push(target);
                 }
             }
@@ -236,7 +236,7 @@ function fetch_new_rows(start_index, length) {
             var messages_pane = document.getElementById('messages_pane');
             var fetcher = function (event) {
                 if (messages_pane.scrollTop > messages_pane.scrollHeight - messages_pane.offsetHeight * 3) {
-                    messages_pane.removeEvent('scroll', fetcher);
+                    messages_pane.removeEventListener('scroll', fetcher);
                     var length = 100;
                     fetch_new_rows(start_index + length, length);
                 }
@@ -277,8 +277,8 @@ function add_drag_and_drop(message, event, droppables, selected) {
     function drag(event) {
         var overed;
         [].forEach.call(droppables, function (el) {
-            el = droppables_positions[el.title];
-            if (event.client.x > el.left && event.client.x < el.right && event.client.y < el.bottom && event.client.y > el.top)
+            pos = droppables_positions[el.title];
+            if (event.clientX > pos.left && event.clientX < pos.right && event.clientY < pos.bottom && event.clientY > pos.top)
                 overed = el;
         });
 
@@ -288,16 +288,16 @@ function add_drag_and_drop(message, event, droppables, selected) {
             }
             overed_prev = overed;
             if (overed){
-                overed.addClass('hover');
+                overed.classList.add('hover');
             }
         }
-        dragger.style.left = event.client.x + 'px';
-        dragger.style.top  = event.client.y + 'px';
+        dragger.style.left = event.clientX + 'px';
+        dragger.style.top  = event.clientY + 'px';
     }
 
     function drop(event) {
-        document.removeEvent('mousemove', drag);
-        document.removeEvent('mouseup', drop);
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', drop);
 
         dragger.parentNode.removeChild(dragger);
 
