@@ -120,7 +120,6 @@ function reset_dialog_box() {
 
     //buttons
     var dialog_button_left = document.getElementById('dialog_button_left');
-    dialog_button_left.removeEvents('click');
     dialog_button_left.style.display = 'none';
     dialog_button_left.removeClass('red');
     dialog_button_left.removeClass('green');
@@ -131,7 +130,7 @@ function reset_dialog_box() {
     dialog_button_left_text.innerHTML = '';
 
     var dialog_button_right = document.getElementById('dialog_button_right');
-    dialog_button_right.removeEvents('click');
+    dialog_button_right.removeEventListener('click', reset_dialog_box, false);
     dialog_button_right.style.display = 'none';
     dialog_button_right.removeClass('red');
     dialog_button_right.removeClass('green');
@@ -154,9 +153,7 @@ function show_warning_message(title_text, message_text) {
     dialog_button_right.style.display = 'block';
     dialog_button_right.style.width = '60px';
     
-    dialog_button_right.addEventListener('click', function() {
-        reset_dialog_box();
-    }, false);
+    dialog_button_right.addEventListener('click', reset_dialog_box, false);
 
     window.scrollTo(0,0);
 
