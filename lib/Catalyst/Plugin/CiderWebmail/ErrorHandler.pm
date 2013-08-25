@@ -17,7 +17,7 @@ sub finalize_error {
     confess("ErrorHandler called without error") unless (defined $c->error->[0]);
 
     my $error = $c->error->[0];
-    if ((defined blessed($error )) and (blessed($error) eq 'CiderWebmail::Error')) {
+    if (blessed $error and $error->DOES('CiderWebmail::Error')) {
         $c->response->status($error->code);
 
         if (($c->req->param('layout') or '') eq 'ajax') {
