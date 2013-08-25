@@ -320,8 +320,15 @@ button { border: 1px solid black; }
 #dialog .green:hover
     {background-color:#7DCA34;}
 
+//add checkmark / X symbol
 #dialog .green:before
     {content: '\2713';}
+
+#dialog .grey:before
+    {content: '\2713';}
+
+#dialog .red:before
+    {content: '\2717';}
 
 #dialog .grey, .dialog .green:visited
     {background-color: #efefef; border:1px solid #8E8E8E; color: #424242; }
@@ -329,17 +336,11 @@ button { border: 1px solid black; }
 #dialog .grey:hover
     {background-color:#B8B8B8;}
 
-#dialog .grey:before
-    {content: '\2713';}
-
 #dialog .red, .dialog .red:visited
     {background-color:#E64444; border:1px solid #B63440;}
 
 #dialog .red:hover
     {background-color:#FF4B5A;}
-
-#dialog .red:before
-    {content: '\2717';}
 
 #dialog_progressbar {
     display: none;
