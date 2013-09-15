@@ -37,3 +37,21 @@ enable_body_search: false
 send:
     method: sendmail
 #   host:   changeme
+
+#logging
+#Screen logger will log to STDERR
+Log::Dispatch:
+    -   class: Screen
+        stderr: 1
+        min_level: warn
+        format: '%d %P %m%n'
+#    -   class: File
+#        min_level: debug
+#        filename: /tmp/ciderwebmail.log
+#        mode: append
+#        format: '%d %P %m%n'
+#    -   class: Syslog
+#        min_level: debug
+#        facility: mail
+#        ident: ciderwebmail
+#        format: '%P %m'

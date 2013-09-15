@@ -19,6 +19,10 @@ requires 'Catalyst::Authentication::Credential::HTTP';
 requires 'Catalyst::Model::DBIC::Schema' => '0.41';
 requires 'Catalyst::ScriptRunner';
 
+requires 'Log::Dispatch';
+requires 'Log::Dispatch::Config';
+requires 'Catalyst::Plugin::Log::Dispatch' => '0.121';
+
 requires 'Catalyst::Action::RenderView' => '0.16';
 requires 'YAML'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats

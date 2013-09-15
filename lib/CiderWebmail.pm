@@ -29,6 +29,8 @@ use Catalyst qw/
     Session::State::Cookie
 
     CiderWebmail::ErrorHandler
+
+    Log::Dispatch
 /;
 
 our $VERSION = '1.04';
@@ -73,6 +75,8 @@ around 'log_request_parameters' => sub {
 
 # Start the application
 __PACKAGE__->setup;
+
+__PACKAGE__->log->info("CiderWebmail $VERSION loaded!");
 
 __PACKAGE__->config->{authentication}{realms}{imap}{store}{host} ||= ($ENV{IMAPHOST} || __PACKAGE__->config->{server}{host});
 
