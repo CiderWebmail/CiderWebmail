@@ -210,9 +210,6 @@ msgstr "Til:"
 msgid "Toggle important flag"
 msgstr "Markér vigtige flag"
 
-msgid "Transmit message"
-msgstr "Send besked"
-
 msgid "Username"
 msgstr "Brugernavn"
 
@@ -233,6 +230,9 @@ msgstr "slet"
 
 msgid "edit"
 msgstr "redigér"
+
+#~ msgid "Transmit message"
+#~ msgstr "Send besked"
 
 #~ msgid "${1} Addressbook"
 #~ msgstr "${1} Addressebog"

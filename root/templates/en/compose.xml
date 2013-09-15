@@ -50,7 +50,7 @@
                         <legend>Attachments</legend>
                         <label class="attachment">
                             <span>Attachment:</span>
-                            <input name="attachment" multiple="multiple" type="file" />
+                            <input name="attachment" multiple="multiple" type="file" size="35" />
                             <a onclick="add_attachment(this)">[+]</a>
                         </label>
                     </fieldset>

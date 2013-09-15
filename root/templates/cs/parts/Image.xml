@@ -1,0 +1,8 @@
+<div xmlns:tal="http://purl.org/petal/1.0/" class="image renderable">
+    <div class="image_view_head">
+        <h1 tal:content="string: ${part/display_name}" />
+    </div>
+    <div class="image_body">
+        <img tal:attributes="src string:${part/uri_download}" />
+    </div>
+</div>

@@ -181,9 +181,6 @@ msgstr "To:"
 msgid "Toggle important flag"
 msgstr "Toggle important flag"
 
-msgid "Transmit message"
-msgstr "Transmit message"
-
 msgid "Username"
 msgstr "Username"
 

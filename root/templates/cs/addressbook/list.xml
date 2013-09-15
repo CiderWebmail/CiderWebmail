@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <title metal:fill-slot="title">Kontakty</title>
+    </head>
+    <body tal:omit-tag="" metal:fill-slot="content">
+        <div id="subheadline">
+            <h1>Kontakty</h1>
+        </div>
+        <div id="container">
+            <table class="addressbook_list" id="addressbook_list">
+                <tr>
+                    <th>Jméno</th>
+                    <th>E-mail</th>
+                    <th />
+                    <th />
+                </tr>
+                <tr tal:repeat="entry addresses">
+                    <td tal:content="string: ${entry/firstname} ${entry/surname}" />
+                    <td><a tal:content="string: ${entry/email}" tal:attributes="href string:${uri_compose}?to=${entry/email}; id string:compose_${entry/id}" /></td>
+                    <td><a tal:attributes="href string:${uri_addressbook}/modify/edit/${entry/id}; id string:edit_${entry/id}">editovat</a></td>
+                    <td><a tal:attributes="href string:${uri_addressbook}/delete/${entry/id}; id string:delete_${entry/id}"><img alt="smazat" title="delete" tal:attributes="src string:${uri_static}/images/trashcan.gif" /></a></td>
+                </tr>
+            </table>
+
+            <a tal:attributes="href string:${uri_addressbook}/modify/add">přidat kontakt</a>
+        </div>
+    </body>
+</html>

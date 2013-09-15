@@ -204,9 +204,6 @@ msgstr "To:"
 msgid "Toggle important flag"
 msgstr "Toggle important flag"
 
-msgid "Transmit message"
-msgstr "Transmit message"
-
 msgid "Username"
 msgstr "Username"
 
@@ -227,6 +224,9 @@ msgstr "delete"
 
 msgid "edit"
 msgstr "edit"
+
+#~ msgid "Transmit message"
+#~ msgstr "Transmit message"
 
 #~ msgid "${1} Addressbook"
 #~ msgstr "${1} Addressbook"
