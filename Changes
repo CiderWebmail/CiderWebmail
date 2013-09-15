@@ -1,3 +1,13 @@
+1.05 2013-xx-yy 00:00:00
+    - HTML5 message submission progress bar
+    - Various html/css/design fixes across all browsers
+    - Basic managesieve support
+    - Improved text/html mail rendering support based on HTML::Defang and HTML::Tidy
+    - Add support for Content Security Policy when rendering text/html parts
+    - New translation: Russian by Elena Bolshakova
+    - New translation: Czech by JiriMacha
+    - New translation: Danish by Jonas Smedegaard
+
 1.04 2012-06-11 22:00:00
     - Completely reworked MIME handling for improved compatability and performance
     - Support for right-to-left text
