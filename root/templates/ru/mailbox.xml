@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:tal="http://purl.org/petal/1.0/" metal:use-macro="layout.xml#layout" xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <head>
+        <title tal:content="string: ${folder} (${folder_data/unseen})" metal:fill-slot="title">Mailbox</title>
+        <tal:div tal:omit-tag="" metal:fill-slot="css">
+            <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/mailbox.css" />
+            <link rel="stylesheet" tal:attributes="href string:${uri_static}/css/mail/message.css" />
+        </tal:div>
+        <tal:div tal:omit-tag="" metal:fill-slot="scripts">
+            <script tal:attributes="src string:${uri_static}/scripts/mail/mailbox.js" type="text/javascript" />
+            <script tal:attributes="src string:${uri_static}/scripts/mail/message.js" type="text/javascript" />
+        </tal:div>
+    </head>
+    <body>
+        <div tal:omit-tag="" metal:fill-slot="content">
+            <div id="subheadline">
+                <h1 tal:content="folder">Mailbox</h1>
+                <form method="GET" tal:attributes="action uri_quicksearch" id="quicksearch">
+                    <input name="sort" tal:attributes="value sort" type="hidden" />
+                    <input name="filter" tal:attributes="value filter" />
+                    <button type="submit">Поиск</button>
+                </form>
+            </div>
+            <div id="messages_pane">
+                <table tal:attributes="class string:message_list ${sort}" id="message_list">
+                    <tr>
+                        <th class="icons"></th>
+                        <th tal:condition="true: show_from" tal:attributes="class if: sort_from then: string:from ${sort_from} ${reverse} else: string:from"><a tal:attributes="href uri_sorted_from">От</a></th>
+                        <th tal:condition="true: show_to" tal:attributes="class if: sort_to then: string:to ${sort_to} ${reverse} else: string:to"><a tal:attributes="href uri_sorted_to">Кому</a></th>
+                        <th tal:attributes="class if: sort_subject then: string:subject ${sort_subject} ${reverse} else: string:subject"><a tal:attributes="href uri_sorted_subject">Тема</a></th>
+                        <th tal:attributes="class if: sort_date then: string:date ${sort_date} ${reverse} else: string:date"><a tal:attributes="href uri_sorted_date">Дата</a></th>
+                        <th class="actions"></th>
+                    </tr>
+                    <tbody tal:repeat="group groups">
+                        <tr class="group_head">
+                            <td tal:condition="true:group/name" tal:content="group/name" colspan="5" />
+                            <td tal:condition="and: true:sort_subject false:group/name" colspan="5">Нет темы</td>
+                        </tr>
+                        <tr tal:repeat="message group/messages" tal:attributes="id string:message_${message/uid}; class if: repeat/even then: string:${message/flags} even else: string:${message/flags} odd">
+                            <td class="icons">
+                                <img tal:attributes="id string:icon_${message/uid}; title message/flags; src string:${uri_static}/images/message${message/flag/seen}${message/flag/forwarded}${message/flag/answered}.png; alt message/flats" />
+                                <img tal:condition="true: message/attachments" alt="attachment" tal:attributes="src string:${uri_static}/images/attachment.png" class="attachment_icon" />
+                                <img tal:condition="true: message/flag/flagged" alt="flagged" tal:attributes="src string:${uri_static}/images/flag-red.png" class="flag_icon" />
+                                </td>
+                            <td tal:condition="true: show_from" tal:attributes="id string:from_${message/uid}" class="sender">
+                                <span tal:condition="false: sort_from" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/from" tal:attributes="title address/address">from</span>
+                            </td>
+                            <td tal:condition="true: show_to" tal:attributes="id string:to_${message/uid}" class="recipient">
+                                <span tal:condition="false: sort_to" tal:content="if: address/name then: address/name else: address/address" tal:repeat="address message/head/to" tal:attributes="title address/address">from</span>
+                            </td>
+                            <td class="subject"><a tal:content="message/head/subject" tal:attributes="href message/uri_view; id string:link_${message/uid}" onclick="return false" /></td>
+                            <td tal:condition="true: sort_date" tal:content="message/head/date/strftime '%T'">date</td>
+                            <td tal:condition="false: sort_date" tal:content="message/head/date/strftime '%F %T'">date</td>
+                            <td class="actions"><a title="Удалить письмо" tal:attributes="href message/uri_delete"><img alt="delete" tal:attributes="src string:${uri_static}/images/trash.png; id string:delete_${message/uid}" /></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="fetching_message">Скачиваю следующие письма</div>
+            </div>
+            <div id="message_divider" />
+            <div id="message_view">
+                <p id="help_message">Чтобы переместить письмо в каталог, перетащите иконку письма.<br /> Используйте стрелки влево/вправо чтобы перейти с предыдущему/следующему письму.<br /> Стрелки  вверх/вниз для прокрутки внутри письма.<br /> клавиши 'd' или 'Delete', чтобы  удалить текущее письмо.<br /> клавишу 'm' для перемещения письма в  другую папку.<br /> клавишу 'r', чтобы ответить на текущее письмо.<br /> 'f', чтобы переслать текущее письмо.</p>
+                <p id="loading_message">Скачивание письма</p>
+            </div>
+        </div>
+    </body>
+</html>

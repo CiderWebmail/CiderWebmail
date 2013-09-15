@@ -1,0 +1,233 @@
+# Elena Bolshakova, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2013-08-19 19:43+0400\n"
+"Last-Translator: Elena Bolshakova\n"
+"Language-Team: American English <kde-i18n-doc@kde.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 1.4\n"
+
+msgid "${1}"
+msgstr "${1}"
+
+msgid "${1} ${2}"
+msgstr "${1} ${2}"
+
+msgid "Active:"
+msgstr "Активные:"
+
+msgid "Addressbook"
+msgstr "Адресная книга"
+
+msgid "Attachment:"
+msgstr "Прикрепленный файл:"
+
+msgid "Attachments"
+msgstr "Прикрепленные файлы:"
+
+msgid "Cc:"
+msgstr "Копия:"
+
+msgid "Compose Message"
+msgstr "Написать"
+
+msgid "Compose new mail"
+msgstr "Новое письмо"
+
+msgid "Compose new mail message"
+msgstr "Написать новое письмо"
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Create folder"
+msgstr "Создать папку"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Date:"
+msgstr "Дата:"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Delete message"
+msgstr "Удалить письмо"
+
+msgid ""
+"Drag a mail's icon to a folder name to move that mail to that folder.${1} "
+"Use cursor left/right for displaying the previous/next message.${2} Cursor "
+"up/down for scrolling within a message.${3} 'd' or the delete key for "
+"deleting the current message.${4} 'm' for moving the current message to a "
+"different folder.${5} 'r' for replying to the current message.${6} 'f' for "
+"forwarding the current message."
+msgstr ""
+"Чтобы переместить письмо в каталог, перетащите иконку письма.${1} "
+"Используйте стрелки влево/вправо чтобы перейти с предыдущему/следующему "
+"письму.${2} Стрелки  вверх/вниз для прокрутки внутри письма.${3} клавиши 'd' "
+"или 'Delete', чтобы  удалить текущее письмо.${4} клавишу 'm' для перемещения "
+"письма в  другую папку.${5} клавишу 'r', чтобы ответить на текущее письмо."
+"${6} 'f', чтобы переслать текущее письмо."
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "E-Mail:"
+msgstr "E-Mail:"
+
+msgid "Edit contact"
+msgstr "Редактировать контакт"
+
+msgid "Edit sieve script"
+msgstr "Редактировать sieve-скрипт"
+
+msgid "Edit vacation rule"
+msgstr "Редактировать каникулярное правило"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Fetching more messages"
+msgstr "Скачиваю следующие письма"
+
+msgid "First name:"
+msgstr "Имя:"
+
+msgid "Folders"
+msgstr "Папки"
+
+msgid "Forward"
+msgstr "Переслать"
+
+msgid "Forwarding"
+msgstr "Пересылка"
+
+msgid "From"
+msgstr "От"
+
+msgid "From:"
+msgstr "От:"
+
+msgid "Last name:"
+msgstr "Фамилия:"
+
+msgid "Loading message"
+msgstr "Скачивание письма"
+
+msgid "Login"
+msgstr "Войти (логин)"
+
+msgid "Logout"
+msgstr "Выйти"
+
+msgid "Manage folders"
+msgstr "Управление папками"
+
+msgid "Manage rules"
+msgstr "Редактировать правила"
+
+msgid "Managesieve"
+msgstr "Редактировать sieve"
+
+msgid "Move message"
+msgstr "Переместить письмо"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "New subfolder"
+msgstr "Новая папка"
+
+msgid "No Subject"
+msgstr "Нет темы"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Reply"
+msgstr "Ответить"
+
+msgid "Reply All"
+msgstr "Ответить всем"
+
+msgid "Reply List"
+msgstr "Ответить по списку"
+
+msgid "Reply message:"
+msgstr "Ответное сообщение:"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Save copy"
+msgstr "Сохранить копию"
+
+msgid "Save message to:"
+msgstr "Сохранить как:"
+
+msgid "Script name"
+msgstr "Имя скрипта"
+
+msgid "Script name:"
+msgstr "Имя скрипта:"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Server"
+msgstr "Сервер"
+
+msgid "Session ended"
+msgstr "Сеанс завершен"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Subject"
+msgstr "Тема"
+
+msgid "Subject:"
+msgstr "Тема:"
+
+msgid "Target folder:"
+msgstr "Целевая папка:"
+
+msgid "To"
+msgstr "Кому"
+
+msgid "To:"
+msgstr "Кому:"
+
+msgid "Toggle important flag"
+msgstr "Переключить флаг \"важное\""
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Vacation rule"
+msgstr "Каникулярное правило"
+
+msgid "View header"
+msgstr "Просмотреть заголовок"
+
+msgid "View source"
+msgstr "Исходный текст"
+
+msgid "add contact"
+msgstr "добавить контакт"
+
+msgid "delete"
+msgstr "удалить"
+
+msgid "edit"
+msgstr "редактировать"
+
+#~ msgid "Transmit message"
+#~ msgstr "Отправить письмо"
