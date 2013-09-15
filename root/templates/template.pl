@@ -15,26 +15,29 @@ my @folders;
 my $cwd = getcwd();
 die("needs to be run from the root/templates folder!") unless($cwd =~ m/root\/templates$/);
 
+my @langs = map { m!/([^/]*)\z!xm } grep { -d $_ } <../locale/*>;
+mkdir $_ foreach @langs;
+
 find(\&wanted, 'base');
 
-foreach(@folders) {
+foreach(sort @folders) { # sort to get base directories before subdirectories
     my $folder = $_;
 
-    foreach(qw/ da de en /) {
+    foreach(@langs) {
         my $langfolder = $folder;
         $langfolder =~ s/^base/$_/;
         print "Creating folder $langfolder\n";
-        `mkdir -p $langfolder`;
+        mkdir $langfolder;
     }
 }
 
 foreach(@files) {
     my $file = $_;
-    foreach(qw/en de da/) {
+    foreach(@langs) {
         my $lang = $_;
         my $outfile = $file;
         $outfile =~ s/^base/$lang/;
-        print "Tranlating $file to $lang in file $outfile\n";
+        print "Translating $file to $lang in file $outfile\n";
         translate_file($file, $outfile, $lang);
     }
 }
@@ -44,7 +47,8 @@ sub wanted {
     if ($file =~ m/\.xml/) {
         push(@files, $file);
         warn "got file: $file";
-    } else {
+    }
+    elsif(-d $_) {
         push(@folders, $file);
         warn "got folder $file";
     } 
@@ -65,7 +69,7 @@ sub translate_file {
     close(INFILE);
 
     $Petal::TranslationService = $TranslationService;
-    open(OUTFILE, "> $outfile");
+    open(OUTFILE, "> $outfile") or die $!;
     print OUTFILE Petal::I18N->process($template);
     close(OUTFILE);
 
