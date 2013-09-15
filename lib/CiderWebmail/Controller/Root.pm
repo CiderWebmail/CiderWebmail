@@ -51,12 +51,10 @@ sub auto : Private {
 
     $c->stash->{translation_service} = $translation_service;
 
-    if (( $c->request->headers->header('Accept-Language') or '') =~ m/^da/ixm) {
-        $c->stash->{language} = 'da';
-    } elsif (( $c->request->headers->header('Accept-Language') or '') =~ m/^de/ixm) {
-        $c->stash->{language} = 'de';
-    } elsif (( $c->request->headers->header('Accept-Language') or '') =~ m/^en/ixm) {
-        $c->stash->{language} = 'en';
+    my @langs = CiderWebmail::Util::langs();
+    my $langs = join '|', @langs;
+    if (( $c->request->headers->header('Accept-Language') or '') =~ m/^($langs)/ixm) {
+        $c->stash->{language} = $1;
     } else {
         $c->stash->{language} = $c->config->{language} || 'en';
     }

@@ -19,6 +19,7 @@ use Crypt::Random::Source qw/get_weak/;
 use MIME::Base64;
 
 use Carp qw/ carp croak /;
+use FindBin qw($Bin);
 
 use feature qw/ switch /;
 
@@ -318,5 +319,9 @@ sub decode_mime_words {
     return $string;
 }
 
+my @langs = map { m!/([^/]*)\z!xm } grep { -d } glob "$Bin/../root/locale/*";
+sub langs {
+    return @langs;
+}
 
 1;
