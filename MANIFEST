@@ -377,7 +377,6 @@ root/static/scripts/base.js
 root/static/scripts/mail/compose.js
 root/static/scripts/mail/mailbox.js
 root/static/scripts/mail/message.js
-root/static/scripts/mootools-core.js
 root/templates/base/addressbook/edit.xml
 root/templates/base/addressbook/list.xml
 root/templates/base/ajax/layout.xml
@@ -508,8 +507,6 @@ root/templates/en/parts/TextPlain.xml
 root/templates/template.pl
 root/var/README
 root/var/user_settings.sql
-runtests
-screenshot_frontpage.png
 script/ciderwebmail_cgi.pl
 script/ciderwebmail_create.pl
 script/ciderwebmail_fastcgi.pl
