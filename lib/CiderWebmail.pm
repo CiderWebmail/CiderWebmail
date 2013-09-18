@@ -88,6 +88,24 @@ CiderWebmail - Catalyst based application
 
 CiderWebmail: webmail sucks - we suck less!
 
+=head1 METHODS
+
+=head2 langs()
+
+Returns all languages supported by this version.
+
+=cut
+
+my @langs;
+sub langs {
+    my ($self) = @_;
+
+    @langs = map { m!/([^/]*)\z!xm } grep { -d } glob $self->config->{root} . "/locale/*"
+        unless @langs;
+
+    return @langs;
+}
+
 =head1 SEE ALSO
 
 L<CiderWebmail::Controller::Root>, L<Catalyst>
