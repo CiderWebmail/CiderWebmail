@@ -88,7 +88,7 @@ requires 'FCGI::ProcManager';
 
 requires 'Time::Piece';
 
-#catalyst;
+catalyst;
 
 install_script glob('script/*.pl');
 auto_install;
