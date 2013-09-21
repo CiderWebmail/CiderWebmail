@@ -80,6 +80,12 @@ around 'log_request_parameters' => sub {
 # Start the application
 __PACKAGE__->setup;
 
+unless (__PACKAGE__->config->{language}) {
+    print "Missing language configuration.\n";
+    print "Maybe CiderWebmail could not find your configuration file?\n";
+    exit 1;
+}
+
 __PACKAGE__->config->{authentication}{realms}{imap}{store}{host} ||= ($ENV{IMAPHOST} || __PACKAGE__->config->{server}{host});
 
 =head1 NAME
