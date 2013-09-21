@@ -10,7 +10,7 @@ requires 'MooseX::Role::WithOverloading' => '0.09';
 requires 'Catalyst::Runtime' => '5.80030';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
-requires 'Catalyst::Plugin::Unicode';
+requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Authentication';
 requires 'Catalyst::Plugin::Session::Store::FastMmap';

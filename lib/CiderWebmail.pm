@@ -15,6 +15,12 @@ use Catalyst::Runtime '5.80';
 # Static::Simple: will serve static files from the application's root 
 #                 directory
 
+my @unicode_encoding;
+BEGIN {
+    # Unicode::Encoding is autoloaded since Catalyst 5.90040
+    @unicode_encoding = 'Unicode::Encoding' if $Catalyst::Runtime::VERSION < 5.90040;
+}
+
 use Catalyst qw/
     ConfigLoader
 
@@ -22,14 +28,13 @@ use Catalyst qw/
 
     Static::Simple
     Authentication
-    Unicode
 
     Session
     Session::Store::FastMmap
     Session::State::Cookie
 
     CiderWebmail::ErrorHandler
-/;
+/, @unicode_encoding;
 
 our $VERSION = '1.04';
 
@@ -43,8 +48,9 @@ our $VERSION = '1.04';
 # local deployment.
 
 __PACKAGE__->config(
-    name => 'CiderWebmail',
-    default_view => 'Petal',
+    name           => 'CiderWebmail',
+    default_view   => 'Petal',
+    encoding       => 'UTF-8',
     authentication => {
         default_realm => 'imap',
         realms => {
