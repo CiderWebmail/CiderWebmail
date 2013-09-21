@@ -51,8 +51,7 @@ sub auto : Private {
 
     $c->stash->{translation_service} = $translation_service;
 
-    my @langs = CiderWebmail::Util::langs();
-    my $langs = join '|', @langs;
+    my $langs = join '|', $c->langs;
     if (( $c->request->headers->header('Accept-Language') or '') =~ m/^($langs)/ixm) {
         $c->stash->{language} = $1;
     } else {

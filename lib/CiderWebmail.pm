@@ -15,6 +15,12 @@ use Catalyst::Runtime '5.80';
 # Static::Simple: will serve static files from the application's root 
 #                 directory
 
+my @unicode_encoding;
+BEGIN {
+    # Unicode::Encoding is autoloaded since Catalyst 5.90040
+    @unicode_encoding = 'Unicode::Encoding' if $Catalyst::Runtime::VERSION < 5.90040;
+}
+
 use Catalyst qw/
     ConfigLoader
 
@@ -22,7 +28,6 @@ use Catalyst qw/
 
     Static::Simple
     Authentication
-    Unicode
 
     Session
     Session::Store::FastMmap
@@ -31,7 +36,7 @@ use Catalyst qw/
     CiderWebmail::ErrorHandler
 
     Log::Dispatch
-/;
+/, @unicode_encoding;
 
 our $VERSION = '1.04';
 
@@ -45,8 +50,9 @@ our $VERSION = '1.04';
 # local deployment.
 
 __PACKAGE__->config(
-    name => 'CiderWebmail',
-    default_view => 'Petal',
+    name           => 'CiderWebmail',
+    default_view   => 'Petal',
+    encoding       => 'UTF-8',
     authentication => {
         default_realm => 'imap',
         realms => {
@@ -78,6 +84,12 @@ __PACKAGE__->setup;
 
 __PACKAGE__->log->info("CiderWebmail $VERSION loaded!");
 
+unless (__PACKAGE__->config->{language}) {
+    print "Missing language configuration.\n";
+    print "Maybe CiderWebmail could not find your configuration file?\n";
+    exit 1;
+}
+
 __PACKAGE__->config->{authentication}{realms}{imap}{store}{host} ||= ($ENV{IMAPHOST} || __PACKAGE__->config->{server}{host});
 
 =head1 NAME
@@ -91,6 +103,24 @@ CiderWebmail - Catalyst based application
 =head1 DESCRIPTION
 
 CiderWebmail: webmail sucks - we suck less!
+
+=head1 METHODS
+
+=head2 langs()
+
+Returns all languages supported by this version.
+
+=cut
+
+my @langs;
+sub langs {
+    my ($self) = @_;
+
+    @langs = map { m!/([^/]*)\z!xm } grep { -d } glob $self->config->{root} . "/locale/*"
+        unless @langs;
+
+    return @langs;
+}
 
 =head1 SEE ALSO
 

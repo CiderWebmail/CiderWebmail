@@ -319,9 +319,4 @@ sub decode_mime_words {
     return $string;
 }
 
-my @langs = map { m!/([^/]*)\z!xm } grep { -d } glob "$Bin/../root/locale/*";
-sub langs {
-    return @langs;
-}
-
 1;
