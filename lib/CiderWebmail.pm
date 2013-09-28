@@ -38,7 +38,7 @@ use Catalyst qw/
     Log::Dispatch
 /, @unicode_encoding;
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 # Configure the application. 
 #
