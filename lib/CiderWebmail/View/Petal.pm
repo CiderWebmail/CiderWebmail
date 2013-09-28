@@ -34,7 +34,8 @@ sub process {
     unshift @$base_dir, join('/', $root, 'templates', $c->stash->{language}, 'ajax') if ($c->req->param('layout') or '') eq 'ajax';
 
     $self->config(
-        base_dir => $base_dir,
+        base_dir    => $base_dir,
+        debug_dump  => $c->debug,
     ); # this sets the global config, so we have to do it for every request
 
     $c->stash({
