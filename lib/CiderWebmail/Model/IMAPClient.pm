@@ -343,7 +343,8 @@ sub get_headers_hash {
         my $email = Email::Simple->new($headers."\n") || croak;
 
         my %headers = $email->header_pairs;
-        defined $headers{$_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
+        my %uc_headers = map { uc $_ =>  $headers{$_} } keys %headers; # courier-imap case doesnt always match
+        defined $uc_headers{uc $_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;
