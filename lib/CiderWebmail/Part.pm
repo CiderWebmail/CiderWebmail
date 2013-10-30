@@ -28,7 +28,7 @@ has message             => (is => 'rw', isa => 'Bool', default => 0 ); #override
 has attachment          => (is => 'rw', isa => 'Bool', default => sub {
     my ($self) = @_;
 
-    return 0 unless defined $self->bodystruct->{bodydisp};
+    return 0 unless (defined $self->bodystruct && defined $self->bodystruct->{bodydisp});
     return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
     return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
     return 0;

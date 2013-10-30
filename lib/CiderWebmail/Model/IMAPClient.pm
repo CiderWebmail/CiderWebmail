@@ -7,7 +7,7 @@ use Moose;
 has _imapclient         => (is => 'rw');
 has _cache              => (is => 'rw', isa => 'Object', default => sub { return CiderWebmail::Cache->new(); } );
 has _enable_body_search => (is => 'rw', isa => 'Bool', default => 0 );
-
+has _enable_courier_headers => (is => 'rw', isa => 'Bool', default => 0 );
 
 use MIME::Parser;
 use Mail::IMAPClient::MessageSet;
@@ -284,6 +284,7 @@ sub get_headers_hash {
     my @words;          #things we expect in return from the imap server
 
     my $headers_to_fetch = uc(join(" ", @{ $o->{headers} }));
+    $headers_to_fetch = ("\"$headers_to_fetch\"" =~ s/ /" "/gr) if $self->{_enable_courier_headers}; # for courier-imap? surround each header with ""
     
     $self->select({ mailbox => $o->{mailbox} } );
     
@@ -342,7 +343,8 @@ sub get_headers_hash {
         my $email = Email::Simple->new($headers."\n") || croak;
 
         my %headers = $email->header_pairs;
-        defined $headers{$_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
+        my %uc_headers = map { uc $_ =>  $headers{$_} } keys %headers; # courier-imap case doesnt always match
+        defined $uc_headers{uc $_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;
