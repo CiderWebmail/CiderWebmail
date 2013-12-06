@@ -8,7 +8,6 @@ use English qw(-no_match_vars);
 
 use charnames ':full';
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok('http://localhost/mailbox/INBOX/compose');
 
@@ -21,8 +20,8 @@ $body    .= "CHECK_\N{CHECK MARK}";
 
 $mech->submit_form(
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'utf8-test-'.$unix_time." -- $body",
         body        => $body,

@@ -4,7 +4,6 @@ use Test::More;
 use CiderWebmail::Test {login => 1};
 use English qw(-no_match_vars);
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok('http://localhost/mailboxes');
 
@@ -12,7 +11,10 @@ if($mech->content =~ m/<span class="name">Sent<\/span>/) {
     done_testing();
     exit;
 } else {
-    $mech->get_ok('http://localhost/create_folder');
+    $mech->get_ok('http://localhost/mailboxes');
+
+    #this is not perfect but works with default dovecot&courier installations until we finish support for special use mailboxes
+    $mech->follow_link_ok({ url_regex => qr{INBOX/create_subfolder} }, 'Follow create subfolder link');
 
     $mech->submit_form_ok({
         with_fields => {

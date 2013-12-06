@@ -8,11 +8,10 @@ use English qw(-no_match_vars);
 
 use JSON::XS;
 
-my $uname = getpwuid $UID;
 my $unix_time = time();
 
-check_error('send-mail-error-no-recipients', { from => "$uname\@localhost", to => '', sent_folder => 'Sent', subject => 'compose-message-test-'.$unix_time, body => 'compose-message-body-'.$unix_time, });
-check_error('send-mail-error-no-sender', { from => '', to => "$uname\@localhost", sent_folder => 'Sent', subject => 'compose-message-test-'.$unix_time, body => 'compose-message-body-'.$unix_time, });
+check_error('send-mail-error-no-recipients', { from => $ENV{TEST_MAILADDR}, to => '', sent_folder => 'Sent', subject => 'compose-message-test-'.$unix_time, body => 'compose-message-body-'.$unix_time, });
+check_error('send-mail-error-no-sender', { from => '', to => $ENV{TEST_MAILADDR}, sent_folder => 'Sent', subject => 'compose-message-test-'.$unix_time, body => 'compose-message-body-'.$unix_time, });
 
 sub check_error {
     my ($expected_error, $fields) = @_;

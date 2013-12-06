@@ -10,7 +10,6 @@ use English qw(-no_match_vars);
 
 return plan skip_all => 'Set VALIDATOR_URI to a server running the w3c validator for HTML5 validation tests' unless $ENV{VALIDATOR_URI};
 
-my $uname = getpwuid $UID;
 
 $mech->get('http://localhost/mailbox/INBOX/compose');
 
@@ -18,8 +17,8 @@ my $unix_time = time();
 
 $mech->submit_form(
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'utf8handling-'.$unix_time,
         body        => 'utf8handling',

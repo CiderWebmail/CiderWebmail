@@ -4,7 +4,6 @@ use Test::More;
 use CiderWebmail::Test {login => 1};
 use English qw(-no_match_vars);
 
-my $uname = getpwuid $UID;
 
 #delete trash folder if it exists
 $mech->get_ok('http://localhost/mailboxes', 'open folder list');
@@ -22,8 +21,8 @@ $mech->follow_link_ok({ url_regex => qr{/compose} }, 'Compose a new message');
 
 $mech->submit_form_ok({
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'deletemessage-'.$unix_time,
         body        => 'deletemessage',
@@ -59,8 +58,8 @@ $mech->follow_link_ok({ url_regex => qr{/compose} }, 'Compose a new message');
 
 $mech->submit_form_ok({
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'trash_deletemessage-'.$unix_time,
         body        => 'trash_deletemessage',

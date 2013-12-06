@@ -8,7 +8,6 @@ use English qw(-no_match_vars);
 
 use charnames ':full';
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok('http://localhost/mailbox/INBOX/compose');
 
@@ -23,8 +22,8 @@ $body    .= "\N{HEBREW LETTER ALEF}\N{HEBREW LETTER PE}\N{HEBREW LETTER NUN}\n\n
 
 $mech->submit_form(
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'hebrew-test-'.$unix_time,
         body        => $body,

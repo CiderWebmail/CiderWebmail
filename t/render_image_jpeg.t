@@ -23,7 +23,6 @@ $message_text =~ s/TIME/$unix_time/gm;
 
 $c->model('IMAPClient')->append_message({ mailbox => 'INBOX', message_text => $message_text });
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'testmessage-image-attachment-'.$unix_time }, 'follow testmessage-image-attachment link');

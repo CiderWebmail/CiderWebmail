@@ -6,7 +6,6 @@ use Regexp::Common qw(Email::Address);
 use Email::Address;
 use English qw(-no_match_vars);
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok('http://localhost/mailbox/INBOX/compose');
 
@@ -14,8 +13,8 @@ my $unix_time = time();
 
 $mech->submit_form(
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'append_signature_subject-'.$unix_time,
         signature   => 'append_signature_signature-'.$unix_time,

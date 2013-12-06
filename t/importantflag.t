@@ -4,7 +4,6 @@ use Test::More;
 use English qw(-no_match_vars);
 use CiderWebmail::Test {login => 1};
 
-my $uname = getpwuid $UID;
 
 $mech->follow_link_ok({ url_regex => qr{/compose} }, 'Compose a new message');
 
@@ -12,8 +11,8 @@ my $unix_time = time();
 
 $mech->submit_form_ok({
     with_fields => {
-        from        => "$uname\@localhost",
-        to          => "$uname\@localhost",
+        from        => $ENV{TEST_MAILADDR},
+        to          => $ENV{TEST_MAILADDR},
         sent_folder => 'Sent',
         subject     => 'importantmessage-'.$unix_time,
         body        => 'importantmessage',

@@ -23,7 +23,6 @@ $message_text =~ s/TIME/$unix_time/gm;
 
 $c->model('IMAPClient')->append_message({ mailbox => 'INBOX', message_text => $message_text });
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'textmessage-'.$unix_time });
@@ -41,7 +40,7 @@ $mech->follow_link_ok({ url_regex => qr{/forward/root\z} }, "forwarding");
 
 $mech->submit_form_ok({
     with_fields => {
-        to => "$uname\@localhost",
+        to => $ENV{TEST_MAILADDR},
     }
 }, 'Send forward');
 

@@ -4,7 +4,6 @@ use Test::More;
 use CiderWebmail::Test {login => 1};
 use English qw(-no_match_vars);
 
-my $uname = getpwuid $UID;
 
 $mech->follow_link_ok({ url_regex => qr{/mailboxes} }, 'open Manage folders');
 

@@ -24,7 +24,6 @@ $message_text =~ s/dsnmessage-check-header-TIME/dsnmessage-check-header-$unix_ti
 
 $c->model('IMAPClient')->append_message({ mailbox => 'INBOX', message_text => $message_text });
 
-my $uname = getpwuid $UID;
 
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'dsnmessage-'.$unix_time });
