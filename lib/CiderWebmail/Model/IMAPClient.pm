@@ -283,7 +283,9 @@ sub get_headers_hash {
     my @messages;       #messages wo got back, contains 'transformed' headers
     my @words;          #things we expect in return from the imap server
 
-    my $headers_to_fetch = uc(join(" ", @{ $o->{headers} }));
+    #Courier IMAP will return quoted headers even if we did not ask for them
+    #for example "SUBJECT" even if we requested SUBJECT
+    my $headers_to_fetch = uc( '"' . join('" "', @{ $o->{headers} }) . '"' );
     
     $self->select({ mailbox => $o->{mailbox} } );
     
@@ -342,7 +344,8 @@ sub get_headers_hash {
         my $email = Email::Simple->new($headers."\n") || croak;
 
         my %headers = $email->header_pairs;
-        defined $headers{$_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
+        my %uc_headers = map { uc $_ =>  $headers{$_} } keys %headers; # courier-imap case doesnt always match
+        defined $uc_headers{uc $_} or $headers{$_} = '' foreach @{ $o->{headers} }; # make sure all requested headers are at least present
 
         while ( my ($header, $value) = each(%headers) ) {
             $header = lc $header;
