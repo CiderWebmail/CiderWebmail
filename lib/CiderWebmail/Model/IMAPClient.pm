@@ -71,11 +71,17 @@ this sould be called after every command sent to the imap server.
 =cut
 
 sub _die_on_error {
-    my ($self) = @_;
+    my ($self, $message) = @_;
   
     if ( $self->_imapclient->LastError ) {
         my $error = $self->_imapclient->LastError;
-        confess $error if $error;
+        my $caller = (caller 1)[3];
+        $caller =~ s/^CiderWebmail::Model::IMAPClient:://;
+        if (defined $message) {
+            confess "$caller failed with $message, IMAP server said: '$error'" if $error;
+        } else {
+            confess "$caller failed, IMAP server said: '$error'" if $error;
+        }
     }
 
     return;
@@ -173,7 +179,7 @@ sub select {
 
     unless ( $self->_imapclient->Folder and $self->_imapclient->Folder eq $o->{mailbox} ) {
         $self->_imapclient->select( $o->{mailbox} );
-        $self->_die_on_error();
+        $self->_die_on_error("attempted to select '$o->{mailbox}'");
     }
 
     return;
@@ -677,11 +683,11 @@ sub move_message {
     my ($self, $o) = @_;
 
     $self->select({ mailbox => $o->{mailbox} });
-    $self->_imapclient->move($o->{target_mailbox}, $o->{uid}) or croak("could not move message $o->{uid} to folder $o->{mailbox}");
-    $self->_die_on_error();
+    $self->_imapclient->move($o->{target_mailbox}, $o->{uid});
+    $self->_die_on_error("could not move message $o->{uid} to folder $o->{mailbox}");
     
     $self->_imapclient->expunge($o->{mailbox});
-    $self->_die_on_error();
+    $self->_die_on_error("Unable to expunge mailbox '$o->{mailbox}'");
 
     return;
 }
