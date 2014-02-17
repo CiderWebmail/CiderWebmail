@@ -703,7 +703,12 @@ sub create_mailbox {
 
     croak unless $o->{name};
 
-    return $self->_imapclient->create($o->{mailbox} ? join $self->separator(), $o->{mailbox}, $o->{name} : $o->{name});
+    my $new_mailbox_name = ($o->{mailbox} ? join $self->separator(), $o->{mailbox}, $o->{name} : $o->{name});
+
+    $self->_imapclient->create($new_mailbox_name);
+    $self->_die_on_error("attempted to create mailbox '$new_mailbox_name'");
+
+    return 1;
 }
 
 =head2 delete_mailbox({ mailbox => $mailbox })
