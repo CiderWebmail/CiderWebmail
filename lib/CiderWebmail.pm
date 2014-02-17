@@ -82,7 +82,9 @@ around 'log_request_parameters' => sub {
 # Start the application
 __PACKAGE__->setup;
 
-__PACKAGE__->log->info("CiderWebmail $VERSION loaded!");
+unless (defined $ENV{TEST_USER}) {
+    __PACKAGE__->log->info("CiderWebmail $VERSION loaded!");
+}
 
 unless (__PACKAGE__->config->{language}) {
     print "Missing language configuration.\n";
