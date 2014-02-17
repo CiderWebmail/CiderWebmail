@@ -7,7 +7,7 @@ use Exporter;
 use base qw(Exporter);
 
 our ($mech);
-our @EXPORT = qw($mech xpath_test cleanup_messages);
+our @EXPORT = qw($mech xpath_test cleanup_messages find_special_folder find_folder);
 sub import {
     my ($self, $params) = @_;
 
@@ -22,7 +22,7 @@ sub import {
     }
 
     $mech = Test::WWW::Mechanize::Catalyst->new;
-    __PACKAGE__->export_to_level(1, $self, qw($mech xpath_test cleanup_messages));
+    __PACKAGE__->export_to_level(1, $self, qw($mech xpath_test cleanup_messages find_special_folder find_folder));
 
     if ($params->{login}) {
         $mech->get( 'http://localhost/' );
@@ -43,6 +43,39 @@ sub xpath_test(&) {
     }
 }
 
+sub find_special_folder {
+    my ($class) = @_;
+
+    my $special_folder = '';
+
+    xpath_test {
+        my ($tx) = @_;
+        $special_folder = $tx->find_value("//a[\@class='$class']/\@title");
+    };
+
+    return length($special_folder) ? $special_folder : undef;
+}
+
+sub find_folder {
+    my ($re) = @_;
+
+    my $folder_name;
+
+    xpath_test {
+        my ($tx) = @_;
+        my $folders = $tx->xpc->find("//a[\@class='folder']/\@title");
+
+        foreach my $folder ($folders->get_nodelist) {
+            if ($folder->value =~ $re) {
+                 $folder_name = $folder->value();
+            }
+        }
+    };
+
+    return length($folder_name) ? $folder_name : undef;
+}
+
+
 sub cleanup_messages {
     my ($messages) = @_;
 
@@ -56,19 +89,24 @@ sub cleanup_messages {
             ok(@{$mech->find_all_links( text_regex => qr{\A$_\z})} == 0, 'message is gone from INBOX folder');
         }
 
-        $mech->get_ok( 'http://localhost/mailbox/Sent?filter=' . $_, "fetch sent with filter for cleanup");
+        my $sent_folder = find_special_folder('sent');
+
+        $mech->get_ok( 'http://localhost/mailbox/' . $sent_folder . '?filter=' . $_, "fetch sent with filter for cleanup");
         my @messages_sent = $mech->find_all_links( text_regex => qr{\A$_\z});
         foreach(@messages_sent) {
             $mech->get_ok($_->url.'/delete', "cleanup message from Sent");
             ok(@{$mech->find_all_links( text_regex => qr{\A$_\z})} == 0, 'message is gone from Sent folder');
         }
-        
-        $mech->get_ok( 'http://localhost/mailbox/Trash?filter=' . $_, "fetch Trash folder with filter for cleanup");
-        my @messages_trash = $mech->find_all_links( text_regex => qr{\A$_\z});
-        foreach(@messages_trash) {
-            $mech->get_ok($_->url.'/delete', "cleanup message from Trash");
-            ok(@{$mech->find_all_links( text_regex => qr{\A$_\z})} == 0, 'message is gone from Trash folder');
-        }
 
+        my $trash_folder = find_special_folder('trash');
+
+        if (defined $trash_folder) {
+            $mech->get_ok( 'http://localhost/mailbox/' . $trash_folder . '?filter=' . $_, "fetch Trash folder with filter for cleanup");
+            my @messages_trash = $mech->find_all_links( text_regex => qr{\A$_\z});
+            foreach(@messages_trash) {
+                $mech->get_ok($_->url.'/delete', "cleanup message from Trash");
+                ok(@{$mech->find_all_links( text_regex => qr{\A$_\z})} == 0, 'message is gone from Trash folder');
+            }
+        }
     }
 }
