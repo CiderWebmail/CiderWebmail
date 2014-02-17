@@ -4,10 +4,12 @@ use Test::More;
 use CiderWebmail::Test {login => 1};
 use English qw(-no_match_vars);
 
-
 $mech->get_ok('http://localhost/mailboxes');
 
-if($mech->content =~ m/<span class="name">Sent<\/span>/) {
+my $sent_folder = find_special_folder('sent');
+
+if(defined $sent_folder) {
+    like($sent_folder, qr/Sent/, "Found Sent folder '$sent_folder'");
     done_testing();
     exit;
 } else {
@@ -22,9 +24,10 @@ if($mech->content =~ m/<span class="name">Sent<\/span>/) {
         },
     });
 
+    $mech->get_ok('http://localhost/mailboxes');
+    $sent_folder = find_special_folder('sent');
+    like($sent_folder, qr/Sent/, "Verified new Sent folder '$sent_folder'");
 }
 
-$mech->get_ok('http://localhost/mailboxes');
-$mech->content_contains('<span class="name">Sent</span>', 'verify new sent folder') or die "\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\nYOU DO NOT HAVE A SEND FOLDER, AND THIS TEST WAS UNABLE TO CREATE IT. OTHER TESTS WILL FAIL BECAUSE OF THIS\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n";
 
 done_testing();

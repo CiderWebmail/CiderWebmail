@@ -16,7 +16,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => find_special_folder('sent'),
         subject     => 'attachment-'.$unix_time,
         body        => 'attachment',
         attachment  => $attachment_file,
@@ -53,7 +53,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => find_special_folder('sent'),
         subject     => 'attachmentforward-'.$unix_time,
         body        => 'attachmentforward',
     },

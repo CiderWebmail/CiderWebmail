@@ -11,11 +11,13 @@ $mech->get_ok('http://localhost/mailbox/INBOX/compose');
 
 my $unix_time = time();
 
+my $sent_folder = find_special_folder('sent'),();
+
 $mech->submit_form(
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => $sent_folder,
         subject     => 'messagehandling-'.$unix_time,
         body        => 'messagehandling',
     },
@@ -28,7 +30,7 @@ $mech->get( 'http://localhost/mailbox/INBOX?length=99999' );
 
 my @inbox_links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
 
-$mech->get( 'http://localhost/mailbox/Sent?length=99999' );
+$mech->follow_link_ok({ url_regex => qr{/mailbox/?.*/$sent_folder} }, 'Open sent folder');
 
 my @sent_links = $mech->find_all_links(id_regex => qr{\Alink_\d+\z});
 

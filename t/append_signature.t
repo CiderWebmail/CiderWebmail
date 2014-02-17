@@ -11,11 +11,13 @@ $mech->get_ok('http://localhost/mailbox/INBOX/compose');
 
 my $unix_time = time();
 
+my $sent_folder = find_special_folder('sent'),();
+
 $mech->submit_form(
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => $sent_folder,
         subject     => 'append_signature_subject-'.$unix_time,
         signature   => 'append_signature_signature-'.$unix_time,
         body        => 'append_signature_body-'.$unix_time,
@@ -29,7 +31,7 @@ $mech->get_ok($inbox_messages[0]->url, 'open message');
 $mech->content_like(qr/append_signature_body-$unix_time/, 'verify inbox message body content');
 $mech->content_like(qr/\-\-\s<br \/>append_signature_signature-$unix_time/, 'verify sent message signature');
 
-$mech->get( 'http://localhost/mailbox/Sent?length=99999' );
+$mech->follow_link_ok({ url_regex => qr{/mailbox/?.*/$sent_folder} }, 'Open sent folder');
 my (@sent_messages) = $mech->find_all_links( text_regex => qr{\Aappend_signature_subject-$unix_time\z});
 ok((@sent_messages == 1), 'messages found');
 $mech->get_ok($sent_messages[0]->url, 'open message');

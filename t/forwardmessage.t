@@ -13,7 +13,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => find_special_folder('sent'),
         subject     => 'forwardmessage-'.$unix_time,
         body        => 'forwardmessage',
     },

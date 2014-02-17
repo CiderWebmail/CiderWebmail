@@ -14,7 +14,7 @@ $mech->submit_form_ok({
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => find_special_folder('sent'),
         subject     => "searchmessage-utf8-\N{CHECK MARK}-$unix_time",
         body        => "searchmessage-utf8-\N{CHECK MARK}-body-$unix_time",
     },

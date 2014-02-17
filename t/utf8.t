@@ -22,7 +22,7 @@ $mech->submit_form(
     with_fields => {
         from        => $ENV{TEST_MAILADDR},
         to          => $ENV{TEST_MAILADDR},
-        sent_folder => 'Sent',
+        sent_folder => find_special_folder('sent'),
         subject     => 'utf8-test-'.$unix_time." -- $body",
         body        => $body,
     },
