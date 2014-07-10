@@ -122,9 +122,14 @@ sub login : Private {
             $c->response->code(403);
             $c->stash->{message} = 'Invalid username or password.';
         },
+        catch_when qr/Unable to connect to/i => sub {
+            $c->response->code(500);
+            $c->stash->{message} = 'Unable to login, IMAP backend unreachable.';
+        },
         catch_default sub {
             $c->response->code(500);
             $c->stash->{message} = 'Unable to login';
+            warn "Unable to login, backend reported '$_ / $!'";
         };
 
         #abort unless we have a successfull login
