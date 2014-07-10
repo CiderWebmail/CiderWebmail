@@ -141,7 +141,7 @@ td, th
         {text-decoration: underline;}
 
 #content
-    {position:absolute; top:2em; height: 100%; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; }
+    {position:absolute; top:2em; bottom: 0px; left:13em; right:0; padding:0; background-color:#ffffff; border-left:1px solid #cccccc; }
 
     #content #subheadline 
         {height: 1.8em; line-height: 1.8em; background-color: #418bd4; color: white;}
