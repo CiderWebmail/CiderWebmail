@@ -27,10 +27,14 @@ $c->model('IMAPClient')->append_message({ mailbox => 'INBOX', message_text => $m
 $mech->get_ok( 'http://localhost/mailbox/INBOX?length=99999' );
 $mech->follow_link_ok({ text => 'icaltest-'.$unix_time });
 
-$mech->content_contains('<th colspan="2" class="heading">Bastille Day Party</th>', 'summary/summary');
-$mech->content_contains('<td class="begin">1997-07-14, 17:00:00</td>', 'begin');
-$mech->content_contains('<td class="end">1997-07-15, 03:59:59</td>', 'end');
-$mech->content_contains('<td colspan="2">Description-first-line<br /></td>', 'description');
+xpath_test {
+    my ($tx) = @_;
+
+    $tx->is("//th[\@class='heading']", 'Bastille Day Party', 'summary');
+    $tx->is("//td[\@class='begin']", '1997-07-14, 17:00:00', 'begin');
+    $tx->is("//td[\@class='end']", '1997-07-15, 03:59:59', 'end');
+    $tx->is("//td[\@class='description']", 'Description-first-line', 'description');
+};
 
 cleanup_messages(["icaltest-$unix_time"]);
 

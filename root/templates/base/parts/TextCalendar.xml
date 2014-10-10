@@ -12,7 +12,7 @@
             <td class="end" tal:content="data/end" />
         </tr>
         <tr tal:condition="data/description">
-            <td colspan="2" tal:content="structure data/description" />
+            <td class="description" colspan="2" tal:content="structure data/description" />
         </tr>
     </table>
 </div>
