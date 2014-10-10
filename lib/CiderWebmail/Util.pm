@@ -22,7 +22,7 @@ use Carp qw/ carp croak /;
 use FindBin qw($Bin);
 
 use feature qw/ switch /;
-
+no warnings 'experimental::smartmatch';
 
 =head1 FUNCTIONS
 

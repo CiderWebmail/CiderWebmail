@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use feature 'switch';
+no warnings 'experimental::smartmatch';
 
 use Carp qw/ confess croak /;
 
