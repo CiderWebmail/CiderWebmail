@@ -16,9 +16,18 @@ $mech->submit_form_ok({ with_fields => { firstname => "firstname-$unix_time", su
 $mech->content_contains("<td>firstname-$unix_time surname-$unix_time<\/td>", 'firstname and surname correct');
 $mech->content_contains("compose?to=email-$unix_time\@example.com", 'email address correct');
 
-ok( $mech->content =~ m/email\-$unix_time\@example\.com\"\s+id=\"compose_(\d+)/xm );
-my $id = ($1 or '');
-like($id, '/^\d+$/', 'address book id is a number');
+my $id = undef;
+xpath_test {
+    my ($tx) = @_;
+    $tx->ok("//a[contains(\@href, 'email-$unix_time')]", sub {
+        $_->ok('./@id', sub {
+            if ($_->node->textContent =~ m/^compose_(\d+)$/) {
+                $id = $1;
+                return 1;
+            }
+        });
+    }, 'found address entry A element');
+};
 
 $mech->follow_link_ok({ id => "edit_$id" }, 'open edit form');
 
