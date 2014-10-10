@@ -377,7 +377,7 @@ sub send : Chained('/mailbox/setup') Args(0) {
     try {
         $c->forward( $c->view('RFC822') );
     } catch {
-        $c->stash->{error} = $_;
+        $c->error($_);
         $c->detach('/error');
     };
 
