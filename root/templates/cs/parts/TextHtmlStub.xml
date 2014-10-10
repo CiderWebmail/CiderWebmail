@@ -1,7 +1,0 @@
-<div xmlns:tal="http://purl.org/petal/1.0/" class="html_message renderable">
-    <div tal:condition="true:part/defang_media_count" class="external_content_warning">
-        <a tal:attributes="href string:${uri_folder}/${part/root_message/uid}?load_external_media=1" onclick="show_message(this); return false;">Show anyway</a>
-        <span>To protect your privacy, CiderWebmail has blocked external content in this message.</span>
-    </div>
-    <iframe onload="resize_iframe(this);" tal:attributes="src string:${part/uri_render}" />
-</div>

@@ -1,8 +1,0 @@
-<div xmlns:tal="http://purl.org/petal/1.0/" class="image renderable">
-    <div class="stub_part">
-        <h1>
-        <a tal:attributes="href string:${part/uri_render}" onclick="load_subpart(this); return false;" class="load_subpart">[+]</a> 
-        <span tal:content="string: ${part/display_name}" />
-        </h1>
-    </div>
-</div>
