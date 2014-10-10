@@ -172,6 +172,7 @@ window.addEvent('load', function() {
     add_event_listener('keyup', function (event) {
             if (event.target && event.target.nodeType == 1 && (event.target.nodeName == 'input' || event.target.nodeName == 'textarea'))
                 return;
+
             switch (event.keyCode) {
                 case 37: // left
                 case 75: // k
@@ -189,6 +190,11 @@ window.addEvent('load', function() {
                     break;
                 case 40: // arrow down
                     document.getElementById('message_view').scrollTop = (document.getElementById('message_view').scrollTop + 25);
+                    break;
+                case 191: // '/' key
+                    var filter = document.getElementById('filter');
+                    filter.focus();
+                    filter.setSelectionRange(0, filter.value.length);
                     break;
             }
         }, false);

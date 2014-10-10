@@ -22,7 +22,7 @@
                 <h1 tal:content="folder">Mailbox</h1>
                 <form id="quicksearch" tal:attributes="action uri_quicksearch" method="GET">
                     <input type="hidden" name="sort" tal:attributes="value sort"/>
-                    <input name="filter" tal:attributes="value filter"/>
+                    <input name="filter" id="filter" tal:attributes="value filter"/>
                     <button type="submit" i18n:translate="">Search</button>
                 </form>
             </div>
