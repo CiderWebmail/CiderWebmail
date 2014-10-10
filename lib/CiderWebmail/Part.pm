@@ -25,15 +25,6 @@ has renderable          => (is => 'rw', isa => 'Bool', default => 0 ); #override
 has render_as_stub      => (is => 'rw', isa => 'Bool', default => 1 ); #override me! 
 
 has message             => (is => 'rw', isa => 'Bool', default => 0 ); #override me!
-has attachment          => (is => 'rw', isa => 'Bool', default => sub {
-    my ($self) = @_;
-
-    return 0 unless defined $self->bodystruct;
-    return 1 unless defined $self->bodystruct->{bodydisp};
-    return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
-    return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
-    return 0;
-},);
 
 my %renderers = map{ $_->supported_type => $_ } __PACKAGE__->plugins();
 
@@ -367,6 +358,22 @@ sub bodydisp {
     return unless ((defined $self->bodystruct) and ($self->bodystruct ne 'NIL'));
     return unless ((defined $self->bodystruct->bodydisp) and ($self->bodystruct->bodydisp ne 'NIL'));
     return $self->bodystruct->bodydisp;
+}
+
+=head2 attachment()
+
+returns true if the bodydisp indicates it is a attachment
+
+=cut
+
+sub attachment {
+    my ($self) = @_;
+
+    return 0 unless defined $self->bodystruct;
+    return 0 unless defined $self->bodystruct->{bodydisp};
+    return 0 unless (ref($self->bodystruct->{bodydisp}) eq 'HASH');
+    return 1 if defined $self->bodystruct->{bodydisp}->{attachment};
+    return 0;
 }
 
 =head2 bodyparms()
