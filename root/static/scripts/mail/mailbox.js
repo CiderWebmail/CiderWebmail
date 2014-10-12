@@ -2,12 +2,6 @@ var droppables;
 var current_message;
 var loading_message;
 
-function get_target_node(event) {
-    var target = event.target || event.srcElement;
-    while (target && target.nodeType == 3) target = target.parentNode;
-    return target;
-}
-
 function show_message(target) {
     var messages_pane = document.getElementById('messages_pane');
 
@@ -102,35 +96,108 @@ function delete_message(icon) {
         group.parentNode.removeChild(group);
 }
 
+function init_droppables() {
+    droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
+    for (var i = 0; i < droppables.length; i++) {
+        droppables[i].addEventListener('dragenter', on_folder_dragenter, false);
+        droppables[i].addEventListener('dragover',  on_folder_dragover, false);
+        droppables[i].addEventListener('dragleave', on_folder_dragleave, false);
+        droppables[i].addEventListener('drop',      on_message_drop,     false);
+        droppables[i].initiated = true;
+    }
+}
+
+function on_message_dragstart(event) {
+    dragged_message = get_dragged_message(event);
+    if (!dragged_message)
+        return;
+    dragged_message.style.opacity = '40%';
+    event.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+    event.dataTransfer.setData('Text', dragged_message.id); // required otherwise doesn't work
+}
+
+function on_message_dragend(event) {
+    dragged_message.style.opacity = '';
+
+    [].forEach.call(
+        document.getElementById('folder_tree').querySelectorAll('.folder'),
+        function(folder) {
+            folder.classList.remove('hover');
+        }
+    );
+}
+
+function number_of_child_elements(parent) {
+    var children = 0;
+    for (var i = 0; i < parent.childNodes.length; i++)
+        if (parent.childNodes[i].nodeType == 1) children++;
+    return children;
+}
+
+function on_message_drop(event) {
+    if (event.stopPropagation)
+        event.stopPropagation();
+    if (event.preventDefault)
+        event.preventDefault();
+
+    on_message_dragend(event);
+
+    var message = dragged_message;
+    var uid = message.id.replace('message_', '');
+    var href = location.href.replace(/\/?(\?.*)?$/, '');
+    var folder = this;
+    new HTMLRequest({
+        url: href + "/" + uid + "/move?target_folder=" + folder.title,
+        onSuccess: update_foldertree,
+    }).send();
+
+    var tbody = message.parentNode
+    tbody.removeChild(message);
+
+    if (number_of_child_elements(tbody) == 1)
+        tbody.parentNode.removeChild(tbody);
+}
+
+function on_folder_dragenter(event) {
+    this.classList.add('hover');
+}
+
+function on_folder_dragover(event) {
+    if (event.preventDefault)
+        event.preventDefault(); // allows us to drop
+
+    event.dataTransfer.dropEffect = 'copy';
+    this.classList.add('hover');
+
+    return false;
+}
+
+function on_folder_dragleave(event) {
+    this.classList.remove('hover');
+}
+
+function get_target_node(event) {
+    var target = event.target || event.srcElement;
+    while (target && target.nodeType == 3) target = target.parentNode;
+    return target;
+}
+
+function get_dragged_message(event) {
+    var target = get_target_node(event);
+    while (target.tagName.toLowerCase() != 'tr') {
+        target = target.parentNode;
+        if (!target) // we obviously did not drag a message
+            return;
+    }
+    return target;
+}
+
+var dragged_message;
 window.addEventListener('load', function() {
     var selected = [];
-    droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
+    init_droppables();
     loading_message = document.getElementById('message_view').innerHTML;
     var cancelled = false;
-
-    function start(event) {
-        var target = get_target_node(event);
-        var tag_name = target.tagName.toLowerCase();
-
-        if (tag_name == 'img' && target.id && target.id.indexOf('icon_') == 0) {
-            if (! selected.length) selected.push(target.parentNode.parentNode);
-            add_drag_and_drop(target, event, droppables, selected);
-            stop_propagation(event);
-        }
-        else if (tag_name == 'td' && target.parentNode.id && target.parentNode.id.indexOf('message_') == 0) {
-            if (! selected.length) selected.push(target.parentNode);
-            var icon = target.parentNode.getElementsByTagName('img')[0];
-            add_drag_and_drop(icon, event, droppables, selected);
-            stop_propagation(event);
-        }
-        else if (tag_name == 'a' && target.id && target.id.indexOf('link_') == 0) {
-            if (! selected.length) selected.push(target.parentNode.parentNode);
-            var icon = target.parentNode.parentNode.getElementsByTagName('img')[0];
-            cancelled = false;
-            setTimeout(function () { if (!cancelled) add_drag_and_drop(icon, event, droppables, selected); }, 200);
-            stop_propagation(event);
-        }
-    }
 
     function handle_click(event) {
         var target = get_target_node(event);
@@ -167,7 +234,8 @@ window.addEventListener('load', function() {
         }
     }
 
-    document.addEventListener('mousedown', start, false);
+    document.addEventListener('dragstart', on_message_dragstart, false);
+    document.addEventListener('dragend', on_message_dragend, false);
     document.addEventListener('click', handle_click, false);
     document.addEventListener('keyup', function (event) {
             if (event.target && event.target.nodeType == 1 && (event.target.nodeName == 'input' || event.target.nodeName == 'textarea'))
@@ -261,8 +329,7 @@ function update_foldertree(responseXML) {
         folder_tree.parentNode.replaceChild(new_folder_tree, folder_tree);
     } 
 
-    droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
-
+    init_droppables();
 }
 
 function add_drag_and_drop(message, event, droppables, selected) {
@@ -303,21 +370,6 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
         if (overed_prev) {
             selected.forEach(function (message) {
-                var uid = message.id.replace('message_', '');
-                var href = location.href.replace(/\/?(\?.*)?$/, '');
-                new HTMLRequest({
-                    url: href + "/" + uid + "/move?target_folder=" + overed_prev.title,
-                    onSuccess: update_foldertree,
-                }).send();
-
-                var tbody = message.parentNode
-                tbody.removeChild(message);
-
-                var children = 0;
-                for (var i = 0; i < tbody.childNodes.length; i++)
-                    if (tbody.childNodes[i].nodeType == 1) children++;
-                if (children == 1)
-                    tbody.parentNode.removeChild(tbody);
             });
         }
 
