@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -13,7 +14,9 @@
     <body>
         <ul metal:use-macro="folder_tree.xml#folder_tree"/>
         <div metal:use-macro="folder_tree.xml#folder_data"/>
-        <div metal:define-slot="content"/>
+        <div id="content">
+            <div metal:define-slot="content" tal:omit-tag=""/>
+        </div>
     </body>
 </html>
 

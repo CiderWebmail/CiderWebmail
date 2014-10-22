@@ -22,7 +22,6 @@ use Carp qw/ carp croak /;
 use FindBin qw($Bin);
 
 use feature qw/ switch /;
-no warnings 'experimental::smartmatch';
 
 =head1 FUNCTIONS
 
@@ -73,11 +72,22 @@ sub add_foldertree_icons {
     croak unless defined $o->{folders};
 
     foreach my $folder ( @{$o->{folders}} ) {
-        given(lc($folder->{name})) {
-            when('inbox')       { $folder->{icon} = 'inbox.png'; $folder->{class} = 'inbox'; }
-            when('sent')        { $folder->{icon} = 'sent.png'; $folder->{class} = 'sent'; }
-            when('trash')       { $folder->{icon} = 'trash.png'; $folder->{class} = 'trash'; }
-            default             { $folder->{icon} = 'folder.png'; $folder->{class} = 'folder'; }
+        my $folder_name = lc $folder->{name};
+        if ($folder_name eq 'inbox') {
+            $folder->{icon}  = 'inbox.png';
+            $folder->{class} = 'inbox';
+        }
+        elsif ($folder_name eq 'sent') {
+            $folder->{icon}  = 'sent.png';
+            $folder->{class} = 'sent';
+        }
+        elsif ($folder_name eq 'trash') {
+            $folder->{icon} = 'trash.png';
+            $folder->{class} = 'trash';
+        }
+        else {
+            $folder->{icon}  = 'folder.png';
+            $folder->{class} = 'folder';
         }
 
         if (defined($folder->{folders})) { #if we have any subfolders

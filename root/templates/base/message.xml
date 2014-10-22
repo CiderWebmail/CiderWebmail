@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"

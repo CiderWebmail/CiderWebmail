@@ -2,33 +2,27 @@ var droppables;
 var current_message;
 var loading_message;
 
-function get_target_node(event) {
-    var target = event.target || event.srcElement;
-    while (target && target.nodeType == 3) target = target.parentNode;
-    return target;
-}
-
 function show_message(target) {
-    var messages_pane = $('messages_pane');
+    var messages_pane = document.getElementById('messages_pane');
 
-    $('message_view').innerHTML = loading_message;
-    $('loading_message').style.display = 'block';
-    $('help_message').style.display = 'none';
+    document.getElementById('message_view').innerHTML = loading_message;
+    document.getElementById('loading_message').style.display = 'block';
+    document.getElementById('help_message').style.display = 'none';
 
-    if (! $('content').hasClass('message_display')) {
+    if (! document.getElementById('content').classList.contains('message_display')) {
         var message_divider_top = Cookie.read('message_divider_message_display_top');
-        $('content').addClass('message_display');
-        messages_pane.style.bottom = message_divider_top ? $('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
-        $('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
-        $('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
+        document.getElementById('content').classList.add('message_display');
+        messages_pane.style.bottom = message_divider_top ? document.getElementById('messages_pane').parentNode.offsetHeight - message_divider_top + 'px' : '70%';
+        document.getElementById('message_view').style.top     = message_divider_top ? message_divider_top + 'px' : '30%';
+        document.getElementById('message_divider').style.top  = message_divider_top ? message_divider_top + 'px' : '30%';
     }
 
     if (current_message)
-        current_message.removeClass('active');
+        current_message.classList.remove('active');
 
-    current_message = $(target.parentNode.parentNode);
-    current_message.addClass('seen');
-    current_message.addClass('active');
+    current_message = target.parentNode.parentNode;
+    current_message.classList.add('seen');
+    current_message.classList.add('active');
 
     if (current_message.offsetTop + current_message.offsetHeight > messages_pane.scrollTop + messages_pane.offsetHeight)
         messages_pane.scrollTop = current_message.offsetTop + current_message.offsetHeight - messages_pane.offsetHeight;
@@ -36,14 +30,14 @@ function show_message(target) {
     if (current_message.offsetTop < messages_pane.scrollTop)
         messages_pane.scrollTop = current_message.offsetTop;
 
-    var myHTMLRequest = new Request.HTML({
-        onSuccess: function(responseTree, responseElements, responseHTML, responseJavaScript) {
-            var parsed = responseHTML.match(/([\s\S]*?)<div>([\s\S]*)<\/div>/);
-            $('message_view').innerHTML = parsed[2];
-            update_foldertree(parsed[1], responseTree);
+    var myHTMLRequest = new HTMLRequest({
+        onSuccess: function(responseXML) {
+            document.getElementById('message_view').innerHTML
+                = responseXML.getElementById('content').innerHTML;
+            update_foldertree(responseXML);
         },
         url: target.href
-    }).get({ 'layout': 'ajax' });
+    }).send();
 }
 
 function show_previous_message() {
@@ -94,7 +88,7 @@ function show_next_message() {
 }
 
 function delete_message(icon) {
-    new Request({url: icon.parentNode.href, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
+    new HTMLRequest({url: icon.parentNode.href, onSuccess: update_foldertree}).send();
 
     var group = icon.parentNode.parentNode.parentNode.parentNode;
     group.removeChild(icon.parentNode.parentNode.parentNode);
@@ -102,35 +96,108 @@ function delete_message(icon) {
         group.parentNode.removeChild(group);
 }
 
-window.addEvent('load', function() {
-    var selected = [];
-    droppables = $('folder_tree').getElements('.folder');
-    loading_message = $('message_view').innerHTML;
-    var cancelled = false;
-
-    function start(event) {
-        var target = get_target_node(event);
-        var tag_name = target.tagName.toLowerCase();
-
-        if (tag_name == 'img' && target.id && target.id.indexOf('icon_') == 0) {
-            if (! selected.length) selected.push(target.parentNode.parentNode);
-            add_drag_and_drop(target, event, droppables, selected);
-            stop_propagation(event);
-        }
-        else if (tag_name == 'td' && target.parentNode.id && target.parentNode.id.indexOf('message_') == 0) {
-            if (! selected.length) selected.push(target.parentNode);
-            var icon = target.parentNode.getElementsByTagName('img')[0];
-            add_drag_and_drop(icon, event, droppables, selected);
-            stop_propagation(event);
-        }
-        else if (tag_name == 'a' && target.id && target.id.indexOf('link_') == 0) {
-            if (! selected.length) selected.push(target.parentNode.parentNode);
-            var icon = target.parentNode.parentNode.getElementsByTagName('img')[0];
-            cancelled = false;
-            setTimeout(function () { if (!cancelled) add_drag_and_drop(icon, event, droppables, selected); }, 200);
-            stop_propagation(event);
-        }
+function init_droppables() {
+    droppables = document.getElementById('folder_tree').querySelectorAll('.folder');
+    for (var i = 0; i < droppables.length; i++) {
+        droppables[i].addEventListener('dragenter', on_folder_dragenter, false);
+        droppables[i].addEventListener('dragover',  on_folder_dragover, false);
+        droppables[i].addEventListener('dragleave', on_folder_dragleave, false);
+        droppables[i].addEventListener('drop',      on_message_drop,     false);
+        droppables[i].initiated = true;
     }
+}
+
+function on_message_dragstart(event) {
+    dragged_message = get_dragged_message(event);
+    if (!dragged_message)
+        return;
+    dragged_message.style.opacity = '40%';
+    event.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+    event.dataTransfer.setData('Text', dragged_message.id); // required otherwise doesn't work
+}
+
+function on_message_dragend(event) {
+    dragged_message.style.opacity = '';
+
+    [].forEach.call(
+        document.getElementById('folder_tree').querySelectorAll('.folder'),
+        function(folder) {
+            folder.classList.remove('hover');
+        }
+    );
+}
+
+function number_of_child_elements(parent) {
+    var children = 0;
+    for (var i = 0; i < parent.childNodes.length; i++)
+        if (parent.childNodes[i].nodeType == 1) children++;
+    return children;
+}
+
+function on_message_drop(event) {
+    if (event.stopPropagation)
+        event.stopPropagation();
+    if (event.preventDefault)
+        event.preventDefault();
+
+    on_message_dragend(event);
+
+    var message = dragged_message;
+    var uid = message.id.replace('message_', '');
+    var href = location.href.replace(/\/?(\?.*)?$/, '');
+    var folder = this;
+    new HTMLRequest({
+        url: href + "/" + uid + "/move?target_folder=" + folder.title,
+        onSuccess: update_foldertree,
+    }).send();
+
+    var tbody = message.parentNode
+    tbody.removeChild(message);
+
+    if (number_of_child_elements(tbody) == 1)
+        tbody.parentNode.removeChild(tbody);
+}
+
+function on_folder_dragenter(event) {
+    this.classList.add('hover');
+}
+
+function on_folder_dragover(event) {
+    if (event.preventDefault)
+        event.preventDefault(); // allows us to drop
+
+    event.dataTransfer.dropEffect = 'copy';
+    this.classList.add('hover');
+
+    return false;
+}
+
+function on_folder_dragleave(event) {
+    this.classList.remove('hover');
+}
+
+function get_target_node(event) {
+    var target = event.target || event.srcElement;
+    while (target && target.nodeType == 3) target = target.parentNode;
+    return target;
+}
+
+function get_dragged_message(event) {
+    var target = get_target_node(event);
+    while (target.tagName.toLowerCase() != 'tr') {
+        target = target.parentNode;
+        if (!target) // we obviously did not drag a message
+            return;
+    }
+    return target;
+}
+
+var dragged_message;
+window.addEventListener('load', function() {
+    var selected = [];
+    init_droppables();
+    loading_message = document.getElementById('message_view').innerHTML;
+    var cancelled = false;
 
     function handle_click(event) {
         var target = get_target_node(event);
@@ -156,20 +223,21 @@ window.addEvent('load', function() {
 
             if (tagname == 'tr' && target.id && target.id.indexOf('message_') == 0) {
                 if (target.hasClass('selected')) {
-                    target.removeClass('selected');
+                    target.classList.remove('selected');
                     selected.erase(target);
                 }
                 else {
-                    target.addClass('selected');
+                    target.classList.add('selected');
                     selected.push(target);
                 }
             }
         }
     }
 
-    add_event_listener('mousedown', start, false);
-    add_event_listener('click', handle_click, false);
-    add_event_listener('keyup', function (event) {
+    document.addEventListener('dragstart', on_message_dragstart, false);
+    document.addEventListener('dragend', on_message_dragend, false);
+    document.addEventListener('click', handle_click, false);
+    document.addEventListener('keyup', function (event) {
             if (event.target && event.target.nodeType == 1 && (event.target.nodeName == 'input' || event.target.nodeName == 'textarea'))
                 return;
 
@@ -200,13 +268,13 @@ window.addEvent('load', function() {
         }, false);
 
     fetch_new_rows(100, 100);
-});
+}, false);
 
 function fetch_new_rows(start_index, length) {
     var start = 'start=' + start_index
     var href = location.search.match(/start=/) ? location.href.replace(/start=\d+/, start) : (location.href.match(/\?/) ? location.href + '&' + start : location.href + '?' + start);
 
-    new Request({url: href + ';layout=ajax', onSuccess: function(responseText, responseXML) {
+    new Request({url: href, onSuccess: function(responseText, responseXML) {
         // this hack is presented to you by Microsoft
         var dummy = document.createElement('span');
         dummy.innerHTML = '<table>' + responseText.match(/<table[^>]+id="message_list"[^>]*>([\S\s]*)<\/table>/)[1] + '</table>'; // responseXML.getElementById doesn't work in IE
@@ -233,36 +301,35 @@ function fetch_new_rows(start_index, length) {
             for (var i = 0; i < new_rows.childNodes.length ; i++)
                 message_list.appendChild(new_rows.childNodes[i].cloneNode(true));
 
-            var messages_pane = $('messages_pane');
+            var messages_pane = document.getElementById('messages_pane');
             var fetcher = function (event) {
                 if (messages_pane.scrollTop > messages_pane.scrollHeight - messages_pane.offsetHeight * 3) {
-                    messages_pane.removeEvent('scroll', fetcher);
+                    messages_pane.removeEventListener('scroll', fetcher);
                     var length = 100;
                     fetch_new_rows(start_index + length, length);
                 }
             };
-            messages_pane.addEvents({scroll: fetcher});
+            messages_pane.addEventListener('scroll', fetcher, false);
         }
         else {
-            $('fetching_message').style.display = 'none';
+            document.getElementById('fetching_message').style.display = 'none';
         }
     }}).send();
 }
 
-function update_foldertree(responseText, responseXML) {
-    var folder_tree = responseText.match(/<ul[^>]*id="folder_tree"[^>]*>([\s\S]*)<\/ul>/i)[1]; // responseXML.getElementById doesn't work in IE
+function update_foldertree(responseXML) {
+    var new_folder_tree = document.importNode(responseXML.getElementById('folder_tree'));
+    var new_foldertree_timestamp = new_folder_tree.getAttribute('data-timestamp');
+    document.title = responseXML.getElementById('unseen').firstChild.data;
 
-    document.title = document.title.replace(/- \(\d+\)$/, '- (' + responseText.match(/<div id="unseen">(\d+)<\/div>/)[1] + ')');
-
-    var new_foldertree_timestamp = responseText.match(/data-timestamp="(\d+\.\d+)" id="folder_tree"/)[1];
+    var folder_tree = document.getElementById('folder_tree');
 
     //only update the foldertree if the response comes in the correct order. sometimes a request takes longer than others.
     if (new_foldertree_timestamp > document.getElementById('folder_tree').getAttribute('data-timestamp')) { 
-        document.getElementById('folder_tree').innerHTML = folder_tree;
+        folder_tree.parentNode.replaceChild(new_folder_tree, folder_tree);
     } 
 
-    droppables = $('folder_tree').getElements('.folder');
-
+    init_droppables();
 }
 
 function add_drag_and_drop(message, event, droppables, selected) {
@@ -270,62 +337,52 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
     var overed_prev;
     var droppables_positions = {};
-    droppables.each(function (droppable) {
-        droppables_positions[droppable.title] = droppable.getCoordinates();
+    [].forEach.call(droppables, function (droppable) {
+        droppables_positions[droppable.title] = get_coordinates(droppable);
     });
 
     function drag(event) {
-        var overed = droppables.filter(function (el) {
-                el = droppables_positions[el.title];
-                return (event.client.x > el.left && event.client.x < el.right && event.client.y < el.bottom && event.client.y > el.top);
-            }).getLast();
+        var overed;
+        [].forEach.call(droppables, function (el) {
+            pos = droppables_positions[el.title];
+            if (event.clientX > pos.left && event.clientX < pos.right && event.clientY < pos.bottom && event.clientY > pos.top)
+                overed = el;
+        });
 
         if (overed_prev != overed) {
             if (overed_prev) {
-                overed_prev.removeClass('hover');
+                overed_prev.classList.remove('hover');
             }
             overed_prev = overed;
             if (overed){
-                overed.addClass('hover');
+                overed.classList.add('hover');
             }
         }
-        dragger.style.left = event.client.x + 'px';
-        dragger.style.top  = event.client.y + 'px';
+        dragger.style.left = event.clientX + 'px';
+        dragger.style.top  = event.clientY + 'px';
     }
 
     function drop(event) {
-        document.removeEvent('mousemove', drag);
-        document.removeEvent('mouseup', drop);
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', drop);
 
         dragger.parentNode.removeChild(dragger);
 
         if (overed_prev) {
-            selected.each(function (message) {
-                var uid = message.id.replace('message_', '');
-                var href = location.href.replace(/\/?(\?.*)?$/, '');
-                new Request({url: href + "/" + uid + "/move?target_folder=" + overed_prev.title, onSuccess: update_foldertree, headers: {'X-Request': 'AJAX'}}).send();
-
-                var tbody = message.parentNode
-                tbody.removeChild(message);
-
-                var children = 0;
-                for (var i = 0; i < tbody.childNodes.length; i++)
-                    if (tbody.childNodes[i].nodeType == 1) children++;
-                if (children == 1)
-                    tbody.parentNode.removeChild(tbody);
+            selected.forEach(function (message) {
             });
         }
 
-        selected.each(function(message) {
-            message.removeClass('selected');
+        selected.forEach(function(message) {
+            message.classList.remove('selected');
         });
         selected.splice(0, selected.length);
     }
 
     var dragger = document.createElement('ul');
-    selected.each(function (message) {
+    selected.forEach(function (message) {
         var li = document.createElement('li');
-        li.innerHTML = $(message).getElements('td.subject a')[0].innerHTML;
+        li.innerHTML = message.querySelector('td.subject a').innerHTML;
         dragger.appendChild(li);
     });
 
@@ -335,5 +392,6 @@ function add_drag_and_drop(message, event, droppables, selected) {
 
     document.body.appendChild(dragger);
 
-    document.addEvents({mousemove: drag, mouseup: drop});
+    document.addEventListener('mousemove', drag, false);
+    document.addEventListener('mouseup', drop, false);
 }

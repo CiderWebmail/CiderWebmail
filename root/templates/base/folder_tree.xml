@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tal="http://purl.org/petal/1.0/"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -13,7 +14,7 @@
         <ul metal:define-macro="folder_tree" id="folder_tree" tal:attributes="data-timestamp string:${timestamp}">
             <div tal:repeat="folder folder_tree/folders" tal:omit-tag="">
                 <li metal:define-macro="folder-tree" tal:attributes="class folder/selected">
-                    <a href="#" tal:attributes="href folder/uri_view; title folder/id; class folder/class"><img tal:attributes="src string:${uri_static}/images/${folder/icon}; alt folder/name" tal:condition="true: folder/icon" /> <span class="name" tal:content="folder/name"/> <span class="counts" tal:content="string: ${folder/unseen}/${folder/total}"/></a>
+                    <a href="#" tal:attributes="href folder/uri_view; title folder/id; class string:${folder/class} folder"><img tal:attributes="src string:${uri_static}/images/${folder/icon}; alt folder/name" tal:condition="true: folder/icon" /> <span class="name" tal:content="folder/name"/> <span class="counts" tal:content="string: ${folder/unseen}/${folder/total}"/></a>
                     <ul tal:define="folders folder/folders" tal:condition="true:folders" tal:repeat="folder folders">
                         <li metal:use-macro="#folder-tree">Dummy Child 1</li>
                     </ul>
