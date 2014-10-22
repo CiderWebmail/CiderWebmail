@@ -1,4 +1,7 @@
-1.05 2013-xx-yy 00:00:00
+1.05 2014-10-22 18:00:00
+    - Now works when using Courier IMAP server
+    - Various improvements for the test suite
+    - Remove Mootools, replace with plain JavaScript
     - HTML5 message submission progress bar
     - Various html/css/design fixes across all browsers
     - Basic managesieve support
