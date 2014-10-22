@@ -10,11 +10,7 @@ CiderWebmail::Error - Error Handling in CiderWebmail
 
 =head1 DESCRIPTION
 
-<<<<<<< HEAD
-Base class for CiderWebmail exceptions. 
-=======
 Implements the base class for CiderWebmail exceptions. 
->>>>>>> begin implementing exception handling
 
 =cut
 
