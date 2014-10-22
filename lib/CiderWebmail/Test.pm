@@ -50,7 +50,7 @@ sub find_special_folder {
 
     xpath_test {
         my ($tx) = @_;
-        $special_folder = $tx->find_value("//a[\@class='$class']/\@title");
+        $special_folder = $tx->find_value("//a[contains(\@class,'$class')]/\@title");
     };
 
     return length($special_folder) ? $special_folder : undef;
@@ -63,7 +63,7 @@ sub find_folder {
 
     xpath_test {
         my ($tx) = @_;
-        my $folders = $tx->xpc->find("//a[\@class='folder']/\@title");
+        my $folders = $tx->xpc->find("//a[contains(\@class, 'folder')]/\@title");
 
         foreach my $folder ($folders->get_nodelist) {
             if ($folder->value =~ $re) {
