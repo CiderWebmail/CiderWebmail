@@ -26,7 +26,7 @@ sub process {
     my ($self, $c) = @_;
 
     my $root = $c->config->{root};
-    my $ajax = $c->req->header('accept') eq 'application/xhtml+xml';
+    my $ajax = ($c->req->header('accept') // '') eq 'application/xhtml+xml';
 
     my $base_dir = [
         join('/', $root, 'templates', $c->stash->{language}),
