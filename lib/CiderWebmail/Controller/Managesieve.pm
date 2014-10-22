@@ -3,7 +3,6 @@ use Moose;
 use namespace::autoclean;
 
 use feature 'switch';
-no warnings 'experimental::smartmatch';
 
 use Carp qw/ confess croak /;
 
@@ -178,10 +177,14 @@ sub save : Chained('/managesieve/setup') Args(0) {
 
     $managesieve->put_script({ name => $name, content => $content });
 
-    given($status) {
-        when('active') { $managesieve->active_script({ name => $name }); }
-        when('inactive') { $managesieve->disable_script({ name => $name }); }
-        default { confess("stash sieve_script_status set to invalid value: " . $status); }
+    if ($status eq 'active') {
+        $managesieve->active_script({ name => $name });
+    }
+    elsif ($status eq 'inactive') {
+        $managesieve->disable_script({ name => $name });
+    }
+    else {
+        confess("stash sieve_script_status set to invalid value: " . $status);
     };
 
     $c->forward('list');
