@@ -257,8 +257,8 @@ function Cookie(key) {
 }
 
 Cookie.prototype.read = function(){
-    var value = this.options.document.cookie.match(
-        "(?:^|;)\\s*" + this.key.escapeRegExp() + "=([^;]*)"
+    var value = document.cookie.match(
+        "(?:^|;)\\s*" + this.key + "=([^;]*)"
     );
     return (value) ? decodeURIComponent(value[1]) : null;
 }
@@ -269,7 +269,7 @@ Cookie.prototype.write = function(value) {
 }
 
 Cookie.read = function(key) {
-    return new Cookie(key);
+    return new Cookie(key).read();
 }
 
 Cookie.write = function(key, value) {
