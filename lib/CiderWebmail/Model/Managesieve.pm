@@ -133,14 +133,19 @@ sub build_vacation_script {
 
     #TODO proper quoting?
     $o->{subject} =~ s/[\n\"]//g;
-    $o->{text} =~ s/[\n\"]//g;
 
-    my $vacation_script = qq|#CiderWebmail Vacation Rule v1\n|;
-    $vacation_script   .= qq|#DO NOT MANUALLY EDIT THIS\n|;
-    $vacation_script   .= qq|require ["vacation"];\n|;
-    $vacation_script   .= qq|if not header :contains "Precedence" ["bulk","list"] {\n|;
-    $vacation_script   .= qq|    vacation :days 7 :subject "$o->{subject}" "$o->{text}";\n|;
-    $vacation_script   .= qq|}\n|;
+    my $vacation_script = <<"    VACATION_SCRIPT";
+        #CiderWebmail Vacation Rule v1
+        #DO NOT MANUALLY EDIT THIS
+        require ["vacation"];
+        if not header :contains "Precedence" ["bulk","list"] {
+            vacation :days 7 :subject "$o->{subject}" text:
+        $o->{text}
+        .
+        ;
+        }
+    VACATION_SCRIPT
+    $vacation_script =~ s/^        //gm;
 
     return $vacation_script;
 }
