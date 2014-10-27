@@ -118,7 +118,7 @@ my @langs;
 sub langs {
     my ($self) = @_;
 
-    @langs = map { m!/([^/]*)\z!xm } grep { -d } glob $self->config->{root} . "/locale/*"
+    @langs = map { m!/([^/]*)\z!xm } grep { -d } glob $self->config->{root} . "/templates/*"
         unless @langs;
 
     return @langs;
