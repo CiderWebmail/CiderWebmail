@@ -19,7 +19,7 @@ sub login {
     croak 'Need password to attempt managesieve login' unless $o->{password};
 
     #TODO error handling after errorhandling branch merge
-    $self->_managesieve(Net::ManageSieve->new($self->config->{host}, Port => $self->config->{port}, on_fail => 'die' ));
+    $self->_managesieve(Net::ManageSieve->new($self->config->{host}, Port => $self->config->{port}, on_fail => 'die', tls => 'auto' ));
 
     $self->_managesieve->login($o->{username}, $o->{password});
 }
