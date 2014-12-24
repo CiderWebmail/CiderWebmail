@@ -54,7 +54,7 @@ sub active_script {
     }
 
     my $scripts = $self->_managesieve->listscripts;
-    return pop(@$scripts); #last script in array is the active script
+    return $scripts->[-1]; #last script in array is the active script
 }
 
 sub disable_script {

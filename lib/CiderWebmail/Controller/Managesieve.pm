@@ -88,7 +88,7 @@ sub vacation : Chained('/managesieve/setup') PathPart('vacation') Args() {
     $c->stash->{template} = 'managesieve/vacation.xml';
     $c->stash->{uri_save} = $c->uri_for('vacation');
 
-    if ((defined $managesieve->active_script) and ($managesieve->active_script ne 'CiderWebmail-Vacation-Rule')) {
+    if ($managesieve->active_script and $managesieve->active_script ne 'CiderWebmail-Vacation-Rule') {
         $c->stash->{error} = 'Another script is currently active: '.$managesieve->active_script.'. It will be disabled once you enable the vacation rule!';
     }
 
