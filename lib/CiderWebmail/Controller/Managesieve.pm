@@ -102,10 +102,7 @@ sub vacation : Chained('/managesieve/setup') PathPart('vacation') Args() {
     } elsif ($managesieve->script_exists({ name => 'CiderWebmail-Vacation-Rule' })) {
         my $vacation_script = $managesieve->get_script({ name => 'CiderWebmail-Vacation-Rule' });
 
-        if ($vacation_script =~ m/vacation :days 7 :subject "([^"]+?)" "([^"]+?)"/) {
-            $c->stash->{vacation_rule_subject}  = $1;
-            $c->stash->{vacation_rule_body}     = $2;
-        }
+        $c->stash($managesieve->parse_vacation_script({script => $vacation_script}));
 
         $c->stash->{vacation_rule_active}   = ($managesieve->active_script eq 'CiderWebmail-Vacation-Rule');
     }

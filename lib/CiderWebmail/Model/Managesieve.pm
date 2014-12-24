@@ -135,7 +135,7 @@ sub build_vacation_script {
     $o->{subject} =~ s/[\n\"]//g;
 
     my $vacation_script = <<"    VACATION_SCRIPT";
-        #CiderWebmail Vacation Rule v1
+        #CiderWebmail Vacation Rule v2
         #DO NOT MANUALLY EDIT THIS
         require ["vacation"];
         if not header :contains "Precedence" ["bulk","list"] {
@@ -150,6 +150,24 @@ sub build_vacation_script {
     return $vacation_script;
 }
 
+sub parse_vacation_script {
+    my ($self, $o) = @_;
+
+    croak 'Need script to parse vacation script.' unless $o->{script};
+    my $script = $o->{script};
+    my %parsed;
+
+    if ($script =~ m/vacation :days 7 :subject "([^"]+?)" "([^"]+?)"/) {
+        $parsed{vacation_rule_subject}  = $1;
+        $parsed{vacation_rule_body}     = $2;
+    }
+    elsif ($script =~ m/vacation :days 7 :subject "([^"]+?)" text:(.*?)^\./ms) {
+        $parsed{vacation_rule_subject} = $1;
+        $parsed{vacation_rule_body}    = $2;
+    }
+
+    return \%parsed;
+}
 
 =head1 LICENSE
 
