@@ -2,8 +2,6 @@ package CiderWebmail::Controller::Managesieve;
 use Moose;
 use namespace::autoclean;
 
-use feature 'switch';
-
 use Carp qw/ confess croak /;
 
 BEGIN { extends 'Catalyst::Controller'; }
