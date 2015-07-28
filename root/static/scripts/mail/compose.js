@@ -34,23 +34,27 @@ function send_mail(compose_form) {
         xhr.onreadystatechange = function(){
             if (xhr.readyState==4 && xhr.status==202) {
                 window.setTimeout(function() {
+                    reset_dialog_box();
                     window.location.href = xhr.getResponseHeader('X-Location');
                 }, 1500);
             }
 
             if (xhr.readyState==4 && xhr.status==400) {
+                reset_dialog_box();
                 var error = JSON.decode(xhr.responseText);
 
                 show_warning_message('', error.message);
             }
             
             if (xhr.readyState==4 && xhr.status==500) {
+                reset_dialog_box();
                 //TODO improve error handling, redirect user
                 show_warning_message('', "Internal Server Error");
             }
         };
 
         xhr.addEventListener("error", function(e) {
+            reset_dialog_box();
             //TODO improve error handling, redirect user
             show_warning_message('', "Internal Server Error");
         }, false);
