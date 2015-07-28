@@ -43,6 +43,11 @@ after BUILD => sub {
         $dbh->do('update db_version set version = 3');
     }
 
+    if ($version < 4) {
+        print STDERR "upgrading database schema to version 4\n";
+        $dbh->do('create table recent_contacts (user varchar not null, name varchar not null, email varchar not null, last_used date not null, PRIMARY KEY(user, email))');
+        $dbh->do('update db_version set version = 4');
+    }
 
     return $self;
 };

@@ -76,8 +76,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07025 @ 2012-11-02 15:57:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QP4m8CWyVxIsbxnUSS7WVg
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-29 00:19:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v29N/O0h54dFgubZHi2LIA
 
 =head1 CiderWebmail::DB::Result::Settings
 
