@@ -121,9 +121,9 @@ function reset_dialog_box() {
     //buttons
     var dialog_button_left = document.getElementById('dialog_button_left');
     dialog_button_left.style.display = 'none';
-    dialog_button_left.removeClass('red');
-    dialog_button_left.removeClass('green');
-    dialog_button_left.removeClass('grey');
+    dialog_button_left.classList.remove('red');
+    dialog_button_left.classList.remove('green');
+    dialog_button_left.classList.remove('grey');
     dialog_button_left.style.width = '50px';
     var dialog_button_left_text = document.getElementById('dialog_button_left_text');
     dialog_button_left_text.style.width = '50px';
@@ -132,9 +132,9 @@ function reset_dialog_box() {
     var dialog_button_right = document.getElementById('dialog_button_right');
     dialog_button_right.removeEventListener('click', reset_dialog_box, false);
     dialog_button_right.style.display = 'none';
-    dialog_button_right.removeClass('red');
-    dialog_button_right.removeClass('green');
-    dialog_button_right.removeClass('grey');
+    dialog_button_right.classList.remove('red');
+    dialog_button_right.classList.remove('green');
+    dialog_button_right.classList.remove('grey');
     dialog_button_right.style.width = '50px';
     var dialog_button_right_text = document.getElementById('dialog_button_right_text');
     dialog_button_right_text.style.width = '50px';
@@ -167,7 +167,7 @@ function init_progress_dialog(title_text) {
     document.getElementById('dialog_progressbar').style.display = 'block';
     document.getElementById('dialog_title_text').innerHTML = title_text;
     
-    document.getElementById('dialog_button_right').addClass('red');
+    document.getElementById('dialog_button_right').classList.add('red');
     document.getElementById('dialog_button_right_text').innerHTML = 'Cancel';
     document.getElementById('dialog_button_right').style.display = 'block';
     document.getElementById('dialog_button_right').style.width = '60px';
