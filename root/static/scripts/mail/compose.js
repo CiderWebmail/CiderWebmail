@@ -41,7 +41,7 @@ function send_mail(compose_form) {
 
             if (xhr.readyState==4 && xhr.status==400) {
                 reset_dialog_box();
-                var error = JSON.decode(xhr.responseText);
+                var error = JSON.parse(xhr.responseText);
 
                 show_warning_message('', error.message);
             }
