@@ -1,48 +1,4 @@
-fieldset {
-    border-top: 1px solid;
-    border-bottom: 0;
-    border-left: 0;
-    border-right: 0;
-}
-
-label {
-    display: block;
-    clear: left;
-    text-align: right;
-}
-
-label span {
-    float: left;
-    text-align: left;
-    width: 14%;
-}
-
-label.text span {
-    float: none;
-    display: block;
-}
-
-input {
-    width: 85%;
-}
-
-textarea {
-    width: 100%;
-}
-
-label.attachment, label.sent_folder {
-    text-align: left;
-}
-
-label.attachment span, label.sent_folder span, label.attachment input, label.sent_folder.input {
-    float: none;
-    width: auto;
-}
-
-label.attachment input {
-    min-width: 70%;
-}
-
+/* Mail Progress */
 div#send_mail_progress {
     display: none;
 }
@@ -54,4 +10,92 @@ div#send_mail_progress .wrapper {
     padding: 0px;
     margin: 0px;
     background-color: white;
+}
+
+/* Form */
+#compose_form {
+    margin: 0.5em;
+}
+
+#compose_form fieldset {
+    border: none;
+    border-top: 1px solid #80c0ff;
+}
+
+#compose_form fieldset legend {
+    background: #efefef;
+
+    padding: 2px 10px 2px 10px;
+
+    font-weight: bold;
+
+    border: 1px solid #80c0ff;
+    border-radius: 5px;
+
+    margin-left: 5px;
+
+}
+
+
+#compose_form label {
+    display:block;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#compose_form label > span {
+    display: inline-block;
+    float: left;
+    width: 10%;
+}
+
+#compose_form input[type=text],
+#compose_form input[type=email] {
+    width: 88%;
+    
+    padding: 2px;
+    outline: none;
+
+    border: none;
+    border-bottom: 1px dashed grey;
+}
+
+#compose_form input[type=text]:focus,
+#compose_form input[type=email]:focus {
+    border-bottom: 1px solid black;
+}
+
+#compose_form label {
+    font-weight: bold;
+}
+
+#compose_form textarea {
+    width: 98%;
+    border: 1px solid grey;
+    overflow: hidden;
+    resize: vertical;
+}
+
+#compose_form textarea#body {
+    height: 16em;
+}
+
+#compose_form textarea#signature {
+    height: 3em;
+}
+
+/* validation states */
+#compose_form input#to:invalid,
+#compose_form input#from:invalid {
+    border-bottom: 1px solid #D8000C !important;
+    background-color: #FFBABA;
+}
+
+#compose_form input:focus:invalid {
+    border-bottom: 1px solid #D8000C !important;
+    background-color: #FFBABA;
+}
+
+#compose_form input:focus:valid {
+    border-bottom: 1px solid #4F8A10 !important;
 }

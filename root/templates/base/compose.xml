@@ -18,61 +18,73 @@
             </div>
             <div id="container">
                 <form tal:attributes="action uri_send" id="compose_form" enctype="multipart/form-data" method="post">
-                    <fieldset>
-                        <legend>Message</legend>
                         <input tal:condition="true: forward" type="hidden" name="forward" tal:attributes="value string:${forward/root_message/uid}/${forward/part_id}"/>
                         <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/root_message/uid}/${in_reply_to/part_id}"/>
+
+                        <fieldset>
+                        <legend>Header</legend>
                         <label class="from">
                             <span i18n:translate="">From:</span>
-                            <input name="from" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>
-                            <input name="from" tal:condition="false: message/from"/>
+                            <input name="from" id="from" tal:condition="true: message/from" tal:attributes="value message/from/0/address" type="email" required="required" />
+                            <input name="from" id="from" tal:condition="false: message/from" type="email" required="required" />
                         </label>
+
                         <label class="to">
                             <span i18n:translate="">To:</span>
-                            <input name="to" tal:condition="true: message/to" tal:attributes="value message/to"/>
-                            <input name="to" tal:condition="false: message/to"/>
+                            <input name="to" id="to" tal:condition="true: message/to" tal:attributes="value message/to" type="email" multiple="multiple" required="required" />
+                            <input name="to" id="to" tal:condition="false: message/to" type="email" multiple="multiple" required="required" list="mailto" autofocus="autofocus" />
                         </label>
+
                         <label class="cc">
                             <span i18n:translate="">Cc:</span>
-                            <input name="cc" tal:attributes="value message/cc"/>
+                            <input name="cc" tal:attributes="value message/cc" type="email" multiple="multiple" />
                         </label>
+
                         <label class="subject">
                             <span i18n:translate="">Subject:</span>
-                            <input name="subject" tal:attributes="value message/subject"/>
+                            <input name="subject" id="subject" type="text" tal:attributes="value message/subject" required="required" />
                         </label>
+                        </fieldset>
+
+                        <fieldset>
+                        <legend>Message</legend>
                         <label class="text">
-                            <textarea name="body" rows="20" tal:content="message/body"/>
+                            <textarea id="body" name="body" rows="20" tal:condition="true: message/to" tal:content="message/body" placeholder="Message..." autofocus="autofocus" />
+                            <textarea id="body" name="body" rows="20" tal:condition="false: message/to" tal:content="message/body" placeholder="Message..." />
                         </label>
+
                         <label class="signature">
-                            <textarea id="signature" name="signature" rows="2" tal:content="signature"/>
+                            <textarea id="signature" name="signature" rows="2" tal:content="signature" placeholder="Signature..." />
                         </label>
-                    </fieldset>
-                    <fieldset>
+                        </fieldset>
+
+                        <fieldset>
+                        <legend>Attachments</legend>
                         <p tal:condition="true: forward" class="forwarding">
                             <span i18n:translate="" class="label">Forwarding</span>:
                             <span tal:content="forward/subject" class="subject"/>
                             (<span tal:condition="true: forward/from/0/name" tal:content="forward/from/0/name" class="address"/><span tal:condition="false: forward/from/0/name" tal:content="forward/from/0/address" class="address"/>, <span tal:condition="true: forward/date" tal:content="forward/date/strftime '%F %T'" class="date"/>)
                         </p>
-                        <legend i18n:translate="">Attachments</legend>
+
                         <label class="attachment">
-                            <span i18n:translate="">Attachment:</span>
                             <input type="file" name="attachment" multiple="multiple" size="35" />
                             <a onclick="add_attachment(this)">[+]</a>
                         </label>
-                    </fieldset>
-                    <fieldset>
-                        <legend i18n:translate="">Save copy</legend>
+                        </fieldset>
+
+                        <fieldset>
+                        <legend>Save a copy...</legend>
                         <label class="sent_folder">
-                            <span i18n:translate="">Save message to:</span>
                             <select name="sent_folder">
                                 <option tal:repeat="folder sent_folders" tal:content="folder/id" tal:attributes="selected folder/selected" />
                             </select>
                         </label>
-                    </fieldset>
-                    <fieldset>
-                        <legend>Send</legend>
-                        <input type="button" name="send" onClick="return send_mail(this.form); return false;" i18n:translate="" value="Transmit message" />
-                    </fieldset>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Send</legend>
+                            <input type="button" name="send" onClick="return send_mail(this.form); return false;" i18n:translate="" value="Send" />
+                        </fieldset>
                 </form>
             </div>
         </div>
