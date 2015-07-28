@@ -24,8 +24,8 @@
                         <input tal:condition="true: in_reply_to" type="hidden" name="in_reply_to" tal:attributes="value string:${in_reply_to/root_message/uid}/${in_reply_to/part_id}"/>
                         <label class="from">
                             <span i18n:translate="">From:</span>
-                            <input name="from" data-validators="required validate-email" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>
-                            <input name="from" data-validators="required validate-email" tal:condition="false: message/from"/>
+                            <input name="from" tal:condition="true: message/from" tal:attributes="value message/from/0/address"/>
+                            <input name="from" tal:condition="false: message/from"/>
                         </label>
                         <label class="to">
                             <span i18n:translate="">To:</span>
@@ -38,7 +38,7 @@
                         </label>
                         <label class="subject">
                             <span i18n:translate="">Subject:</span>
-                            <input name="subject" data-validators="validate-required" tal:attributes="value message/subject"/>
+                            <input name="subject" tal:attributes="value message/subject"/>
                         </label>
                         <label class="text">
                             <textarea name="body" rows="20" tal:content="message/body"/>
