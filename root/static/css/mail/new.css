@@ -72,7 +72,7 @@ div#send_mail_progress .wrapper {
 #compose_form textarea {
     width: 98%;
     border: 1px solid grey;
-    overflow: hidden;
+    overflow: auto;
     resize: vertical;
 }
 
