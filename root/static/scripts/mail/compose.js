@@ -1,11 +1,3 @@
-window.addEventListener('load', function() {
-    new Form.Validator.Inline($('compose_form'), {
-        stopOnFailure : true,
-        useTitles: true,
-        errorPrefix: "",
-    });
-}, false);
-
 function send_mail(compose_form) {
     //if we support FormData/xhr2
     if (window.FormData !== undefined ) {
