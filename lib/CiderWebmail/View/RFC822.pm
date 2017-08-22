@@ -96,7 +96,9 @@ sub process {
     }
 
     if (length($c->stash->{'email'}->{'signature'} // '') and length($c->stash->{email}->{body} // '')) {
-        $mail->sign(Signature => $c->stash->{'email'}->{'signature'});
+        my $signature = '' . $c->stash->{'email'}->{'signature'}; # ensure we work with a copy
+        utf8::encode($signature)
+        $mail->sign(Signature => $signature);
     }
     
     #deliver mail

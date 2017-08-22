@@ -8,7 +8,9 @@ __PACKAGE__->config(
     schema_class => 'CiderWebmail::DB',
     connect_info => [
         'dbi:SQLite:root/var/user_settings.sql',
-        
+        '',
+        '',
+        { sqlite_unicode => 1 },
     ],
 );
 
