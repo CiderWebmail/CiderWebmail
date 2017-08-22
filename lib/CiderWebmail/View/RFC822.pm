@@ -61,8 +61,8 @@ sub process {
         foreach ($c->req->upload('attachment')) {
             $mail->attach(
                 Type        => $_->type,
-                Encode::encode('MIME-Header', $part_to_forward->subject . '.eml'),
-                Path        => $_->tempname,
+                Filename    => Encode::encode('MIME-Header', $_->basename),
+                Path        => Encode::encode('MIME-Header', $_->tempname),
                 Disposition => 'attachment',
                 ReadNow     => 1,
             );
@@ -75,7 +75,7 @@ sub process {
 
         $mail->attach(
             Type     => 'message/rfc822',
-            Filename => $part_to_forward->subject . '.eml',
+            Filename => Encode::encode('MIME-Header', $part_to_forward->subject . '.eml'),
             Data     => $part_to_forward->body,
         );
     }
