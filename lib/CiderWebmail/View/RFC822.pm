@@ -61,7 +61,7 @@ sub process {
         foreach ($c->req->upload('attachment')) {
             $mail->attach(
                 Type        => $_->type,
-                Filename    => $_->basename,
+                Encode::encode('MIME-Header', $part_to_forward->subject . '.eml'),
                 Path        => $_->tempname,
                 Disposition => 'attachment',
                 ReadNow     => 1,
