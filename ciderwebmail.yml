@@ -38,6 +38,9 @@ send:
     method: sendmail
 #   host:   changeme
 
+#timeout for reading from the IMAP server in seconds.
+imap_timeout: 30
+
 #logging
 #Screen logger will log to STDERR
 Log::Dispatch:
