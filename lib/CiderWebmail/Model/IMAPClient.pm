@@ -57,7 +57,7 @@ sub ACCEPT_CONTEXT {
     my ($self, $c) = @_;
 
     $self->_imapclient($c->stash->{imapclient});
-    $self->_imapclient->Timeout($c->config->{imap_timeout});
+    $self->_imapclient->Timeout($c->config->{imap_timeout}) if $self->_imapclient;
     $self->_enable_body_search(1) if $c->config->{enable_body_search};
 
     return $self;
