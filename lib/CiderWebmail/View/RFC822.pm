@@ -49,9 +49,10 @@ sub process {
     if ($c->stash->{email}->{body}) { #TODO decent check if we have a valid body? what if only forwarding as attachment etc?
         utf8::encode($c->stash->{email}->{body});
         my $body_entity = MIME::Entity->build(
-            Type    => 'text/plain',
-            Charset => 'UTF-8',
-            Data    => $c->stash->{email}->{body},
+            Type     => 'text/plain',
+            Charset  => 'UTF-8',
+            Encoding => 'quoted-printable',
+            Data     => $c->stash->{email}->{body},
         );
 
         $mail->add_part($body_entity);
