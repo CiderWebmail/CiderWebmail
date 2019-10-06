@@ -65,7 +65,7 @@ requires 'Net::ManageSieve';
 requires 'Email::Address';
 
 requires 'Parse::RecDescent' => '1.967009'; #https://rt.cpan.org/Public/Bug/Display.html?id=76118
-requires 'Mail::IMAPClient' => '3.35';
+requires 'Mail::IMAPClient' => '3.41';
 
 requires 'Clone';
 requires 'HTML::Defang' => '1.04';

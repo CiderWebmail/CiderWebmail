@@ -44,12 +44,6 @@ creates a new CiderWebmail::Model::IMAPClient
 sub new {
     my $self = shift->next::method(@_);
 
-    if ($Mail::IMAPClient::VERSION =~ m/^3\.2(6|7)/xm) {
-        warn "Mail::IMAPClient V3.2(6|7) Unescape workaround enabled. Please upgrade to Mail::IMAPClient >= 3.28\n";
-        $self->{_imapclient_unescape_workaround} = 1;
-    }
-
-
     return $self;
 }
 
@@ -290,9 +284,7 @@ sub get_headers_hash {
     my @messages;       #messages wo got back, contains 'transformed' headers
     my @words;          #things we expect in return from the imap server
 
-    #Courier IMAP will return quoted headers even if we did not ask for them
-    #for example "SUBJECT" even if we requested SUBJECT
-    my $headers_to_fetch = uc( '"' . join('" "', @{ $o->{headers} }) . '"' );
+    my $headers_to_fetch = uc( join(' ', @{ $o->{headers} }) );
     
     $self->select({ mailbox => $o->{mailbox} } );
     
@@ -338,13 +330,7 @@ sub get_headers_hash {
         $message->{uid}     = $uid;
         $message->{mailbox} = $o->{mailbox};
 
-        my $headers;
-
-        if (defined($self->{_imapclient_unescape_workaround})) {
-            $headers = $self->_imapclient->Unescape($entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"});
-        } else {
-            $headers = $entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"};
-        }
+        my $headers = $entry->{"BODY[HEADER.FIELDS ($headers_to_fetch)]"};
 
         #we need to add \n to the header text because we only parse headers not a real rfc2822 message
         #otherwise it would skip the last header
