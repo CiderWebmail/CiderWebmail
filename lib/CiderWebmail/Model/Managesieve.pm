@@ -19,7 +19,7 @@ sub login {
     croak 'Need password to attempt managesieve login' unless $o->{password};
 
     #TODO error handling after errorhandling branch merge
-    $self->_managesieve(Net::ManageSieve->new($self->config->{host}, Port => $self->config->{port}, on_fail => 'die' ));
+    $self->_managesieve(Net::ManageSieve->new($self->config->{host}, Port => $self->config->{port}, on_fail => 'die', tls => 'auto' ));
 
     $self->_managesieve->login($o->{username}, $o->{password});
 }
@@ -54,7 +54,7 @@ sub active_script {
     }
 
     my $scripts = $self->_managesieve->listscripts;
-    return pop(@$scripts); #last script in array is the active script
+    return $scripts->[-1]; #last script in array is the active script
 }
 
 sub disable_script {
@@ -133,18 +133,41 @@ sub build_vacation_script {
 
     #TODO proper quoting?
     $o->{subject} =~ s/[\n\"]//g;
-    $o->{text} =~ s/[\n\"]//g;
 
-    my $vacation_script = qq|#CiderWebmail Vacation Rule v1\n|;
-    $vacation_script   .= qq|#DO NOT MANUALLY EDIT THIS\n|;
-    $vacation_script   .= qq|require ["vacation"];\n|;
-    $vacation_script   .= qq|if not header :contains "Precedence" ["bulk","list"] {\n|;
-    $vacation_script   .= qq|    vacation :days 7 :subject "$o->{subject}" "$o->{text}";\n|;
-    $vacation_script   .= qq|}\n|;
+    my $vacation_script = <<"    VACATION_SCRIPT";
+        #CiderWebmail Vacation Rule v2
+        #DO NOT MANUALLY EDIT THIS
+        require ["vacation"];
+        if not header :contains "Precedence" ["bulk","list"] {
+            vacation :days 7 :subject "$o->{subject}" text:
+        $o->{text}
+        .
+        ;
+        }
+    VACATION_SCRIPT
+    $vacation_script =~ s/^        //gm;
 
     return $vacation_script;
 }
 
+sub parse_vacation_script {
+    my ($self, $o) = @_;
+
+    croak 'Need script to parse vacation script.' unless $o->{script};
+    my $script = $o->{script};
+    my %parsed;
+
+    if ($script =~ m/vacation :days 7 :subject "([^"]+?)" "([^"]+?)"/) {
+        $parsed{vacation_rule_subject}  = $1;
+        $parsed{vacation_rule_body}     = $2;
+    }
+    elsif ($script =~ m/vacation :days 7 :subject "([^"]+?)" text:(.*?)^\./ms) {
+        $parsed{vacation_rule_subject} = $1;
+        $parsed{vacation_rule_body}    = $2;
+    }
+
+    return \%parsed;
+}
 
 =head1 LICENSE
 

@@ -21,8 +21,6 @@ use MIME::Base64;
 use Carp qw/ carp croak /;
 use FindBin qw($Bin);
 
-use feature qw/ switch /;
-
 =head1 FUNCTIONS
 
 =head2 add_foldertree_uris($c, {folders => $folder_tree, path => 'folder/path', uris => [{action => 'view', uri => 'view_folder'}, ...]})

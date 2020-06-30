@@ -24,7 +24,7 @@
                     </label>
                     <label>
                         <span i18n:translate="">Reply message:</span>
-                        <input name="vacation_rule_body" tal:attributes="value vacation_rule_body" />
+                        <textarea name="vacation_rule_body" cols="40" rows="10" tal:content="vacation_rule_body" />
                     </label>
                     <label>
                         <span i18n:translate="">Active:</span>
