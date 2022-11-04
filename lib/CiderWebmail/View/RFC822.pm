@@ -150,7 +150,7 @@ sub process {
         CiderWebmail::Error->throw({
             code            => '500',
             message         => "Unable to send Mail: $!",
-            error_id        => 'send-mail-error',
+            error           => 'send-mail-error',
         });
     };
     
