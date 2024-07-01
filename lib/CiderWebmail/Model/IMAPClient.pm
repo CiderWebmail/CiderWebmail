@@ -12,6 +12,7 @@ has _enable_body_search => (is => 'rw', isa => 'Bool', default => 0 );
 use MIME::Parser;
 use Mail::IMAPClient::MessageSet;
 use Mail::IMAPClient::BodyStructure;
+use Encode::IMAPUTF7;
 use Email::Simple;
 use Carp qw(carp croak confess);
 
@@ -124,7 +125,7 @@ sub folder_tree {
     my ($self) = @_;
     
     # sorting folders makes sure branches are created before leafs
-    my @folders = sort folder_sort $self->_imapclient->folders;
+    my @folders = sort folder_sort map { Encode::IMAPUTF7::decode('IMAP-UTF-7',$_)}  $self->_imapclient->folders;
     $self->_die_on_error();
 
 
@@ -172,8 +173,10 @@ sub select {
 
     croak 'No mailbox to select' unless $o->{mailbox};
 
-    unless ( $self->_imapclient->Folder and $self->_imapclient->Folder eq $o->{mailbox} ) {
-        $self->_imapclient->select( $o->{mailbox} );
+    my $encoded = Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{mailbox});
+
+    unless ( $self->_imapclient->Folder and $self->_imapclient->Folder eq $encoded ) {
+        $self->_imapclient->select($encoded);
         $self->_die_on_error("attempted to select '$o->{mailbox}'");
     }
 
@@ -191,7 +194,7 @@ sub message_count {
 
     croak unless $o->{mailbox};
 
-    return $self->_imapclient->message_count($o->{mailbox});
+    return $self->_imapclient->message_count(Encode::IMAPUTF7::encode("IMAP-UTF-7",$o->{mailbox}));
 }
 
 =head2 unseen_count({ mailbox => $mailbox })
@@ -205,7 +208,7 @@ sub unseen_count {
 
     croak unless $o->{mailbox};
 
-    return $self->_imapclient->unseen_count($o->{mailbox});
+    return $self->_imapclient->unseen_count(Encode::IMAPUTF7::encode("IMAP-UTF-7",$o->{mailbox}));
 }
 
 =head2 check_sort($sort)
@@ -657,7 +660,7 @@ low level method to append an RFC822-formatted message to a mailbox
 
 sub append_message {
     my ($self, $o) = @_;
-    return $self->_imapclient->append($o->{mailbox}, $o->{message_text});
+    return $self->_imapclient->append(Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{mailbox}), $o->{message_text});
 }
 
 =head2 move_message({ mailbox => $mailbox, target_mailbox => $target_mailbox, uid => $uid })
@@ -670,10 +673,10 @@ sub move_message {
     my ($self, $o) = @_;
 
     $self->select({ mailbox => $o->{mailbox} });
-    $self->_imapclient->move($o->{target_mailbox}, $o->{uid});
-    $self->_die_on_error("could not move message $o->{uid} to folder $o->{mailbox}");
+    $self->_imapclient->move(Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{target_mailbox}), $o->{uid});
+    $self->_die_on_error("could not move message $o->{uid} to folder $o->{itarget_mailbox}");
     
-    $self->_imapclient->expunge($o->{mailbox});
+    $self->_imapclient->expunge(Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{mailbox}));
     $self->_die_on_error("Unable to expunge mailbox '$o->{mailbox}'");
 
     return;
@@ -692,7 +695,7 @@ sub create_mailbox {
 
     my $new_mailbox_name = ($o->{mailbox} ? join $self->separator(), $o->{mailbox}, $o->{name} : $o->{name});
 
-    $self->_imapclient->create($new_mailbox_name);
+    $self->_imapclient->create(Encode::IMAPUTF7::encode('IMAP-UTF-7',$new_mailbox_name));
     $self->_die_on_error("attempted to create mailbox '$new_mailbox_name'");
 
     return 1;
@@ -709,7 +712,7 @@ sub delete_mailbox {
 
     croak unless $o->{mailbox};
 
-    return $self->_imapclient->delete($o->{mailbox});
+    return $self->_imapclient->delete(Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{mailbox}));
 }
 
 =head2 get_quotas({ mailbox => $mailbox })
@@ -723,7 +726,7 @@ sub get_quotas {
 
     croak unless $o->{mailbox};
 
-    my @quota_response = $self->_imapclient->tag_and_run("GETQUOTAROOT $o->{mailbox}");
+    my @quota_response = $self->_imapclient->tag_and_run("GETQUOTAROOT ".Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{mailbox}));
     $self->_die_on_error();
 
     my @quotas;
