@@ -48,6 +48,8 @@ requires 'MIME::Words';
 requires 'Try::Tiny';
 requires 'Try::Tiny::SmartCatch';
 
+requires 'Encode::IMAPUTF7';
+
 requires 'Email::Simple';
 requires 'Email::Sender';
 requires 'Email::Valid';
