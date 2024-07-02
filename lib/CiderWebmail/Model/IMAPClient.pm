@@ -646,7 +646,7 @@ sub delete_messages {
     $self->_imapclient->delete_message($o->{uids});
     $self->_die_on_error();
 
-    $self->_imapclient->expunge($o->{mailbox});
+    $self->_imapclient->expunge(Encode::IMAPUTF7::encode('IMAP-UTF-7',$o->{mailbox}));
     $self->_die_on_error();
 
     return;
